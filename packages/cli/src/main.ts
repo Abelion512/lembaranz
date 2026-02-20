@@ -8,7 +8,7 @@ import prompts from 'prompts';
 program
   .name('lembaran')
   .description('Lembaran — CLI Pengelolaan Aksara Personal')
-  .version('3.0.0');
+  .version('3.1.0');
 
 // Default action: Jalankan TUI jika tidak ada subcommand
 program.action(async () => {
@@ -29,7 +29,7 @@ program
     console.log(pc.bold('📊 STATUS SISTEM LEMBARAN:'));
     const isInit = await Arsip.isVaultInitialized();
     console.log(`${isInit ? pc.green('✅') : pc.yellow('⚠️')} Brankas: ${isInit ? 'Terinisialisasi' : 'Belum Disiapkan'}`);
-    console.log(pc.green('✅ Security Engine: AES-GCM \u0026 Argon2id'));
+    console.log(pc.green('✅ Security Engine: AES-GCM & Argon2id'));
     console.log(pc.blue('ℹ️  Storage: Local-First (FileAdapter Active)'));
   });
 

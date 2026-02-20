@@ -32,7 +32,7 @@ export function bacaBerkas(namaBerkas: string): string | null {
                 // console.log(`[bacaBerkas] Berhasil menemukan: ${p}`);
                 return fs.readFileSync(p, 'utf8');
             }
-        } catch (e) {
+        } catch (_e) {
             // Lanjut ke lokasi berikutnya
         }
     }
@@ -46,7 +46,7 @@ export function bacaBerkas(namaBerkas: string): string | null {
         try {
             if (fs.existsSync(target) && fs.statSync(target).isFile()) return fs.readFileSync(target, 'utf8');
             if (fs.existsSync(publicTarget) && fs.statSync(publicTarget).isFile()) return fs.readFileSync(publicTarget, 'utf8');
-        } catch (e) {}
+        } catch (_e) { }
 
         const parent = path.dirname(currentDir);
         if (parent === currentDir) break;

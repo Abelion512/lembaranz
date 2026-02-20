@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ShieldCheck, Lock, Key, Ghost, AlertTriangle, Clock, Fingerprint, Command } from 'lucide-react';
+import { ChevronLeft, ShieldCheck, Key, Ghost, AlertTriangle, Fingerprint, Command } from 'lucide-react';
 import { haptic } from '@lembaran/core/Indera';
 import { usePundi } from '@lembaran/core/Pundi';
 import { Arsip } from '@lembaran/core/Arsip';

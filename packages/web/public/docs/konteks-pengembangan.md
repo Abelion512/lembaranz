@@ -7,7 +7,7 @@ Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan 
 **Masalah**: Versi migrasi awal kehilangan "jiwa" desain asli; blur terlalu kuat, radius terlalu bulat, dan layout terasa terlalu "Tailwind standar".
 
 **Solusi**:
-- **Sinkronisasi CSS**: Variabel di `src/app/globals.css` diselaraskan 100% dengan `arsip_legacy/pustaka/gaya/gayanya.css`.
+- **Sinkronisasi CSS**: Variabel di `src/app/globals.css` diselaraskan 100% dengan `arsip_legacy/pustaka/gaya/gayanya.css`. 
 - **Typography**: Mengunci penggunaan font `SF Pro` dengan fallback yang tepat untuk menjaga nuansa iOS.
 - **Efek Glassmorphism**: Mengembalikan nilai `--glass-blur: 25px` danopacity frosted glass agar konten di belakang tetap terbaca namun artistik.
 

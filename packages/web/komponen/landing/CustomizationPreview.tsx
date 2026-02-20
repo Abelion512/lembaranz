@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Palette, Eye, Settings, Shield, Zap } from 'lucide-react';
+import { Palette, Settings, Shield, Zap } from 'lucide-react';
 
 export const CustomizationPreview = () => {
     const [activeColor, setActiveColor] = useState('blue');

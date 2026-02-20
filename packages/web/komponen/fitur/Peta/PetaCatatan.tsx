@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Arsip } from '@lembaran/core/Arsip';
 import { Note } from '@lembaran/core/Rumus';
-import { X, Maximize2, Minimize2, ZoomIn, ZoomOut, RefreshCw } from 'lucide-react';
+import { X, ZoomIn, ZoomOut, RefreshCw } from 'lucide-react';
 import { haptic } from '@lembaran/core/Indera';
 
 interface Node extends Note {
@@ -17,7 +17,7 @@ interface Node extends Note {
 export const PetaCatatan = ({ onClose }: { onClose: () => void }) => {
     const [nodes, setNodes] = useState<Node[]>([]);
     const [links, setLinks] = useState<{ source: number, target: number }[]>([]);
-    const [isFullScreen, setIsFullScreen] = useState(false);
+    const [isFullScreen] = useState(false);
     const [zoom, setZoom] = useState(1);
 
     const loadGraph = async () => {

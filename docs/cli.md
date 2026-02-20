@@ -14,6 +14,18 @@ bun install -g Abelion512/lembaran
 npm install -g Abelion512/lembaran
 ```
 
+## Troubleshooting Instalasi
+
+Jika Anda mengalami masalah "Module not found" atau perintah `lembaran` merujuk ke path lama (`abelion-notes`), lakukan pembersihan cache global:
+
+```bash
+bun remove -g abelion-notes lembaran
+# ATAU jika menggunakan npm
+npm uninstall -g abelion-notes lembaran
+```
+
+Setelah itu, ulangi proses instalasi.
+
 ## Menjalankan CLI
 
 Setelah instalasi, perintah `lembaran` akan tersedia secara global.

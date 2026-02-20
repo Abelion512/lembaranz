@@ -1,6 +1,6 @@
 {
   "name": "@lembaran/web",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "private": true,
   "scripts": {
     "sinkron-aset": "cp -r ../../docs ./public/ && cp ../../CHANGELOG.md ./public/ || true",

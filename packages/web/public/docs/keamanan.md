@@ -17,9 +17,9 @@ sequenceDiagram
     Note right of App: Hitung SHA-256 Hash<br/>(Sidik Jari Digital)
     App->>App: Tambahkan Segel "_hash"
     App->>Storage: Simpan Data + Segel
-
+    
     Note over User, Storage: ... Beberapa waktu kemudian ...
-
+    
     User->>App: Buka Catatan
     Storage->>App: Muat Data
     App->>App: Hitung Ulang Hash dari Isi
@@ -45,7 +45,7 @@ flowchart LR
     Data[Catatan Asli] -->|AES-GCM| Enc[Data Teracak]
     Key --> Enc
     Enc --> Disk[Penyimpanan Fisik]
-
+    
     style Pass fill:#f9f,stroke:#333,stroke-width:2px
     style Key fill:#bbf,stroke:#333,stroke-width:2px
     style Enc fill:#bfb,stroke:#333,stroke-width:2px

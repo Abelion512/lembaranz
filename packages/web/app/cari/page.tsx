@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Arsip, Brankas, Note, haptic } from '@lembaran/core';
 import Link from 'next/link';
 import { Search as SearchIcon, ChevronRight, Sparkles, X } from 'lucide-react';
-import { stripHtml, truncate } from '@lembaran/core/Penyaring';
+import { stripHtml } from '@lembaran/core/Penyaring';
 import { KerangkaCatatan } from '@/komponen/bersama/KerangkaCatatan';
 import { useGunakanTunda } from '@lembaran/core/GunakanTunda';
 import { IlustrasiKosong } from "@/komponen/bersama/IlustrasiKosong";
@@ -101,6 +101,7 @@ export default function SearchPage() {
             }
             return null;
         }).filter(Boolean) as (Note & { isSmartMatch: boolean })[];
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debouncedQuery, notes, decryptedCount]);
 
     return (

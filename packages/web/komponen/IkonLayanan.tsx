@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import {
     Key, Mail, Github,
-    Layout, Cpu, Cloud, Bot, ShieldCheck,
-    FileText, Calendar, Play
+    Layout, Bot, ShieldCheck,
+    Calendar, Play
 } from 'lucide-react';
 
 /**
@@ -338,9 +338,9 @@ const N8NIcon = ({ size }: { size: number }) => (
 
 const AntigravityIcon = ({ size }: { size: number }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="10" stroke="#F97316" strokeWidth="2"/>
-        <path d="M12 6V18M6 12H18" stroke="#F97316" strokeWidth="2" strokeLinecap="round"/>
-        <circle cx="12" cy="12" r="3" fill="#F97316"/>
+        <circle cx="12" cy="12" r="10" stroke="#F97316" strokeWidth="2" />
+        <path d="M12 6V18M6 12H18" stroke="#F97316" strokeWidth="2" strokeLinecap="round" />
+        <circle cx="12" cy="12" r="3" fill="#F97316" />
     </svg>
 );
 
@@ -469,6 +469,7 @@ const OfficialIcon = ({ name, size }: { name: string, size: number }) => {
 
     if (domain && !imgError && domain !== 'google.com') {
         return (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
                 src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
                 alt={name}

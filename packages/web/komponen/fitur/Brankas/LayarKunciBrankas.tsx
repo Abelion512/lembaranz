@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Lock, KeyRound, Unlock, ArrowRight, ShieldCheck,
+    Lock, KeyRound, Unlock, ArrowRight,
     ChevronLeft, Check, Copy, Fingerprint
 } from 'lucide-react';
 import { Arsip } from '@lembaran/core/Arsip';
@@ -27,7 +27,6 @@ export const LayarKunciBrankas = () => {
     const [paperKey, setPaperKey] = useState('');
     const [copied, setCopied] = useState(false);
 
-    const secretMode = settings.secretMode;
 
     useEffect(() => {
         const checkVaultStatus = async () => {
@@ -68,7 +67,7 @@ export const LayarKunciBrankas = () => {
             await Arsip.setupVault(password);
             audio.unlock();
             setVaultLocked(false);
-        } catch (err) {
+        } catch (_err) {
             setError("Gagal menyiapkan brankas");
         } finally {
             setIsLoading(false);
@@ -92,7 +91,7 @@ export const LayarKunciBrankas = () => {
                 audio.lock();
                 setError("Kata sandi salah");
             }
-        } catch (err) {
+        } catch (_err) {
             setError("Gagal membuka brankas");
         } finally {
             setIsLoading(false);
@@ -123,7 +122,7 @@ export const LayarKunciBrankas = () => {
                                 {isSetupMode && <><div className="ios-separator"></div><input type="password" value={confirmPassword} onChange={(e) => { setConfirmPassword(e.target.value); setError(false); }} placeholder="Ulangi Kata Sandi" className="w-full px-4 py-3 bg-transparent border-none focus:outline-none text-center text-lg font-medium placeholder:opacity-30" /></>}
                             </div>
                             {settings.biometricEnabled && !isSetupMode && (
-                                <button type="button" onClick={() => handleUnlock({ preventDefault: () => {} } as unknown as React.FormEvent, "biometric-simulated")} className="w-full flex items-center justify-center gap-2 py-3 mb-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-500 font-bold text-sm hover:bg-blue-500/20 transition-all">
+                                <button type="button" onClick={() => handleUnlock({ preventDefault: () => { } } as unknown as React.FormEvent, "biometric-simulated")} className="w-full flex items-center justify-center gap-2 py-3 mb-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-500 font-bold text-sm hover:bg-blue-500/20 transition-all">
                                     <Fingerprint size={18} /> Gunakan Biometrik
                                 </button>
                             )}

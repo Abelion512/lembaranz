@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { Terminal, Copy, Check } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 const COMMANDS = {
     npm: 'npm install -g Abelion512/lembaran',
@@ -40,9 +39,8 @@ export const CliInstallation = () => {
                             <button
                                 key={m}
                                 onClick={() => setMethod(m)}
-                                className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${
-                                    method === m ? 'bg-blue-500 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'
-                                }`}
+                                className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${method === m ? 'bg-blue-500 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'
+                                    }`}
                             >
                                 {m.toUpperCase()}
                             </button>

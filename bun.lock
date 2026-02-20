@@ -1,8 +1,14 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "tmp_next",
+      "dependencies": {
+        "commander": "^14.0.3",
+        "picocolors": "^1.1.1",
+        "prompts": "^2.4.2",
+      },
       "devDependencies": {
         "eslint": "^9",
         "typescript": "^5",
@@ -10,7 +16,7 @@
     },
     "packages/cli": {
       "name": "@lembaran/cli",
-      "version": "3.0.0",
+      "version": "3.1.0",
       "dependencies": {
         "@lembaran/core": "workspace:*",
         "commander": "^14.0.3",
@@ -20,7 +26,7 @@
     },
     "packages/core": {
       "name": "@lembaran/core",
-      "version": "3.0.0",
+      "version": "3.1.0",
       "dependencies": {
         "@noble/ciphers": "^2.1.1",
         "@noble/hashes": "^2.0.1",
@@ -30,7 +36,7 @@
     },
     "packages/web": {
       "name": "@lembaran/web",
-      "version": "3.0.0",
+      "version": "3.1.0",
       "dependencies": {
         "@lembaran/core": "workspace:*",
         "@mlc-ai/web-llm": "^0.2.80",

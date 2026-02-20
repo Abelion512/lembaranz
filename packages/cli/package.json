@@ -1,7 +1,7 @@
 {
   "name": "@lembaran/cli",
-  "version": "3.0.0",
-  "private": true,
+  "version": "3.1.0",
+  "private": false,
   "type": "module",
   "bin": {
     "lembaran": "./src/main.ts"

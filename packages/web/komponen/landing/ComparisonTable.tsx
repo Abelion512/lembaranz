@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Terminal, Globe, Smartphone, Check, AlertCircle, Fingerprint } from 'lucide-react';
+import { Terminal, Globe, Smartphone } from 'lucide-react';
 
 const COMPARISON_DATA = [
     {

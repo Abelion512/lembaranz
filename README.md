@@ -9,22 +9,32 @@ Lembaran adalah platform arsip digital personal yang aman, berbasis local-first,
    curl -fsSL https://lembaran.vercel.app/install.sh | bash
    ```
 
-2. **Manual Setup (Developer)**:
+   *Jika Anda mengalami masalah "Module not found" dari versi lama (abelion-notes), jalankan perintah berikut untuk membersihkan cache:*
+   ```bash
+   bun remove -g abelion-notes lembaran
+   ```
+
+2. **Instalasi via Bun Global**:
+   ```bash
+   bun install -g Abelion512/lembaran
+   ```
+
+3. **Manual Setup (Developer)**:
    **Install Bun Runtime**: [bun.sh](https://bun.sh)
-3. **Clone & Setup**:
+4. **Clone & Setup**:
    ```bash
    git clone https://github.com/Abelion512/lembaran.git
    cd lembaran
    bun install
    ```
-4. **Run Web Interface**:
+5. **Run Web Interface**:
    ```bash
    bun run dev
    ```
-5. **Run Management TUI**:
+6. **Run Management TUI**:
    ```bash
    lembaran mulai
-   # Atau akses fitur lain: lembaran pantau | jelajah | kuncung
+   # Atau akses fitur lain: lembaran pantau | jelajah | ukir
    ```
 
 ## Features
@@ -47,10 +57,10 @@ Saat ini aplikasi dikonfigurasi melalui antarmuka **Setelan (Laras)** di dalam a
 
 ## Documentation
 
-- [Manajemen CLI & API](./docs/CLI_API.md)
-- [Peningkatan Masa Depan](./docs/FUTURE_IMPROVEMENTS.md)
+- [Manajemen CLI & API](./docs/cli.md)
+- [Peningkatan Masa Depan](./docs/future_improvements.md)
 - [Log Perubahan (Changelog)](./CHANGELOG.md)
-- [Architecture Decision Records (ADR)](./docs/ADR-001_TUI_Implementation.md)
+- [Architecture Decision Records (ADR)](./docs/adr-001-tui-implementation.md)
 
 ## License
 

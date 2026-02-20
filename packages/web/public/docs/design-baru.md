@@ -209,3 +209,4 @@ Aplikasi ini sudah punya arah yang benar:
 Yang dibutuhkan sekarang hanya disiplin dan konsistensi.
 
 Dokumen ini bisa dijadikan baseline untuk iterasi desain berikutnya.
+

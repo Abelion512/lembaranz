@@ -1,6 +1,6 @@
 import React from 'react';
 import { DocPage } from '@/komponen/bersama/DocPage';
-import { Shield, Zap, Terminal, Database, BookOpen } from 'lucide-react';
+import { Shield, Zap, Terminal, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 
 export default function BantuanPage() {

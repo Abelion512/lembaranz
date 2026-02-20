@@ -80,7 +80,7 @@ export const PenyusunKredensial = ({ data, onChange }: PenyusunKredensialProps) 
 
             onChange(newData);
             haptic.success();
-        } catch (err) {} finally {
+        } catch (_err) { } finally {
             setTimeout(() => setIsPasting(false), 500);
         }
     };

@@ -45,7 +45,7 @@ Standar visual yang harus dipatuhi berdasarkan referensi **Google Stitch**:
     - **No Hover**: Tidak ada perubahan visual saat kursor melintas (untuk rasa touch-native).
     - **Opacity Feedback**: Gunakan perubahan opasitas pada `active` state (saat ditekan).
     - **No Scale/Bounce**: Hindari animasi perbesaran atau pantulan yang berlebihan.
-*   **Layout**:
+*   **Layout**: 
     - **Grouped List**: Mengikuti gaya iOS Settings dengan `border-radius: 1rem (16px)`.
     - **Bottom Navigation**: Navigasi utama berada di bawah (Pill Style).
 *   **Iconografi**: Menggunakan `SF Symbols` kustom (atau `Lucide` dengan stroke tipis 1.5px).

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
     Book, Shield, Zap, Rocket,
     Database, Github,
-    Command, Download, PlayCircle,
+    Command, Download,
     ChevronRight, ExternalLink,
     ChevronLeft
 } from 'lucide-react';
@@ -75,11 +75,10 @@ export const SidebarBantuan = () => {
                                     key={item.id}
                                     href={item.id === '' ? '/bantuan' : `/bantuan/${item.id}`}
                                     onClick={() => haptic.light()}
-                                    className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all text-left group ${
-                                        isActive(item.id)
-                                        ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/10'
-                                        : 'text-[var(--text-secondary)] hover:bg-blue-500/5 hover:text-blue-500'
-                                    }`}
+                                    className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all text-left group ${isActive(item.id)
+                                            ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/10'
+                                            : 'text-[var(--text-secondary)] hover:bg-blue-500/5 hover:text-blue-500'
+                                        }`}
                                 >
                                     <div className="flex items-center gap-3">
                                         <item.icon size={18} className={isActive(item.id) ? 'opacity-100' : 'opacity-40 group-hover:opacity-100 transition-opacity'} />

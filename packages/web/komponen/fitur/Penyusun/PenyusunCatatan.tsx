@@ -114,7 +114,7 @@ export const PenyusunCatatan = ({
             const summary = await Pujangga.ringkasCerdas(editor.getHTML());
             editor.chain().focus().insertContent(`<p><strong>${summary}</strong></p>`).run();
             haptic.success();
-        } catch (err) {
+        } catch (_err) {
             haptic.error();
         } finally {
             setIsSummarizing(false);
