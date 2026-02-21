@@ -1,21 +1,106 @@
 # Lembaran
-> Brankas Aksara Personal yang Berdikari (v3.0.0)
+> Brankas Aksara Personal yang Berdikari — v3.1.0
 
-## Agent Context
-- [.Jules/SPEC.md]: Aturan operasional dan spesifikasi Jules.
-- [.Jules/MCP_CAPABILITIES.md]: Detail teknis alat MCP (Neon, Supabase, Stitch, dll).
-- [.Jules/palette.md]: Brand identity and icon system documentation.
+## Tentang Proyek
+Lembaran adalah aplikasi manajemen catatan lokal-first dengan enkripsi end-to-end (AES-GCM + Argon2id). Tidak ada server pihak ketiga — data tersimpan sepenuhnya di perangkat pengguna.
 
-## Core Workspaces
-- [packages/core]: Shared logic, encryption (AES-GCM/Argon2id), dan storage adapters.
-- [packages/cli]: Interactive terminal interface (TUI).
-- [packages/web]: Next.js application (Dashboard at /arsip).
+## Struktur Monorepo
+```
+packages/
+  core/   — Shared logic: enkripsi, storage adapter, AI, Sentinel
+  cli/    — Terminal interface (TUI) berbasis Bun
+  web/    — Next.js 16 app (App Router + Turbopack)
+```
 
-## Key Files
-- [packages/core/src/Arsip.ts]: Manajer enkripsi tingkat tinggi.
-- [packages/core/src/Brankas.ts]: Mesin kriptografi.
-- [AGENTS.md]: Panduan pengembangan utama.
+## Arsitektur Web (packages/web)
+- **Framework**: Next.js 16.1.6, React 19, Turbopack
+- **Routing URL**: `app/[locale]/` → semua halaman diprefix `/id/` atau `/en/`
+- **i18n**: `next-intl` — locale berbasis URL, bukan state
+  - `i18n/routing.ts` — config locale (`id` default, `en`)
+  - `i18n/request.ts` — server config, load messages JSON
+  - `i18n/navigation.ts` — locale-aware `Link`, `useRouter`, `usePathname`
+  - `middleware.ts` — auto-redirect ke locale prefix
+  - `messages/id.json`, `messages/en.json` — kamus terjemahan UI
+- **State management**: Zustand via `@lembaran/core/Pundi`
+- **Storage**: IndexedDB (browser) via `BrowserAdapter`, JSON file (Node) via `FileAdapter`
 
-## Concepts
-- Berdikari: Local-first data sovereignty.
-- Sentinel Security: Client-side encryption.
+## Arsitektur Core (packages/core)
+- `Arsip.ts` — CRUD catatan tingkat tinggi
+- `Brankas.ts` — Mesin kriptografi (AES-GCM, Argon2id)
+- `Gudang.ts` — Storage abstraction (auto-detect browser vs Node)
+- `Sentinel.ts` — Background tasks & autonomous agent (**TIDAK** di-export dari index.ts — import langsung: `@lembaran/core/Sentinel`)
+- `Linguis.ts` — AI translation (Gemini)
+- `Pundi.ts` — Zustand global store
+- `Laras.ts` — Context/path resolver (Node-only, dynamic import)
+- `storage/BrowserAdapter.ts` — IndexedDB adapter
+- `storage/FileAdapter.ts` — JSON file adapter (Node.js)
+
+## Rules Penting untuk AI
+
+### Import Sentinel
+```typescript
+// ✅ BENAR (CLI only)
+import { Sentinel } from '@lembaran/core/Sentinel';
+
+// ❌ SALAH — menyebabkan node:child_process masuk browser bundle
+import { Sentinel } from '@lembaran/core';
+```
+
+### Gunakan i18n navigation (bukan next/link langsung)
+```typescript
+// ✅ BENAR — locale-aware
+import { Link, useRouter, usePathname } from '@/i18n/navigation';
+
+// ❌ Hindari di halaman [locale] — tidak locale-aware
+import Link from 'next/link';
+```
+
+### Locale di komponen client
+```typescript
+// Ambil locale saat ini
+import { useLocale, useTranslations } from 'next-intl';
+const locale = useLocale(); // 'id' | 'en'
+const t = useTranslations('NamaNamespace');
+```
+
+### Environment Variables
+- `.env` ada di **root monorepo** — Next.js membacanya via `dotenv` di `next.config.ts`
+- `GEMINI_API_KEY` — untuk AI translation (Linguis/PenyaringRahasia)
+- `DB_PATH` — path custom untuk FileAdapter (CLI)
+
+## Dev Commands
+```bash
+bun run dev      # Start dev server di port 1400 (auto-kill port dulu via predev)
+bun run build    # Sync aset + next build
+bun run lint     # ESLint semua package (web + core + cli)
+```
+
+## Konvensi Penamaan
+Seluruh kode menggunakan **bahasa Indonesia** untuk identifier:
+- `Arsip` = Archive/Notes manager
+- `Brankas` = Vault/Crypto engine
+- `Gudang` = Storage
+- `Pundi` = Store (Zustand)
+- `Laras` = Context resolver
+- `Sentinel` = Background task manager
+- `Linguis` = AI translator
+- `Pujangga` = AI provider manager
+
+## Halaman (app/[locale]/)
+| URL | Halaman |
+|-----|---------|
+| `/id/` atau `/en/` | Landing page |
+| `/id/pustaka` | Daftar catatan (main app) |
+| `/id/catatan/[id]` | Editor catatan |
+| `/id/bantuan/[slug]` | Dokumentasi (markdown) |
+| `/id/laras` | Pengaturan |
+| `/id/jatidiri` | Profil |
+| `/id/cari` | Pencarian |
+| `/id/versi` | Changelog |
+| `/id/tentang` | Tentang |
+| `/id/privasi`, `/id/ketentuan` | Legal |
+
+## Referensi Tambahan
+- [AGENTS.md](./AGENTS.md) — Panduan pengembangan utama
+- [CHANGELOG.md](./CHANGELOG.md) — Riwayat perubahan
+- [docs/](./docs/) — Dokumentasi teknis lengkap
