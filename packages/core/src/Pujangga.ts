@@ -1,42 +1,66 @@
-/**
- * Pujangga Engine: Smart Automation & Local AI.
- */
+import { PujanggaProvider, PujanggaPlan } from './ai/types';
+import { GeminiProvider } from './ai/GeminiProvider';
+import { LocalProvider } from './ai/LocalProvider';
+import { PenyaringRahasia } from './ai/PenyaringRahasia';
+import { AuditLog } from './AuditLog';
 
-export const Pujangga = {
+/**
+ * Pujangga Engine: Modular & Private AI Architecture.
+ * Standardized as a class for maximum compatibility.
+ */
+export class Pujangga {
+    static _provider: PujanggaProvider = new LocalProvider();
+
     /**
-     * Sugesti tag berdasarkan konten secara otomatis.
+     * Sets the active AI provider.
      */
-    async sarankanTag(konten: string): Promise<string[]> {
+    static setProvider(type: 'gemini' | 'openai' | 'claude' | 'none') {
+        switch (type) {
+            case 'gemini': this._provider = new GeminiProvider(); break;
+            case 'none': this._provider = new LocalProvider(); break;
+            default: this._provider = new LocalProvider();
+        }
+    }
+
+    /**
+     * Smart Brain with Privacy Scrubbing.
+     */
+    static async berpikir(konteks: string, instruksi: string): Promise<PujanggaPlan> {
+        // Step 1: Scrub Secrets
+        const safeKonteks = PenyaringRahasia.saring(konteks);
+        const safeInstruksi = PenyaringRahasia.saring(instruksi);
+
+        // Step 2: Laporan Transparansi (Audit)
+        await AuditLog.catat('PERMINTAAN_KECERDASAN', {
+            model: this._provider.name,
+            konteks: safeKonteks,
+            instruksi: safeInstruksi
+        });
+
+        // Step 3: Delegate to Provider
+        const plan = await this._provider.berpikir(safeKonteks, safeInstruksi);
+
+        // Step 4: Catat Keputusan
+        await AuditLog.catat('KEPUTUSAN_SENTINEL', plan);
+
+        return plan;
+    }
+
+    /**
+     * Heuristic methods.
+     */
+    static async sarankanTag(konten: string): Promise<string[]> {
         const clean = konten.toLowerCase();
         const tags: string[] = [];
-
-        if (clean.includes('koding') || clean.includes('bug') || clean.includes('fix')) tags.push('Developer');
-        if (clean.includes('makan') || clean.includes('resep')) tags.push('Kuliner');
-        if (clean.includes('penting') || clean.includes('rahasia')) tags.push('Privat');
-        if (clean.includes('kerja') || clean.includes('proyek')) tags.push('Pekerjaan');
-        if (clean.includes('ide') || clean.includes('gagasan')) tags.push('Inspirasi');
-
+        if (clean.includes('koding') || clean.includes('bug')) tags.push('Developer');
         return tags;
-    },
-
-    /**
-     * Sugesti judul jika judul kosong.
-     */
-    async sarankanJudul(konten: string): Promise<string> {
-        const clean = konten.replace(/<[^>]*>?/gm, '').trim();
-        if (!clean) return 'Tanpa Judul';
-        return clean.substring(0, 30) + (clean.length > 30 ? '...' : '');
-    },
-
-    /**
-     * Ringkasan cerdas (Heuristik untuk performa instan).
-     */
-    async ringkasCerdas(konten: string): Promise<string> {
-        const clean = konten.replace(/<[^>]*>?/gm, '').trim();
-        if (clean.length < 50) return clean;
-
-        // Find first sentence or first 150 chars
-        const firstSentence = clean.split(/[.!?]/)[0];
-        return firstSentence.length > 150 ? firstSentence.substring(0, 150) + '...' : firstSentence;
     }
-};
+
+    static async sarankanJudul(konten: string): Promise<string> {
+        return konten.substring(0, 30);
+    }
+
+    static async ringkasCerdas(konten: string): Promise<string> {
+        return konten.substring(0, 150);
+    }
+}

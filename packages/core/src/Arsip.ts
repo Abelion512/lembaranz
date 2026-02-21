@@ -12,20 +12,26 @@ export const Arsip = {
     },
 
     async setupVault(password: string): Promise<void> {
+        if (process.env.DEBUG) console.log('[ARSIP] Memulai setupVault...');
         const salt = crypto.getRandomValues(new Uint8Array(16));
         const saltHex = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
 
+        if (process.env.DEBUG) console.log('[ARSIP] Membangun kunci Argon2id...');
         const key = await Brankas.deriveKey(password, salt);
+
+        if (process.env.DEBUG) console.log('[ARSIP] Menyiapkan validator brankas...');
         const validator = 'LEMBARAN_SECURED_V2';
         const encryptedValidator = await Brankas.encrypt(validator, key);
 
         const ivHex = Array.from(encryptedValidator.iv).map(b => b.toString(16).padStart(2, '0')).join('');
         const base64Data = btoa(String.fromCharCode(...new Uint8Array(encryptedValidator.data)));
 
+        if (process.env.DEBUG) console.log('[ARSIP] Menyimpan meta-data ke Gudang...');
         await Gudang.set('meta', 'auth_salt', saltHex);
         await Gudang.set('meta', 'auth_validator', `${ivHex}|${base64Data}`);
 
         Brankas.setActiveKey(key);
+        if (process.env.DEBUG) console.log('[ARSIP] Setup brankas selesai!');
     },
 
     async unlockVault(password: string): Promise<boolean> {

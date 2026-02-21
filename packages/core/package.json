@@ -10,10 +10,14 @@
   "browser": {
     "./src/storage/FileAdapter.ts": "./src/storage/FileAdapter.shim.ts"
   },
+  "scripts": {
+    "lint": "eslint ."
+  },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@noble/ciphers": "^2.1.1",
     "@noble/hashes": "^2.0.1",
-    "uuid": "^13.0.0",
-    "idb": "^8.0.3"
+    "idb": "^8.0.3",
+    "uuid": "^13.0.0"
   }
 }

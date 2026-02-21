@@ -34,41 +34,34 @@ export class BrowserAdapter implements StorageAdapter {
 
     async get<K extends keyof LembaranSchema>(store: K, key: string) {
         const db = await this.initDB();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return db.get(store as any, key);
     }
 
     async set<K extends keyof LembaranSchema>(store: K, key: string, value: LembaranSchema[K]['value']) {
         const db = await this.initDB();
         if (store === 'notes' || store === 'folders') {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return db.put(store as any, value);
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return db.put(store as any, value, key);
     }
 
     async getAll<K extends keyof LembaranSchema>(store: K) {
         const db = await this.initDB();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return db.getAll(store as any);
     }
 
     async delete(store: keyof LembaranSchema, key: string) {
         const db = await this.initDB();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return db.delete(store as any, key);
     }
 
     async count(store: keyof LembaranSchema) {
         const db = await this.initDB();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return db.count(store as any);
     }
 
     async clear(store: keyof LembaranSchema) {
         const db = await this.initDB();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return db.clear(store as any);
     }
 }

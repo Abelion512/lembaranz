@@ -8,7 +8,7 @@ async function run() {
     const times = [];
     for (let i = 0; i < 10; i++) {
         const start = performance.now();
-        const notes = await Arsip.getAllNotes();
+        const _notes = await Arsip.getAllNotes();
         const end = performance.now();
         times.push(end - start);
     }

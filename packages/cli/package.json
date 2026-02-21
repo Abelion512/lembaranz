@@ -7,7 +7,8 @@
     "lembaran": "./src/main.ts"
   },
   "scripts": {
-    "start": "bun ./src/main.ts"
+    "start": "bun ./src/main.ts",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@lembaran/core": "workspace:*",

@@ -1,5 +1,4 @@
 import { Arsip } from '../Arsip';
-import { Brankas } from '../Brankas';
 
 async function run() {
     const password = 'bolt-speed-test';
@@ -28,7 +27,7 @@ async function run() {
                      Catatan ini berisi teks yang cukup panjang untuk mensimulasikan beban kerja nyata.
                      Pujangga akan membantu membuatkan ringkasan cerdas dari konten ini.
                      Kita akan mencari kata kunci "BOLT_SPECIAL_TOKEN" di beberapa catatan.` +
-                     (i === 500 || i === 999 ? ' BOLT_SPECIAL_TOKEN' : ''),
+                (i === 500 || i === 999 ? ' BOLT_SPECIAL_TOKEN' : ''),
             folderId: null,
             isPinned: i % 10 === 0,
             isFavorite: false,

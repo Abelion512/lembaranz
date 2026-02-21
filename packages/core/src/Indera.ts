@@ -45,7 +45,9 @@ export const audio = {
 
             osc.start();
             osc.stop(ctx.currentTime + duration);
-        } catch (e) {}
+        } catch (_e) {
+            // Silently fail as haptics/audio are non-critical enhancements
+        }
     },
     click: () => audio.play(440, 'sine', 0.05),
     unlock: () => {

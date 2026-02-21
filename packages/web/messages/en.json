@@ -1,0 +1,70 @@
+{
+    "Navigasi": {
+        "changelog": "Changelog",
+        "bantuan": "Help",
+        "buka_brankas": "Open Vault",
+        "mulai_menulis": "Start Writing",
+        "unduh_app": "Download App"
+    },
+    "Landing": {
+        "badge": "Local-First Personal Intelligence",
+        "hero_prefix": "Notes that are",
+        "hero_words": [
+            "Sovereign",
+            "Secure",
+            "Smart",
+            "Personal",
+            "Instant"
+        ],
+        "tagline": "A personal notes vault that prioritizes absolute privacy, instant performance, and on-device AI.",
+        "footer_copyright": "© 2025 Lembaran Open Source.",
+        "footer_privasi": "Privacy",
+        "footer_ketentuan": "Terms"
+    },
+    "Bantuan": {
+        "MULAI_CEPAT": {
+            "title": "Quick Start",
+            "desc": "Step-by-step guide to mastering Lembaran in minutes."
+        },
+        "cli": {
+            "title": "CLI Interface",
+            "desc": "Lembaran provides a powerful terminal interface for an efficient workflow."
+        },
+        "keamanan": {
+            "title": "Absolute Security",
+            "desc": "Learn how we secure your data with the highest industry standards."
+        },
+        "perintah": {
+            "title": "Command Reference",
+            "desc": "Quick reference for all Lembaran CLI commands."
+        },
+        "performa": {
+            "title": "Performance Optimization",
+            "desc": "How Lembaran stays fast while processing thousands of notes."
+        },
+        "struktur": {
+            "title": "System Architecture",
+            "desc": "Understanding the internal structure and design of the Lembaran monorepo."
+        },
+        "publik": {
+            "title": "Sovereignty First",
+            "desc": "A guide to understanding the Lembaran ecosystem and mastering data sovereignty."
+        },
+        "dok_tidak_ditemukan": "Documentation Not Found",
+        "dok_tidak_dapat_dimuat": "File docs/{lang}/{slug}.md could not be loaded.",
+        "memuat": "Loading...",
+        "buka_navigasi": "Open navigation",
+        "tutup": "Close sidebar",
+        "cari_placeholder": "Search this page...",
+        "footer": "© 2026 Lembaran Documentation Engine."
+    },
+    "SaklarBahasa": {
+        "label": "Language",
+        "id": "🇮🇩 Indonesia",
+        "en": "🇺🇸 English"
+    },
+    "Umum": {
+        "tidak_ditemukan": "Page not found",
+        "kembali": "Go back"
+    }
+}

@@ -21,6 +21,16 @@ const getAdapter = async (): Promise<StorageAdapter> => {
 export type { LembaranSchema };
 
 export const Gudang = {
+    async inisialisasi(customPath?: string) {
+        if (process.env.DEBUG) {
+            console.log(`[GUDANG] Inisialisasi: ${customPath || 'default'}`);
+        }
+        if (typeof window === 'undefined') {
+            const { FileAdapter } = await import('./storage/FileAdapter');
+            adapter = new FileAdapter(customPath);
+        }
+    },
+
     async set<K extends keyof LembaranSchema>(store: K, key: string, value: LembaranSchema[K]['value']) {
         const adp = await getAdapter();
         return adp.set(store, key, value);
