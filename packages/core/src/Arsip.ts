@@ -149,6 +149,10 @@ export const Arsip = {
     async getAllNotes(): Promise<Note[]> {
         if (Brankas.isLocked()) throw new Error('Vault Locked');
         const rawNotes = await Gudang.getAll('notes') as Note[];
+
+        // Sort BEFORE decryption for performance (Bolt ⚡)
+        rawNotes.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+
         const decrypted = await Promise.all(rawNotes.map(async n => {
             try {
                 return {
@@ -160,7 +164,8 @@ export const Arsip = {
                 return { ...n, title: '🔒 Terkunci', preview: '🔒 Terkunci' };
             }
         }));
-        return decrypted.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+
+        return decrypted;
     },
 
     async decryptNote(note: Note): Promise<Note> {

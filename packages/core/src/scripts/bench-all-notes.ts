@@ -10,7 +10,9 @@ async function run() {
         const start = performance.now();
         const _notes = await Arsip.getAllNotes();
         const end = performance.now();
-        times.push(end - start);
+        const duration = end - start;
+        console.log(`Run #${i + 1}: ${duration.toFixed(2)}ms`);
+        times.push(duration);
     }
 
     const avg = times.reduce((a, b) => a + b, 0) / times.length;
