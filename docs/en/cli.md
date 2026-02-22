@@ -47,7 +47,33 @@ lembaran jelajah   # Search for notes
 
 When you run `lembaran mulai`, you will enter the **Aksara Shell**. The prompt will change to `aksara ❯`. Here, you can type commands directly without the `lembaran` prefix.
 
-Examples:
-- `pantau`
-- `jelajah "Server Config"`
-- `ukir` (to create a new note)
+## Configuration Command (pengaturan)
+
+One of Lembaran CLI's most powerful features is its ability to manage `.env` configurations directly without opening a text editor. This is extremely useful for quickly storing API credentials or project settings.
+
+### Usage Examples:
+
+1. **View all configurations:**
+   ```bash
+   lembaran pengaturan
+   ```
+2. **View a specific value:**
+   ```bash
+   lembaran pengaturan GEMINI_API_KEY
+   ```
+3. **Store/Update a value:**
+   ```bash
+   lembaran pengaturan GEMINI_API_KEY "your-api-key-here"
+   ```
+
+## Long-term Retention & Security
+
+Lembaran is designed to keep your data safe and accessible for years to come:
+
+1.  **Self-Backup**: Use the `petik` (export) command in the main menu to export your entire vault into a single encrypted `.lembaran` file. Keep this file in a safe place (personal cloud or physical drive).
+2.  **Easy Import**: If you change devices, simply install Lembaran CLI and use the `tanam` (import) feature to restore your entire archive.
+3.  **Local-First, Privacy-Always**: The `.lembaran/` folder in your project root contains the local database. We've ensured this folder is automatically added to `.gitignore` when using the CLI, so your secrets will never accidentally leak to GitHub.
+4.  **AI Sovereignty**: By using `lembaran pengaturan`, you can easily switch AI providers (Gemini, etc.) at any time without changing application code.
+
+---
+*Created with ❤️ for those who crave digital freedom.*

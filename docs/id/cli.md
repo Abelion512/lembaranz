@@ -52,9 +52,33 @@ Contoh:
 - `jelajah "Server Config"`
 - `ukir` (untuk membuat catatan baru)
 
-## Kedaulatan Data & .env Lokal
-Lembaran CLI menjamin data Anda tetap lokal melalui sistem ganda:
-1.  **Vault Terenkripsi**: Data catatan disimpan dalam JSON terenkripsi AES-GCM.
-2.  **Konfigurasi .env**: Kredensial sensitive (seperti API Key atau Password Vault) dapat disimpan dalam file `.env` lokal di setiap proyek.
+## Perintah Pengaturan (Config)
 
-Gunakan perintah `lembaran pengaturan` untuk melihat atau memperbarui kredensial Anda dengan aman. Folder `.lembaran/` yang berisi basis data lokal Anda secara otomatis di-ignore oleh Git untuk mencegah kebocoran data ke repositori publik.
+Salah satu fitur terkuat Lembaran CLI adalah kemampuannya mengelola konfigurasi `.env` secara langsung tanpa harus membuka editor teks. Ini sangat berguna untuk menyimpan kredensial API atau konfigurasi proyek dengan cepat.
+
+### Contoh Penggunaan:
+
+1. **Melihat semua konfigurasi:**
+   ```bash
+   lembaran pengaturan
+   ```
+2. **Melihat nilai spesifik:**
+   ```bash
+   lembaran pengaturan GEMINI_API_KEY
+   ```
+3. **Menyimpan/Memperbarui nilai:**
+   ```bash
+   lembaran pengaturan GEMINI_API_KEY "isi-api-key-anda"
+   ```
+
+## Retensi Jangka Panjang & Keamanan
+
+Lembaran dirancang agar data Anda tetap aman dan dapat diakses selama bertahun-tahun:
+
+1.  **Backup Mandiri**: Gunakan perintah `petik` di menu utama untuk mengekspor seluruh brankas Anda menjadi satu file `.lembaran` yang terenkripsi. Simpan file ini di tempat aman (cloud pribadi atau drive fisik).
+2.  **Impor Mudah**: Jika Anda berganti perangkat, cukup instal Lembaran CLI dan gunakan fitur `tanam` untuk mengembalikan seluruh arsip Anda.
+3.  **Local-First, Privacy-Always**: Folder `.lembaran/` di root proyek Anda berisi basis data lokal. Kami telah memastikan folder ini otomatis masuk dalam `.gitignore` jika Anda menggunakan CLI, sehingga rahasia Anda tidak akan pernah bocor ke GitHub secara tidak sengaja.
+4.  **Kedaulatan AI**: Dengan menggunakan `lembaran pengaturan`, Anda dapat dengan mudah mengganti provider AI (Gemini, dsb) kapan saja tanpa mengubah kode aplikasi.
+
+---
+*Dibuat dengan ❤️ untuk para pengukir aksara yang mendambakan kebebasan digital.*
