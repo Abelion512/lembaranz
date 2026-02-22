@@ -44,7 +44,7 @@ const siapkanKonteks = async (opts: { saku?: boolean; pelataran?: boolean; ai?: 
 // Alternate screen helpers
 const masukLayarTUI = () => {
   process.stdout.write('\x1b[?1049h'); // Enter alternate screen
-  process.stdout.write('\x1b[H');      // Move cursor to top-left
+  process.stdout.write('\x1b[2J\x1b[H'); // Clear alternate screen & move cursor to top-left
 };
 
 const keluarLayarTUI = () => {
@@ -97,8 +97,8 @@ program
 
     const LayarCepat = () => {
       const app = useApp();
-      return React.createElement(Box, { flexDirection: 'column', height: '100%' },
-        React.createElement(Box, { flexGrow: 1 },
+      return React.createElement(Box, { flexDirection: 'column' },
+        React.createElement(Box, { flexDirection: 'column', marginBottom: 1 },
           React.createElement(LayarPantau, { konteks, onKembali: () => app.exit() })
         ),
         React.createElement(BarStatus, { konteks, versi: VERSI, layar: 'Pantau' })

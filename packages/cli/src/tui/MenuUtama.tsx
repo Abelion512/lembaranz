@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text, useInput } from 'ink';
+import { Box, Text } from 'ink';
 import SelectInput from 'ink-select-input';
 
 interface MenuUtamaProps {
@@ -29,6 +29,7 @@ export const MenuUtama: React.FC<MenuUtamaProps> = ({ onPilih }) => {
             <Box paddingX={1}>
                 <SelectInput
                     items={MENU_ITEMS}
+                    limit={5}
                     onSelect={(item) => onPilih(item.value)}
                     indicatorComponent={({ isSelected }) => (
                         <Text color="cyan">{isSelected ? '❯ ' : '  '}</Text>

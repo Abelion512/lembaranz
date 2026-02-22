@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Box, Text, useApp, useInput } from 'ink';
+import { Box, useApp, useInput } from 'ink';
 import { BarStatus } from './BarStatus.js';
 import { LayarSelamat } from './LayarSelamat.js';
 import { MenuUtama } from './MenuUtama.js';
@@ -75,8 +75,8 @@ export const Aplikasi: React.FC<AplikasiProps> = ({ konteks, versi }) => {
     }[layar] || 'Menu Utama';
 
     return (
-        <Box flexDirection="column" height="100%">
-            <Box flexGrow={1} flexDirection="column">
+        <Box flexDirection="column">
+            <Box flexDirection="column" marginBottom={1}>
                 {renderLayar()}
             </Box>
             <BarStatus konteks={konteks} versi={versi} layar={namaLayar} />
