@@ -26,8 +26,8 @@ export class FileAdapter implements StorageAdapter {
             this.filePath = path.resolve(process.cwd(), DEFAULT_DB_FILE);
         }
 
-        if (process.env.DEBUG) {
-            console.log(`[FILE_ADAPTER] Open: ${this.filePath}`);
+        if (process.env.DEBUG === 'true') {
+            if (process.env.DEBUG === 'true') console.log(`[FILE_ADAPTER] Open: ${this.filePath}`);
         }
     }
 

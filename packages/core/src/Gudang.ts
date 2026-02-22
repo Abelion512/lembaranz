@@ -22,8 +22,8 @@ export type { LembaranSchema };
 
 export const Gudang = {
     async inisialisasi(customPath?: string) {
-        if (process.env.DEBUG) {
-            console.log(`[GUDANG] Inisialisasi: ${customPath || 'default'}`);
+        if (process.env.DEBUG === 'true') {
+            if (process.env.DEBUG === 'true') console.log(`[GUDANG] Inisialisasi: ${customPath || 'default'}`);
         }
         if (typeof window === 'undefined') {
             const { FileAdapter } = await import('./storage/FileAdapter');

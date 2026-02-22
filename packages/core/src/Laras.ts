@@ -39,8 +39,8 @@ export class Laras {
             jalur = path.join(localDir, this.PELATARAN_FILE);
         }
 
-        if (process.env.DEBUG) {
-            console.log(`[LARAS] Jalur ${konteks}: ${jalur}`);
+        if (process.env.DEBUG === 'true') {
+            if (process.env.DEBUG === 'true') console.log(`[LARAS] Jalur ${konteks}: ${jalur}`);
         }
         return jalur;
     }

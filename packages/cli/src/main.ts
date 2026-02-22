@@ -30,7 +30,7 @@ const siapkanKonteks = async (opts: { saku?: boolean; pelataran?: boolean; ai?: 
   else if (opts.pelataran) konteks = 'pelataran';
   else konteks = await Laras.deteksiKonteksOtomatis();
 
-  if (process.env.DEBUG) console.log(pc.dim(`[DEBUG] Konteks: ${konteks}`));
+  if (process.env.DEBUG === 'true') console.log(pc.dim(`[DEBUG] Konteks: ${konteks}`));
 
   // Set AI Provider
   if (opts.ai) {
