@@ -150,5 +150,15 @@ Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan 
 
 ---
 > [!NOTE]
-> **Mengapa Lompat ke Versi 3?**
-> Versi 3 menandai era **Ekosistem Berdikari**. Perubahan dari v2 ke v3 bukan sekadar update fitur, melainkan perombakan total arsitektur menjadi **Monorepo** yang menyatukan Core logic, CLI TUI, dan Web GUI. Versi ini juga memperkenalkan fitur "Sentinel" tingkat tinggi seperti Argon2id, Vim Mode, dan infrastruktur Biometrik yang menjadikannya standar baru bagi aplikasi kedaulatan data.
+## 13. Restorasi TUI Modern & Kalibrasi Navigasi (v3.3.0 - 22/02/2026)
+
+**Masalah**: Upaya kembali ke TUI lama (legacy) untuk mengatasi masalah scrolling menyebabkan hilangnya fitur-fitur baru dan degradasi pengalaman visual bagi pengguna modern. Namun, TUI modern orisinal memiliki masalah looping menu yang membingungkan.
+
+**Solusi**:
+- **PilihanModern.tsx**: Menciptakan komponen kustom untuk menggantikan library standar. Komponen ini mengimplementasikan logika **Unlooping Scroll** yang mengunci kursor di batas daftar (tidak melompat balik), namun tetap mendukung kelancaran scrolling untuk menjangkau seluruh 11+ menu.
+- **Pembersihan Visual**: Menghapus seluruh residu karakter encoding rusak (simbol Γ, ≡ƒ) yang muncul akibat transisi runtime.
+- **Sinkronisasi CLI & TUI**: Mengunci integrasi subcommand `pengaturan` (konfigurasi .env) baik sebagai perintah mandiri maupun sebagai bagian dari info kedaulatan data di dalam TUI.
+
+---
+> [!NOTE]
+> Versi 3.3.0 mengukuhkan kedaulatan TUI modern dengan kontrol yang lebih stabil dan intuitif, memadukan kecepatan 'Ink' dengan presisi navigasi klasik.

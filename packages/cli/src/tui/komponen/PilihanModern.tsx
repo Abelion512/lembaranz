@@ -49,14 +49,12 @@ export function PilihanModern<V>({
 }: Props<V>) {
     const hasLimit = typeof customLimit === 'number' && items.length > customLimit;
     const limit = hasLimit ? Math.min(customLimit, items.length) : items.length;
-    const lastIdx = limit - 1;
 
-    const [rotateIndex, setRotateIndex] = useState(
-        initialIndex > lastIdx ? lastIdx - initialIndex : 0
-    );
-    const [selectedIndex, setSelectedIndex] = useState(
-        initialIndex ? (initialIndex > lastIdx ? lastIdx : initialIndex) : 0
-    );
+    // indexAbs: 0 to items.length - 1
+    const [indexAbs, setIndexAbs] = useState(initialIndex);
+
+    // rotateIndex: index of the first item in the visible window
+    const [rotateIndex, setRotateIndex] = useState(0);
 
     const previousItems = useRef(items);
 
@@ -64,49 +62,38 @@ export function PilihanModern<V>({
         const prevValues = previousItems.current.map(i => i.value);
         const currValues = items.map(i => i.value);
         if (JSON.stringify(prevValues) !== JSON.stringify(currValues)) {
+            setIndexAbs(0);
             setRotateIndex(0);
-            setSelectedIndex(0);
         }
         previousItems.current = items;
     }, [items]);
 
+    // Update window rotation when indexAbs moves out of visible range
+    useEffect(() => {
+        if (hasLimit) {
+            if (indexAbs < rotateIndex) {
+                setRotateIndex(indexAbs);
+            } else if (indexAbs >= rotateIndex + limit) {
+                setRotateIndex(indexAbs - limit + 1);
+            }
+        }
+    }, [indexAbs, rotateIndex, limit, hasLimit]);
+
     useInput(useCallback((input, key) => {
         if (input === 'k' || key.upArrow) {
-            const listSize = hasLimit ? limit : items.length;
-            const atFirst = selectedIndex === 0;
-
-            if (atFirst && !isLooping) return;
-
-            const nextRotate = atFirst ? rotateIndex + 1 : rotateIndex;
-            const nextSelected = atFirst ? listSize - 1 : selectedIndex - 1;
-
-            setRotateIndex(nextRotate);
-            setSelectedIndex(nextSelected);
-
-            const sliced = hasLimit
-                ? toRotated(items, nextRotate).slice(0, limit)
-                : items;
-
-            onHighlight?.(sliced[nextSelected]);
+            if (indexAbs > 0) {
+                setIndexAbs(v => v - 1);
+            } else if (isLooping) {
+                setIndexAbs(items.length - 1);
+            }
         }
 
         if (input === 'j' || key.downArrow) {
-            const listSize = hasLimit ? limit : items.length;
-            const atLast = selectedIndex === listSize - 1;
-
-            if (atLast && !isLooping) return;
-
-            const nextRotate = atLast ? rotateIndex - 1 : rotateIndex;
-            const nextSelected = atLast ? 0 : selectedIndex + 1;
-
-            setRotateIndex(nextRotate);
-            setSelectedIndex(nextSelected);
-
-            const sliced = hasLimit
-                ? toRotated(items, nextRotate).slice(0, limit)
-                : items;
-
-            onHighlight?.(sliced[nextSelected]);
+            if (indexAbs < items.length - 1) {
+                setIndexAbs(v => v + 1);
+            } else if (isLooping) {
+                setIndexAbs(0);
+            }
         }
 
         if (/^[1-9]$/.test(input)) {
@@ -121,21 +108,24 @@ export function PilihanModern<V>({
         }
 
         if (key.return) {
-            const visible = hasLimit
-                ? toRotated(items, rotateIndex).slice(0, limit)
-                : items;
-            onSelect?.(visible[selectedIndex]);
+            onSelect?.(items[indexAbs]);
         }
-    }, [hasLimit, limit, rotateIndex, selectedIndex, items, isLooping, onSelect, onHighlight]), { isActive: isFocused });
+    }, [items, isLooping, hasLimit, limit, rotateIndex, indexAbs, onSelect]), { isActive: isFocused });
+
+    useEffect(() => {
+        onHighlight?.(items[indexAbs]);
+    }, [indexAbs, onHighlight, items]);
 
     const visibleItems = hasLimit
-        ? toRotated(items, rotateIndex).slice(0, limit)
+        ? items.slice(rotateIndex, rotateIndex + limit)
         : items;
+
+    const selectedIndexInWindow = indexAbs - rotateIndex;
 
     return (
         <Box flexDirection="column">
             {visibleItems.map((item: Item<V>, index: number) => {
-                const isSelected = index === selectedIndex;
+                const isSelected = index === selectedIndexInWindow;
                 return (
                     <Box key={item.key ?? (item.value as any)}>
                         <Indicator isSelected={isSelected} />

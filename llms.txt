@@ -1,5 +1,5 @@
 # Lembaran
-> Brankas Aksara Personal yang Berdikari — v3.1.0
+> Brankas Aksara Personal yang Berdikari — v3.3.0 (Update 22/02/2026)
 
 ## Tentang Proyek
 Lembaran adalah aplikasi manajemen catatan lokal-first dengan enkripsi end-to-end (AES-GCM + Argon2id). Tidak ada server pihak ketiga — data tersimpan sepenuhnya di perangkat pengguna.
@@ -8,7 +8,7 @@ Lembaran adalah aplikasi manajemen catatan lokal-first dengan enkripsi end-to-en
 ```
 packages/
   core/   — Shared logic: enkripsi, storage adapter, AI, Sentinel
-  cli/    — Terminal interface (TUI) berbasis Bun
+  cli/    — Terminal interface (TUI) berbasis Bun & Ink (PilihanModern kustom untuk unlooping)
   web/    — Next.js 16 app (App Router + Turbopack)
 ```
 
