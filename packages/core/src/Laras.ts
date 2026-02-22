@@ -114,4 +114,43 @@ export class Laras {
         }
         return env;
     }
+
+    /**
+     * Writes or updates a local .env variable. Node.js only.
+     */
+    static async simpanEnv(key: string, value: string): Promise<void> {
+        if (typeof window !== 'undefined') return;
+
+        const path = await import('node:path');
+        const fs = await import('node:fs');
+
+        const root = await this.temukanAkarProyek();
+        if (!root) throw new Error('Akar proyek tidak ditemukan.');
+        const envPath = path.join(root, '.env');
+
+        let content = '';
+        if (fs.existsSync(envPath)) {
+            content = fs.readFileSync(envPath, 'utf8');
+        }
+
+        const lines = content.split('\n');
+        let found = false;
+        const newLines = lines.map(line => {
+            const trimmed = line.trim();
+            if (trimmed.startsWith(`${key}=`)) {
+                found = true;
+                return `${key}=${value}`;
+            }
+            return line;
+        });
+
+        if (!found) {
+            if (content.length > 0 && !content.endsWith('\n')) {
+                newLines.push('');
+            }
+            newLines.push(`${key}=${value}`);
+        }
+
+        fs.writeFileSync(envPath, newLines.join('\n'), 'utf8');
+    }
 }

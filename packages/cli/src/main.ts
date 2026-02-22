@@ -146,4 +146,28 @@ program
     }
   });
 
+program
+  .command('pengaturan')
+  .alias('config')
+  .description('Mengelola variabel lingkungan (.env) lokal')
+  .argument('[katalog]', 'Nama variabel (key)')
+  .argument('[nilai]', 'Nilai variabel (value)')
+  .action(async (katalog, nilai) => {
+    await siapkanKonteks(program.opts());
+
+    if (katalog && nilai !== undefined) {
+      await Laras.simpanEnv(katalog, nilai);
+      console.log(`✅ Berhasil menyimpan: ${katalog}=${nilai}`);
+    } else if (katalog) {
+      const env = await Laras.bacaEnv();
+      console.log(`${katalog}=${env[katalog] || '(tidak disetel)'}`);
+    } else {
+      const env = await Laras.bacaEnv();
+      console.log('📄 Konfigurasi Lokal (.env):');
+      Object.entries(env).forEach(([k, v]) => {
+        console.log(`  ${k}=${v}`);
+      });
+    }
+  });
+
 program.parse(process.argv);

@@ -94,9 +94,9 @@ dev_output.log
 # CLI Artifacts
 lembaran.exe
 .lembaran-db.json
+.lembaran/
 packages/web/.next
 packages/web/out
 packages/cli/dist
 node_modules
 *.log
-.lembaran-db.json
