@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { marked } from 'marked';
+import { Marked } from 'marked';
 import { useLocale, useTranslations } from 'next-intl';
 import { ambilKontenDok } from '@/lib/ambilKontenDok';
 import { ambilTerjemahanDokumen } from '@/lib/ambilTerjemahan';
@@ -12,6 +12,15 @@ interface PenerjemahAksaraProps {
 
 // Cache in-memory: key = "slug-lang" → html string
 const kontenCache = new Map<string, string>();
+
+const perenderMarkdown = new Marked({ gfm: true });
+perenderMarkdown.use({
+    renderer: {
+        html() {
+            return '';
+        }
+    }
+});
 
 export function PenerjemahAksara({ slug }: PenerjemahAksaraProps) {
     const lang = useLocale() as 'id' | 'en';
@@ -51,7 +60,7 @@ export function PenerjemahAksara({ slug }: PenerjemahAksaraProps) {
             if (cancelled) return;
 
             if (content) {
-                const parsed = await marked.parse(content);
+                const parsed = await perenderMarkdown.parse(content);
                 kontenCache.set(cacheKey, parsed);
                 setHtmlContent(parsed);
             } else {
