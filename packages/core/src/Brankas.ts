@@ -11,6 +11,12 @@ export class Brankas {
     private static key: CryptoKey | null = null;
 
     /**
+     * Cache for decrypted strings to improve performance on repeated reads.
+     * Cleared whenever the vault is locked or key changes.
+     */
+    private static decryptionCache = new Map<string, string>();
+
+    /**
      * Derives a CryptoKey from a password and salt using Argon2id
      */
     static async deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
@@ -38,10 +44,12 @@ export class Brankas {
 
     static setActiveKey(key: CryptoKey) {
         this.key = key;
+        this.decryptionCache.clear();
     }
 
     static clearKey() {
         this.key = null;
+        this.decryptionCache.clear();
     }
 
     static isLocked(): boolean {
@@ -91,15 +99,38 @@ export class Brankas {
         return `${ivHex}|${base64}`;
     }
 
+    /**
+     * Optimized hex string to Uint8Array conversion without regex.
+     */
+    private static hexToBytes(hex: string): Uint8Array {
+        const bytes = new Uint8Array(hex.length / 2);
+        for (let i = 0; i < bytes.length; i++) {
+            bytes[i] = parseInt(hex.substring(i * 2, i * 2 + 2), 16);
+        }
+        return bytes;
+    }
+
     static async decryptPacked(packed: string): Promise<string> {
         if (!packed || !packed.includes('|')) return packed;
+
+        // Hit cache for O(1) performance boost on repeat reads (Bolt ⚡)
+        if (this.decryptionCache.has(packed)) {
+            return this.decryptionCache.get(packed)!;
+        }
+
         const [ivHex, base64] = packed.split('|');
-        const iv = new Uint8Array(ivHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+        const iv = this.hexToBytes(ivHex);
+
         const binaryString = atob(base64);
         const bytes = new Uint8Array(binaryString.length);
         for (let i = 0; i < binaryString.length; i++) {
             bytes[i] = binaryString.charCodeAt(i);
         }
-        return await this.decrypt(bytes.buffer, iv);
+
+        const result = await this.decrypt(bytes.buffer, iv);
+
+        // Populate cache for future hits
+        this.decryptionCache.set(packed, result);
+        return result;
     }
 }
