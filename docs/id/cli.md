@@ -51,3 +51,10 @@ Contoh:
 - `pantau`
 - `jelajah "Server Config"`
 - `ukir` (untuk membuat catatan baru)
+
+## Kedaulatan Data & .env Lokal
+Lembaran CLI menjamin data Anda tetap lokal melalui sistem ganda:
+1.  **Vault Terenkripsi**: Data catatan disimpan dalam JSON terenkripsi AES-GCM.
+2.  **Konfigurasi .env**: Kredensial sensitive (seperti API Key atau Password Vault) dapat disimpan dalam file `.env` lokal di setiap proyek.
+
+Gunakan perintah `lembaran pengaturan` untuk melihat atau memperbarui kredensial Anda dengan aman. Folder `.lembaran/` yang berisi basis data lokal Anda secara otomatis di-ignore oleh Git untuk mencegah kebocoran data ke repositori publik.

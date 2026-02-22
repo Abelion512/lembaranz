@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { marked } from 'marked';
 import { useLocale, useTranslations } from 'next-intl';
 import { ambilKontenDok } from '@/lib/ambilKontenDok';
@@ -23,7 +23,6 @@ export function PenerjemahAksara({ slug }: PenerjemahAksaraProps) {
     );
     const [loading, setLoading] = useState(!kontenCache.has(cacheKey));
     const [isAITranslated, setIsAITranslated] = useState(false);
-    const prevHtml = useRef<string | null>(htmlContent);
 
     useEffect(() => {
         if (kontenCache.has(cacheKey)) {
@@ -65,13 +64,8 @@ export function PenerjemahAksara({ slug }: PenerjemahAksaraProps) {
         return () => { cancelled = true; };
     }, [slug, lang, cacheKey]);
 
-    const displayHtml = loading ? (prevHtml.current ?? htmlContent) : htmlContent;
 
-    useEffect(() => {
-        if (!loading && htmlContent) prevHtml.current = htmlContent;
-    }, [loading, htmlContent]);
-
-    if (loading && !displayHtml) {
+    if (loading && !htmlContent) {
         return (
             <div className="flex flex-col items-center justify-center p-20 gap-4">
                 <div className="w-8 h-8 rounded-full border-4 border-blue-500/20 border-t-blue-500 animate-spin" />
@@ -82,7 +76,7 @@ export function PenerjemahAksara({ slug }: PenerjemahAksaraProps) {
         );
     }
 
-    if (!displayHtml) {
+    if (!htmlContent) {
         return (
             <div className="p-10 rounded-[3rem] bg-red-500/5 border border-red-500/10 text-red-500">
                 <h2 className="text-xl font-black mb-2">{t('dok_tidak_ditemukan')}</h2>
@@ -116,7 +110,7 @@ export function PenerjemahAksara({ slug }: PenerjemahAksaraProps) {
                 prose-code:text-blue-500 prose-code:bg-blue-500/5 prose-code:px-2 prose-code:py-0.5 prose-code:rounded-lg
                 prose-pre:bg-black/50 prose-pre:backdrop-blur-md prose-pre:border prose-pre:border-white/5 prose-pre:rounded-[2rem] prose-pre:p-8
                 prose-strong:text-[var(--text-primary)] prose-strong:font-bold">
-                <div dangerouslySetInnerHTML={{ __html: displayHtml }} />
+                <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
             </div>
         </div>
     );
