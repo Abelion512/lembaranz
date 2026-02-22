@@ -1,0 +1,7 @@
+$ eslint .
+
+H:\ican\Web\lembaran\packages\cli\src\TUI.ts
+  264:18  warning  'err' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+
+Γ£û 1 problem (0 errors, 1 warning)
+
