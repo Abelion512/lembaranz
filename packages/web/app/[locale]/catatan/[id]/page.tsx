@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, use, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { Arsip } from '@lembaran/core/Arsip';
 import { haptic } from '@lembaran/core/Indera';
 import { useGunakanTunda } from '@lembaran/core/GunakanTunda';

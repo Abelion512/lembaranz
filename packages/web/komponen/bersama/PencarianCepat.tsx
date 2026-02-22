@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, FileText, ChevronRight, X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { Arsip } from '@lembaran/core/Arsip';
 import { haptic } from '@lembaran/core/Indera';
 import { Note } from '@lembaran/core/Rumus';

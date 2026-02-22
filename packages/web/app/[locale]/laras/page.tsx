@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { haptic } from '@lembaran/core/Indera';
 import { Moon, Shield, Database, BookOpen, ChevronRight, LogOut, User, Info, Cpu } from 'lucide-react';
 import { usePundi } from '@lembaran/core/Pundi';

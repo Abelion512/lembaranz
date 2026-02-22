@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from 'react';
 import { Search, Menu, X } from 'lucide-react';
 import { SaklarSuasana } from '@/komponen/landing/SaklarSuasana';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { SelasarBantuan } from './SelasarBantuan';
 
 interface LembaranDokProps {

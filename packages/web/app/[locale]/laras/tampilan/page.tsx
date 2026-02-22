@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { ChevronLeft, Sun, Moon, Monitor, Check } from 'lucide-react';
 import { usePundi } from '@lembaran/core/Pundi';
 import { haptic } from '@lembaran/core/Indera';

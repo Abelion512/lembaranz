@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { ChevronLeft, Download, Upload, Shield, Trash2 } from 'lucide-react';
 import { Arsip } from '@lembaran/core/Arsip';
 import { Brankas } from '@lembaran/core/Brankas';

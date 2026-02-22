@@ -1,5 +1,5 @@
 import { marked } from 'marked';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { ChevronLeft } from 'lucide-react';
 import { bacaBerkas } from '@/lib/bacaBerkas';
 

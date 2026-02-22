@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { usePundi } from '@lembaran/core/Pundi';
 import { Shield, Terminal, BookOpen, Rocket } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { LembaranDok } from '@/komponen/bersama/LembaranDok';
 import { SaklarBahasa } from '@/komponen/bersama/SaklarBahasa';
 import { ambilTerjemahan } from '@/lib/ambilTerjemahan';

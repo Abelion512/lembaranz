@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import {
     Book, Shield, Zap, Rocket,
     Database, Github,
@@ -10,7 +10,7 @@ import {
     ChevronLeft
 } from 'lucide-react';
 import { haptic } from '@lembaran/core/Indera';
-import { usePathname } from 'next/navigation';
+import { usePathname } from '@/i18n/navigation';
 
 const SECTIONS = [
     {

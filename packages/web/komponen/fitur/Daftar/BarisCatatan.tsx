@@ -1,7 +1,7 @@
 'use client';
 
 import React, { memo, useState } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import {
     CheckCircle2, FileText, Pin, Copy, Check
 } from 'lucide-react';

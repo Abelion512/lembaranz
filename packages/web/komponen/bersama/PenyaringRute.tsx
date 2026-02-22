@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname } from '@/i18n/navigation';
 import { PintuBrankas } from '@/komponen/fitur/Brankas/PintuBrankas';
 import { KemudiBawah } from '@/komponen/bersama/KemudiBawah';
 import { PaletPerintah } from '@/komponen/bersama/PaletPerintah';

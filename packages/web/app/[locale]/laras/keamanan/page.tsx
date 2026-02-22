@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { ChevronLeft, ShieldCheck, Key, Ghost, AlertTriangle, Fingerprint, Command } from 'lucide-react';
 import { haptic } from '@lembaran/core/Indera';
 import { usePundi } from '@lembaran/core/Pundi';

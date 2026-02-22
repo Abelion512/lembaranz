@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Arsip, Brankas, Note, haptic } from '@lembaran/core';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { Search as SearchIcon, ChevronRight, Sparkles, X } from 'lucide-react';
 import { stripHtml } from '@lembaran/core/Penyaring';
 import { KerangkaCatatan } from '@/komponen/bersama/KerangkaCatatan';

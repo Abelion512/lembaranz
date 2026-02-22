@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { Arsip } from '@lembaran/core/Arsip';
 import { haptic } from '@lembaran/core/Indera';
 import { getIconForService } from '@/komponen/IkonLayanan';

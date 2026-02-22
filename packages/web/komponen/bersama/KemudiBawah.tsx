@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { Link } from '@/i18n/navigation';
+import { usePathname, useRouter } from '@/i18n/navigation';
 import {
     Home, Search, User, Settings, Plus, WifiOff,
     FileText, ShieldCheck, CheckSquare

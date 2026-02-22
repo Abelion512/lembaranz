@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { ChevronLeft, Plus, Cpu, Shield, Globe, Trash2, Power } from 'lucide-react';
 import { haptic } from '@lembaran/core/Indera';
 
