@@ -6,7 +6,25 @@ import prompts from 'prompts';
 import fs from 'node:fs/promises';
 
 export class Antarmuka {
+    static enterTUI() {
+        // Masuk ke alternate screen buffer (seperti nano, vim, atau claude)
+        process.stdout.write('\x1b[?1049h');
+
+        let cleanedUp = false;
+        const cleanup = () => {
+            if (cleanedUp) return;
+            // Keluar dari alternate screen buffer dan pulihkan layar asli
+            process.stdout.write('\x1b[?1049l');
+            cleanedUp = true;
+        };
+
+        process.on('exit', cleanup);
+        process.on('SIGINT', () => { cleanup(); process.exit(0); });
+        process.on('SIGTERM', () => { cleanup(); process.exit(0); });
+    }
+
     static async jalankan(konteksAwal?: KonteksLaras) {
+        this.enterTUI();
         const konteks: KonteksLaras = konteksAwal || await Laras.deteksiKonteksOtomatis();
 
         while (true) {

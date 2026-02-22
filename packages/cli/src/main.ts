@@ -62,11 +62,15 @@ program
   .description('Memantau kesehatan dan integritas sistem')
   .action(async () => {
     const konteks = await siapkanKonteks(program.opts());
+    Antarmuka.enterTUI();
+    console.clear();
     console.log(pc.bold(`📊 STATUS SISTEM LEMBARAN [${konteks.toUpperCase()}]:`));
     const isInit = await Arsip.isVaultInitialized();
     console.log(`${isInit ? pc.green('✅') : pc.yellow('⚠️')} Brankas: ${isInit ? 'Terinisialisasi' : 'Belum Disiapkan'}`);
     console.log(pc.green('✅ Security Engine: AES-GCM & Argon2id'));
     console.log(pc.blue(`ℹ️  Penyimpanan: ${konteks === 'saku' ? 'Personal (Saku)' : 'Proyek (Pelataran)'}`));
+    console.log(pc.dim('\nKetik enter untuk kembali...'));
+    await prompts({ type: 'text', name: 'p', message: '' });
   });
 
 program
@@ -77,6 +81,9 @@ program
     await siapkanKonteks(program.opts());
     const isInit = await Arsip.isVaultInitialized();
     if (!isInit) return console.log(pc.red('❌ Brankas belum disiapkan.'));
+
+    Antarmuka.enterTUI();
+    console.clear();
 
     const response = await prompts({ type: 'password', name: 'password', message: 'Password brankas:' });
     if (!response.password || !(await Arsip.unlockVault(response.password))) return console.log(pc.red('❌ Gagal.'));
@@ -93,6 +100,8 @@ program
     notes.forEach(note => {
       console.log(`${pc.bold(note.title)} ${pc.dim(`[${note.id}]`)} ${pc.blue(`#${note.tags.join(' #')}`)}`);
     });
+    console.log(pc.dim('\nKetik enter untuk kembali...'));
+    await prompts({ type: 'text', name: 'p', message: '' });
   });
 
 program
@@ -101,11 +110,18 @@ program
   .argument('<id>', 'ID Catatan')
   .action(async (id) => {
     await siapkanKonteks(program.opts());
+    Antarmuka.enterTUI();
+    console.clear();
+
     const response = await prompts({ type: 'password', name: 'password', message: 'Password brankas:' });
     if (!response.password || !(await Arsip.unlockVault(response.password))) return;
 
     const note = await Arsip.getNoteById(id);
-    if (!note) return console.log(pc.red('❌ Tidak ditemukan.'));
+    if (!note) {
+      console.log(pc.red('❌ Tidak ditemukan.'));
+      await prompts({ type: 'text', name: 'p', message: pc.dim('Ketik enter untuk kembali...') });
+      return;
+    }
 
     const edit = await prompts({
       type: 'text',
@@ -117,6 +133,7 @@ program
     if (edit.content) {
       await Arsip.saveNote({ ...note, content: edit.content });
       console.log(pc.green('✅ Berhasil diukir.'));
+      await prompts({ type: 'text', name: 'p', message: pc.dim('Ketik enter untuk kembali...') });
     }
   });
 
