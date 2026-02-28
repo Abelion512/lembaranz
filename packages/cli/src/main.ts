@@ -94,22 +94,7 @@ program
     await jalankanTUI(konteks);
   });
 
-program
-  .command('layani')
-  .description('Menjalankan API server lokal')
-  .option('-p, --port <number>', 'Port server', '1401')
-  .action(async (opts) => {
-    await siapkanKonteks(program.opts());
-    console.log('🔓 Mohon buka brankas terlebih dahulu.');
-    if (await bukaBrankasCLI()) {
-      const { mulaiServer } = await import('./Server.js');
-      const server = await mulaiServer(parseInt(opts.port));
-      console.log(`✅ Aktif di http://localhost:${server.port}`);
-      console.log('Tekan Ctrl+C untuk berhenti.');
-    } else {
-      console.log('❌ Gagal membuka brankas.');
-    }
-  });
+
 
 program
   .command('tanam')

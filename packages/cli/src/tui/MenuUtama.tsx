@@ -17,7 +17,6 @@ const MENU_ITEMS = [
     { label: '⚔️   Mode Berdaulat (Otonom)', value: 'berdaulat' },
     { label: '🌱  Tanam (Impor .md)', value: 'tanam' },
     { label: '📦  Petik (Ekspor .lembaran)', value: 'petik' },
-    { label: '🚀  Layani Server Sentinel', value: 'layani' },
     { label: '✨  Keluar', value: 'keluar' },
 ];
 
