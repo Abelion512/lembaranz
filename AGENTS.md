@@ -19,6 +19,7 @@ Proyek ini mengikuti konvensi penamaan 'Indonesia Puitis' dalam struktur monorep
 1. **Prioritas Konteks**: Setiap agent **WAJIB** membaca ketiga dokumen di atas (berurutan) sebelum memulai tugas apa pun.
 2. **Eksplorasi Luas**: Selalu pindai `packages/core/src` untuk memahami logika enkripsi dan storage sebelum memodifikasi data.
 3. **Penyelarasan Nama**: Gunakan terminologi Indonesia untuk logika internal (aksara, brankas, gudang, integritas).
+4. **Kewajiban Pembaruan Dokumentasi**: Setiap perubahan kode fungsional **WAJIB** diikuti dengan pembaruan _context_ (`CONTEXT.md` / `AGENTS.md`) dan dokumentasi terkait. Jangan tinggalkan kode baru tanpa penjelasan.
 
 ## 🔒 Keamanan & Integritas Data (Sentinel Standard)
 

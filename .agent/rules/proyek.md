@@ -6,3 +6,4 @@ Aturan khusus untuk pengerjaan di repositori Lembaran:
 2. **Kedaulatan Konteks**: Selalu cek apakah perintah harus dijalankan dengan flag `--saku` atau `--pelataran`. Default untuk proyek adalah `--pelataran`.
 3. **Penyimpanan**: Gunakan `FileAdapter` sebagai satu-satunya adapter penyimpanan untuk lingkungan pengembangan lokal.
 4. **Pujangga Modular**: Jangan memodifikasi penyedia AI tanpa memperbarui interface `PujanggaProvider`.
+5. **Kewajiban Dokumentasi**: Setiap pembaruan kode **WAJIB** disertai dengan pembaruan dokumentasi (konteks, guidelines, UI teks) yang berkaitan dengan fungsionalitas kode yang diubah.
