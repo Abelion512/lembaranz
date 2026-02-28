@@ -234,4 +234,105 @@ program
     }
   });
 
+const envCmd = program
+  .command('env')
+  .description('Manajemen file .env lokal lintas proyek (Brankas tersentralisasi)');
+
+envCmd
+  .command('simpan')
+  .description('Menyimpan file .env lokal ke brankas')
+  .argument('[tag]', 'Nama tag/proyek (default: nama direktori saat ini)')
+  .action(async (tag) => {
+    await siapkanKonteks(program.opts());
+    if (!(await bukaBrankasCLI())) return console.log('❌ Akses ditolak.');
+
+    const targetTag = tag || path.basename(process.cwd());
+    const envPath = path.join(process.cwd(), '.env');
+
+    try {
+      const content = await fs.readFile(envPath, 'utf8');
+      const title = `.env - ${targetTag}`;
+      
+      const notes = await Arsip.getAllNotes();
+      const existing = notes.find(n => n.title === title && n.tags.includes('env'));
+
+      if (existing) {
+        const fullNote = await Arsip.getNoteById(existing.id);
+        if (fullNote) {
+            fullNote.content = content;
+            fullNote.updatedAt = new Date().toISOString();
+            await Arsip.saveNote(fullNote);
+            console.log(`✅ Berhasil memperbarui profil .env: ${targetTag}`);
+            return;
+        }
+      }
+
+      await Arsip.saveNote({
+        id: '', title, content,
+        folderId: null, isPinned: false, isFavorite: false,
+        tags: ['env', targetTag], createdAt: new Date().toISOString()
+      });
+      console.log(`✅ Berhasil menyimpan profil .env: ${targetTag} ke dalam brankas.`);
+    } catch (e: any) {
+      if (e.code === 'ENOENT') {
+         console.log('❌ File .env tidak ditemukan di direktori saat ini.');
+      } else {
+         console.log(`❌ Gagal menyimpan: ${e.message}`);
+      }
+    }
+  });
+
+envCmd
+  .command('muat')
+  .alias('ambil')
+  .description('Memuat file .env dari brankas ke direktori lokal')
+  .argument('<tag>', 'Nama tag/proyek')
+  .action(async (tag) => {
+    await siapkanKonteks(program.opts());
+    if (!(await bukaBrankasCLI())) return console.log('❌ Akses ditolak.');
+
+    const title = `.env - ${tag}`;
+    const notes = await Arsip.getAllNotes();
+    const existingHeader = notes.find(n => n.title === title && n.tags.includes('env'));
+
+    if (!existingHeader) {
+        return console.log(`❌ Profil .env dengan tag '${tag}' tidak ditemukan di brankas.`);
+    }
+
+    const fullNote = await Arsip.getNoteById(existingHeader.id);
+    if (!fullNote) {
+        return console.log(`❌ Gagal mendekripsi profil .env '${tag}'.`);
+    }
+
+    const envPath = path.join(process.cwd(), '.env');
+    try {
+        await fs.writeFile(envPath, fullNote.content, 'utf8');
+        console.log(`✅ Berhasil memuat profil .env '${tag}' ke ${envPath}`);
+    } catch (e: any) {
+        console.log(`❌ Gagal menulis file .env: ${e.message}`);
+    }
+  });
+
+envCmd
+  .command('daftar')
+  .alias('senarai')
+  .description('Menampilkan daftar profil .env yang tersimpan di brankas')
+  .action(async () => {
+    await siapkanKonteks(program.opts());
+    if (!(await bukaBrankasCLI())) return console.log('❌ Akses ditolak.');
+
+    const notes = await Arsip.getAllNotes();
+    const envNotes = notes.filter(n => n.tags.includes('env') && n.title.startsWith('.env - '));
+
+    if (envNotes.length === 0) {
+        return console.log('📂 Belum ada profil .env yang tersimpan di brankas.');
+    }
+
+    console.log('📄 Daftar Profil .env Tersimpan:');
+    envNotes.forEach(n => {
+        const tag = n.title.replace('.env - ', '');
+        console.log(`  - ${tag} (Disimpan: ${new Date(n.updatedAt || n.createdAt).toLocaleString('id-ID')})`);
+    });
+  });
+
 program.parse(process.argv);
