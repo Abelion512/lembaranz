@@ -23,7 +23,8 @@ export const PetaCatatan = ({ onClose }: { onClose: () => void }) => {
     const loadGraph = async () => {
         haptic.light();
         const allNotes = await Arsip.getAllNotes();
-        const graphNodes: Node[] = allNotes.map((note) => ({
+        const filteredNotes = allNotes.filter(n => !(n.tags.includes('env') && n.title.startsWith('.env - ')));
+        const graphNodes: Node[] = filteredNotes.map((note) => ({
             ...note,
             x: 400 + (Math.random() - 0.5) * 500,
             y: 300 + (Math.random() - 0.5) * 400,

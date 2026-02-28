@@ -32,7 +32,10 @@ export const PencarianCepat = () => {
 
     useEffect(() => {
         if (isOpen) {
-            Arsip.getAllNotes().then(setNotes).catch(console.error);
+            Arsip.getAllNotes().then(all => {
+                const filtered = all.filter(n => !(n.tags.includes('env') && n.title.startsWith('.env - ')));
+                setNotes(filtered);
+            }).catch(console.error);
         }
     }, [isOpen]);
 

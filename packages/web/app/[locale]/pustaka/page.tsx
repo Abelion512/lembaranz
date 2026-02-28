@@ -68,7 +68,10 @@ export default function NoteListPage() {
         setIsLoading(true);
         try {
             const allNotes = await Arsip.getAllNotes();
-            setNotes(allNotes);
+            const filteredNotes = allNotes.filter(n => 
+                !(n.tags.includes('env') && n.title.startsWith('.env - '))
+            );
+            setNotes(filteredNotes);
         } catch (err) {
             console.error(err);
         } finally {
