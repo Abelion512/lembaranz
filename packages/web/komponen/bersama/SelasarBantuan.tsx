@@ -95,7 +95,7 @@ export const SelasarBantuan = () => {
             <div className="mt-auto pt-12 space-y-3">
                 <a
                     href="https://github.com/Abelion512/lembaran"
-                    target="_blank"
+                    target="_blank" rel="noopener noreferrer"
                     className="flex items-center justify-between px-5 py-4 rounded-2xl bg-black text-white dark:bg-white dark:text-black text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-all"
                 >
                     <div className="flex items-center gap-3">

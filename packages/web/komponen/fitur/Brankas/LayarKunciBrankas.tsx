@@ -4,11 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Lock, KeyRound, Unlock, ArrowRight,
-    ChevronLeft, Check, Copy, Fingerprint
+    ChevronLeft, Check, Copy, Fingerprint,
+    LifeBuoy, RefreshCcw
 } from 'lucide-react';
 import { Arsip } from '@lembaran/core/Arsip';
 import { usePundi } from '@lembaran/core/Pundi';
-import { haptic, audio } from '@lembaran/core/Indera';
+import { audio } from '@lembaran/core/Indera';
 
 const generateMnemonic = () => {
     const words = ["cakrawala", "aksara", "hening", "harmoni", "saujana", "bestari", "anitya", "baswara", "pustaka", "gudang", "brankas", "sentinel"];
@@ -16,12 +17,14 @@ const generateMnemonic = () => {
 };
 
 export const LayarKunciBrankas = () => {
-    const { setVaultLocked, settings, isVaultLocked } = usePundi();
+    const { setVaultLocked, settings } = usePundi();
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState<string | boolean>(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isSetupMode, setIsSetupMode] = useState(false);
+    const [isRecoveryMode, setIsRecoveryMode] = useState(false);
+    const [isResetMode, setIsResetMode] = useState(false);
     const [checkingStatus, setCheckingStatus] = useState(true);
     const [showPaperKey, setShowPaperKey] = useState(false);
     const [paperKey, setPaperKey] = useState('');
@@ -43,17 +46,6 @@ export const LayarKunciBrankas = () => {
         checkVaultStatus();
     }, []);
 
-    useEffect(() => {
-        if (!isVaultLocked && settings.sessionTimeout) {
-            const timeout = setTimeout(() => {
-                setVaultLocked(true);
-                audio.lock();
-                haptic.medium();
-            }, settings.sessionTimeout * 60 * 1000);
-            return () => clearTimeout(timeout);
-        }
-    }, [isVaultLocked, settings.sessionTimeout, setVaultLocked]);
-
     const handleSetup = async (e: React.FormEvent) => {
         e.preventDefault();
         if (password.length < 8) return setError("Minimal 8 karakter");
@@ -64,7 +56,7 @@ export const LayarKunciBrankas = () => {
     const finalizeSetup = async () => {
         setIsLoading(true);
         try {
-            await Arsip.setupVault(password);
+            await Arsip.setupVault(password, paperKey);
             audio.unlock();
             setVaultLocked(false);
         } catch (_err) {
@@ -74,16 +66,15 @@ export const LayarKunciBrankas = () => {
         }
     };
 
-    const handleUnlock = async (e: React.FormEvent, directPassword?: string) => {
+    const handleUnlock = async (e: React.FormEvent) => {
         if (e) e.preventDefault();
-        const pw = directPassword === "biometric-simulated" ? "SIMULATED_KEY" : (directPassword || password);
-        if (!pw) return;
+        if (!password) return;
 
         setIsLoading(true);
         setError(false);
 
         try {
-            const isValid = pw === "SIMULATED_KEY" ? true : await Arsip.unlockVault(pw);
+            const isValid = await Arsip.unlockVault(password);
             if (isValid) {
                 audio.unlock();
                 setVaultLocked(false);
@@ -93,6 +84,45 @@ export const LayarKunciBrankas = () => {
             }
         } catch (_err) {
             setError("Gagal membuka brankas");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleRecover = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError(false);
+        try {
+            const success = await Arsip.recoverVault(password); // password field used for mnemonic
+            if (success) {
+                audio.unlock();
+                // Setelah recovery, paksa user set password baru (Task 🟡)
+                setIsResetMode(true);
+                setIsRecoveryMode(false);
+                setPassword('');
+            } else {
+                setError("Kunci kertas tidak valid");
+            }
+        } catch (_err) {
+            setError("Gagal memulihkan brankas");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleResetPassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (password.length < 8) return setError("Minimal 8 karakter");
+        if (password !== confirmPassword) return setError("Kata sandi tidak cocok");
+
+        setIsLoading(true);
+        try {
+            await Arsip.resetPassword(password);
+            audio.unlock();
+            setVaultLocked(false);
+        } catch (_err) {
+            setError("Gagal menetapkan kata sandi baru");
         } finally {
             setIsLoading(false);
         }
@@ -112,24 +142,67 @@ export const LayarKunciBrankas = () => {
                 {!showPaperKey ? (
                     <motion.div key="auth-form" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="flex-1 flex flex-col items-center justify-center max-w-sm mx-auto w-full text-center">
                         <div className="w-20 h-20 rounded-2xl bg-[var(--surface)] shadow-sm flex items-center justify-center text-[var(--primary)] mb-8">
-                            {isLoading ? <Unlock size={36} className="animate-pulse" /> : (isSetupMode ? <KeyRound size={36} /> : <Lock size={36} />)}
+                            {isLoading ? <Unlock size={36} className="animate-pulse" /> :
+                                (isSetupMode ? <KeyRound size={36} /> :
+                                    (isRecoveryMode ? <LifeBuoy size={36} /> :
+                                        (isResetMode ? <RefreshCcw size={36} /> : <Lock size={36} />)))}
                         </div>
-                        <h1 className="text-3xl font-bold mb-2 tracking-tight">{isSetupMode ? 'Amankan Arsip' : 'Lembaran Vault'}</h1>
-                        <p className="text-[var(--text-secondary)] text-[15px] mb-10 px-4">{isSetupMode ? 'Tetapkan kata sandi utama untuk enkripsi Argon2id sisi klien.' : 'Arsip Anda terenkripsi secara aman. Masukkan kata sandi untuk membukanya.'}</p>
-                        <form onSubmit={isSetupMode ? handleSetup : handleUnlock} className="w-full space-y-4">
+
+                        <h1 className="text-3xl font-bold mb-2 tracking-tight">
+                            {isSetupMode ? 'Amankan Arsip' :
+                                (isRecoveryMode ? 'Pemulihan' :
+                                    (isResetMode ? 'Kata Sandi Baru' : 'Lembaran Vault'))}
+                        </h1>
+
+                        <p className="text-[var(--text-secondary)] text-[15px] mb-10 px-4">
+                            {isSetupMode ? 'Tetapkan kata sandi utama untuk enkripsi Argon2id sisi klien.' :
+                                (isRecoveryMode ? 'Masukkan 12 kata kunci pemulihan Anda untuk membuka akses.' :
+                                    (isResetMode ? 'Pemulihan berhasil! Sekarang, tetapkan kata sandi baru untuk penggunaan selanjutnya.' : 'Arsip Anda terenkripsi secara aman. Masukkan kata sandi untuk membukanya.'))}
+                        </p>
+
+                        <form onSubmit={isSetupMode ? handleSetup : (isRecoveryMode ? handleRecover : (isResetMode ? handleResetPassword : handleUnlock))} className="w-full space-y-4">
                             <div className="ios-list-group shadow-sm">
-                                <input type="password" value={password} onChange={(e) => { setPassword(e.target.value); setError(false); }} placeholder={isSetupMode ? "Kata Sandi Baru" : "Kata Sandi Brankas"} className="w-full px-4 py-3 bg-transparent border-none focus:outline-none text-center text-lg font-medium placeholder:opacity-30" autoFocus />
-                                {isSetupMode && <><div className="ios-separator"></div><input type="password" value={confirmPassword} onChange={(e) => { setConfirmPassword(e.target.value); setError(false); }} placeholder="Ulangi Kata Sandi" className="w-full px-4 py-3 bg-transparent border-none focus:outline-none text-center text-lg font-medium placeholder:opacity-30" /></>}
+                                {isRecoveryMode ? (
+                                    <textarea
+                                        value={password}
+                                        onChange={(e) => { setPassword(e.target.value); setError(false); }}
+                                        placeholder="Ketik 12 kata kunci pemulihan..."
+                                        className="w-full px-4 py-6 bg-transparent border-none focus:outline-none text-center text-sm font-bold placeholder:opacity-30 min-h-[120px] resize-none"
+                                        autoFocus
+                                    />
+                                ) : (
+                                    <input
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => { setPassword(e.target.value); setError(false); }}
+                                        placeholder={isSetupMode || isResetMode ? "Kata Sandi Baru" : "Kata Sandi Brankas"}
+                                        className="w-full px-4 py-3 bg-transparent border-none focus:outline-none text-center text-lg font-medium placeholder:opacity-30"
+                                        autoFocus
+                                    />
+                                )}
+                                {(isSetupMode || isResetMode) && <><div className="ios-separator"></div><input type="password" value={confirmPassword} onChange={(e) => { setConfirmPassword(e.target.value); setError(false); }} placeholder="Ulangi Kata Sandi" className="w-full px-4 py-3 bg-transparent border-none focus:outline-none text-center text-lg font-medium placeholder:opacity-30" /></>}
                             </div>
-                            {settings.biometricEnabled && !isSetupMode && (
-                                <button type="button" onClick={() => handleUnlock({ preventDefault: () => { } } as unknown as React.FormEvent, "biometric-simulated")} className="w-full flex items-center justify-center gap-2 py-3 mb-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-500 font-bold text-sm hover:bg-blue-500/20 transition-all">
+
+                            {settings.biometricEnabled && !isSetupMode && !isRecoveryMode && !isResetMode && (
+                                <button type="button" onClick={() => setError("WebAuthn sedang dalam pengembangan aktif.")} className="w-full flex items-center justify-center gap-2 py-3 mb-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-500 font-bold text-sm hover:bg-blue-500/20 transition-all">
                                     <Fingerprint size={18} /> Gunakan Biometrik
                                 </button>
                             )}
-                            <button type="submit" disabled={!password || (isSetupMode && !confirmPassword) || isLoading} className="ios-button ios-button-primary w-full shadow-lg shadow-[var(--primary)]/20 disabled:opacity-30">
-                                {isLoading ? 'Memproses...' : (isSetupMode ? 'Lanjutkan' : 'Buka Brankas')}
+
+                            <button type="submit" disabled={!password || ((isSetupMode || isResetMode) && !confirmPassword) || isLoading} className="ios-button ios-button-primary w-full shadow-lg shadow-[var(--primary)]/20 disabled:opacity-30">
+                                {isLoading ? 'Memproses...' : (isSetupMode ? 'Lanjutkan' : (isRecoveryMode ? 'Pulihkan Akses' : (isResetMode ? 'Simpan & Buka' : 'Buka Brankas')))}
                                 {!isLoading && <ArrowRight size={18} />}
                             </button>
+
+                            {!isSetupMode && !isResetMode && (
+                                <button
+                                    type="button"
+                                    onClick={() => { setIsRecoveryMode(!isRecoveryMode); setPassword(''); setError(false); }}
+                                    className="text-[var(--primary)] text-xs font-bold uppercase tracking-widest mt-4 hover:opacity-70 transition-opacity"
+                                >
+                                    {isRecoveryMode ? 'Kembali ke Login' : 'Lupa Kata Sandi?'}
+                                </button>
+                            )}
                         </form>
                         {error && <p className="text-red-500 text-xs mt-6 font-semibold uppercase tracking-wider">{typeof error === "string" ? error : "Terjadi kesalahan"}</p>}
                     </motion.div>

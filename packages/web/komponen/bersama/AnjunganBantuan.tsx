@@ -1,43 +1,23 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { usePundi } from '@lembaran/core/Pundi';
-import { Shield, Terminal, BookOpen, Rocket } from 'lucide-react';
+import { useLocale } from 'next-intl';
+import { LucideIcon, Shield, Terminal, BookOpen, Rocket, Zap, Layers, Globe } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { LembaranDok } from '@/komponen/bersama/LembaranDok';
 import { SaklarBahasa } from '@/komponen/bersama/SaklarBahasa';
 import { ambilTerjemahan } from '@/lib/ambilTerjemahan';
+import { ambilMetadataBantuan, ButirMetadata } from '@/lib/ambilKontenDok';
 
-const BASE_CARDS = [
-    {
-        id: 'MULAI_CEPAT',
-        title: 'Mulai Cepat',
-        desc: 'Panduan langkah demi langkah untuk instalasi dan setup awal.',
-        icon: Rocket,
-        color: 'bg-orange-500/10 text-orange-500'
-    },
-    {
-        id: 'keamanan',
-        title: 'Keamanan Absolut',
-        desc: 'Pelajari bagaimana kami mengamankan data Anda dengan AES-GCM 256.',
-        icon: Shield,
-        color: 'bg-green-500/10 text-green-500'
-    },
-    {
-        id: 'cli',
-        title: 'Antarmuka CLI',
-        desc: 'Panduan lengkap penggunaan terminal untuk efisiensi maksimal.',
-        icon: Terminal,
-        color: 'bg-blue-500/10 text-blue-500'
-    },
-    {
-        id: 'perintah',
-        title: 'Daftar Perintah',
-        desc: 'Referensi cepat untuk semua perintah CLI Lembaran.',
-        icon: BookOpen,
-        color: 'bg-purple-500/10 text-purple-500'
-    }
-];
+const IKON_MAP: Record<string, LucideIcon> = {
+    Shield,
+    Terminal,
+    BookOpen,
+    Rocket,
+    Zap,
+    Layers,
+    Globe
+};
 
 const DEFAULT_UI = {
     title: "Pusat Bantuan",
@@ -47,52 +27,54 @@ const DEFAULT_UI = {
     footerBtn: "Buka Diskusi GitHub"
 };
 
+interface KartuBantuan extends Omit<ButirMetadata, 'icon'> {
+    id: string;
+    icon: LucideIcon;
+}
+
 export default function AnjunganBantuan() {
-    const lang = usePundi(state => state.settings.language) || 'id';
+    const lang = useLocale() as 'id' | 'en';
     const [ui, setUi] = useState(DEFAULT_UI);
-    const [cards, setCards] = useState(BASE_CARDS);
+    const [cards, setCards] = useState<KartuBantuan[]>([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const translateUI = async () => {
-            if (lang === 'id') {
-                setUi(DEFAULT_UI);
-                setCards(BASE_CARDS);
-                return;
-            }
-
+        const muatKonten = async () => {
             setLoading(true);
             try {
-                // Translate static strings
-                const [title, desc, footerTitle, footerDesc, footerBtn] = await Promise.all([
-                    ambilTerjemahan(DEFAULT_UI.title, 'en'),
-                    ambilTerjemahan(DEFAULT_UI.desc, 'en'),
-                    ambilTerjemahan(DEFAULT_UI.footerTitle, 'en'),
-                    ambilTerjemahan(DEFAULT_UI.footerDesc, 'en'),
-                    ambilTerjemahan(DEFAULT_UI.footerBtn, 'en'),
-                ]);
+                // 1. Ambil Metadata Bantuan (Source of Truth)
+                const metadata = await ambilMetadataBantuan(lang);
+                if (metadata) {
+                    const mappedCards = Object.entries(metadata).map(([id, data]: [string, ButirMetadata]): KartuBantuan => ({
+                        id,
+                        ...data,
+                        icon: IKON_MAP[data.icon] || BookOpen
+                    }));
+                    // Tampilkan hanya 4 kartu utama di anjungan jika mau, atau semua.
+                    // Di prompt awal ada 4, tapi indeks.json punya lebih. Kita tampilkan yang ada di indeks saja.
+                    setCards(mappedCards);
+                }
 
-                setUi({ title, desc, footerTitle, footerDesc, footerBtn });
-
-                // Translate card content
-                const translatedCards = await Promise.all(BASE_CARDS.map(async (card) => {
-                    const [cTitle, cDesc] = await Promise.all([
-                        ambilTerjemahan(card.title, 'en'),
-                        ambilTerjemahan(card.desc, 'en')
+                // 2. Terjemahkan UI statis jika bukan Indonesia
+                if (lang === 'en') {
+                    const [title, desc, footerTitle, footerDesc, footerBtn] = await Promise.all([
+                        ambilTerjemahan(DEFAULT_UI.title, 'en'),
+                        ambilTerjemahan(DEFAULT_UI.desc, 'en'),
+                        ambilTerjemahan(DEFAULT_UI.footerTitle, 'en'),
+                        ambilTerjemahan(DEFAULT_UI.footerDesc, 'en'),
+                        ambilTerjemahan(DEFAULT_UI.footerBtn, 'en'),
                     ]);
-                    // Map target slug if it's the getting started one
-                    const targetId = card.id === 'MULAI_CEPAT' ? 'GETTING_STARTED' : card.id;
-                    return { ...card, id: targetId, title: cTitle, desc: cDesc };
-                }));
-
-                setCards(translatedCards);
+                    setUi({ title, desc, footerTitle, footerDesc, footerBtn });
+                } else {
+                    setUi(DEFAULT_UI);
+                }
             } catch (error) {
-                console.error('[BantuanClient] Translation error:', error);
+                console.error('[Bantuan] Load error:', error);
             }
             setLoading(false);
         };
 
-        translateUI();
+        muatKonten();
     }, [lang]);
 
     return (
@@ -104,7 +86,7 @@ export default function AnjunganBantuan() {
                 {loading && (
                     <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-blue-500 font-bold animate-pulse">
                         <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                        AI Translating...
+                        Memuat Dokumentasi...
                     </div>
                 )}
                 <div className="flex-1" />
@@ -133,6 +115,7 @@ export default function AnjunganBantuan() {
                 <a
                     href="https://github.com/Abelion512/lembaran/discussions"
                     target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-6 py-3 bg-white text-blue-500 rounded-full font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all"
                 >
                     {ui.footerBtn}

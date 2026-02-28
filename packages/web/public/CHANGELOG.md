@@ -2,6 +2,16 @@
 
 Semua perubahan penting pada proyek ini akan didokumentasikan di file ini.
 
+## [3.3.0] - 2026-02-22
+### Added
+- **Restorasi TUI Modern**: Pengembalian antarmuka interaktif berbasis Ink/React yang lebih visual dan intuitif.
+- **Unlooping Scroll Logic**: Implementasi `PilihanModern.tsx` kustom untuk mencegah kursor menu berputar balik (loop) di ujung daftar, memberikan kontrol navigasi yang lebih pasti.
+- **Subcommand Pengaturan**: Integrasi perintah `lembaran pengaturan` untuk manajemen variabel lingkungan (.env) langsung dari terminal.
+### Fixed
+- **Emoji & Encoding**: Pembersihan seluruh karakter encoding yang rusak pada antarmuka terminal untuk tampilan yang lebih premium.
+- **Scrolling Trap**: Perbaikan logika viewport pada menu utama agar mendukung scrolling ke seluruh item daftar (11+ opsi).
+
+
 ## [3.1.0] - 2026-02-19
 ### Added
 - **Dynamic Documentation Engine**: Seluruh halaman bantuan kini menggunakan `DocRenderer` berbasis Markdown untuk konsistensi.

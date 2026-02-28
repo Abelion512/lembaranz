@@ -76,7 +76,7 @@ export const EtalaseLokal = () => {
 
             <div className="mt-12 text-center">
                 <p className="text-gray-500 text-sm font-medium">
-                    Lihat roadmap pengembangan kami di <a href="https://github.com/Abelion512/lembaran/discussions" target="_blank" className="text-blue-500 hover:underline">GitHub Discussions</a>.
+                    Lihat roadmap pengembangan kami di <a href="https://github.com/Abelion512/lembaran/discussions" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">GitHub Discussions</a>.
                 </p>
             </div>
         </div>

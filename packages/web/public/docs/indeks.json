@@ -1,0 +1,90 @@
+{
+    "id": {
+        "MULAI_CEPAT": {
+            "title": "Mulai Cepat",
+            "desc": "Panduan langkah demi langkah untuk menguasai Lembaran dalam hitungan menit.",
+            "icon": "Rocket",
+            "color": "bg-orange-500/10 text-orange-500"
+        },
+        "cli": {
+            "title": "Antarmuka CLI",
+            "desc": "Lembaran menyediakan antarmuka terminal yang kuat untuk alur kerja yang efisien.",
+            "icon": "Terminal",
+            "color": "bg-blue-500/10 text-blue-500"
+        },
+        "keamanan": {
+            "title": "Keamanan Absolut",
+            "desc": "Pelajari bagaimana kami mengamankan data Anda dengan standar industri tertinggi.",
+            "icon": "Shield",
+            "color": "bg-green-500/10 text-green-500"
+        },
+        "perintah": {
+            "title": "Daftar Perintah",
+            "desc": "Referensi cepat untuk semua perintah CLI Lembaran.",
+            "icon": "BookOpen",
+            "color": "bg-purple-500/10 text-purple-500"
+        },
+        "performa": {
+            "title": "Optimasi Performa",
+            "desc": "Bagaimana Lembaran tetap cepat meski memproses ribuan catatan.",
+            "icon": "Zap",
+            "color": "bg-yellow-500/10 text-yellow-500"
+        },
+        "struktur": {
+            "title": "Arsitektur Sistem",
+            "desc": "Memahami struktur internal dan desain monorepo Lembaran.",
+            "icon": "Layers",
+            "color": "bg-indigo-500/10 text-indigo-500"
+        },
+        "publik": {
+            "title": "Mulai Berdikari",
+            "desc": "Panduan memahami ekosistem Lembaran dan menguasai kedaulatan data Anda.",
+            "icon": "Globe",
+            "color": "bg-cyan-500/10 text-cyan-500"
+        }
+    },
+    "en": {
+        "GETTING_STARTED": {
+            "title": "Getting Started",
+            "desc": "Step-by-step guide to mastering Lembaran in minutes.",
+            "icon": "Rocket",
+            "color": "bg-orange-500/10 text-orange-500"
+        },
+        "cli": {
+            "title": "CLI Interface",
+            "desc": "Lembaran provides a powerful terminal interface for an efficient workflow.",
+            "icon": "Terminal",
+            "color": "bg-blue-500/10 text-blue-500"
+        },
+        "keamanan": {
+            "title": "Absolute Security",
+            "desc": "Learn how we secure your data with the highest industry standards.",
+            "icon": "Shield",
+            "color": "bg-green-500/10 text-green-500"
+        },
+        "perintah": {
+            "title": "Command List",
+            "desc": "Quick reference for all Lembaran CLI commands.",
+            "icon": "BookOpen",
+            "color": "bg-purple-500/10 text-purple-500"
+        },
+        "performa": {
+            "title": "Performance Optimization",
+            "desc": "How Lembaran stays fast while processing thousands of notes.",
+            "icon": "Zap",
+            "color": "bg-yellow-500/10 text-yellow-500"
+        },
+        "struktur": {
+            "title": "System Architecture",
+            "desc": "Understanding the internal structure and design of the Lembaran monorepo.",
+            "icon": "Layers",
+            "color": "bg-indigo-500/10 text-indigo-500"
+        },
+        "publik": {
+            "title": "Sovereignty First",
+            "desc": "A guide to understanding the Lembaran ecosystem and mastering data sovereignty.",
+            "icon": "Globe",
+            "color": "bg-cyan-500/10 text-cyan-500"
+        }
+    }
+}

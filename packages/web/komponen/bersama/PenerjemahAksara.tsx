@@ -13,11 +13,35 @@ interface PenerjemahAksaraProps {
 // Cache in-memory: key = "slug-lang" → html string
 const kontenCache = new Map<string, string>();
 
+/**
+ * Hardening Renderer Markdown:
+ * 1. Blokir raw HTML.
+ * 2. Filter protokol berbahaya pada link.
+ * 3. Tambahkan rel="noopener noreferrer" pada link eksternal.
+ */
 const perenderMarkdown = new Marked({ gfm: true });
 perenderMarkdown.use({
     renderer: {
         html() {
-            return '';
+            return ''; // Blokir eksekusi HTML mentah dalam markdown
+        },
+        link(token) {
+            const href = token.href;
+            const text = token.text;
+            const title = token.title;
+
+            // Keamanan: Tolak protokol berbahaya (XSS)
+            const skemaBerbahaya = /^(javascript|data|vbscript|file):/i;
+            if (skemaBerbahaya.test(href)) {
+                return `<span>${text}</span>`;
+            }
+
+            // Keamanan: Tambahkan atribut pengaman untuk link eksternal
+            const isEksternal = href.startsWith('http');
+            const rel = isEksternal ? 'rel="noopener noreferrer" target="_blank"' : '';
+            const titleAttr = title ? `title="${title}"` : '';
+
+            return `<a href="${href}" ${rel} ${titleAttr}>${text}</a>`;
         }
     }
 });
@@ -34,16 +58,17 @@ export function PenerjemahAksara({ slug }: PenerjemahAksaraProps) {
     const [isAITranslated, setIsAITranslated] = useState(false);
 
     useEffect(() => {
-        if (kontenCache.has(cacheKey)) {
-            setHtmlContent(kontenCache.get(cacheKey)!);
-            setLoading(false);
-            setIsAITranslated(false);
-            return;
-        }
-
         let cancelled = false;
 
         const loadContent = async () => {
+            if (kontenCache.has(cacheKey)) {
+                const cached = kontenCache.get(cacheKey)!;
+                setHtmlContent(cached);
+                setLoading(false);
+                setIsAITranslated(false);
+                return;
+            }
+
             setLoading(true);
             setIsAITranslated(false);
 
@@ -61,8 +86,8 @@ export function PenerjemahAksara({ slug }: PenerjemahAksaraProps) {
 
             if (content) {
                 const parsed = await perenderMarkdown.parse(content);
-                kontenCache.set(cacheKey, parsed);
-                setHtmlContent(parsed);
+                kontenCache.set(cacheKey, parsed as string);
+                setHtmlContent(parsed as string);
             } else {
                 setHtmlContent(null);
             }

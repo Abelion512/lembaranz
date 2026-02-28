@@ -117,7 +117,7 @@ export default function NoteListPage() {
     };
 
     const handleBulkDelete = async () => {
-        if (!confirm(`Hapus .* aksara secara permanen?`)) return;
+        if (!confirm(`Hapus ${selectedIds.length} aksara secara permanen?`)) return;
         haptic.heavy();
         for (const id of selectedIds) {
             await Arsip.deleteNote(id);

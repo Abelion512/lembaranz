@@ -6,6 +6,7 @@ import { argon2id } from '@noble/hashes/argon2.js';
  */
 
 const ALGO_ENC = 'AES-GCM';
+const MAX_CACHE_ITEMS = 100;
 
 export class Brankas {
     private static key: CryptoKey | null = null;
@@ -18,8 +19,9 @@ export class Brankas {
 
     /**
      * Derives a CryptoKey from a password and salt using Argon2id
+     * @param extractable Whether the key should be extractable (needed for recovery setup)
      */
-    static async deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
+    static async deriveKey(password: string, salt: Uint8Array, extractable = false): Promise<CryptoKey> {
         try {
             // Argon2id parameters (OWASP recommended: 19MB RAM, 2 iterations, 1 parallelism)
             const hash = argon2id(password, salt, {
@@ -33,13 +35,44 @@ export class Brankas {
                 'raw',
                 hash as BufferSource,
                 { name: ALGO_ENC, length: 256 },
-                false,
+                extractable,
                 ['encrypt', 'decrypt']
             );
         } catch (error) {
-            console.error('Argon2id derivation failed', error);
+            console.error('[BRANKAS] Kunci gagal diturunkan (ERR_DRV_001)');
             throw error;
         }
+    }
+
+    /**
+     * Generates a random 256-bit AES-GCM master key.
+     */
+    static async generateMasterKey(): Promise<CryptoKey> {
+        return crypto.subtle.generateKey(
+            { name: ALGO_ENC, length: 256 },
+            true, // extractable so it can be wrapped
+            ['encrypt', 'decrypt']
+        );
+    }
+
+    /**
+     * Imports a key from raw bytes.
+     */
+    static async importRawKey(keyBuffer: ArrayBuffer, extractable = true): Promise<CryptoKey> {
+        return crypto.subtle.importKey(
+            'raw',
+            keyBuffer,
+            { name: ALGO_ENC, length: 256 },
+            extractable,
+            ['encrypt', 'decrypt']
+        );
+    }
+
+    /**
+     * Exports a key to raw bytes.
+     */
+    static async exportRawKey(key: CryptoKey): Promise<ArrayBuffer> {
+        return crypto.subtle.exportKey('raw', key);
     }
 
     static setActiveKey(key: CryptoKey) {
@@ -54,6 +87,10 @@ export class Brankas {
 
     static isLocked(): boolean {
         return this.key === null;
+    }
+
+    static getActiveKey(): CryptoKey | null {
+        return this.key;
     }
 
     /**
@@ -92,8 +129,8 @@ export class Brankas {
         return decoder.decode(decrypted);
     }
 
-    static async encryptPacked(text: string): Promise<string> {
-        const { data, iv } = await this.encrypt(text);
+    static async encryptPacked(text: string, customKey?: CryptoKey): Promise<string> {
+        const { data, iv } = await this.encrypt(text, customKey);
         const ivHex = Array.from(iv).map(b => b.toString(16).padStart(2, '0')).join('');
         const base64 = btoa(String.fromCharCode(...new Uint8Array(data)));
         return `${ivHex}|${base64}`;
@@ -110,12 +147,14 @@ export class Brankas {
         return bytes;
     }
 
-    static async decryptPacked(packed: string): Promise<string> {
+    static async decryptPacked(packed: string, customKey?: CryptoKey): Promise<string> {
         if (!packed || !packed.includes('|')) return packed;
 
-        // Hit cache for O(1) performance boost on repeat reads (Bolt ⚡)
-        if (this.decryptionCache.has(packed)) {
-            return this.decryptionCache.get(packed)!;
+        if (!customKey && this.decryptionCache.has(packed)) {
+            const result = this.decryptionCache.get(packed)!;
+            this.decryptionCache.delete(packed);
+            this.decryptionCache.set(packed, result);
+            return result;
         }
 
         const [ivHex, base64] = packed.split('|');
@@ -127,10 +166,18 @@ export class Brankas {
             bytes[i] = binaryString.charCodeAt(i);
         }
 
-        const result = await this.decrypt(bytes.buffer, iv);
+        const result = await this.decrypt(bytes.buffer, iv, customKey);
 
-        // Populate cache for future hits
-        this.decryptionCache.set(packed, result);
+        if (!customKey) {
+            if (this.decryptionCache.size >= MAX_CACHE_ITEMS) {
+                const firstKey = this.decryptionCache.keys().next().value;
+                if (firstKey !== undefined) {
+                    this.decryptionCache.delete(firstKey);
+                }
+            }
+            this.decryptionCache.set(packed, result);
+        }
+        
         return result;
     }
 }

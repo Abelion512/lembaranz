@@ -36,3 +36,6 @@ Semua halaman bantuan di `/bantuan` kini menggunakan `DocRenderer.tsx`.
 ## 🛠️ Peningkatan CLI
 - Perintah `ukir` mendukung multi-baris via `prompts`.
 - Perintah `tanam` mendukung pemindaian direktori otomatis.
+
+## 🧩 Codex Context (v3.1.0)
+Gunakan `.codex/CONTEXT.md` sebagai pedoman teknis utama untuk arsitektur, aturan locale, dan checklist keamanan. Hindari redundansi informasi antara `AGENTS.md` dan `Codex`.

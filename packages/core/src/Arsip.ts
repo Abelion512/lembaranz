@@ -5,41 +5,73 @@ import { v4 as uuidv4 } from 'uuid';
 import { Integritas } from './Integritas';
 import { Pujangga } from './Pujangga';
 
+/**
+ * Arsip: Modul utama manajemen brankas dan catatan Lembaran.
+ * Menangani siklus hidup data dari enkripsi, penyimpanan, hingga pemulihan.
+ */
 export const Arsip = {
+    /**
+     * Memeriksa apakah brankas sudah pernah diinisialisasi.
+     */
     async isVaultInitialized(): Promise<boolean> {
         const validator = await Gudang.get('meta', 'auth_validator');
         return !!validator;
     },
 
-    async setupVault(password: string): Promise<void> {
+    /**
+     * Menyiapkan brankas baru dengan kata sandi dan kunci pemulihan (mnemonic).
+     * @param password Kata sandi utama
+     * @param mnemonic 12 kata kunci pemulihan (opsional)
+     */
+    async setupVault(password: string, mnemonic?: string): Promise<void> {
         if (process.env.DEBUG === 'true') console.log('[ARSIP] Memulai setupVault...');
+
+        const masterKey = await Brankas.generateMasterKey();
+        const masterKeyBuffer = await Brankas.exportRawKey(masterKey);
+
         const salt = crypto.getRandomValues(new Uint8Array(16));
         const saltHex = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
+        const passwordKey = await Brankas.deriveKey(password, salt);
 
-        if (process.env.DEBUG === 'true') console.log('[ARSIP] Membangun kunci Argon2id...');
-        const key = await Brankas.deriveKey(password, salt);
+        const wrappedKey = await Brankas.encryptPacked(
+            btoa(String.fromCharCode(...new Uint8Array(masterKeyBuffer))),
+            passwordKey
+        );
 
-        if (process.env.DEBUG === 'true') console.log('[ARSIP] Menyiapkan validator brankas...');
-        const validator = 'LEMBARAN_SECURED_V2';
-        const encryptedValidator = await Brankas.encrypt(validator, key);
+        const validator = 'LEMBARAN_SECURED_V3';
+        const encryptedValidator = await Brankas.encryptPacked(validator, masterKey);
 
-        const ivHex = Array.from(encryptedValidator.iv).map(b => b.toString(16).padStart(2, '0')).join('');
-        const base64Data = btoa(String.fromCharCode(...new Uint8Array(encryptedValidator.data)));
-
-        if (process.env.DEBUG === 'true') console.log('[ARSIP] Menyimpan meta-data ke Gudang...');
         await Gudang.set('meta', 'auth_salt', saltHex);
-        await Gudang.set('meta', 'auth_validator', `${ivHex}|${base64Data}`);
+        await Gudang.set('meta', 'auth_wrapped_key', wrappedKey);
+        await Gudang.set('meta', 'auth_validator', encryptedValidator);
 
-        Brankas.setActiveKey(key);
-        if (process.env.DEBUG === 'true') console.log('[ARSIP] Setup brankas selesai!');
+        if (mnemonic) {
+            const mnemonicSalt = crypto.getRandomValues(new Uint8Array(16));
+            const mSaltHex = Array.from(mnemonicSalt).map(b => b.toString(16).padStart(2, '0')).join('');
+            const recoveryKey = await Brankas.deriveKey(mnemonic, mnemonicSalt);
+
+            const recoveryWrappedKey = await Brankas.encryptPacked(
+                btoa(String.fromCharCode(...new Uint8Array(masterKeyBuffer))),
+                recoveryKey
+            );
+
+            await Gudang.set('meta', 'recovery_salt', mSaltHex);
+            await Gudang.set('meta', 'recovery_wrapped_key', recoveryWrappedKey);
+        }
+
+        Brankas.setActiveKey(masterKey);
     },
 
+    /**
+     * Membuka brankas menggunakan kata sandi.
+     * Mendukung migrasi otomatis dari V2 ke V3.
+     */
     async unlockVault(password: string): Promise<boolean> {
         try {
             // Panic Key Check
             const panicHash = await Gudang.get('meta', 'panic_hash') as string;
             if (panicHash) {
-                const currentHash = await Integritas.hitungHash({ p: password });
+                const currentHash = await Integritas.hitungHash(password);
                 if (currentHash === panicHash) {
                     await this.destroyAllData();
                     return false;
@@ -47,50 +79,126 @@ export const Arsip = {
             }
 
             const saltHex = await Gudang.get('meta', 'auth_salt') as string;
-            const packedValidator = await Gudang.get('meta', 'auth_validator') as string;
+            const authValidator = await Gudang.get('meta', 'auth_validator') as string;
+            const wrappedKey = await Gudang.get('meta', 'auth_wrapped_key') as string;
 
-            if (!saltHex || !packedValidator) return false;
+            if (!saltHex || !authValidator) return false;
 
             const salt = new Uint8Array(saltHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
-            const [ivHex, base64Data] = packedValidator.split('|');
-            const iv = new Uint8Array(ivHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
-            const binaryString = atob(base64Data);
-            const bytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) {
-                bytes[i] = binaryString.charCodeAt(i);
+            const passwordKey = await Brankas.deriveKey(password, salt);
+
+            // Coba V3 (Decoupled Master Key)
+            if (wrappedKey) {
+                const masterKeyBase64 = await Brankas.decryptPacked(wrappedKey, passwordKey);
+                const masterKeyBuffer = Uint8Array.from(atob(masterKeyBase64), c => c.charCodeAt(0)).buffer;
+                const masterKey = await Brankas.importRawKey(masterKeyBuffer);
+
+                const decryptedValidator = await Brankas.decryptPacked(authValidator, masterKey);
+                if (decryptedValidator === 'LEMBARAN_SECURED_V3') {
+                    Brankas.setActiveKey(masterKey);
+                    return true;
+                }
+            } else {
+                // Migrasi dari V2 (Master Key = Password Key)
+                const [ivHex, base64Data] = authValidator.split('|');
+                const iv = new Uint8Array(ivHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+                const binaryString = atob(base64Data);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+
+                const decrypted = await Brankas.decrypt(bytes.buffer, iv, passwordKey);
+                if (decrypted === 'LEMBARAN_SECURED_V2') {
+                    Brankas.setActiveKey(passwordKey);
+                    // Lakukan migrasi ke V3 agar support reset password & recovery yang lebih baik
+                    await this.resetPassword(password);
+                    return true;
+                }
             }
 
-            const key = await Brankas.deriveKey(password, salt);
-            const decrypted = await Brankas.decrypt(bytes.buffer, iv, key);
-
-            if (decrypted === 'LEMBARAN_SECURED_V2') {
-                Brankas.setActiveKey(key);
-                return true;
-            }
             return false;
-        } catch (e) {
-            console.error('Unlock failed', e);
+        } catch (_e) {
+            console.error('[ARSIP] Gagal membuka brankas (ERR_AUTH_001)');
             return false;
         }
     },
 
-    async setPanicKey(password: string): Promise<void> {
-        const hash = await Integritas.hitungHash({ p: password });
-        await Gudang.set('meta', 'panic_hash', hash);
+    /**
+     * Memulihkan akses brankas menggunakan Kunci Kertas (mnemonic).
+     */
+    async recoverVault(mnemonic: string): Promise<boolean> {
+        try {
+            const mSaltHex = await Gudang.get('meta', 'recovery_salt') as string;
+            const wrappedKey = await Gudang.get('meta', 'recovery_wrapped_key') as string;
+
+            if (!mSaltHex || !wrappedKey) return false;
+
+            const mSalt = new Uint8Array(mSaltHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+            const recoveryKey = await Brankas.deriveKey(mnemonic, mSalt);
+
+            const decryptedKeyBase64 = await Brankas.decryptPacked(wrappedKey, recoveryKey);
+            const keyBuffer = Uint8Array.from(atob(decryptedKeyBase64), c => c.charCodeAt(0)).buffer;
+            const masterKey = await Brankas.importRawKey(keyBuffer);
+
+            Brankas.setActiveKey(masterKey);
+            return true;
+        } catch (_e) {
+            console.error('[ARSIP] Pemulihan gagal (ERR_REC_001)');
+            return false;
+        }
     },
 
+    /**
+     * Menetapkan kata sandi baru untuk brankas yang sedang terbuka.
+     */
+    async resetPassword(newPassword: string): Promise<void> {
+        const masterKey = Brankas.getActiveKey();
+        if (!masterKey) throw new Error('Vault Locked');
+
+        const masterKeyBuffer = await Brankas.exportRawKey(masterKey);
+
+        const salt = crypto.getRandomValues(new Uint8Array(16));
+        const saltHex = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
+        const passwordKey = await Brankas.deriveKey(newPassword, salt);
+
+        const wrappedKey = await Brankas.encryptPacked(
+            btoa(String.fromCharCode(...new Uint8Array(masterKeyBuffer))),
+            passwordKey
+        );
+
+        await Gudang.set('meta', 'auth_salt', saltHex);
+        await Gudang.set('meta', 'auth_wrapped_key', wrappedKey);
+
+        const validator = 'LEMBARAN_SECURED_V3';
+        const encryptedValidator = await Brankas.encryptPacked(validator, masterKey);
+        await Gudang.set('meta', 'auth_validator', encryptedValidator);
+    },
+
+    /**
+     * Menghapus seluruh data aplikasi secara permanen.
+     */
     async destroyAllData(): Promise<void> {
         await Promise.all([
             Gudang.clear('notes'),
             Gudang.clear('folders'),
             Gudang.clear('meta')
         ]);
+
         if (typeof window !== 'undefined') {
-            window.localStorage.clear();
+            const keys = Object.keys(window.localStorage);
+            keys.forEach(key => {
+                if (key.startsWith('lembaran:')) {
+                    window.localStorage.removeItem(key);
+                }
+            });
             window.location.href = '/';
         }
     },
 
+    /**
+     * Menyimpan catatan baru atau memperbarui catatan lama.
+     */
     async saveNote(note: Omit<Note, 'updatedAt'>): Promise<Note> {
         if (Brankas.isLocked()) {
             throw new Error('Vault is locked. Cannot save data.');
@@ -146,11 +254,13 @@ export const Arsip = {
         return finalNote;
     },
 
+    /**
+     * Mengambil seluruh catatan yang sudah didekripsi minimal.
+     */
     async getAllNotes(): Promise<Note[]> {
         if (Brankas.isLocked()) throw new Error('Vault Locked');
         const rawNotes = await Gudang.getAll('notes') as Note[];
 
-        // Sort BEFORE decryption for performance (Bolt ⚡)
         rawNotes.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 
         const decrypted = await Promise.all(rawNotes.map(async n => {
@@ -168,6 +278,9 @@ export const Arsip = {
         return decrypted;
     },
 
+    /**
+     * Mendekripsi catatan secara penuh.
+     */
     async decryptNote(note: Note): Promise<Note> {
         try {
             const [title, content, credsRaw] = await Promise.all([
@@ -191,16 +304,22 @@ export const Arsip = {
             }
 
             return decryptedNote;
-        } catch (err) {
-            console.error('Decryption failed', err);
+        } catch (_err) {
+            console.error('[ARSIP] Gagal mendekripsi catatan (ERR_DEC_001)');
             return { ...note, content: '⚠️ Gagal Dekripsi Data' };
         }
     },
 
+    /**
+     * Menghapus catatan berdasarkan ID.
+     */
     async deleteNote(id: EntityId) {
         await Gudang.delete('notes', id);
     },
 
+    /**
+     * Mengambil catatan spesifik berdasarkan ID dan mendekripsinya.
+     */
     async getNoteById(id: EntityId): Promise<Note | undefined> {
         if (Brankas.isLocked()) throw new Error('Vault Locked');
         const note = await Gudang.get('notes', id) as Note;
@@ -208,6 +327,9 @@ export const Arsip = {
         return this.decryptNote(note);
     },
 
+    /**
+     * Mengambil statistik jumlah catatan dan folder.
+     */
     async getStats() {
         try {
             const notesCount = await Gudang.count('notes');

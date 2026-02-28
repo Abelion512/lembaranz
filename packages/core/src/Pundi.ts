@@ -62,7 +62,7 @@ export const usePundi = create<LembaranState>()(
                 })),
         }),
         {
-            name: 'lembaran-storage',
+            name: 'lembaran:pundi',
             partialize: (state) => ({ settings: state.settings, profile: state.profile }),
         }
     )

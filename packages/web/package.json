@@ -5,9 +5,9 @@
   "scripts": {
     "sinkron-aset": "bun run scripts/sinkron-aset.ts",
     "predev": "bun run scripts/bersihkan-port.ts",
-    "dev": "next dev -p 1400",
-    "build": "bun run sinkron-aset && next build",
-    "start": "next start -p 1400",
+    "dev": "bun --bun next dev --webpack -p 1400",
+    "build": "bun run sinkron-aset && bun --bun next build --webpack",
+    "start": "bun --bun next start -p 1400",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -36,8 +36,8 @@
     "marked": "^17.0.1",
     "next": "16.1.6",
     "next-intl": "^4.8.3",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
     "react-window": "^2.2.6",
     "sortablejs": "^1.15.6",
     "tippy.js": "^6.3.7",

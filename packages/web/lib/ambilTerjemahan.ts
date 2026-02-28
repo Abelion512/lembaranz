@@ -12,7 +12,7 @@ export async function ambilTerjemahan(teks: string, targetLang: 'id' | 'en'): Pr
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
-        console.warn('[Linguis] GEMINI_API_KEY not found. Returning original text.');
+        if (process.env.NODE_ENV === 'development') console.warn('[Linguis] API Key tidak ditemukan (ERR_LNG_001)');
         return teks;
     }
 

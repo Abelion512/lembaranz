@@ -39,7 +39,7 @@ export default function LandingPage() {
                 <div className="flex items-center gap-4">
                     <nav className="hidden md:flex items-center gap-6 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">
                         <Link href="/versi" className="hover:text-blue-500 transition-colors">Changelog</Link>
-                        <a href="https://github.com/Abelion512/lembaran" target="_blank" className="hover:text-blue-500 transition-colors">GitHub</a>
+                        <a href="https://github.com/Abelion512/lembaran" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transition-colors">GitHub</a>
                         <Link href="/bantuan" className="hover:text-blue-500 transition-colors">Docs</Link>
                     </nav>
                     <div className="w-px h-6 bg-white/10 mx-2 hidden md:block"></div>
