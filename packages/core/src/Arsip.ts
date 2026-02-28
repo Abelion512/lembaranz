@@ -264,15 +264,28 @@ export const Arsip = {
         rawNotes.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 
         const decrypted = await Promise.all(rawNotes.map(async n => {
+            let safeTitle = '🔒 Terkunci';
+            let safePreview = '🔒 Terkunci';
+            
             try {
-                return {
-                    ...n,
-                    title: await Brankas.decryptPacked(n.title),
-                    preview: await Brankas.decryptPacked(n.preview || '')
-                };
+                safeTitle = await Brankas.decryptPacked(n.title);
             } catch (_e) {
-                return { ...n, title: '🔒 Terkunci', preview: '🔒 Terkunci' };
+                safeTitle = '⚠️ [DATA RUSAK/TAMPERED]';
             }
+
+            try {
+                safePreview = await Brankas.decryptPacked(n.preview || '');
+            } catch (_e) {
+                safePreview = '⚠️ [DATA RUSAK/TAMPERED]';
+            }
+
+            return {
+                ...n,
+                title: safeTitle,
+                preview: safePreview,
+                content: '🔒 Terkunci', // Jauhkan konten dari RAM di list all notes
+                kredensial: undefined
+            };
         }));
 
         return decrypted;
@@ -305,8 +318,14 @@ export const Arsip = {
 
             return decryptedNote;
         } catch (_err) {
-            console.error('[ARSIP] Gagal mendekripsi catatan (ERR_DEC_001)');
-            return { ...note, content: '⚠️ Gagal Dekripsi Data' };
+            console.error('[ARSIP] Gagal mendekripsi catatan. Kemungkinan tampering / korupsi data (ERR_DEC_001)');
+            return { 
+                ...note, 
+                title: '⚠️ [DATA RUSAK/TAMPERED]',
+                content: '⚠️ Gagal Dekripsi Data. Integritas kriptografi tertolak.',
+                preview: '⚠️ [DATA RUSAK/TAMPERED]',
+                kredensial: undefined
+            };
         }
     },
 
@@ -338,5 +357,16 @@ export const Arsip = {
         } catch {
             return { notes: 0, folders: 0 };
         }
+    },
+
+    /**
+     * Menetapkan Panic Key: kata sandi yang jika dimasukkan saat login
+     * akan menghapus semua data brankas secara permanen.
+     * @param panicPassword Kata sandi yang akan bertindak sebagai tombol panik
+     */
+    async setPanicKey(panicPassword: string): Promise<void> {
+        const hash = await Integritas.hitungHash(panicPassword);
+        await Gudang.set('meta', 'panic_hash', hash);
     }
 };
+
