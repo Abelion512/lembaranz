@@ -320,4 +320,75 @@ envCmd
     });
   });
 
+program
+  .command('run')
+  .description('Menempelkan environment dari brankas lalu mengeksekusi sub-perintah (Zonal Context Injection)')
+  .option('-t, --tag <tag>', 'Nama profil .env spesifik (default: nama direktori)')
+  .argument('<command...>', 'Perintah eksekusi yang akan di-spawn (contoh: npm start)')
+  .allowUnknownOption()
+  .action(async (commandArgs, options) => {
+    const targetTag = options.tag || path.basename(process.cwd());
+    const actualCommand = commandArgs;
+
+    if (!actualCommand || actualCommand.length === 0) {
+      return console.log('❌ Anda harus memasukkan perintah yang akan dijalankan. Contoh: lembaran run npm start');
+    }
+
+    await siapkanKonteks(program.opts());
+    if (!(await bukaBrankasCLI())) return console.log('❌ Akses ditolak.');
+
+    const title = `.env - ${targetTag}`;
+    const notes = await Arsip.getAllNotes();
+    const existingHeader = notes.find(n => n.title === title && n.tags.includes('env'));
+
+    if (!existingHeader) {
+      return console.log(`❌ Profil .env dengan tag '${targetTag}' tidak ditemukan di brankas.`);
+    }
+
+    const fullNote = await Arsip.getNoteById(existingHeader.id);
+    if (!fullNote) {
+      return console.log(`❌ Gagal mendekripsi profil .env '${targetTag}'.`);
+    }
+
+    // Parsing raw .env text to an object
+    const parsedEnv: Record<string, string> = {};
+    for (const line of fullNote.content.split('\n')) {
+      const clean = line.trim();
+      if (clean && !clean.startsWith('#')) {
+        const index = clean.indexOf('=');
+        if (index !== -1) {
+          const key = clean.substring(0, index).trim();
+          let val = clean.substring(index + 1).trim();
+          if (val.startsWith('"') && val.endsWith('"') || val.startsWith("'") && val.endsWith("'")) {
+             val = val.substring(1, val.length - 1);
+          }
+          parsedEnv[key] = val;
+        }
+      }
+    }
+
+    // Prepare child process
+    const { spawn } = await import('node:child_process');
+    
+    // Command string & args
+    const cmd = actualCommand[0];
+    const args = actualCommand.slice(1);
+
+    console.log(`⚡ Menginjeksi konteks terisolasi '${targetTag}'...`);
+
+    const child = spawn(cmd, args, {
+      stdio: 'inherit',
+      shell: true,
+      env: { ...process.env, ...parsedEnv }
+    });
+
+    child.on('error', (err) => {
+      console.error(`❌ Gagal menjalankan proses: ${err.message}`);
+    });
+
+    child.on('exit', (code, signal) => {
+      process.exitCode = code ?? (signal ? 1 : 0);
+    });
+  });
+
 program.parse(process.argv);
