@@ -198,10 +198,61 @@ program
 program
   .command('pengaturan')
   .alias('config')
-  .description('Mengelola variabel lingkungan (.env) lokal')
+  .description('Mengelola variabel lingkungan (.env) lokal atau pengaturan repo')
+  .option('--pasang-hook', 'Memasang Git Hook Pre-commit pencegah kebocoran rahasia')
   .argument('[katalog]', 'Nama variabel (key)')
   .argument('[nilai]', 'Nilai variabel (value)')
-  .action(async (katalog, nilai) => {
+  .action(async (katalog, nilai, options) => {
+    if (options.pasangHook) {
+      const gitHooksPath = path.join(process.cwd(), '.git', 'hooks');
+      try {
+        await fs.access(gitHooksPath);
+      } catch {
+        return console.log('❌ Direktori .git/hooks tidak ditemukan. Pastikan Anda berada dalam direktori repositori Git.');
+      }
+
+      const hookFile = path.join(gitHooksPath, 'pre-commit');
+      const hookContent = `#!/bin/bash
+# Lembaran Pre-commit Secret Scanner
+
+echo "🔍 [Lembaran SEC] Memindai file staged untuk hardcoded secrets..."
+
+# Pola Regex Kredensial Umum (Diobvuskasi dari deteksi dirinya sendiri)
+P1="AWS_ACCESS_KEY"_"ID"
+P2="AWS_SECRET_ACCESS"_"KEY"
+P3="-----BEGIN PRIVATE"_" KEY-----"
+P4="eyJhbGc"_"iOi"
+P5="Bearer [A-Za-z0-9\\-\\._~\\+/]+=*"
+
+PATTERN="($P1|$P2|$P3|$P4|$P5)"
+
+staged_files=$(git diff --cached --name-only --diff-filter=ACM)
+has_secrets=0
+
+for file in $staged_files; do
+  if git show ":$file" | grep -qE "$PATTERN"; then
+    echo "❌ KEBOCORAN TERDETEKSI pada file: $file"
+    has_secrets=1
+  fi
+done
+
+if [ $has_secrets -eq 1 ]; then
+  echo ""
+  echo "🚨 Peringatan Keamanan Lembaran!"
+  echo "Commit dibatalkan karena terdeteksi keberadaan teks kunci rahasia (hardcoded)."
+  echo "💡 Saran: Simpan variabel lingkungan di brankas dengan perintah: lembaran env simpan [tag]"
+  echo "          dan panggil menggunakan metode Zonal Context Injection: lembaran run."
+  echo ""
+  exit 1
+fi
+
+echo "✅ 스 Pemindaian bersih. Mengizinkan komit."
+exit 0
+`;
+      await fs.writeFile(hookFile, hookContent, { mode: 0o755 });
+      return console.log('✨ Berhasil memasang Pre-commit Secret Scanner Lembaran di direktori ini.');
+    }
+
     await siapkanKonteks(program.opts());
 
     if (katalog && nilai !== undefined) {
@@ -237,18 +288,18 @@ envCmd
     try {
       const content = await fs.readFile(envPath, 'utf8');
       const title = `.env - ${targetTag}`;
-      
+
       const notes = await Arsip.getAllNotes();
       const existing = notes.find(n => n.title === title && n.tags.includes('env'));
 
       if (existing) {
         const fullNote = await Arsip.getNoteById(existing.id);
         if (fullNote) {
-            fullNote.content = content;
-            fullNote.updatedAt = new Date().toISOString();
-            await Arsip.saveNote(fullNote);
-            console.log(`✅ Berhasil memperbarui profil .env: ${targetTag}`);
-            return;
+          fullNote.content = content;
+          fullNote.updatedAt = new Date().toISOString();
+          await Arsip.saveNote(fullNote);
+          console.log(`✅ Berhasil memperbarui profil .env: ${targetTag}`);
+          return;
         }
       }
 
@@ -260,9 +311,9 @@ envCmd
       console.log(`✅ Berhasil menyimpan profil .env: ${targetTag} ke dalam brankas.`);
     } catch (e: any) {
       if (e.code === 'ENOENT') {
-         console.log('❌ File .env tidak ditemukan di direktori saat ini.');
+        console.log('❌ File .env tidak ditemukan di direktori saat ini.');
       } else {
-         console.log(`❌ Gagal menyimpan: ${e.message}`);
+        console.log(`❌ Gagal menyimpan: ${e.message}`);
       }
     }
   });
@@ -281,20 +332,20 @@ envCmd
     const existingHeader = notes.find(n => n.title === title && n.tags.includes('env'));
 
     if (!existingHeader) {
-        return console.log(`❌ Profil .env dengan tag '${tag}' tidak ditemukan di brankas.`);
+      return console.log(`❌ Profil .env dengan tag '${tag}' tidak ditemukan di brankas.`);
     }
 
     const fullNote = await Arsip.getNoteById(existingHeader.id);
     if (!fullNote) {
-        return console.log(`❌ Gagal mendekripsi profil .env '${tag}'.`);
+      return console.log(`❌ Gagal mendekripsi profil .env '${tag}'.`);
     }
 
     const envPath = path.join(process.cwd(), '.env');
     try {
-        await fs.writeFile(envPath, fullNote.content, 'utf8');
-        console.log(`✅ Berhasil memuat profil .env '${tag}' ke ${envPath}`);
+      await fs.writeFile(envPath, fullNote.content, 'utf8');
+      console.log(`✅ Berhasil memuat profil .env '${tag}' ke ${envPath}`);
     } catch (e: any) {
-        console.log(`❌ Gagal menulis file .env: ${e.message}`);
+      console.log(`❌ Gagal menulis file .env: ${e.message}`);
     }
   });
 
@@ -310,13 +361,13 @@ envCmd
     const envNotes = notes.filter(n => n.tags.includes('env') && n.title.startsWith('.env - '));
 
     if (envNotes.length === 0) {
-        return console.log('📂 Belum ada profil .env yang tersimpan di brankas.');
+      return console.log('📂 Belum ada profil .env yang tersimpan di brankas.');
     }
 
     console.log('📄 Daftar Profil .env Tersimpan:');
     envNotes.forEach(n => {
-        const tag = n.title.replace('.env - ', '');
-        console.log(`  - ${tag} (Disimpan: ${new Date(n.updatedAt || n.createdAt).toLocaleString('id-ID')})`);
+      const tag = n.title.replace('.env - ', '');
+      console.log(`  - ${tag} (Disimpan: ${new Date(n.updatedAt || n.createdAt).toLocaleString('id-ID')})`);
     });
   });
 
@@ -360,7 +411,7 @@ program
           const key = clean.substring(0, index).trim();
           let val = clean.substring(index + 1).trim();
           if (val.startsWith('"') && val.endsWith('"') || val.startsWith("'") && val.endsWith("'")) {
-             val = val.substring(1, val.length - 1);
+            val = val.substring(1, val.length - 1);
           }
           parsedEnv[key] = val;
         }
@@ -369,7 +420,7 @@ program
 
     // Prepare child process
     const { spawn } = await import('node:child_process');
-    
+
     // Command string & args
     const cmd = actualCommand[0];
     const args = actualCommand.slice(1);
