@@ -4,6 +4,7 @@ import { PilihanModern } from './komponen/PilihanModern.js';
 
 interface MenuUtamaProps {
     onPilih: (aksi: string) => void;
+    aksiAwal?: string;
 }
 
 const MENU_ITEMS = [
@@ -20,7 +21,9 @@ const MENU_ITEMS = [
     { label: '✨  Keluar', value: 'keluar' },
 ];
 
-export const MenuUtama: React.FC<MenuUtamaProps> = ({ onPilih }) => {
+export const MenuUtama: React.FC<MenuUtamaProps> = ({ onPilih, aksiAwal }) => {
+    const initialIndex = Math.max(0, MENU_ITEMS.findIndex(item => item.value === aksiAwal));
+
     return (
         <Box flexDirection="column" padding={1}>
             <Box borderStyle="round" borderColor="blue" paddingX={1} marginBottom={1}>
@@ -32,6 +35,7 @@ export const MenuUtama: React.FC<MenuUtamaProps> = ({ onPilih }) => {
                     items={MENU_ITEMS}
                     limit={7}
                     isLooping={false}
+                    initialIndex={initialIndex}
                     onSelect={(item) => onPilih(item.value)}
                 />
             </Box>

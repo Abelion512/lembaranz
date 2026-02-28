@@ -22,10 +22,12 @@ export const Aplikasi: React.FC<AplikasiProps> = ({ konteks, versi }) => {
     const { exit } = useApp();
     const [layar, setLayar] = useState<Layar>('selamat');
     const [pesan, setPesan] = useState<{ jenis: 'sukses' | 'info'; judul: string } | null>(null);
+    const [aksiTerakhir, setAksiTerakhir] = useState<string | undefined>();
 
     const keMenu = useCallback(() => setLayar('menu'), []);
 
     const handlePilih = useCallback((aksi: string) => {
+        setAksiTerakhir(aksi);
         switch (aksi) {
             case 'pantau':
                 setLayar('pantau');
@@ -67,7 +69,7 @@ export const Aplikasi: React.FC<AplikasiProps> = ({ konteks, versi }) => {
             case 'selamat':
                 return <LayarSelamat konteks={konteks} versi={versi} onSelesai={keMenu} />;
             case 'menu':
-                return <MenuUtama onPilih={handlePilih} />;
+                return <MenuUtama onPilih={handlePilih} aksiAwal={aksiTerakhir} />;
             case 'pantau':
                 return <LayarPantau konteks={konteks} onKembali={keMenu} />;
             case 'jelajah':
@@ -85,7 +87,7 @@ export const Aplikasi: React.FC<AplikasiProps> = ({ konteks, versi }) => {
                     </Box>
                 );
             default:
-                return <MenuUtama onPilih={handlePilih} />;
+                return <MenuUtama onPilih={handlePilih} aksiAwal={aksiTerakhir} />;
         }
     };
 

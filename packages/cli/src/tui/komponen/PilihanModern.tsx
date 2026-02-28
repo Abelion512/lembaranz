@@ -50,11 +50,16 @@ export function PilihanModern<V>({
     const hasLimit = typeof customLimit === 'number' && items.length > customLimit;
     const limit = hasLimit ? Math.min(customLimit, items.length) : items.length;
 
+    // hitung rotate index awal agar scrolling langsung tepat posisi tanpa berkedip
+    const initialRotate = hasLimit && initialIndex >= limit
+        ? Math.min(initialIndex - limit + 1, items.length - limit)
+        : 0;
+
     // indexAbs: 0 to items.length - 1
     const [indexAbs, setIndexAbs] = useState(initialIndex);
 
     // rotateIndex: index of the first item in the visible window
-    const [rotateIndex, setRotateIndex] = useState(0);
+    const [rotateIndex, setRotateIndex] = useState(initialRotate);
 
     const previousItems = useRef(items);
 
