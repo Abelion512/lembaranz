@@ -10,9 +10,10 @@ export const Integritas = {
      * This is more efficient than cloning and deleting keys.
      */
     async hitungHash(data: unknown): Promise<string> {
-        // Exclude transient metadata per policy using JSON.stringify replacer
+        // Hashing policy: Include ALL relevant data for integrity.
+        // We only exclude technical metadata like the hash itself.
         const text = JSON.stringify(data, (key, value) => {
-            if (key === '_hash' || key === '_timestamp' || key === 'updatedAt') {
+            if (key === '_hash' || key === '_timestamp') {
                 return undefined;
             }
             return value;

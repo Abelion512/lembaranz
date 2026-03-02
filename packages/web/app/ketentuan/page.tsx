@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { marked } from 'marked';
+import DOMPurify from 'isomorphic-dompurify';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 
@@ -15,7 +16,8 @@ async function getContent() {
 }
 
 export default async function TermsPage() {
-    const htmlContent = await getContent();
+    const rawContent = await getContent();
+    const htmlContent = DOMPurify.sanitize(rawContent);
 
     return (
         <div className='flex-1 flex flex-col min-h-0 bg-[var(--background)] px-5 pt-14 pb-20 overflow-y-auto no-scrollbar'>

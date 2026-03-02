@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { program } from 'commander';
 import { TUI } from './TUI';
-import { Arsip } from '@lembaran/core/Arsip';
+import { Arsip, Sentinel } from '@lembaran/core';
 import pc from 'picocolors';
 import prompts from 'prompts';
 
@@ -19,11 +19,22 @@ program
   .command('pantau')
   .description('Memantau kesehatan dan integritas sistem')
   .action(async () => {
-    console.log(pc.bold('📊 STATUS SISTEM LEMBARAN:'));
+    console.log(pc.bold('\n📊 STATUS SISTEM LEMBARAN:'));
     const isInit = await Arsip.isVaultInitialized();
     console.log(`${isInit ? pc.green('✅') : pc.yellow('⚠️')} Brankas: ${isInit ? 'Terinisialisasi' : 'Belum Disiapkan'}`);
     console.log(pc.green('✅ Security Engine: AES-GCM & Argon2id'));
     console.log(pc.blue('ℹ️  Storage: Local-First (FileAdapter Active)'));
+
+    const logs = await Sentinel.bacaLogAudit();
+    if (logs.length > 0) {
+        console.log(pc.bold(pc.red('\n🛑 PERINGATAN KEAMANAN TERAKHIR:')));
+        logs.slice(0, 5).forEach(log => {
+            const [time, type, ...msg] = log.split(' ');
+            console.log(`${pc.dim(time)} ${pc.bold(pc.red(type))} ${msg.join(' ')}`);
+        });
+    } else {
+        console.log(pc.green('\n✅ Tidak ada insiden keamanan terdeteksi.'));
+    }
   });
 
 program

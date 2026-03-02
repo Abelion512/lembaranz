@@ -54,7 +54,9 @@ export class FileAdapter implements StorageAdapter {
     private async save(): Promise<void> {
         if (!this.data) return;
         await this.ensureDirectory();
-        await fs.writeFile(this.filePath, JSON.stringify(this.data, null, 2));
+        // Secure file permissions (chmod 600 - read/write for owner only)
+        // Set mode before writing or use writeFile options
+        await fs.writeFile(this.filePath, JSON.stringify(this.data, null, 2), { mode: 0o600 });
     }
 
     async get<K extends keyof LembaranSchema>(store: K, key: string) {
