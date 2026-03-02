@@ -178,7 +178,7 @@ export const Arsip = {
 
             if (note._hash) {
                 const actualHash = await Integritas.hitungHash(decryptedNote);
-                if (actualHash !== note._hash) {
+                if (!Integritas.amanBandingkan(actualHash, note._hash)) {
                     decryptedNote.content = `⚠️ PERINGATAN: Segel digital rusak!\n\n` + decryptedNote.content;
                 }
             }

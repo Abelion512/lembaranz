@@ -1,6 +1,6 @@
 {
   "name": "@lembaran/web",
-  "version": "3.0.0",
+  "version": "3.3.2",
   "private": true,
   "scripts": {
     "dev": "next dev -p 1400",

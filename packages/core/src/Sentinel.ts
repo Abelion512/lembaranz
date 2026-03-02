@@ -17,7 +17,7 @@ export class Sentinel {
         const invalidIds: string[] = [];
         for (const note of notes) {
             const actualHash = await Integritas.hitungHash(note);
-            if (note._hash && note._hash !== actualHash) {
+            if (note._hash && !Integritas.amanBandingkan(note._hash, actualHash)) {
                 invalidIds.push(note.id);
                 this.laporkan('INTEGRITY_VIOLATION', `ID: ${note.id}`);
             }
@@ -51,7 +51,8 @@ export class Sentinel {
             }
         }
 
-        console.error(`🚨 SENTINEL ALERT: ${insiden.trim()}`);
+        // Reduced information leakage in console logs
+        console.error(`🚨 SENTINEL ALERT: [${tipe}]`);
     }
 
     /**
