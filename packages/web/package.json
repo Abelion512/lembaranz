@@ -6,7 +6,7 @@
     "dev": "next dev -p 1400",
     "build": "next build",
     "start": "next start -p 1400",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@lembaran/core": "workspace:*",

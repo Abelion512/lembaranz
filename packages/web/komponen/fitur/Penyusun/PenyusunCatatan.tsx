@@ -21,7 +21,7 @@ import 'highlight.js/styles/github-dark.css';
 
 const lowlight = createLowlight(common);
 
-const DOMPURIFY_CONFIG: DOMPurify.Config = {
+const DOMPURIFY_CONFIG = {
     ALLOWED_TAGS: [
         'p', 'br', 'strong', 'em', 'u', 's', 'code', 'pre',
         'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
