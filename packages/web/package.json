@@ -1,12 +1,12 @@
 {
   "name": "@lembaran/web",
-  "version": "3.3.2",
+  "version": "3.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev -p 1400",
     "build": "next build",
     "start": "next start -p 1400",
-    "lint": "eslint ."
+    "lint": "next lint"
   },
   "dependencies": {
     "@lembaran/core": "workspace:*",
@@ -22,12 +22,10 @@
     "@tiptap/starter-kit": "^3.19.0",
     "@tiptap/suggestion": "^3.19.0",
     "docx": "^9.5.1",
-    "dompurify": "^3.3.1",
     "emoji-picker-element": "^1.28.1",
     "file-saver": "^2.0.5",
     "framer-motion": "^12.33.0",
     "highlight.js": "^11.11.1",
-    "isomorphic-dompurify": "^3.0.0",
     "jspdf": "^4.1.0",
     "jszip": "^3.10.1",
     "lowlight": "^3.3.0",
@@ -43,11 +41,10 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/dompurify": "^3.2.0",
-    "@types/file-saver": "^2.0.7",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/file-saver": "^2.0.7",
     "@types/sortablejs": "^1.15.9",
     "tailwindcss": "^4",
     "typescript": "^5"

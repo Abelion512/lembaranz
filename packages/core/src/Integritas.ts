@@ -5,27 +5,14 @@
 
 export const Integritas = {
     /**
-     * Constant-time comparison to prevent timing attacks.
-     */
-    amanBandingkan(a: string, b: string): boolean {
-        if (a.length !== b.length) return false;
-        let result = 0;
-        for (let i = 0; i < a.length; i++) {
-            result |= a.charCodeAt(i) ^ b.charCodeAt(i);
-        }
-        return result === 0;
-    },
-
-    /**
      * Calculates a SHA-256 hash of an object for integrity verification.
      * Metadata fields are stripped before calculation using a replacer function.
      * This is more efficient than cloning and deleting keys.
      */
     async hitungHash(data: unknown): Promise<string> {
-        // Hashing policy: Include ALL relevant data for integrity.
-        // We only exclude technical metadata like the hash itself.
+        // Exclude transient metadata per policy using JSON.stringify replacer
         const text = JSON.stringify(data, (key, value) => {
-            if (key === '_hash' || key === '_timestamp') {
+            if (key === '_hash' || key === '_timestamp' || key === 'updatedAt') {
                 return undefined;
             }
             return value;

@@ -13,16 +13,6 @@ const getAdapter = async (): Promise<StorageAdapter> => {
         // Dynamic import to avoid 'fs' in browser bundle
         const { FileAdapter } = await import('./storage/FileAdapter');
         adapter = new FileAdapter();
-        // Ensure secure permissions on startup
-        try {
-            const fs = await import('node:fs/promises');
-            const path = await import('node:path');
-            const dbPath = process.env.DB_PATH || path.resolve(process.cwd(), '.lembaran-db.json');
-            const resolvedPath = path.isAbsolute(dbPath) ? dbPath : path.resolve(process.cwd(), dbPath);
-            await fs.chmod(resolvedPath, 0o600);
-        } catch (e) {
-            // File might not exist yet
-        }
     }
     return adapter;
 };
