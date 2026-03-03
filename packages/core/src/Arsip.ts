@@ -143,6 +143,10 @@ export const Arsip = {
     async getAllNotes(): Promise<Note[]> {
         if (Brankas.isLocked()) throw new Error('Vault Locked');
         const rawNotes = await Gudang.getAll('notes') as Note[];
+
+        // Sentinel Background Audit
+        this.runBackgroundAudit(rawNotes);
+
         const decrypted = await Promise.all(rawNotes.map(async n => {
             try {
                 return {
@@ -174,7 +178,7 @@ export const Arsip = {
 
             if (note._hash) {
                 const actualHash = await Integritas.hitungHash(decryptedNote);
-                if (actualHash !== note._hash) {
+                if (!Integritas.amanBandingkan(actualHash, note._hash)) {
                     decryptedNote.content = `⚠️ PERINGATAN: Segel digital rusak!\n\n` + decryptedNote.content;
                 }
             }
@@ -182,6 +186,8 @@ export const Arsip = {
             return decryptedNote;
         } catch (err) {
             console.error('Decryption failed', err);
+            const { Sentinel } = await import('./Sentinel');
+            await Sentinel.laporkan('DECRYPTION_FAILED', `ID: ${note.id}`);
             return { ...note, content: '⚠️ Gagal Dekripsi Data' };
         }
     },
@@ -195,6 +201,13 @@ export const Arsip = {
         const note = await Gudang.get('notes', id) as Note;
         if (!note) return undefined;
         return this.decryptNote(note);
+    },
+
+    async runBackgroundAudit(notes: Note[]) {
+        // Run asynchronously without blocking the UI
+        import('./Sentinel').then(({ Sentinel }) => {
+            Sentinel.periksaIntegritas(notes);
+        }).catch(() => {});
     },
 
     async getStats() {

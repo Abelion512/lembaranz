@@ -5,6 +5,7 @@ import { BubbleMenu, FloatingMenu } from '@tiptap/react/menus';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import DOMPurify from 'dompurify';
 import { common, createLowlight } from 'lowlight';
 import { PerintahGarisMiring, PerintahGarisMiringConfig } from './PerintahGarisMiring';
 import { EkstensiTanggalCerdas } from './EkstensiTanggalCerdas';
@@ -19,6 +20,28 @@ import { usePundi } from '@lembaran/core/Pundi';
 import 'highlight.js/styles/github-dark.css';
 
 const lowlight = createLowlight(common);
+
+const DOMPURIFY_CONFIG = {
+    ALLOWED_TAGS: [
+        'p', 'br', 'strong', 'em', 'u', 's', 'code', 'pre',
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+        'ul', 'ol', 'li',
+        'blockquote', 'hr',
+        'a', 'img',
+        'table', 'thead', 'tbody', 'tr', 'th', 'td',
+        'span', 'div',
+    ],
+    ALLOWED_ATTR: [
+        'href', 'target', 'rel',
+        'src', 'alt', 'width', 'height',
+        'class',
+        'style',
+        'data-type',
+        'colspan', 'rowspan',
+    ],
+    ALLOW_DATA_ATTR: false,
+    FORCE_BODY: false,
+};
 
 interface PenyusunCatatanProps {
     content: string;
@@ -52,7 +75,12 @@ export const PenyusunCatatan = ({
         content: content,
         editable: editable,
         onUpdate: ({ editor }) => {
-            onChange(editor.getHTML());
+            const html = editor.getHTML();
+            if (typeof window !== 'undefined') {
+                onChange(DOMPurify.sanitize(html, DOMPURIFY_CONFIG));
+            } else {
+                onChange(html);
+            }
         },
         editorProps: {
             attributes: {

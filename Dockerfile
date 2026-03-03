@@ -4,7 +4,7 @@ FROM oven/bun:latest AS base
 # Install dependencies only when needed
 FROM base AS deps
 WORKDIR /app
-COPY package.json bun.lockb ./
+COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile
 
 # Rebuild the source code only when needed
@@ -21,8 +21,8 @@ WORKDIR /app
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN groupadd --system --gid 1001 nodejs
+RUN useradd --system --uid 1001 nextjs --gid nodejs
 
 COPY --from=builder /app/public ./public
 

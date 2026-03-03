@@ -16,15 +16,19 @@ export class TUI {
     }
 
     private static async inisialisasiBrankas() {
+        console.clear();
         console.log(pc.yellow('⚠️ Brankas belum terinisialisasi.'));
         const res = await prompts({
             type: 'password',
             name: 'pw',
             message: 'Buat kata sandi baru untuk brankas Anda:'
         });
-        if (!res.pw) return;
+        const pw = res.pw;
+        delete res.pw;
 
-        await Arsip.initializeVault(res.pw);
+        if (!pw) return;
+
+        await Arsip.setupVault(pw);
         console.log(pc.green('✅ Brankas berhasil dibuat!'));
         await this.menuUtama();
     }
