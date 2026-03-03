@@ -23,18 +23,13 @@ export class Brankas {
                 p: 1, // parallelism
             });
 
-            const cryptoKey = await crypto.subtle.importKey(
+            return crypto.subtle.importKey(
                 'raw',
                 hash as BufferSource,
                 { name: ALGO_ENC, length: 256 },
                 false,
                 ['encrypt', 'decrypt']
             );
-
-            // Secure Memory Shredding: Zero out the raw hash after import
-            hash.fill(0);
-
-            return cryptoKey;
         } catch (error) {
             console.error('Argon2id derivation failed', error);
             throw error;
@@ -46,7 +41,6 @@ export class Brankas {
     }
 
     static clearKey() {
-        // Explicitly nullify for GC
         this.key = null;
     }
 

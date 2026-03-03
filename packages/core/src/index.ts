@@ -14,7 +14,6 @@ export * from './Pujangga';
 export * from './Pundi';
 export * from './Rumus';
 export * from './Waktu';
-export * from './Sentinel';
 export * from './storage/FileAdapter';
 export * from './storage/BrowserAdapter';
 export * from './storage/types';

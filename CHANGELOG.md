@@ -1,21 +1,6 @@
 # Changelog
 
 Semua perubahan penting pada proyek ini akan didokumentasikan di file ini.
-
-
-## [3.3.2-SECURITY] - 2026-03-02
-### 🔒 Extreme Hardening & Autonomous Defense
-- **BIP-39 Compliance**: Implementasi penuh 2048 kata mnemonic untuk kunci pemulihan.
-- **Auto-Lock Defense**: Sentinel kini secara otonom mengunci brankas saat terdeteksi anomali.
-- **Audit Logging**: Implementasi `.lembaran-audit.log` terpusat untuk monitoring insiden.
-- **Web Security**: Penerapan Content Security Policy (CSP) dan sanitasi berlapis pada halaman statis.
-- **Memory Hardening**: Pembersihan variabel kata sandi secara instan di CLI untuk proteksi RAM.
-## [3.3.1-SECURITY] - 2026-02-28
-### 🔒 Security Audit & Patch (Extreme White Hat Mode)
-- **Patch XSS**: Implementasi DOMPurify pada editor Tiptap untuk mencegah Stored XSS.
-- **Hardening Integritas**: Memasukkan field 'updatedAt' ke dalam hitungan hash SHA-256.
-- **Secure Storage**: Implementasi chmod 600 pada FileAdapter untuk proteksi database lokal.
-- **Automasi**: Penambahan Automated Security Test Suite untuk regresi celah keamanan.
 ## [3.0.0] - 2026-02-18
 ### Added
 - **Vim Mode**: Navigasi editor menggunakan shortcut H J K L (Normal/Insert Mode).
