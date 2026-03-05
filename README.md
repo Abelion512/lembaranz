@@ -1,64 +1,65 @@
-# Lembaran
+# lembaran
 
-Lembaran adalah platform arsip digital personal yang aman, berbasis local-first, dengan fokus pada kedaulatan data dan pengalaman pengguna premium.
+A project hosted on GitHub.
 
-## Quick Start
+## Overview
 
-1. **Install Lembaran via Terminal** (Rekomendasi):
-   ```bash
-   curl -fsSL https://lembaran.vercel.app/install.sh | bash
-   ```
-
-2. **Manual Setup (Developer)**:
-   **Install Bun Runtime**: [bun.sh](https://bun.sh)
-3. **Clone & Setup**:
-   ```bash
-   git clone https://github.com/Abelion512/lembaran.git
-   cd lembaran
-   bun install
-   ```
-4. **Run Web Interface**:
-   ```bash
-   bun run dev
-   ```
-5. **Run Management TUI**:
-   ```bash
-   lembaran mulai
-   # Atau akses fitur lain: lembaran pantau | jelajah | kuncung
-   ```
+This repository contains the source code for the **lembaran** project.
+It is primarily developed using **TypeScript**.
 
 ## Features
 
-- **End-to-End Encryption**: Data dienkripsi menggunakan AES-GCM 256-bit sisi klien.
-- **Local-First Architecture**: Database utama menggunakan IndexedDB (via `idb`).
-- **Interactive TUI/CLI (`lembaran`)**: Alat manajemen terminal puitis untuk efisiensi developer.
-- **Credential Storage**: Template khusus untuk menyimpan username, password, dan URL secara aman.
-- **Gmail Camouflage**: Mode rahasia untuk menyamarkan layar kunci brankas.
+- Monorepo structure with `cli`, `core`, and `web` packages.
+- Built with TypeScript.
 
-## Configuration
+## Technologies Used
 
-Saat ini aplikasi dikonfigurasi melalui antarmuka **Setelan (Laras)** di dalam aplikasi.
+- **Primary Language**: TypeScript
+- Node.js/npm (for dependencies)
 
-| Fitur | Deskripsi | Default |
-|-------|-----------|---------|
-| Tema | Tampilan Terang, Gelap, atau Otomatis | Otomatis |
-| Mode Rahasia | Penyamaran sebagai login Gmail | Mati |
-| Kunci Otomatis | Durasi sebelum brankas terkunci otomatis | 1 Menit |
+## Setup and Installation
 
-## Documentation
+To get a local copy up and running, follow these simple steps.
 
-- [Manajemen CLI & API](./docs/CLI_API.md)
-- [Peningkatan Masa Depan](./docs/FUTURE_IMPROVEMENTS.md)
-- [Log Perubahan (Changelog)](./CHANGELOG.md)
-- [Architecture Decision Records (ADR)](./docs/ADR-001_TUI_Implementation.md)
+### Prerequisites
+
+- Node.js (LTS recommended)
+- npm or yarn
+
+### Installation
+
+1. Clone the repo
+   ```bash
+   git clone https://github.com/Abelion512/lembaran
+   ```
+2. Navigate to the project directory
+   ```bash
+   cd lembaran
+   ```
+3. Install NPM packages
+   ```bash
+   npm install
+   ```
+
+## Usage
+
+No specific usage instructions identified. Please refer to the source code for details.
+
+## Contributing
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## License
 
-MIT - Dikelola oleh Lembaga Arsip Digital Lembaran.
+Distributed under the MIT License. See `LICENSE` for more information.
 
----
+## Contact
 
-## 🧠 Agent Skills
-
-Repositori ini mendukung sistem **Agent Skills** standar industri (.agent/skills) untuk efisiensi pengembangan menggunakan AI.
-Skill terintegrasi: `find-skills`, `nextjs-app-router-patterns`, `nextjs-best-practices`, `security-review`, `typescript-advanced-types`.
+Your Name - [Your Email/GitHub Profile]
+Project Link: https://github.com/Abelion512/lembaran
