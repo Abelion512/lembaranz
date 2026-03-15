@@ -14,7 +14,7 @@
     "@google/generative-ai": "^0.24.1",
     "@lembaran/core": "workspace:*",
     "@mlc-ai/web-llm": "^0.2.80",
-    "@supabase/supabase-js": "^2.95.3",
+    "@supabase/supabase-js": "^2.99.1",
     "@tailwindcss/typography": "^0.5.19",
     "@tiptap/extension-bubble-menu": "^3.19.0",
     "@tiptap/extension-code-block-lowlight": "^3.19.0",
