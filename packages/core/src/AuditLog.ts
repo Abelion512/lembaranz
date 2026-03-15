@@ -8,7 +8,7 @@ import { Laras } from './Laras';
 export class AuditLog {
     private static readonly LOG_FILE = 'audit-privasi.log';
 
-    static async catat(aksi: string, data: any) {
+    static async catat(aksi: string, data: unknown) {
         if (typeof window !== 'undefined') return;
 
         try {

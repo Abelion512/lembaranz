@@ -264,9 +264,9 @@ export const Arsip = {
         rawNotes.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 
         const decrypted = await Promise.all(rawNotes.map(async n => {
-            let safeTitle = '🔒 Terkunci';
-            let safePreview = '🔒 Terkunci';
-            
+            let safeTitle: string;
+            let safePreview: string;
+
             try {
                 safeTitle = await Brankas.decryptPacked(n.title);
             } catch (_e) {
