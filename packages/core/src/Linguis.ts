@@ -6,7 +6,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
  */
 export class Linguis {
     private genAI: GoogleGenerativeAI;
-    private model: any;
+    private model: ReturnType<GoogleGenerativeAI['getGenerativeModel']>;
 
     constructor(apiKey: string) {
         this.genAI = new GoogleGenerativeAI(apiKey);

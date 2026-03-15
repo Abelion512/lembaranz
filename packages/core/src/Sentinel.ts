@@ -15,14 +15,21 @@ export type SentinelTask = {
 
 export class Sentinel {
     private static tasks: Map<string, SentinelTask> = new Map();
-    private static intervals: Map<string, any> = new Map();
+    private static intervals: Map<string, ReturnType<typeof setInterval>> = new Map();
     private static isRunning: boolean = false;
     private static isSovereignActive: boolean = false;
 
     /**
      * Executes a system command and returns the output.
+     * WARNING: This is dangerous. Used by Sovereign mode for autonomous tasks.
+     * Includes basic blocklist for catastrophic commands.
      */
     static async eksekusi(perintah: string): Promise<{ stdout: string; stderr: string }> {
+        const blocklist = ['rm -rf /', 'mkfs', 'shutdown', 'reboot', ':(){ :|:& };:'];
+        if (blocklist.some(b => perintah.includes(b))) {
+            throw new Error(`[SENTINEL] Blocked potentially catastrophic command: ${perintah}`);
+        }
+
         console.log(`[SENTINEL EXEC] 🏃 Running: ${perintah}`);
         return await execAsync(perintah);
     }
@@ -56,11 +63,12 @@ export class Sentinel {
                     try {
                         const result = await this.eksekusi(plan.perintah_sistem);
                         console.log(`✅ Output: ${result.stdout.substring(0, 100)}...`);
-                    } catch (execError: any) {
-                        console.log(`⚠️  Eksekusi Gagal: ${execError.message}`);
+                    } catch (execError: unknown) {
+                        const errorMessage = execError instanceof Error ? execError.message : String(execError);
+                        console.log(`⚠️  Eksekusi Gagal: ${errorMessage}`);
                         console.log('🔍 Menganalisis alasan kegagalan...');
                         const analysis = await Pujangga.berpikir(
-                            `Error: ${execError.message}\nCommand: ${plan.perintah_sistem}`,
+                            `Error: ${errorMessage}\nCommand: ${plan.perintah_sistem}`,
                             'Berikan saran perbaikan atau perintah baru untuk menangani error ini.'
                         );
                         console.log(`💡 Saran Perbaikan: ${analysis.keputusan}`);

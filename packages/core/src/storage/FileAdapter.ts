@@ -84,14 +84,13 @@ export class FileAdapter implements StorageAdapter {
         const data = await this.load();
 
         let actualKey = key;
-        if ((store === 'notes' || store === 'folders') && (value as any).id) {
-            actualKey = (value as any).id;
+        if ((store === 'notes' || store === 'folders') && (value as { id?: string }).id) {
+            actualKey = (value as { id: string }).id;
         }
 
         // @ts-expect-error - dynamic store access
         data[store][actualKey] = value;
         await this.save();
-        return typeof actualKey === 'string' ? actualKey : String(actualKey);
     }
 
     async getAll<K extends keyof LembaranSchema>(store: K) {

@@ -24,8 +24,14 @@ program
   .option('--pelataran', 'Gunakan konteks brankas proyek (lokal)')
   .option('--ai <provider>', 'Pilih model AI (gemini, none)', 'none');
 
+interface OpsiGlobal {
+  saku?: boolean;
+  pelataran?: boolean;
+  ai?: string;
+}
+
 // Middleware
-const siapkanKonteks = async (opts: any): Promise<KonteksLaras> => {
+const siapkanKonteks = async (opts: OpsiGlobal): Promise<KonteksLaras> => {
   let konteks: KonteksLaras;
 
   if (opts.saku) konteks = 'saku';
@@ -33,7 +39,7 @@ const siapkanKonteks = async (opts: any): Promise<KonteksLaras> => {
   else konteks = await Laras.deteksiKonteksOtomatis();
 
   if (opts.ai && opts.ai !== 'none') {
-    Pujangga.setProvider(opts.ai as any);
+    Pujangga.setProvider(opts.ai as 'gemini' | 'none');
   }
 
   const jalur = await Laras.temukanJalur(konteks);
@@ -309,11 +315,11 @@ envCmd
         tags: ['env', targetTag], createdAt: new Date().toISOString()
       });
       console.log(`✅ Berhasil menyimpan profil .env: ${targetTag} ke dalam brankas.`);
-    } catch (e: any) {
-      if (e.code === 'ENOENT') {
+    } catch (e: unknown) {
+      if (e && typeof e === 'object' && 'code' in e && e.code === 'ENOENT') {
         console.log('❌ File .env tidak ditemukan di direktori saat ini.');
       } else {
-        console.log(`❌ Gagal menyimpan: ${e.message}`);
+        console.log(`❌ Gagal menyimpan: ${e instanceof Error ? e.message : String(e)}`);
       }
     }
   });
@@ -344,8 +350,8 @@ envCmd
     try {
       await fs.writeFile(envPath, fullNote.content, 'utf8');
       console.log(`✅ Berhasil memuat profil .env '${tag}' ke ${envPath}`);
-    } catch (e: any) {
-      console.log(`❌ Gagal menulis file .env: ${e.message}`);
+    } catch (e: unknown) {
+      console.log(`❌ Gagal menulis file .env: ${e instanceof Error ? e.message : String(e)}`);
     }
   });
 

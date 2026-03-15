@@ -61,7 +61,10 @@ export async function ambilKontenDok(slug: string, lang: 'id' | 'en' = 'id') {
 export async function ambilMetadataBantuan(lang: 'id' | 'en' = 'id') {
     if (!cacheMetadata) {
         const raw = bacaBerkas('docs/indeks.json');
-        if (!raw) return null;
+        if (!raw) {
+            console.error('[ambilMetadataBantuan] Gagal membaca docs/indeks.json');
+            return null;
+        }
         try {
             cacheMetadata = JSON.parse(raw);
         } catch (e) {
