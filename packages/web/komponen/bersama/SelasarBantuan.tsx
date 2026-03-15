@@ -6,7 +6,7 @@ import {
     Book, Shield, Zap, Rocket,
     Database, Github,
     Command, Download,
-    ChevronRight, ExternalLink,
+    ExternalLink,
     ChevronLeft
 } from 'lucide-react';
 import { haptic } from '@lembaran/core/Indera';
@@ -46,24 +46,23 @@ export const SelasarBantuan = () => {
     };
 
     return (
-        <aside className="hidden lg:flex flex-col w-80 h-screen sticky top-0 bg-[var(--background)] border-r border-[var(--separator)]/10 p-8 overflow-y-auto no-scrollbar z-40">
-            <div className="flex flex-col gap-10">
-                <Link href="/" onClick={() => haptic.light()} className="flex items-center gap-2 text-[var(--primary)] font-bold text-xs uppercase tracking-widest hover:opacity-70 transition-opacity">
-                    <ChevronLeft size={16} /> Kembali ke Beranda
+        <aside className="hidden lg:flex flex-col w-72 h-screen sticky top-0 bg-[var(--background)] border-r border-[var(--separator)]/10 p-6 overflow-y-auto no-scrollbar z-40">
+            <div className="flex flex-col gap-8">
+                <Link href="/" onClick={() => haptic.light()} className="flex items-center gap-2 text-[var(--text-muted)] font-black text-[10px] uppercase tracking-[0.2em] hover:text-blue-500 transition-colors">
+                    <ChevronLeft size={14} /> Beranda
                 </Link>
 
-                <div className="flex items-center gap-3 group">
-                    <div className="w-10 h-10 rounded-2xl bg-blue-500 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
-                        <Book size={20} />
+                <div className="flex items-center gap-3 px-2">
+                    <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold">
+                        <Book size={16} />
                     </div>
                     <div className="flex flex-col">
-                        <span className="font-bold text-sm tracking-tighter uppercase leading-none">Dokumentasi</span>
-                        <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mt-1">Pusat Bantuan</span>
+                        <span className="font-black text-[10px] uppercase tracking-widest leading-none">Dokumentasi</span>
                     </div>
                 </div>
             </div>
 
-            <div className="mt-12 space-y-10">
+            <div className="mt-10 space-y-8">
                 {SECTIONS.map((section) => (
                     <div key={section.title}>
                         <h3 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] mb-5 ml-4">
@@ -75,16 +74,16 @@ export const SelasarBantuan = () => {
                                     key={item.id}
                                     href={item.id === '' ? '/bantuan' : `/bantuan/${item.id}`}
                                     onClick={() => haptic.light()}
-                                    className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all text-left group ${isActive(item.id)
-                                        ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/10'
-                                        : 'text-[var(--text-secondary)] hover:bg-blue-500/5 hover:text-blue-500'
+                                    className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl transition-all text-left group ${isActive(item.id)
+                                        ? 'bg-blue-500/5 text-blue-500 font-bold'
+                                        : 'text-[var(--text-secondary)] hover:bg-[var(--surface)]'
                                         }`}
                                 >
                                     <div className="flex items-center gap-3">
-                                        <item.icon size={18} className={isActive(item.id) ? 'opacity-100' : 'opacity-40 group-hover:opacity-100 transition-opacity'} />
-                                        <span className="text-sm font-bold">{item.label}</span>
+                                        <item.icon size={16} className={isActive(item.id) ? 'text-blue-500' : 'text-[var(--text-muted)] group-hover:text-blue-500 transition-colors'} />
+                                        <span className="text-xs tracking-tight">{item.label}</span>
                                     </div>
-                                    <ChevronRight size={14} className={isActive(item.id) ? 'opacity-100' : 'opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all'} />
+                                    {isActive(item.id) && <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />}
                                 </Link>
                             ))}
                         </div>

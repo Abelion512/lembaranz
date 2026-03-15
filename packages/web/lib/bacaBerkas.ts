@@ -12,8 +12,8 @@ export function bacaBerkas(namaBerkas: string): string | null {
     const normalizedRelativePath = path.normalize(namaBerkas).replace(/^(\.\.[\\/])+/g, '');
     
     // 2. Batasi akses hanya ke folder dokumentasi atau aset publik tertentu
-    if (!normalizedRelativePath.startsWith('docs' + path.sep) && 
-        !normalizedRelativePath.startsWith('public' + path.sep + 'docs' + path.sep)) {
+    if (!normalizedRelativePath.startsWith('docs') &&
+        !normalizedRelativePath.startsWith('public')) {
         return null;
     }
 
@@ -21,6 +21,7 @@ export function bacaBerkas(namaBerkas: string): string | null {
         path.join(cwd, 'public', normalizedRelativePath),
         path.join(cwd, 'packages', 'web', 'public', normalizedRelativePath),
         path.join(cwd, normalizedRelativePath),
+        path.join(cwd, '..', '..', 'public', normalizedRelativePath),
         path.join(__dirname, '..', '..', '..', 'public', normalizedRelativePath),
     ];
 
