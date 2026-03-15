@@ -34,35 +34,35 @@ export class BrowserAdapter implements StorageAdapter {
 
     async get<K extends keyof LembaranSchema>(store: K, key: string) {
         const db = await this.initDB();
-        return db.get(store, key);
+        return db.get(store as any, key);
     }
 
     async set<K extends keyof LembaranSchema>(store: K, key: string, value: LembaranSchema[K]['value']) {
         const db = await this.initDB();
         if (store === 'notes' || store === 'folders') {
-            await db.put(store, value);
+            await db.put(store as any, value);
         } else {
-            await db.put(store, value, key);
+            await db.put(store as any, value, key);
         }
     }
 
     async getAll<K extends keyof LembaranSchema>(store: K) {
         const db = await this.initDB();
-        return db.getAll(store);
+        return db.getAll(store as any);
     }
 
     async delete(store: keyof LembaranSchema, key: string) {
         const db = await this.initDB();
-        await db.delete(store, key);
+        await db.delete(store as any, key);
     }
 
     async count(store: keyof LembaranSchema) {
         const db = await this.initDB();
-        return db.count(store);
+        return db.count(store as any);
     }
 
     async clear(store: keyof LembaranSchema) {
         const db = await this.initDB();
-        await db.clear(store);
+        await db.clear(store as any);
     }
 }
