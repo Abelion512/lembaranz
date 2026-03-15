@@ -19,7 +19,7 @@
     },
     "packages/cli": {
       "name": "@lembaran/cli",
-      "version": "3.1.0",
+      "version": "3.2.0",
       "bin": {
         "lembaran": "./src/main.ts",
       },
@@ -41,7 +41,7 @@
     },
     "packages/core": {
       "name": "@lembaran/core",
-      "version": "3.1.0",
+      "version": "3.2.0",
       "dependencies": {
         "@google/generative-ai": "^0.24.1",
         "@noble/ciphers": "^2.1.1",
@@ -52,7 +52,7 @@
     },
     "packages/web": {
       "name": "@lembaran/web",
-      "version": "3.1.0",
+      "version": "3.2.0",
       "dependencies": {
         "@google/generative-ai": "^0.24.1",
         "@lembaran/core": "workspace:*",
@@ -81,7 +81,7 @@
         "next-intl": "^4.8.3",
         "react": "19.2.4",
         "react-dom": "19.2.4",
-        "react-window": "^2.2.6",
+        "react-window": "^2.2.7",
         "sortablejs": "^1.15.6",
         "tippy.js": "^6.3.7",
         "zustand": "^5.0.11",
@@ -1196,7 +1196,7 @@
 
     "react-reconciler": ["react-reconciler@0.33.0", "", { "dependencies": { "scheduler": "^0.27.0" }, "peerDependencies": { "react": "^19.2.0" } }, "sha512-KetWRytFv1epdpJc3J4G75I4WrplZE5jOL7Yq0p34+OVOKF4Se7WrdIdVC45XsSSmUTlht2FM/fM1FZb1mfQeA=="],
 
-    "react-window": ["react-window@2.2.6", "", { "peerDependencies": { "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0" } }, "sha512-v89O08xRdpCaEuf380B39D1C/0KgUDZA59xft6SVAjzjz/xQxSyXrgDWHymIsYI6TMrqE8WO+G0/PB9AGE8VNA=="],
+    "react-window": ["react-window@2.2.7", "", { "peerDependencies": { "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0" } }, "sha512-SH5nvfUQwGHYyriDUAOt7wfPsfG9Qxd6OdzQxl5oQ4dsSsUicqQvjV7dR+NqZ4coY0fUn3w1jnC5PwzIUWEg5w=="],
 
     "readable-stream": ["readable-stream@2.3.8", "", { "dependencies": { "core-util-is": "~1.0.0", "inherits": "~2.0.3", "isarray": "~1.0.0", "process-nextick-args": "~2.0.0", "safe-buffer": "~5.1.1", "string_decoder": "~1.1.1", "util-deprecate": "~1.0.1" } }, "sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA=="],
 
