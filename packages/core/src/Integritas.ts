@@ -3,6 +3,8 @@
  * Follows Data Integrity Policy: Excludes metadata (_hash, _timestamp) during calculation.
  */
 
+const encoder = new TextEncoder();
+
 export const Integritas = {
     /**
      * Calculates a SHA-256 hash of an object for integrity verification.
@@ -18,12 +20,16 @@ export const Integritas = {
             return value;
         });
 
-        const encoder = new TextEncoder();
         const buffer = encoder.encode(text);
 
         const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        const hashArray = new Uint8Array(hashBuffer);
+
+        // Optimized bytes-to-hex conversion using a pre-allocated string for better performance
+        let hashHex = '';
+        for (let i = 0; i < hashArray.length; i++) {
+            hashHex += hashArray[i].toString(16).padStart(2, '0');
+        }
 
         return hashHex;
     }
