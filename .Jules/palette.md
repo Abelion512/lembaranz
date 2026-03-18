@@ -17,3 +17,7 @@
 ## 2026-02-18 - High-Fidelity Icon Trust
 **Learning:** In a security-focused application like Abelion, brand icon fidelity (especially for high-trust services like Google and Claude) directly impacts perceived data sovereignty and app quality. Users find even slightly inaccurate geometry or colors "off-putting" in a premium UI.
 **Action:** Prioritize exact brand SVG paths and multi-color segments over simplified monochromatic icons for core ecosystem services.
+
+## 2026-03-18 - [Accessibility in Credential Management]
+**Learning:** In highly functional forms like credential managers, individual copy buttons and visibility toggles MUST have descriptive `aria-label`s as they often only use icons. Reusing the "Tersalin!" (Copied!) micro-feedback pattern across the app increases UI consistency and user trust.
+**Action:** Always provide `aria-label` for icon-only action buttons and implement the standard "Tersalin!" feedback for all copy operations.
