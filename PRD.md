@@ -60,7 +60,7 @@ Lembaran adalah platform manajemen arsip digital personal yang berfokus pada ked
 *   **Runtime:** Bun (Backend & CLI).
 *   **Penyimpanan Utama:** IndexedDB (Browser), Local Filesystem (CLI).
 *   **Styling:** Tailwind CSS 4 dengan kustomisasi *Glassmorphism*.
-*   **Kriptografi:** `@noble/ciphers` (AES-GCM), `@noble/hashes` (SHA-256), Argon2-browser.
+*   **Kriptografi:** `@noble/ciphers` (AES-GCM), `@noble/hashes` (SHA-256, Argon2id).
 *   **Monorepo Struktur:**
     - `packages/core`: Logika bisnis & keamanan (Jiwa).
     - `packages/web`: Antarmuka grafis (Raga).
