@@ -51,10 +51,10 @@ export const PaletPerintah = () => {
                     />
 
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.98, y: -20 }}
+                        initial={{ opacity: 0, scale: 0.95, y: -20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.98, y: -20 }}
-                        className="w-full max-w-lg glass-card shadow-xl border-white/20 flex flex-col overflow-hidden"
+                        exit={{ opacity: 0, scale: 0.95, y: -20 }}
+                        className="w-full max-w-lg glass-card shadow-2xl border-white/20 flex flex-col overflow-hidden"
                     >
                         <div className="flex items-center px-4 py-3 border-b border-[var(--separator)]">
                             <Search size={20} className="text-[var(--text-secondary)] mr-3" />
@@ -77,15 +77,15 @@ export const PaletPerintah = () => {
                                     <button
                                         key={action.path}
                                         onClick={() => navigate(action.path)}
-                                        className="w-full flex items-center justify-between p-3 rounded-xl active:bg-white/5 transition-all text-left group"
+                                        className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-white/10 active:opacity-60 transition-all text-left group"
                                     >
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-active:bg-primary group-active:text-white transition-colors">
+                                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
                                                 <action.icon size={18} />
                                             </div>
                                             <span className="font-medium text-sm">{action.label}</span>
                                         </div>
-                                        <span className="text-[10px] font-bold opacity-30 group-active:opacity-60">{action.shortcut}</span>
+                                        <span className="text-[10px] font-bold opacity-30 group-hover:opacity-60">{action.shortcut}</span>
                                     </button>
                                 ))
                             ) : (

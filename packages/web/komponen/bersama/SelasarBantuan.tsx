@@ -76,7 +76,7 @@ export const SelasarBantuan = () => {
                                     onClick={() => haptic.light()}
                                     className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl transition-all text-left group ${isActive(item.id)
                                         ? 'bg-blue-500/5 text-blue-500 font-bold'
-                                        : 'text-[var(--text-secondary)] active:bg-[var(--surface)]'
+                                        : 'text-[var(--text-secondary)] hover:bg-[var(--surface)]'
                                         }`}
                                 >
                                     <div className="flex items-center gap-3">
@@ -95,7 +95,7 @@ export const SelasarBantuan = () => {
                 <a
                     href="https://github.com/Abelion512/lembaran"
                     target="_blank" rel="noopener noreferrer"
-                    className="flex items-center justify-between px-5 py-4 rounded-2xl bg-black text-white dark:bg-white dark:text-black text-xs font-bold active:opacity-80 transition-all"
+                    className="flex items-center justify-between px-5 py-4 rounded-2xl bg-black text-white dark:bg-white dark:text-black text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-all"
                 >
                     <div className="flex items-center gap-3">
                         <Github size={16} />

@@ -56,7 +56,7 @@ export const BarisCatatan = memo(({
                         />
                     </div>
                 ) : (
-                    <div className="w-12 h-12 rounded-full bg-blue-500/5 flex items-center justify-center flex-shrink-0 text-blue-500 overflow-hidden border border-blue-500/10 shadow-sm transition-transform">
+                    <div className="w-12 h-12 rounded-full bg-blue-500/5 flex items-center justify-center flex-shrink-0 text-blue-500 overflow-hidden border border-blue-500/10 shadow-sm transition-transform group-hover:scale-105">
                         {serviceIcon || <FileText size={20} className="opacity-40" />}
                     </div>
                 )}
@@ -97,7 +97,7 @@ export const BarisCatatan = memo(({
                             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button
                                     onClick={(e) => onCopy(e, note)}
-                                    className="p-1 rounded-md active:bg-blue-500/10 text-blue-500 transition-transform"
+                                    className="p-1 rounded-md hover:bg-blue-500/10 text-blue-500 active:scale-90 transition-transform"
                                 >
                                     {isCopied ? <Check size={14} /> : <Copy size={14} className="opacity-40" />}
                                 </button>
