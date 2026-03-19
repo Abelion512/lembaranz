@@ -1,42 +1,40 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
-import { Search, X } from 'lucide-react';
-import { SaklarSuasana } from '@/komponen/landing/SaklarSuasana';
+import React, { useState } from 'react';
 import { Link } from '@/i18n/navigation';
+import { SaklarSuasana } from '@/komponen/landing/SaklarSuasana';
+import { Search, X } from 'lucide-react';
 import { SelasarBantuan } from './SelasarBantuan';
 
 interface LembaranDokProps {
+    children: React.ReactNode;
     title: string;
     description: string;
-    children: React.ReactNode;
 }
 
-export const LembaranDok = ({ title, description, children }: LembaranDokProps) => {
+export const LembaranDok = ({ children, title, description }: LembaranDokProps) => {
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [sidebarTerbuka, setSidebarTerbuka] = useState(false);
 
-    const tutupSidebar = useCallback(() => setSidebarTerbuka(false), []);
+    const tutupSidebar = () => setIsSidebarOpen(false);
 
     return (
-        <div className="flex-1 flex flex-col min-h-0 overflow-y-auto no-scrollbar scroll-smooth">
-            {/* Mobile Sidebar Overlay */}
-            {sidebarTerbuka && (
+        <div className="flex min-h-screen bg-[var(--background)] text-[var(--text-primary)] font-sans selection:bg-blue-500/20">
+            <SelasarBantuan />
+
+            {/* Mobile Sidebar */}
+            {isSidebarOpen && (
                 <div
-                    className="fixed inset-0 z-50 lg:hidden"
+                    className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm lg:hidden"
                     onClick={tutupSidebar}
                 >
-                    {/* Backdrop */}
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-
-                    {/* Panel Sidebar */}
                     <div
-                        className="absolute left-0 top-0 bottom-0 w-80 bg-[var(--background)] shadow-2xl overflow-y-auto"
+                        className="absolute left-0 top-0 bottom-0 w-80 bg-[var(--background)] shadow-lg overflow-y-auto"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <button
                             onClick={tutupSidebar}
-                            className="absolute top-4 right-4 p-2 rounded-full hover:bg-[var(--surface)] transition-colors"
+                            className="absolute top-4 right-4 p-2 rounded-full active:bg-[var(--surface)] transition-colors"
                             aria-label="Tutup sidebar"
                         >
                             <X size={20} />
@@ -51,13 +49,13 @@ export const LembaranDok = ({ title, description, children }: LembaranDokProps) 
                 <div className="px-4 sm:px-8 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-6">
                         <Link href="/" className="flex items-center gap-3 group">
-                            <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center text-white font-bold group-hover:scale-105 transition-transform">
+                            <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center text-white font-bold transition-transform">
                                 L
                             </div>
                             <span className="font-bold tracking-tighter text-lg">Lembaran</span>
                         </Link>
 
-                        <div className="hidden lg:flex items-center gap-6 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] ml-4">
+                        <div className="hidden lg:flex items-center gap-6 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)] ml-4">
                             <Link href="/pustaka" className="hover:text-blue-500 transition-colors">Produk</Link>
                             <Link href="/bantuan" className="hover:text-blue-500 transition-colors">Bantuan</Link>
                             <a href="https://github.com/Abelion512/lembaran" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transition-colors">GitHub</a>
@@ -77,7 +75,7 @@ export const LembaranDok = ({ title, description, children }: LembaranDokProps) 
 
                     <div className="flex items-center gap-4">
                         <SaklarSuasana />
-                        <Link href="/pustaka" className="px-6 py-2.5 bg-blue-500 text-white rounded-full font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-blue-500/20 active:scale-95 transition-all">
+                        <Link href="/pustaka" className="px-6 py-2.5 bg-blue-500 text-white rounded-full font-bold text-[10px] uppercase tracking-widest shadow-sm active:opacity-80 transition-all">
                             Buka Brankas
                         </Link>
                     </div>
@@ -95,7 +93,7 @@ export const LembaranDok = ({ title, description, children }: LembaranDokProps) 
                         <Link
                             key={link.label}
                             href={link.href}
-                            className="py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] hover:text-blue-500 border-b-2 border-transparent hover:border-blue-500 transition-all whitespace-nowrap"
+                            className="py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)] hover:text-blue-500 border-b-2 border-transparent hover:border-blue-500 transition-all whitespace-nowrap"
                         >
                             {link.label}
                         </Link>
@@ -105,8 +103,8 @@ export const LembaranDok = ({ title, description, children }: LembaranDokProps) 
 
             <main className="max-w-4xl w-full px-6 py-12 sm:py-20 lg:px-20">
                 <div className="mb-16">
-                    <h1 className="text-4xl sm:text-6xl font-light tracking-tight mb-6">{title}</h1>
-                    <p className="text-xl text-[var(--text-secondary)] font-medium leading-relaxed max-w-2xl">{description}</p>
+                    <h1 className="text-4xl sm:text-6xl font-bold tracking-tight mb-6">{title}</h1>
+                    <p className="text-xl text-[var(--text-secondary)] font-normal leading-relaxed max-w-2xl">{description}</p>
                 </div>
 
                 <div className="space-y-20">
@@ -114,7 +112,7 @@ export const LembaranDok = ({ title, description, children }: LembaranDokProps) 
                 </div>
 
                 <footer className="mt-40 pt-12 border-t border-[var(--separator)]/10">
-                    <p className="text-[10px] font-light uppercase tracking-[0.3em] text-[var(--text-muted)]">
+                    <p className="text-[10px] font-normal uppercase tracking-[0.3em] text-[var(--text-muted)]">
                         © 2026 Lembaran Documentation Engine.
                     </p>
                 </footer>

@@ -6,6 +6,7 @@ import {
     Settings2, RefreshCw, Eye, EyeOff
 } from 'lucide-react';
 import { haptic } from '@lembaran/core/Indera';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface KredensialData {
     username?: string;
@@ -96,12 +97,14 @@ export const PenyusunKredensial = ({ data, onChange }: PenyusunKredensialProps) 
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => setShowPassGen(!showPassGen)}
+                        aria-label="Buka Pembangkit Password"
                         className={`flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full border ${showPassGen ? 'bg-blue-500 text-white border-blue-500' : 'border-blue-500/20 text-blue-500 hover:bg-blue-500/5'} transition-all`}
                     >
                         <Settings2 size={10} /> Pembangkit
                     </button>
                     <button
                         onClick={handleSmartPaste}
+                        aria-label="Tempel Pintar dari Clipboard"
                         className={`flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full border border-blue-500/20 text-blue-500 hover:bg-blue-500/5 transition-all ${isPasting ? 'animate-pulse' : ''}`}
                     >
                         <Wand2 size={10} /> Tempel Pintar
@@ -119,29 +122,86 @@ export const PenyusunKredensial = ({ data, onChange }: PenyusunKredensialProps) 
                             className="w-full h-1 bg-blue-500/20 rounded-lg appearance-none cursor-pointer accent-blue-500"
                         />
                     </div>
-                    <button onClick={generatePassword} className="px-4 py-2 bg-blue-500 text-white rounded-xl text-[11px] font-bold shadow-lg active:scale-95 transition-transform flex items-center gap-2">
+                    <button
+                        onClick={generatePassword}
+                        aria-label="Acak Password"
+                        className="px-4 py-2 bg-blue-500 text-white rounded-xl text-[11px] font-bold shadow-lg active:scale-95 transition-transform flex items-center gap-2"
+                    >
                         <RefreshCw size={12} /> Acak
                     </button>
                 </div>
             )}
 
             <div className="ios-list-group border border-[var(--separator)]/20 shadow-sm overflow-hidden w-full mb-0">
-                <div className="flex items-center px-3 gap-2 group">
+                <div className="flex items-center px-3 gap-2 group relative">
                     <User size={15} className="text-blue-500 opacity-40 group-focus-within:opacity-100 transition-opacity" />
                     <input type="text" value={data.username || ''} onChange={(e) => updateField('username', e.target.value)} placeholder="Username / Email" className={inputClass} />
-                    <button onClick={() => handleCopy(data.username, 'user')} className="p-1.5 opacity-20 hover:opacity-100 transition-opacity text-blue-500">{copiedField === 'user' ? <Check size={14} /> : <Copy size={14} />}</button>
+                    <div className="relative">
+                        <AnimatePresence>
+                            {copiedField === 'user' && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 5, scale: 0.8 }}
+                                    animate={{ opacity: 1, y: -25, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.8 }}
+                                    className="absolute right-0 top-0 bg-blue-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-lg z-10 pointer-events-none whitespace-nowrap uppercase tracking-widest"
+                                >
+                                    Tersalin!
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                        <button
+                            onClick={() => handleCopy(data.username, 'user')}
+                            aria-label="Salin Username"
+                            className="p-1.5 opacity-20 hover:opacity-100 transition-opacity text-blue-500"
+                        >
+                            {copiedField === 'user' ? <Check size={14} /> : <Copy size={14} />}
+                        </button>
+                    </div>
                 </div>
                 <div className="ios-separator"></div>
 
                 <div className="flex flex-col">
-                    <div className="flex items-center px-3 gap-2 group">
+                    <div className="flex items-center px-3 gap-2 group relative">
                         <Lock size={15} className="text-blue-500 opacity-40 group-focus-within:opacity-100 transition-opacity" />
                         <input type={showPassword ? "text" : "password"} value={data.password || ''} onChange={(e) => updateField('password', e.target.value)} placeholder="Password" className={inputClass} />
-                        <button onClick={() => setShowPassword(!showPassword)} className="p-1.5 opacity-20 hover:opacity-100 transition-opacity">{showPassword ? <EyeOff size={14} /> : <Eye size={14} />}</button>
-                        <button onClick={() => handleCopy(data.password, 'pass')} className="p-1.5 opacity-20 hover:opacity-100 transition-opacity text-blue-500">{copiedField === 'pass' ? <Check size={14} /> : <Copy size={14} />}</button>
+                        <button
+                            onClick={() => setShowPassword(!showPassword)}
+                            aria-label={showPassword ? "Sembunyikan Password" : "Tampilkan Password"}
+                            className="p-1.5 opacity-20 hover:opacity-100 transition-opacity"
+                        >
+                            {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                        </button>
+                        <div className="relative">
+                            <AnimatePresence>
+                                {copiedField === 'pass' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 5, scale: 0.8 }}
+                                        animate={{ opacity: 1, y: -25, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.8 }}
+                                        className="absolute right-0 top-0 bg-blue-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-lg z-10 pointer-events-none whitespace-nowrap uppercase tracking-widest"
+                                    >
+                                        Tersalin!
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                            <button
+                                onClick={() => handleCopy(data.password, 'pass')}
+                                aria-label="Salin Password"
+                                className="p-1.5 opacity-20 hover:opacity-100 transition-opacity text-blue-500"
+                            >
+                                {copiedField === 'pass' ? <Check size={14} /> : <Copy size={14} />}
+                            </button>
+                        </div>
                     </div>
                     {data.password && (
-                        <div className="px-10 pb-2 flex gap-1">
+                        <div
+                            className="px-10 pb-2 flex gap-1"
+                            role="meter"
+                            aria-label="Kekuatan Password"
+                            aria-valuemin={0}
+                            aria-valuemax={5}
+                            aria-valuenow={strength}
+                        >
                             {[1, 2, 3, 4, 5].map((i) => (
                                 <div key={i} className={`h-0.5 flex-1 rounded-full transition-colors ${i <= strength ? (strength <= 2 ? "bg-red-500" : strength <= 4 ? "bg-yellow-500" : "bg-green-500") : "bg-white/5"}`} />
                             ))}
@@ -150,10 +210,30 @@ export const PenyusunKredensial = ({ data, onChange }: PenyusunKredensialProps) 
                 </div>
                 <div className="ios-separator"></div>
 
-                <div className="flex items-center px-3 gap-2 group">
+                <div className="flex items-center px-3 gap-2 group relative">
                     <LinkIcon size={15} className="text-blue-500 opacity-40 group-focus-within:opacity-100 transition-opacity" />
                     <input type="text" value={data.url || ''} onChange={(e) => updateField('url', e.target.value)} placeholder="URL" className={inputClass} />
-                    <button onClick={() => handleCopy(data.url, 'url')} className="p-1.5 opacity-20 hover:opacity-100 transition-opacity text-blue-500">{copiedField === 'url' ? <Check size={14} /> : <Copy size={14} />}</button>
+                    <div className="relative">
+                        <AnimatePresence>
+                            {copiedField === 'url' && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 5, scale: 0.8 }}
+                                    animate={{ opacity: 1, y: -25, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.8 }}
+                                    className="absolute right-0 top-0 bg-blue-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-lg z-10 pointer-events-none whitespace-nowrap uppercase tracking-widest"
+                                >
+                                    Tersalin!
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                        <button
+                            onClick={() => handleCopy(data.url, 'url')}
+                            aria-label="Salin URL"
+                            className="p-1.5 opacity-20 hover:opacity-100 transition-opacity text-blue-500"
+                        >
+                            {copiedField === 'url' ? <Check size={14} /> : <Copy size={14} />}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useLocale } from 'next-intl';
-import { LucideIcon, Shield, Terminal, BookOpen, Rocket, Zap, Layers, Globe } from 'lucide-react';
+import { LucideIcon, Shield, Terminal, BookOpen, Rocket, Zap, Layers, Globe, ArrowRight } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { LembaranDok } from '@/komponen/bersama/LembaranDok';
 import { SaklarBahasa } from '@/komponen/bersama/SaklarBahasa';
@@ -32,7 +32,7 @@ interface KartuBantuan extends Omit<ButirMetadata, 'icon'> {
     icon: LucideIcon;
 }
 
-export default function AnjunganBantuan() {
+export const AnjunganBantuan = () => {
     const lang = useLocale() as 'id' | 'en';
     const [ui, setUi] = useState(DEFAULT_UI);
     const [cards, setCards] = useState<KartuBantuan[]>([]);
@@ -44,7 +44,6 @@ export default function AnjunganBantuan() {
             setLoading(true);
             try {
                 setError(null);
-                // 1. Ambil Metadata Bantuan (Source of Truth)
                 const metadata = await ambilMetadataBantuan(lang);
                 if (metadata) {
                     const mappedCards = Object.entries(metadata).map(([id, data]: [string, ButirMetadata]): KartuBantuan => ({
@@ -57,7 +56,6 @@ export default function AnjunganBantuan() {
                     setError("Gagal memuat metadata dokumentasi.");
                 }
 
-                // 2. Terjemahkan UI statis jika bukan Indonesia
                 if (lang === 'en') {
                     const [title, desc, footerTitle, footerDesc, footerBtn] = await Promise.all([
                         ambilTerjemahan(DEFAULT_UI.title, 'en'),
@@ -102,7 +100,7 @@ export default function AnjunganBantuan() {
                     <p className="text-sm opacity-70">{error}</p>
                     <button
                         onClick={() => window.location.reload()}
-                        className="mt-6 px-6 py-2 bg-red-500 text-white rounded-full text-xs font-bold uppercase tracking-widest"
+                        className="mt-6 px-6 py-2 bg-red-500 text-white rounded-full text-xs font-bold uppercase tracking-widest active:opacity-60 transition-all"
                     >
                         Coba Lagi
                     </button>
@@ -114,9 +112,9 @@ export default function AnjunganBantuan() {
                     <Link
                         key={card.id}
                         href={`/bantuan/${card.id}`}
-                        className="p-10 rounded-[2rem] bg-[var(--surface)] border border-[var(--separator)]/10 hover:border-blue-500/30 hover:shadow-xl hover:shadow-blue-500/5 transition-all group"
+                        className="p-10 rounded-[2rem] bg-[var(--surface)] border border-[var(--separator)]/10 active:opacity-60 transition-all group"
                     >
-                        <div className={`w-14 h-14 rounded-2xl ${card.color} flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm`}>
+                        <div className={`w-14 h-14 rounded-2xl ${card.color} flex items-center justify-center mb-8 shadow-sm`}>
                             <card.icon size={28} />
                         </div>
                         <h3 className="text-2xl font-bold tracking-tight mb-4">{card.title}</h3>
@@ -125,18 +123,19 @@ export default function AnjunganBantuan() {
                 ))}
             </div>
 
-            <section className="p-12 rounded-[2.5rem] bg-blue-500 text-white shadow-2xl shadow-blue-500/20 flex flex-col items-center text-center">
+            <section className="p-12 rounded-[2.5rem] bg-blue-500 text-white shadow-lg shadow-blue-500/10 flex flex-col items-center text-center">
                 <h2 className="text-2xl font-black mb-4">{ui.footerTitle}</h2>
                 <p className="text-blue-100 mb-8 font-medium">{ui.footerDesc}</p>
                 <a
                     href="https://github.com/Abelion512/lembaran/discussions"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-white text-blue-500 rounded-full font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-white text-blue-500 rounded-full font-black text-xs uppercase tracking-widest active:opacity-80 transition-all"
                 >
                     {ui.footerBtn}
+                    <ArrowRight size={14} />
                 </a>
             </section>
         </LembaranDok>
     );
-}
+};
