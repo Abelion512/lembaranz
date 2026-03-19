@@ -113,7 +113,7 @@ export function PenerjemahAksara({ slug }: PenerjemahAksaraProps) {
     if (!htmlContent) {
         return (
             <div className="p-10 rounded-[3rem] bg-red-500/5 border border-red-500/10 text-red-500">
-                <h2 className="text-xl font-bold mb-2">{t('dok_tidak_ditemukan')}</h2>
+                <h2 className="text-xl font-black mb-2">{t('dok_tidak_ditemukan')}</h2>
                 <p className="text-sm opacity-70">{t('dok_tidak_dapat_dimuat', { lang, slug })}</p>
             </div>
         );
@@ -137,10 +137,10 @@ export function PenerjemahAksara({ slug }: PenerjemahAksaraProps) {
                 </div>
             )}
             <div className="prose dark:prose-invert prose-blue max-w-none
-                prose-headings:font-bold prose-headings:tracking-tight
+                prose-headings:font-light prose-headings:tracking-[0.1em] prose-headings:uppercase
                 prose-h1:text-4xl prose-h1:mb-12
-                prose-p:text-lg prose-p:font-normal prose-p:leading-relaxed prose-p:text-[var(--text-secondary)]
-                prose-li:font-normal
+                prose-p:text-lg prose-p:font-light prose-p:leading-relaxed prose-p:tracking-wide prose-p:text-[var(--text-secondary)]
+                prose-li:font-light prose-li:tracking-wide
                 prose-code:text-blue-500 prose-code:bg-blue-500/5 prose-code:px-2 prose-code:py-0.5 prose-code:rounded-lg
                 prose-pre:bg-black/50 prose-pre:backdrop-blur-md prose-pre:border prose-pre:border-white/5 prose-pre:rounded-[2rem] prose-pre:p-8
                 prose-strong:text-[var(--text-primary)] prose-strong:font-bold">

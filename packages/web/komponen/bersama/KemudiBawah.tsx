@@ -65,7 +65,7 @@ export const KemudiBawah = () => {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="mb-3 px-3 py-1 bg-orange-500 text-white text-[10px] font-bold rounded-full flex items-center gap-1.5 shadow-md"
+                        className="mb-3 px-3 py-1 bg-orange-500 text-white text-[10px] font-bold rounded-full flex items-center gap-1.5 shadow-lg"
                     >
                         <WifiOff size={10} />
                         MODE LURING
@@ -85,17 +85,17 @@ export const KemudiBawah = () => {
                             className="fixed inset-0 bg-black/40 backdrop-blur-sm pointer-events-auto"
                         />
                         <motion.div
-                            initial={{ scale: 0.9, opacity: 0, y: 50 }}
+                            initial={{ scale: 0.8, opacity: 0, y: 50 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.9, opacity: 0, y: 50 }}
+                            exit={{ scale: 0.8, opacity: 0, y: 50 }}
                             role="menu"
                             aria-label="Aksi Cepat Catatan"
-                            className="glass-card mb-6 p-2 rounded-[2rem] shadow-xl pointer-events-auto border border-white/10 flex flex-col gap-1 min-w-[200px]"
+                            className="glass-card mb-6 p-2 rounded-[2rem] shadow-2xl pointer-events-auto border border-white/10 flex flex-col gap-1 min-w-[200px]"
                         >
                             <button
                                 role="menuitem"
                                 onClick={() => handleQuickAction('/tambah')}
-                                className="flex items-center gap-4 px-5 py-4 active:bg-white/5 rounded-2xl transition-colors active:opacity-50"
+                                className="flex items-center gap-4 px-5 py-4 hover:bg-white/5 rounded-2xl transition-colors active:opacity-50"
                             >
                                 <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center">
                                     <FileText size={20} />
@@ -108,7 +108,7 @@ export const KemudiBawah = () => {
                             <button
                                 role="menuitem"
                                 onClick={() => handleQuickAction('/tambah?mode=credentials')}
-                                className="flex items-center gap-4 px-5 py-4 active:bg-white/5 rounded-2xl transition-colors active:opacity-50"
+                                className="flex items-center gap-4 px-5 py-4 hover:bg-white/5 rounded-2xl transition-colors active:opacity-50"
                             >
                                 <div className="w-10 h-10 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center">
                                     <ShieldCheck size={20} />
@@ -121,7 +121,7 @@ export const KemudiBawah = () => {
                             <button
                                 role="menuitem"
                                 onClick={() => handleQuickAction('/tambah?mode=checklist')}
-                                className="flex items-center gap-4 px-5 py-4 active:bg-white/5 rounded-2xl transition-colors active:opacity-50"
+                                className="flex items-center gap-4 px-5 py-4 hover:bg-white/5 rounded-2xl transition-colors active:opacity-50"
                             >
                                 <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center">
                                     <CheckSquare size={20} />
@@ -138,7 +138,7 @@ export const KemudiBawah = () => {
 
             <nav
                 aria-label="Navigasi Utama"
-                className="glass-card flex items-center justify-around gap-2 px-6 py-3 min-w-[320px] max-w-lg w-full pointer-events-auto rounded-full shadow-md border border-white/20 relative !overflow-visible"
+                className="glass-card flex items-center justify-around gap-2 px-6 py-3 min-w-[320px] max-w-lg w-full pointer-events-auto rounded-full shadow-lg border border-white/20 relative !overflow-visible"
             >
                 {NAV_ITEMS.map((item) => {
                     const isActive = pathname === item.path;
@@ -156,7 +156,7 @@ export const KemudiBawah = () => {
                             >
                                 <motion.div
                                     animate={{ rotate: isMenuOpen ? 45 : 0 }}
-                                    className={`w-14 h-14 -mt-10 rounded-full flex items-center justify-center text-white shadow-lg border-4 border-[var(--background)] transition-colors ${isMenuOpen ? 'bg-red-500' : 'bg-blue-500'}`}
+                                    className={`w-14 h-14 -mt-10 rounded-full flex items-center justify-center text-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-4 border-[var(--background)] transition-colors ${isMenuOpen ? 'bg-red-500' : 'bg-blue-500'}`}
                                 >
                                     <Plus size={28} />
                                 </motion.div>

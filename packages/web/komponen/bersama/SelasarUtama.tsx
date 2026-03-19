@@ -28,7 +28,7 @@ export const SelasarUtama = () => {
     return (
         <aside className="hidden md:flex flex-col w-64 h-screen sticky top-0 bg-[var(--surface)] border-r border-[var(--separator)]/20 p-4">
             <div className="flex items-center gap-3 px-3 mb-10">
-                <div className="w-8 h-8 bg-[var(--primary)] rounded-lg flex items-center justify-center text-white shadow-md shadow-[var(--primary)]/10">
+                <div className="w-8 h-8 bg-[var(--primary)] rounded-lg flex items-center justify-center text-white shadow-lg shadow-[var(--primary)]/20">
                     <LayoutGrid size={18} />
                 </div>
                 <span className="font-bold text-lg tracking-tight">Lembaran</span>
@@ -45,8 +45,8 @@ export const SelasarUtama = () => {
                                 href={item.path}
                                 onClick={() => haptic.light()}
                                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${isActive
-                                    ? 'bg-[var(--primary)] text-white shadow-sm shadow-[var(--primary)]/10'
-                                    : 'text-[var(--text-secondary)] active:bg-[var(--background)]'
+                                    ? 'bg-[var(--primary)] text-white shadow-md shadow-[var(--primary)]/20'
+                                    : 'text-[var(--text-secondary)] hover:bg-[var(--background)]'
                                     }`}
                             >
                                 <item.icon size={20} className={isActive ? 'text-white' : 'opacity-70'} />
@@ -65,7 +65,7 @@ export const SelasarUtama = () => {
                             key={action.path}
                             href={action.path}
                             onClick={() => haptic.light()}
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[var(--text-secondary)] active:bg-[var(--background)] transition-all group"
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[var(--text-secondary)] hover:bg-[var(--background)] transition-all group"
                         >
                             <div className={`p-1.5 rounded-lg bg-current/5 ${action.color}`}>
                                 <action.icon size={18} />
