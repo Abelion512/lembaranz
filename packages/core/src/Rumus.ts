@@ -22,6 +22,17 @@ export interface Note {
     syncStatus?: "synced" | "pending" | "error";
 }
 
+/**
+ * NoteInput: Input untuk membuat atau memperbarui catatan.
+ * Beberapa field bersifat opsional karena akan diisi otomatis oleh sistem.
+ */
+export type NoteInput = Omit<Note, 'id' | 'title' | 'createdAt' | 'updatedAt' | 'tags'> & {
+    id?: EntityId;
+    title?: string;
+    createdAt?: string;
+    tags?: string[];
+};
+
 export interface Folder {
     id: EntityId;
     name: string;

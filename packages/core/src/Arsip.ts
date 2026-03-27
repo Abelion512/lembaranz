@@ -1,6 +1,6 @@
 import { Gudang } from './Gudang';
 import { Brankas } from './Brankas';
-import { Note, EntityId } from './Rumus';
+import { Note, EntityId, NoteInput } from './Rumus';
 import { v4 as uuidv4 } from 'uuid';
 import { Integritas } from './Integritas';
 import { Pujangga } from './Pujangga';
@@ -199,7 +199,7 @@ export const Arsip = {
     /**
      * Menyimpan catatan baru atau memperbarui catatan lama.
      */
-    async saveNote(note: Omit<Note, 'updatedAt'>): Promise<Note> {
+    async saveNote(note: NoteInput): Promise<Note> {
         if (Brankas.isLocked()) {
             throw new Error('Vault is locked. Cannot save data.');
         }
