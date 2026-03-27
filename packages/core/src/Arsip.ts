@@ -200,58 +200,68 @@ export const Arsip = {
      * Menyimpan catatan baru atau memperbarui catatan lama.
      */
     async saveNote(note: Omit<Note, 'updatedAt'>): Promise<Note> {
+        const [saved] = await this.saveNotes([note]);
+        return saved;
+    },
+
+    /**
+     * Menyimpan banyak catatan sekaligus secara efisien (Bulk Save).
+     */
+    async saveNotes(notes: Omit<Note, 'updatedAt'>[]): Promise<Note[]> {
         if (Brankas.isLocked()) {
             throw new Error('Vault is locked. Cannot save data.');
         }
 
-        let title = note.title;
-        if (!title || title === 'Tanpa Judul') {
-            title = await Pujangga.sarankanJudul(note.content);
-        }
+        const processedNotes = await Promise.all(notes.map(async (note) => {
+            // Parallelize as much as possible for each note
+            const [suggestedTitle, suggestedTags, preview] = await Promise.all([
+                (!note.title || note.title === 'Tanpa Judul') ? Pujangga.sarankanJudul(note.content) : Promise.resolve(note.title),
+                Pujangga.sarankanTag(note.content),
+                Pujangga.ringkasCerdas(note.content)
+            ]);
 
-        const suggestedTags = await Pujangga.sarankanTag(note.content);
-        const tags = Array.from(new Set([...(note.tags || []), ...suggestedTags]));
+            const tags = Array.from(new Set([...(note.tags || []), ...suggestedTags]));
+            const noteWithId = {
+                ...note,
+                title: suggestedTitle,
+                tags,
+                id: note.id || uuidv4(),
+                createdAt: note.createdAt || new Date().toISOString(),
+            } as Note;
 
-        const noteWithId = {
-            ...note,
-            title,
-            tags,
-            id: note.id || uuidv4(),
-            createdAt: note.createdAt || new Date().toISOString(),
-        } as Note;
+            const checkHash = await Integritas.hitungHash(noteWithId);
 
-        const checkHash = await Integritas.hitungHash(noteWithId);
+            // Potential read bottleneck: Gudang.get for each note.
+            // FileAdapter now handles concurrent loads efficiently.
+            const existing = await Gudang.get("notes", noteWithId.id);
+            if (existing && existing._hash === checkHash) {
+                return existing;
+            }
 
-        const existing = await Gudang.get("notes", noteWithId.id);
-        if (existing && existing._hash === checkHash) {
-            return existing;
-        }
+            const [secureTitle, secureContent, securePreview, secureKredensial] = await Promise.all([
+                Brankas.encryptPacked(noteWithId.title),
+                Brankas.encryptPacked(noteWithId.content),
+                Brankas.encryptPacked(preview),
+                (note.kredensial && typeof note.kredensial !== 'string')
+                    ? Brankas.encryptPacked(JSON.stringify(note.kredensial))
+                    : Promise.resolve(note.kredensial as string | undefined)
+            ]);
 
-        const preview = await Pujangga.ringkasCerdas(noteWithId.content);
+            return {
+                ...noteWithId,
+                title: secureTitle,
+                content: secureContent,
+                preview: securePreview,
+                kredensial: secureKredensial as Note['kredensial'],
+                updatedAt: new Date().toISOString(),
+                _hash: checkHash,
+            } as Note;
+        }));
 
-        const [secureTitle, secureContent, securePreview] = await Promise.all([
-            Brankas.encryptPacked(noteWithId.title),
-            Brankas.encryptPacked(noteWithId.content),
-            Brankas.encryptPacked(preview)
-        ]);
+        const entriesToSet = processedNotes.map(n => ({ key: n.id, value: n }));
+        await Gudang.setBulk('notes', entriesToSet);
 
-        let secureKredensial: typeof note.kredensial | string = note.kredensial;
-        if (note.kredensial && typeof note.kredensial !== 'string') {
-            secureKredensial = await Brankas.encryptPacked(JSON.stringify(note.kredensial));
-        }
-
-        const finalNote: Note = {
-            ...noteWithId,
-            title: secureTitle,
-            content: secureContent,
-            preview: securePreview,
-            kredensial: secureKredensial as Note['kredensial'],
-            updatedAt: new Date().toISOString(),
-            _hash: checkHash,
-        };
-
-        await Gudang.set('notes', finalNote.id, finalNote);
-        return finalNote;
+        return processedNotes;
     },
 
     /**

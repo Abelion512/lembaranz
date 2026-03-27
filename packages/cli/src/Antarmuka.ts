@@ -351,9 +351,11 @@ export class Antarmuka {
 
             if (select.targets && select.targets.length > 0) {
                 if (!(await this.unlock())) return;
-                for (const file of select.targets) {
+                console.log(pc.dim(`Sedang menanam ${select.targets.length} file...`));
+
+                const notesToSave = await Promise.all(select.targets.map(async (file: string) => {
                     const content = await fs.readFile(file, 'utf8');
-                    await Arsip.saveNote({
+                    return {
                         id: '',
                         title: file,
                         content,
@@ -362,9 +364,11 @@ export class Antarmuka {
                         isFavorite: false,
                         tags: ['impor'],
                         createdAt: new Date().toISOString()
-                    });
-                    console.log(pc.green(`Γ£à ${file} berhasil ditanam.`));
-                }
+                    };
+                }));
+
+                await Arsip.saveNotes(notesToSave);
+                select.targets.forEach((file: string) => console.log(pc.green(`✅ ${file} berhasil ditanam.`)));
             }
         } catch (_err) {
             console.log(pc.red('Γ¥î Gagal membaca direktori.'));
@@ -481,25 +485,25 @@ export class Antarmuka {
 
         if (sel.target && sel.target.length > 0) {
             console.log(pc.dim('Sedang menanam kredensial...'));
-            for (const key of sel.target) {
-                await Arsip.saveNote({
-                    id: '',
-                    title: `🛡️ ENV: ${key}`,
-                    content: `Variabel lingkungan otomatis dari .env`,
-                    folderId: null,
-                    isPinned: false,
-                    isFavorite: false,
-                    isCredentials: true,
-                    kredensial: {
-                        username: 'SYSTEM_ENV',
-                        password: env[key],
-                        url: '.env'
-                    },
-                    tags: ['ENV', 'Impor'],
-                    createdAt: new Date().toISOString()
-                });
-                console.log(pc.green(`  ├── ✅ ${key}`));
-            }
+            const envNotes = sel.target.map((key: string) => ({
+                id: '',
+                title: `🛡️ ENV: ${key}`,
+                content: `Variabel lingkungan otomatis dari .env`,
+                folderId: null,
+                isPinned: false,
+                isFavorite: false,
+                isCredentials: true,
+                kredensial: {
+                    username: 'SYSTEM_ENV',
+                    password: env[key],
+                    url: '.env'
+                },
+                tags: ['ENV', 'Impor'],
+                createdAt: new Date().toISOString()
+            }));
+
+            await Arsip.saveNotes(envNotes);
+            sel.target.forEach((key: string) => console.log(pc.green(`  ├── ✅ ${key}`)));
             console.log(pc.green('✨ Selesai! Kredensial Anda kini tersimpan aman di Lembaran.'));
         }
     }

@@ -51,6 +51,22 @@ export class BrowserAdapter implements StorageAdapter {
         return db.getAll(store as any);
     }
 
+    async setBulk<K extends keyof LembaranSchema>(store: K, entries: { key: string; value: LembaranSchema[K]['value'] }[]) {
+        const db = await this.initDB();
+        const tx = db.transaction(store as any, 'readwrite');
+        const objectStore = tx.objectStore(store as any);
+
+        for (const entry of entries) {
+            if (store === 'notes' || store === 'folders') {
+                await objectStore.put(entry.value);
+            } else {
+                await objectStore.put(entry.value, entry.key);
+            }
+        }
+
+        await tx.done;
+    }
+
     async delete(store: keyof LembaranSchema, key: string) {
         const db = await this.initDB();
         await db.delete(store as any, key);

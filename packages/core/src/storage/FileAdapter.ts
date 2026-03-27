@@ -13,6 +13,7 @@ interface SchemaStructure {
 
 export class FileAdapter implements StorageAdapter {
     private data: SchemaStructure | null = null;
+    private loadPromise: Promise<SchemaStructure> | null = null;
     private filePath: string;
 
     constructor(customPath?: string) {
@@ -42,25 +43,32 @@ export class FileAdapter implements StorageAdapter {
 
     private async load(): Promise<SchemaStructure> {
         if (this.data) return this.data;
+        if (this.loadPromise) return this.loadPromise;
 
-        try {
-            const content = await fs.readFile(this.filePath, 'utf-8');
-            const parsed = JSON.parse(content);
-            this.data = {
-                notes: parsed.notes || {},
-                folders: parsed.folders || {},
-                kv: parsed.kv || {},
-                meta: parsed.meta || {}
-            };
-        } catch (_error) {
-            this.data = {
-                notes: {},
-                folders: {},
-                kv: {},
-                meta: {}
-            };
-        }
-        return this.data!;
+        this.loadPromise = (async () => {
+            try {
+                const content = await fs.readFile(this.filePath, 'utf-8');
+                const parsed = JSON.parse(content);
+                this.data = {
+                    notes: parsed.notes || {},
+                    folders: parsed.folders || {},
+                    kv: parsed.kv || {},
+                    meta: parsed.meta || {}
+                };
+            } catch (_error) {
+                this.data = {
+                    notes: {},
+                    folders: {},
+                    kv: {},
+                    meta: {}
+                };
+            } finally {
+                this.loadPromise = null;
+            }
+            return this.data!;
+        })();
+
+        return this.loadPromise;
     }
 
     private async save(): Promise<void> {
@@ -97,6 +105,19 @@ export class FileAdapter implements StorageAdapter {
         const data = await this.load();
         // @ts-expect-error - dynamic store access
         return Object.values(data[store]);
+    }
+
+    async setBulk<K extends keyof LembaranSchema>(store: K, entries: { key: string; value: LembaranSchema[K]['value'] }[]) {
+        const data = await this.load();
+        for (const entry of entries) {
+            let actualKey = entry.key;
+            if ((store === 'notes' || store === 'folders') && (entry.value as { id?: string }).id) {
+                actualKey = (entry.value as { id: string }).id;
+            }
+            // @ts-expect-error - dynamic store access
+            data[store][actualKey] = entry.value;
+        }
+        await this.save();
     }
 
     async delete(store: keyof LembaranSchema, key: string) {

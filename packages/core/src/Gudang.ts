@@ -60,4 +60,9 @@ export const Gudang = {
         const adp = await getAdapter();
         return adp.clear(store);
     }
+
+    async setBulk<K extends keyof LembaranSchema>(store: K, entries: { key: string; value: LembaranSchema[K]['value'] }[]) {
+        const adp = await getAdapter();
+        return adp.setBulk(store, entries);
+    }
 };
