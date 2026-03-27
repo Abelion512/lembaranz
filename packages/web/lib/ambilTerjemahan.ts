@@ -9,6 +9,8 @@ const cacheUI: Record<string, string> = {};
  * Server Action to get AI-powered translation for a string.
  */
 export async function ambilTerjemahan(teks: string, targetLang: 'id' | 'en'): Promise<string> {
+    if (targetLang !== 'id' && targetLang !== 'en') return teks;
+
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
@@ -30,6 +32,8 @@ export async function ambilTerjemahan(teks: string, targetLang: 'id' | 'en'): Pr
  * Server Action to get AI-powered translation for documentation.
  */
 export async function ambilTerjemahanDokumen(markdown: string, targetLang: 'id' | 'en'): Promise<string> {
+    if (targetLang !== 'id' && targetLang !== 'en') return markdown;
+
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) return markdown;
