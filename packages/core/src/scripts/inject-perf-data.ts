@@ -32,7 +32,7 @@ async function run() {
             isPinned: i % 10 === 0,
             isFavorite: false,
             tags: ['Performance', 'Bolt', i % 2 === 0 ? 'Testing' : 'Benchmark']
-        } as any);
+        });
 
         if (i % 100 === 0) {
             const elapsed = (Date.now() - startTime) / 1000;
