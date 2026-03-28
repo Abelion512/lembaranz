@@ -2,7 +2,6 @@ import { Command } from 'commander';
 import { Arsip } from '@lembaran/core';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { type ChildProcess } from 'node:child_process';
 import { siapkanKonteks, bukaBrankasCLI } from '../utils.js';
 import prompts from 'prompts';
 
@@ -190,7 +189,7 @@ export function registrasiPerintahEnv(program: Command) {
         stdio: 'inherit',
         shell: true,
         env: { ...process.env, ...parsedEnv }
-      }) as ChildProcess;
+      }) as ReturnType<typeof import('node:child_process').spawn>;
 
       child.on('error', (err: Error) => {
         console.error(`❌ Gagal menjalankan proses: ${err.message}`);
