@@ -3,16 +3,33 @@
 Semua perubahan penting pada proyek ini akan didokumentasikan di file ini.
 
 ## [3.4.0] - 2026-03-28
-### Fixed
-- **Perbaikan Error Handling**: Menambahkan `cause` pada semua error yang dilempar untuk debugging yang lebih baik (Arsip.ts, Brankas.ts).
-- **Perbaikan TypeScript/ESLint**: Menghapus semua warning dari console dan memperbaiki dependency arrays di React hooks.
-- **Optimasi Gambar**: Mengganti tag `<img>` dengan komponen `<Image>` dari Next.js untuk optimasi performa.
-- **Perbaikan Instalasi CLI**: Mengganti `bun install -g .` dengan `bun link` untuk menangani workspace dependencies dengan benar.
-- **Proteksi Timpa .env**: Menambahkan konfirmasi sebelum menimpa file .env yang sudah ada di perintah `env muat`.
-### Added
-- **Terjemahan Lengkap**: Menambahkan semua kunci terjemahan yang hilang untuk navigasi bantuan (Selasar).
+
+### Added (28 Maret 2026)
+- **AI YOLO Mode**: Sistem keamanan single-push untuk Git (auto-disable setelah 1x push)
+  - Pre-push hook: `.githooks/pre-push`
+  - State tracking: `.git/yolo_mode_state`
+  - Helper: `enable-yolo-push.sh` dan `setup-hooks.sh`
+  - Dokumentasi: `docs/AI_YOLO_MODE.md`
+- **Dependabot Configuration**: Update otomatis untuk npm + github-actions
+- **PRD Refactor**: Fokus CLI/TUI, progress 75%, identitas Indonesia
+- **README Update**: Identitas Indonesia kuat, tanpa gimmick, fokus developer
+
+### Fixed (28 Maret 2026)
+- **TypeScript**: ChildProcess typing di `Env.ts`
+- **Linting**: Unused imports di `IkonLayanan.tsx`
+- **Web Vault**: Button "Buka Brankas" ditandai CLI-only (deprecated untuk web)
+- **Cleanup**: Hapus folder AI agent yang tidak perlu
+
 ### Changed
-- **Dokumentasi Instalasi**: Memperbarui panduan instalasi di semua dokumen (MULAI_CEPAT.md, GETTING_STARTED.md) dengan perintah `bun link`.
+- **Fokus CLI/TUI**: Web vault di-deprecate, fokus ke CLI commands
+- **Bahasa**: Semua dokumentasi menggunakan Bahasa Indonesia baku
+- **PRD**: Refactor untuk mencerminkan perkembangan terkini
+
+### Removed
+- **Web Vault UI**: Fitur vault via web dihapus
+- **AI Agent Folders**: `.commandcode`, `.factory`, `.goose`, `.junie`, `.kiro`, `.pochi`, `.qoder`, `.zencoder`
+
+---
 
 ## [3.3.0] - 2026-02-22
 ### Added

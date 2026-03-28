@@ -1,150 +1,212 @@
 # Product Requirements Document (PRD): Lembaran
 
-### STATUS: FINAL — Siap di-execute (v3.5.0)
+**Versi:** 3.4.0  
+**Status:** Production Ready — Fokus CLI/TUI  
+**Tanggal:** 28 Maret 2026  
+**Bahasa:** Indonesia Baku
 
-> Lembaran: Ekosistem kedaulatan data dan manajemen arsip digital personal.
-> Menggabungkan keamanan tingkat tinggi dengan estetika premium "Liquid Glass".
-> **Konvensi Nama:** Indonesia Puitis (Jiwa, Raga, Suara, Aksara, Brankas).
-
----
-
-## 1. Identitas & Filosofi (Visi)
-
-Lembaran bukan sekadar aplikasi catatan, melainkan benteng digital bagi pemiliknya. Dirancang untuk pengembang dan individu yang memprioritaskan kedaulatan data di atas kenyamanan cloud publik.
-
-- **Visi:** Menjadi standar emas untuk penyimpanan rahasia dan catatan personal yang terenkripsi penuh.
-- **Prinsip Utama:**
-  - **Local-First:** Data Anda, di perangkat Anda.
-  - **Privacy-First:** Enkripsi Zero-Knowledge menggunakan **Brankas**.
-  - **Estetika Premium:** Antarmuka minimalis, tipografi *Thin & Spacious*.
-  - **Kedaulatan Aksara:** Kontrol penuh melalui format terbuka.
-
-- **Target Pengguna:**
-  1. **Pengembang:** Butuh manajemen `.env` (Laras) dan CLI (Suara) yang aman.
-  2. **Pegiat Privasi:** Menghindari pengawasan cloud.
-  3. **Power Users:** Navigasi cepat (Slash Commands, Vim-mode).
+> **Lembaran**: Brankas Arsip Digital Personal Buatan Anak Bangsa  
+> **Filosofi:** Kedaulatan Data, Privasi Absolut, Estetika Minimalis  
+> **Konvensi Nama:** Indonesia Puitis (Jiwa, Raga, Suara, Aksara, Brankas)
 
 ---
 
-## 2. Susunan Teknologi (Tech Stack)
+## 1. Identitas & Filosofi
 
-### Inti (The Core)
-- **Framework:** Next.js 16 (App Router)
-- **Runtime:** Bun (Backend & CLI)
-- **Language:** TypeScript 5.x
-- **Kriptografi:** `@noble/ciphers` (AES-GCM 256-bit), `@noble/hashes` (Argon2id, SHA-256)
-- **Database Lokal:** IndexedDB (Web) & Local Filesystem (CLI) via `@lembaran/core`
+Lembaran adalah brankas arsip digital personal yang dikembangkan oleh pengembang Indonesia untuk kedaulatan data lokal.
 
-### Antarmuka (The Interface)
-- **Web (Raga):** React 19, Tailwind CSS v4 (CSS-first)
-- **CLI (Suara):** Ink (React in Terminal), CMD: `lembaran`
-- **Animation:** Motion v12
-- **Editor:** Tiptap (Markdown based)
+### Visi
+Menjadi standar emas penyimpanan data personal terenkripsi yang **dibuat di Indonesia untuk dunia**.
 
----
+### Prinsip Utama
+- **Local-First**: Data Anda tetap di perangkat Anda
+- **Privacy-First**: Enkripsi zero-knowledge, tidak ada yang bisa mengakses kecuali Anda
+- **CLI-First**: Fokus pada terminal/TUI untuk developer productivity
+- **Minimalis**: Estetika bersih tanpa gimmick berlebihan
+- **Terbuka**: Format data terbuka, tidak ada vendor lock-in
 
-## 3. Sistem Estetika (Design System)
-
-### "Liquid Glass" Aesthetic
-- **Colors (Dark Mode):**
-  - BG Utama: `#0a0a0f`
-  - Cards/Panels: `rgba(26, 26, 46, 0.6)` + `backdrop-blur(12px)`
-  - Accent: `#6C63FF` (Jiwa Purple)
-  - Integrity Green: `#00D4AA` (Sentinel Teal)
-- **Typography:**
-  - Heading: `Syne` (Google Fonts)
-  - Body: `Plus Jakarta Sans` (Weight 300/400)
-  - Mono: `JetBrains Mono`
-- **Motion Specs:**
-  - Reveal: Staggered reveal 0.05s
-  - Transition: Soft spring transitions, no bounce.
+### Target Pengguna
+1. **Developer Indonesia**: Butuh manajemen `.env` aman dan CLI yang efisien
+2. **Pegiat Privasi**: Menghindari surveillance cloud korporat
+3. **Power Users Terminal**: Nyaman dengan keyboard-first workflow
 
 ---
 
-## 4. Arsitektur & Fitur Utama
+## 2. Stack Teknologi
 
-### A. Brankas (Lapisan Keamanan)
-- **Jiwa:** Mesin enkripsi AES-GCM 256-bit.
-- **Zero-Knowledge:** Kunci derivasi Argon2id di sisi client.
-- **Auto-Lock:** Penguncian otomatis setelah 1 menit tidak aktif.
-- **Panic Key:** Protokol penghapusan darurat.
+### Core (Jiwa)
+- **Runtime**: Bun 1.3+ (cepat, native TypeScript)
+- **Language**: TypeScript 5.x
+- **Encryption**: `@noble/ciphers` (AES-GCM 256-bit)
+- **Key Derivation**: `@noble/hashes` (Argon2id)
+- **Integrity**: SHA-256 (digital seal)
+- **Storage**: IndexedDB (web), Filesystem (CLI)
 
-### B. Gudang Aksara (Manajemen Catatan)
-- **Raga:** Editor modern dengan *Slash Commands* (/).
-- **Segel Digital:** Integritas data via HMAC/SHA-256.
-- **Organisasi:** Folder, Tagar, dan Peta (Graph View).
+### Interface (Raga & Suara)
+- **Web**: Next.js 16 (App Router), React 19, Tailwind CSS v4
+- **CLI/TUI**: Ink (React for Terminal), Commander.js
+- **Animation**: Framer Motion (web only)
+- **Editor**: Tiptap (Markdown-based)
 
-### C. Laras & Pundi (Manajemen Konfigurasi)
-- **Laras:** Pengelola variabel lingkungan (.env) terenkripsi.
-- **Mode Hantu:** Injeksi variabel langsung ke memori tanpa menulis file fisik.
-- **Pundi:** Dashboard statistik real-time (jumlah aksara, kapasitas brankas).
-
----
-
-## 5. Struktur Aplikasi & Halaman
-
-### Raga (Web UI)
-- `/` — Landing Page: Estetika Liquid Glass, status Brankas.
-- `/masuk` — Dekripsi Brankas: Password prompt (Argon2id).
-- `/jelajah` — Gudang Aksara: Sidebar pencarian fuzzy, masonry grid untuk catatan.
-- `/ukir` — Editor: Tiptap dengan Vim-mode & Markdown support.
-- `/laras` — Environment Manager: Pengelolaan file `.env` antar proyek.
-- `/peta` — Visualisasi: Graph view hubungan antar aksara.
-- `/bantuan` — Dokumentasi: Rendered dari `docs/*.md`.
-
-### Suara (CLI TUI)
-- `lembaran` — Masuk ke TUI interaktif.
-- `lembaran ukir` — Buat catatan baru langsung dari terminal.
-- `lembaran laras` — Kelola variabel lingkungan proyek.
-- `lembaran tanam` — Impor direktori ke dalam brankas.
+### Infrastructure
+- **Package Manager**: Bun (monorepo workspaces)
+- **CI/CD**: GitHub Actions
+- **Deployment**: Vercel (web), npm/Bun (CLI)
 
 ---
 
-## 6. Urutan Pembangunan (Roadmap)
+## 3. Arsitektur Sistem
 
-### Fase 1 — Pondasi (MVP)
-- [ ] Setup Monorepo (Core, Web, CLI).
-- [ ] Implementasi Brankas (AES-GCM + Argon2id).
-- [ ] Editor Dasar (Tiptap + Markdown).
-- [ ] Gudang Aksara (Local Storage wrapper).
+### A. Brankas (Security Layer)
+Enkripsi zero-knowledge dengan standar industri tertinggi.
 
-### Fase 2 — Fitur Utama (Ciri Khas)
-- [ ] Laras (.env manager) & Mode Hantu.
-- [ ] TUI Interaktif (cli package).
-- [ ] Peta Aksara (Graph visualization).
-- [ ] Sentinel Auto-Lock.
+**Fitur:**
+- AES-GCM 256-bit encryption
+- Argon2id key derivation (memory-hard, anti-GPU)
+- Auto-lock setelah 1 menit idle
+- Panic key untuk emergency wipe
+- Digital seal (SHA-256) untuk integrity check
 
-### Fase 3 — Ekspansi (Community & Sync)
-- [ ] Sync Bridge (E2EE sync to personal cloud).
-- [ ] Collaboration (Yjs/CRDT).
-- [ ] Biometric Unlock (WebAuthn).
+**Status:** ✅ Production Ready
+
+### B. Gudang Aksara (Note Management)
+Manajemen catatan terenkripsi dengan CLI-first approach.
+
+**Fitur:**
+- CRUD operations via CLI
+- Markdown support
+- Tag-based organization
+- Fuzzy search (encrypted content)
+- Import/export (.md, .json)
+
+**Status:** ✅ Production Ready (CLI), ⏳ Web UI deprecated
+
+### C. Laras (Environment Manager)
+Pengelolaan `.env` lintas proyek dengan enkripsi.
+
+**Fitur:**
+- Simpan `.env` ke brankas terenkripsi
+- Load `.env` ke project lokal
+- Overwrite protection dengan konfirmasi
+- Multi-project support dengan tagging
+
+**Status:** ✅ Production Ready (CLI)
+
+### D. Suara (CLI/TUI)
+Antarmuka terminal interaktif untuk produktivitas maksimal.
+
+**Commands:**
+- `lembaran mulai` - TUI interaktif
+- `lembaran ukir` - Buat/edit catatan
+- `lembaran laras` - Kelola environment
+- `lembaran tanam` - Import direktori
+- `lembaran cari` - Search encrypted notes
+- `lembaran petik` - Export catatan
+
+**Status:** ✅ Production Ready
 
 ---
 
-## 7. Variabel Lingkungan (.env)
+## 4. Roadmap & Progress
 
-| Kunci | Deskripsi | Wajib |
-|---|---|---|
-| `NODE_ENV` | `development` atau `production` | Ya |
-| `NEXT_PUBLIC_APP_URL` | URL Utama aplikasi | Ya |
-| `ENCRYPTION_SALT` | Garam default untuk derivasi kunci | Ya |
-| `SECRET_SCRUBBER_LEVEL` | Tingkat filter data sensitif di AI | Opsional |
+### Fase 1 — Pondasi (MVP) ✅ **SELESAI 100%**
+- [x] Setup Monorepo (Core, Web, CLI)
+- [x] Implementasi Brankas (AES-GCM + Argon2id)
+- [x] CLI Commands (ukir, laras, tanam, cari)
+- [x] TUI Interaktif (Ink-based)
+- [x] Digital Seal (SHA-256 integrity)
+- [x] Auto-lock & panic key
+
+### Fase 2 — Fitur Utama (Ciri Khas) ✅ **SELESAI 85%**
+- [x] Laras (.env manager) dengan overwrite protection
+- [x] TUI dengan logo Lembaran (seperti gemini/claude)
+- [x] Fuzzy search encrypted content
+- [x] Import/export multi-format
+- [x] AI YOLO Mode security (single-push)
+- [ ] Graph visualization (Peta Aksara) — **50%**
+
+### Fase 3 — Ekspansi (Community & Polish) ⏳ **PLANNED**
+- [ ] Documentation lengkap Bahasa Indonesia
+- [ ] Benchmark suite (1000 notes stress test)
+- [ ] Native apps (iOS/Android/Desktop)
+- [ ] Biometric unlock (WebAuthn)
+- [ ] Sync bridge (E2EE personal cloud)
+
+**Overall Progress: ~75%** (Fase 1 ✅, Fase 2 🔄, Fase 3 📋)
 
 ---
 
-## 8. Detail Implementasi V1
+## 5. Struktur Folder
 
-### Komponen Brankas (Vault)
-- Harus memiliki indikator visual "Terkunci" atau "Terbuka".
-- Input password tidak boleh bisa di-copy/paste.
-- Progress bar saat derivasi kunci Argon2id (karena intensif CPU).
-
-### Editor Ukir
-- Bar navigasi minimalis (Pill-style).
-- Floating menu untuk formatting.
-- Shortcut `CMD+S` untuk simpan dengan Segel Digital.
+```
+lembaran/
+├── packages/
+│   ├── core/          # @lembaran/core (encryption, storage)
+│   ├── cli/           # @lembaran/cli (TUI, commands)
+│   └── web/           # @lembaran/web (landing page, docs)
+├── docs/              # Dokumentasi (id/ & en/)
+├── .githooks/         # Git hooks (YOLO mode)
+├── scripts/           # Helper scripts
+├── .github/
+│   ├── workflows/     # CI/CD
+│   └── dependabot.yml # Auto-updates
+├── PRD.md             # This file
+├── CHANGELOG.md       # Version history
+├── README.md          # Quick start
+└── package.json       # Monorepo root
+```
 
 ---
 
-*PRD Akhir — Lembaran (Abelion Lavv).*
-*Status: Locked v3.5.0.*
+## 6. Non-Goals (Yang TIDAK Akan Dibangun)
+
+❌ **Web Vault UI** — Fokus ke CLI/TUI untuk developer  
+❌ **Cloud Sync** — Local-first, data tetap di perangkat  
+❌ **Collaboration** — Personal vault, bukan team tool  
+❌ **Mobile Apps** — Prioritas CLI desktop experience  
+❌ **Gimmick Features** — Minimalis, fungsional, tanpa bloat  
+
+---
+
+## 7. Metrics & Success Criteria
+
+### Technical Metrics
+- **Encryption**: AES-GCM 256-bit, Argon2id (19MB RAM, 2 iterations)
+- **Performance**: <100ms decrypt untuk note <10KB
+- **Bundle Size**: CLI <2MB, Web <500KB (gzip)
+- **Test Coverage**: >80% core modules
+
+### User Metrics
+- **Time to First Note**: <30 detik dari install
+- **CLI Commands**: 6 commands utama (mulai, ukir, laras, tanam, cari, petik)
+- **Documentation**: 100% Bahasa Indonesia baku
+
+### Security Metrics
+- **Zero-Knowledge**: Password tidak pernah disimpan/transmit
+- **Auto-Lock**: 1 menit idle timeout
+- **Panic Key**: Emergency wipe dalam <1 detik
+
+---
+
+## 8. Release History
+
+| Version | Date | Status | Highlights |
+|---------|------|--------|------------|
+| 3.4.0 | Mar 2026 | Current | AI YOLO Mode, CLI focus, docs update |
+| 3.3.0 | Feb 2026 | Stable | TUI modern, env protection |
+| 3.0.0 | Feb 2026 | Stable | Monorepo, rebranding |
+| 2.x | Feb 2026 | Legacy | Landing page, basic CLI |
+
+---
+
+## 9. Tim Pengembang
+
+**Lead Developer:** Abelion Lavv  
+**Kontributor:** Open Source Community  
+**Lokasi:** Indonesia 🇮🇩  
+
+---
+
+**PRD ini adalah living document.** Update seiring perkembangan fitur dan feedback komunitas.
+
+* Dibuat dengan ❤️ oleh pengembang Indonesia untuk kedaulatan data lokal.
