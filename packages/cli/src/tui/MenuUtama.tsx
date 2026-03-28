@@ -25,6 +25,22 @@ export const MenuUtama: React.FC<MenuUtamaProps> = ({ onPilih, aksiAwal }) => {
 
     return (
         <Box flexDirection="column" padding={1}>
+            {/* Logo Permanen Lembaran */}
+            <Box
+                borderStyle="round"
+                borderColor="blue"
+                paddingX={2}
+                paddingY={1}
+                marginBottom={2}
+            >
+                <Text color="blue" bold>
+                    📜 LEMBARAN v3.4.0
+                </Text>
+                <Text dimColor>
+                    Brankas Aksara Digital Personal
+                </Text>
+            </Box>
+
             <Box borderStyle="round" borderColor="blue" paddingX={1} marginBottom={1}>
                 <Text color="blue" bold>📜 Menu Utama</Text>
             </Box>
