@@ -23,6 +23,7 @@ export const Aplikasi: React.FC<AplikasiProps> = ({ konteks, versi }) => {
     const [layar, setLayar] = useState<Layar>('selamat');
     const [pesan, setPesan] = useState<{ jenis: 'sukses' | 'info'; judul: string } | null>(null);
     const [aksiTerakhir, setAksiTerakhir] = useState<string | undefined>();
+    const [exitAttempts, setExitAttempts] = useState(0);
 
     const keMenu = useCallback(() => setLayar('menu'), []);
 
@@ -58,7 +59,34 @@ export const Aplikasi: React.FC<AplikasiProps> = ({ konteks, versi }) => {
         }
     }, [exit]);
 
+    // Global exit handler with double-verify
     useInput((input, key) => {
+        // Check for exit keys (Ctrl+C, Q, Esc)
+        const isExitKey = (key.ctrl && input === 'c') || input === 'q' || key.escape;
+
+        if (isExitKey) {
+            if (exitAttempts === 0) {
+                // First attempt - show warning
+                setExitAttempts(1);
+                setPesan({
+                    jenis: 'info',
+                    judul: '⚠️  Tekan sekali lagi untuk keluar (atau tunggu 3 detik)'
+                });
+
+                // Auto-reset after 3 seconds
+                setTimeout(() => {
+                    setExitAttempts(0);
+                    setPesan(null);
+                }, 3000);
+            } else {
+                // Second attempt - actually exit
+                console.log('\n👋 Sampai jumpa! Lembaran ditutup.\n');
+                exit();
+            }
+            return;
+        }
+
+        // Handle message screen dismissal
         if (layar === 'pesan' && (input === 'q' || key.escape || key.return)) {
             keMenu();
         }
