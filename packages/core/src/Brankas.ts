@@ -26,13 +26,10 @@ export class Brankas {
      * @param extractable Whether the key should be extractable (needed for recovery setup)
      */
     static async deriveKey(password: string, salt: Uint8Array, extractable = false): Promise<CryptoKey> {
-        let passwordBuffer: Uint8Array | null = null;
+        const passwordBuffer = new TextEncoder().encode(password);
         let hash: Uint8Array | null = null;
 
         try {
-            // Convert password to Uint8Array for explicit memory management
-            passwordBuffer = new TextEncoder().encode(password);
-
             // Argon2id parameters (OWASP recommended: 19MB RAM, 2 iterations, 1 parallelism)
             hash = argon2id(passwordBuffer, salt, {
                 t: 2,
@@ -53,13 +50,9 @@ export class Brankas {
             throw error;
         } finally {
             // Sanitize password from memory immediately after use
-            if (passwordBuffer) {
-                passwordBuffer.fill(0);
-                passwordBuffer = null;
-            }
+            passwordBuffer.fill(0);
             if (hash) {
                 hash.fill(0);
-                hash = null;
             }
         }
     }

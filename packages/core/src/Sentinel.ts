@@ -28,9 +28,9 @@ export const Sentinel = {
         // Length check (still constant-time)
         if (aBytes.length !== bBytes.length) {
             // Still do comparison to maintain constant time
-            let dummy = 0;
+            let _dummy = 0;
             for (let i = 0; i < aBytes.length; i++) {
-                dummy |= aBytes[i] ^ aBytes[i];
+                _dummy |= aBytes[i] ^ aBytes[i];
             }
             return false;
         }
