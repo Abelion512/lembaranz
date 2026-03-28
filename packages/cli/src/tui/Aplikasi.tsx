@@ -117,15 +117,13 @@ export const Aplikasi: React.FC<AplikasiProps> = ({ konteks, versi }) => {
 
                 // Show exit info after 1 second
                 setTimeout(() => {
-                    if (exitAttempts === 1) {
-                        console.log('\n╭─────────────────────────────────────────────────────────────────╮');
-                        console.log('│  ℹ️  Exit Info                                                   │');
-                        console.log('├─────────────────────────────────────────────────────────────────┤');
-                        console.log('│  • Tekan Ctrl+C / Q / Esc sekali lagi untuk keluar             │');
-                        console.log('│  • Atau tunggu 3 detik untuk membatalkan                       │');
-                        console.log('│  • Session summary akan ditampilkan setelah keluar             │');
-                        console.log('╰─────────────────────────────────────────────────────────────────╯\n');
-                    }
+                    console.log('\n╭─────────────────────────────────────────────────────────────────╮');
+                    console.log('│  ℹ️  Exit Info                                                   │');
+                    console.log('├─────────────────────────────────────────────────────────────────┤');
+                    console.log('│  • Tekan Ctrl+C / Q / Esc sekali lagi untuk keluar             │');
+                    console.log('│  • Atau tunggu 3 detik untuk membatalkan                       │');
+                    console.log('│  • Session summary akan ditampilkan setelah keluar             │');
+                    console.log('╰─────────────────────────────────────────────────────────────────╯\n');
                 }, 1000);
 
                 // Auto-reset after 3 seconds

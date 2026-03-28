@@ -456,7 +456,9 @@ export class Antarmuka {
         });
 
         if (res.tujuan) {
-            await Sentinel.siklusBerdaulat(res.tujuan);
+            // TODO: Implement autonomous mode in future version
+            console.log(pc.yellow('\n⚠️  Mode Berdaulat (Otonom) akan segera hadir di versi berikutnya.'));
+            console.log(pc.dim('Fitur ini akan menggunakan AI untuk melakukan pemeriksaan sistem secara otonom.'));
         }
     }
 
