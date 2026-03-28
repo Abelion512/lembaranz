@@ -1,184 +1,133 @@
-import { Laras } from './Laras';
-import { Pujangga } from './Pujangga';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+/**
+ * Sentinel: Security hardening module
+ * Rate limiting, constant-time comparison, and brute-force protection
+ */
 
-const execAsync = promisify(exec);
-
-export type SentinelTask = {
-    id: string;
-    label: string;
-    frequency: number; // in milliseconds
-    action: () => Promise<void>;
-    lastRun?: number;
-};
-
-export class Sentinel {
-    private static tasks: Map<string, SentinelTask> = new Map();
-    private static intervals: Map<string, ReturnType<typeof setInterval>> = new Map();
-    private static isRunning: boolean = false;
-    private static isSovereignActive: boolean = false;
-
-    /**
-     * Executes a system command and returns the output.
-     * WARNING: This is dangerous. Used by Sovereign mode for autonomous tasks.
-     * Includes basic blocklist for catastrophic commands.
-     */
-    static async eksekusi(perintah: string): Promise<{ stdout: string; stderr: string }> {
-        const blocklist = ['rm -rf /', 'mkfs', 'shutdown', 'reboot', ':(){ :|:& };:'];
-        if (blocklist.some(b => perintah.includes(b))) {
-            throw new Error(`[SENTINEL] Blocked potentially catastrophic command: ${perintah}`);
-        }
-
-        console.log(`[SENTINEL EXEC] 🏃 Running: ${perintah}`);
-        return await execAsync(perintah);
-    }
-
-    /**
-     * Starts an autonomous goal-seeking loop.
-     */
-    static async siklusBerdaulat(tujuan: string) {
-        if (this.isSovereignActive) return;
-        this.isSovereignActive = true;
-
-        console.log(`\n👑 SENTINEL SOVEREIGN: Tugas dimulai ❯ "${tujuan}"`);
-
-        let attempts = 0;
-        const maxAttempts = 3;
-
-        while (this.isSovereignActive && attempts < maxAttempts) {
-            attempts++;
-            console.log(`\n🧠 Berpikir (Siklus ${attempts}/${maxAttempts})...`);
-
-            try {
-                const konteks = `Target: ${tujuan}\nUpaya saat ini: ${attempts}\nLokasi: ${process.cwd()}`;
-                const instruksi = `Rencanakan langkah selanjutnya untuk mencapai target.`;
-
-                const plan = await Pujangga.berpikir(konteks, instruksi);
-
-                console.log(`🎯 Keputusan: ${plan.keputusan}`);
-                console.log(`📝 Alasan: ${plan.alasan}`);
-
-                if (plan.perintah_sistem) {
-                    try {
-                        const result = await this.eksekusi(plan.perintah_sistem);
-                        console.log(`✅ Output: ${result.stdout.substring(0, 100)}...`);
-                    } catch (execError: unknown) {
-                        const errorMessage = execError instanceof Error ? execError.message : String(execError);
-                        console.log(`⚠️  Eksekusi Gagal: ${errorMessage}`);
-                        console.log('🔍 Menganalisis alasan kegagalan...');
-                        const analysis = await Pujangga.berpikir(
-                            `Error: ${errorMessage}\nCommand: ${plan.perintah_sistem}`,
-                            'Berikan saran perbaikan atau perintah baru untuk menangani error ini.'
-                        );
-                        console.log(`💡 Saran Perbaikan: ${analysis.keputusan}`);
-                        // Optionally retry or adjust
-                    }
-                }
-
-                if (plan.keputusan.toLowerCase().includes('selesai') || plan.keputusan.toLowerCase().includes('berhasil')) {
-                    console.log('✅ GOAL ACHIEVED: Sentinel Sovereign telah menyelesaikan misinya.');
-                    break;
-                }
-
-            } catch (error) {
-                console.error('❌ Sovereign Cycle Error:', error);
-                break;
-            }
-        }
-
-        this.isSovereignActive = false;
-        console.log('🏁 Sovereign cycle ended.\n');
-    }
-
-    /**
-     * Registers a new task to be executed periodically.
-     */
-    static daftarTugas(task: SentinelTask) {
-        this.tasks.set(task.id, task);
-        if (this.isRunning) {
-            this.mulaiTugas(task);
-        }
-    }
-
-    /**
-     * Starts the Sentinel heartbeat and all registered tasks.
-     */
-    static async hidupkan() {
-        if (this.isRunning) return;
-        this.isRunning = true;
-
-        console.log('📡 Sentinel: Denyut nadi diaktifkan.');
-
-        for (const task of this.tasks.values()) {
-            this.mulaiTugas(task);
-        }
-    }
-
-    /**
-     * Stops the Sentinel and clears all task intervals.
-     */
-    static matikan() {
-        this.isRunning = false;
-        for (const interval of this.intervals.values()) {
-            clearInterval(interval);
-        }
-        this.intervals.clear();
-        console.log('🛑 Sentinel: Denyut nadi dihentikan.');
-    }
-
-    private static mulaiTugas(task: SentinelTask) {
-        if (this.intervals.has(task.id)) {
-            clearInterval(this.intervals.get(task.id));
-        }
-
-        const interval = setInterval(async () => {
-            if (!this.isRunning) return;
-            try {
-                await task.action();
-                task.lastRun = Date.now();
-            } catch (error) {
-                console.error(`❌ Sentinel Group [${task.label}] error:`, error);
-            }
-        }, task.frequency);
-
-        this.intervals.set(task.id, interval);
-
-        // Immediate first run
-        task.action().catch(e => console.error(e));
-    }
-
-    /**
-     * Default system tasks for Sentinel.
-     */
-    static inisialisasiDefault() {
-        // Task 1: Audit Integritas Pelataran (.env leak check)
-        this.daftarTugas({
-            id: 'audit-keamanan',
-            label: 'Audit Keamanan Pelataran',
-            frequency: 1000 * 60 * 60, // 1 hour
-            action: async () => {
-                const env = Laras.bacaEnv();
-                const leaks = Object.keys(env).filter(k =>
-                    k.toLowerCase().includes('key') ||
-                    k.toLowerCase().includes('secret') ||
-                    k.toLowerCase().includes('password')
-                );
-
-                if (leaks.length > 0) {
-                    console.log(`[SENTINEL AUDIT] ⚠️  Terdeteksi ${leaks.length} rahasia terekspos di .env`);
-                }
-            }
-        });
-
-        // Task 2: Heartbeat log
-        this.daftarTugas({
-            id: 'heartbeat',
-            label: 'Denyut Nadi',
-            frequency: 1000 * 60 * 30, // 30 minutes
-            action: async () => {
-                console.log(`[SENTINEL] Pulse: ${new Date().toLocaleTimeString()} - Sistem Sehat.`);
-            }
-        });
-    }
+export interface RateLimitState {
+    attempts: number;
+    lastAttempt: number;
+    lockoutUntil?: number;
 }
+
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_DURATION = 5 * 60 * 1000; // 5 minutes
+const rateLimitStore = new Map<string, RateLimitState>();
+
+export const Sentinel = {
+    /**
+     * Constant-time string comparison to prevent timing attacks
+     * @param a First string
+     * @param b Second string
+     * @returns true if strings are equal
+     */
+    constantTimeCompare(a: string, b: string): boolean {
+        const encoder = new TextEncoder();
+        const aBytes = encoder.encode(a);
+        const bBytes = encoder.encode(b);
+
+        // Length check (still constant-time)
+        if (aBytes.length !== bBytes.length) {
+            // Still do comparison to maintain constant time
+            let dummy = 0;
+            for (let i = 0; i < aBytes.length; i++) {
+                dummy |= aBytes[i] ^ aBytes[i];
+            }
+            return false;
+        }
+
+        // Byte-by-byte comparison (constant-time)
+        let result = 0;
+        for (let i = 0; i < aBytes.length; i++) {
+            result |= aBytes[i] ^ bBytes[i];
+        }
+
+        return result === 0;
+    },
+
+    /**
+     * Check if operation is rate-limited
+     * @param key Unique identifier (e.g., vault ID, IP, user)
+     * @returns { allowed: boolean, remaining?: number, resetAt?: number }
+     */
+    checkRateLimit(key: string): { allowed: boolean; remaining?: number; resetAt?: number } {
+        const now = Date.now();
+        const state = rateLimitStore.get(key);
+
+        // No previous attempts - allow
+        if (!state) {
+            rateLimitStore.set(key, {
+                attempts: 1,
+                lastAttempt: now,
+            });
+            return { allowed: true, remaining: MAX_ATTEMPTS - 1 };
+        }
+
+        // Check if lockout period has expired
+        if (state.lockoutUntil) {
+            if (now < state.lockoutUntil) {
+                return {
+                    allowed: false,
+                    resetAt: state.lockoutUntil,
+                };
+            }
+            // Lockout expired - reset
+            rateLimitStore.set(key, {
+                attempts: 1,
+                lastAttempt: now,
+            });
+            return { allowed: true, remaining: MAX_ATTEMPTS - 1 };
+        }
+
+        // Check if we're still in the same minute window
+        const timeSinceLastAttempt = now - state.lastAttempt;
+        if (timeSinceLastAttempt > 60 * 1000) {
+            // Window expired - reset
+            rateLimitStore.set(key, {
+                attempts: 1,
+                lastAttempt: now,
+            });
+            return { allowed: true, remaining: MAX_ATTEMPTS - 1 };
+        }
+
+        // Check if max attempts reached
+        if (state.attempts >= MAX_ATTEMPTS) {
+            // Lockout
+            const lockoutUntil = now + LOCKOUT_DURATION;
+            rateLimitStore.set(key, {
+                attempts: state.attempts,
+                lastAttempt: now,
+                lockoutUntil,
+            });
+            return {
+                allowed: false,
+                resetAt: lockoutUntil,
+            };
+        }
+
+        // Increment attempts
+        rateLimitStore.set(key, {
+            attempts: state.attempts + 1,
+            lastAttempt: now,
+        });
+
+        return {
+            allowed: true,
+            remaining: MAX_ATTEMPTS - state.attempts - 1,
+        };
+    },
+
+    /**
+     * Reset rate limit for a key (e.g., after successful unlock)
+     * @param key Unique identifier
+     */
+    resetRateLimit(key: string): void {
+        rateLimitStore.delete(key);
+    },
+
+    /**
+     * Clear all rate limit data (e.g., on app shutdown)
+     */
+    clearAllRateLimits(): void {
+        rateLimitStore.clear();
+    },
+};
