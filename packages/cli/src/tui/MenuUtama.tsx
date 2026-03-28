@@ -20,25 +20,24 @@ const MENU_ITEMS = [
     { label: '✨  Keluar', value: 'keluar' },
 ];
 
+const LOGO = `
+  ██╗     ███████╗███╗   ███╗██████╗  █████╗ ██████╗  █████╗ ███╗   ██╗
+  ██║     ██╔════╝████╗ ████║██╔══██╗██╔══██╗██╔══██╗██╔══██╗████╗  ██║
+  ██║     █████╗  ██╔████╔██║██████╔╝███████║██████╔╝███████║██╔██╗ ██║
+  ██║     ██╔══╝  ██║╚██╔╝██║██╔══██╗██╔══██║██╔══██╗██╔══██║██║╚██╗██║
+  ███████╗███████╗██║ ╚═╝ ██║██████╔╝██║  ██║██║  ██║██║  ██║██║ ╚████║
+  ╚══════╝╚══════╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝ ╚═══╝
+`.trim();
+
 export const MenuUtama: React.FC<MenuUtamaProps> = ({ onPilih, aksiAwal }) => {
     const initialIndex = Math.max(0, MENU_ITEMS.findIndex(item => item.value === aksiAwal));
 
     return (
         <Box flexDirection="column" padding={1}>
-            {/* Logo Permanen Lembaran */}
-            <Box
-                borderStyle="round"
-                borderColor="blue"
-                paddingX={2}
-                paddingY={1}
-                marginBottom={2}
-            >
-                <Text color="blue" bold>
-                    📜 LEMBARAN v3.4.0
-                </Text>
-                <Text dimColor>
-                    Brankas Aksara Digital Personal
-                </Text>
+            {/* Logo ASCII Permanen Lembaran */}
+            <Box flexDirection="column" alignItems="center" marginBottom={2}>
+                <Text color="cyan">{LOGO}</Text>
+                <Text color="gray" dimColor>Brankas Aksara Personal yang Berdikari</Text>
             </Box>
 
             <Box borderStyle="round" borderColor="blue" paddingX={1} marginBottom={1}>
