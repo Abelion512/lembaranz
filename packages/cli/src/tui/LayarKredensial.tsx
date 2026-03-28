@@ -17,7 +17,15 @@ export const LayarKredensial: React.FC<LayarKredensialProps> = ({ onKembali }) =
         else if (step === 'password') {
             setStep('saving');
             try {
-                const { Arsip } = await import('@lembaran/core');
+                const { Arsip, Brankas } = await import('@lembaran/core');
+
+                // Cek apakah vault sudah dibuka
+                if (Brankas.isLocked()) {
+                    console.error('\n❌ Brankas terkunci! Silakan buka brankas terlebih dahulu dengan perintah: lembaran mulai');
+                    onKembali();
+                    return;
+                }
+
                 await Arsip.saveNote({
                     id: '',
                     title: `🛡️ ${data.label}`,
@@ -34,9 +42,10 @@ export const LayarKredensial: React.FC<LayarKredensialProps> = ({ onKembali }) =
                     tags: ['Kredensial'],
                     createdAt: new Date().toISOString()
                 });
+                console.error('\n✅ Kredensial berhasil disimpan!');
                 onKembali();
             } catch (e) {
-                console.error(e);
+                console.error('\n❌ Gagal menyimpan:', e instanceof Error ? e.message : String(e));
                 onKembali();
             }
         }
