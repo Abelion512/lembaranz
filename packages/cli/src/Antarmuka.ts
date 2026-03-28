@@ -1,6 +1,4 @@
-import { Arsip, Laras, Pujangga, KonteksLaras } from '@lembaran/core';
-import { Sentinel } from '@lembaran/core/Sentinel';
-import { Brankas } from '@lembaran/core';
+import { Arsip, Laras, Pujangga, KonteksLaras, Brankas } from '@lembaran/core';
 import pc from 'picocolors';
 import prompts from 'prompts';
 import fs from 'node:fs/promises';
