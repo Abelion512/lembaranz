@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import { Arsip } from '@lembaran/core';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { type ChildProcess, spawn } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import { siapkanKonteks, bukaBrankasCLI } from '../utils.js';
 import prompts from 'prompts';
 
@@ -186,11 +186,11 @@ export function registrasiPerintahEnv(program: Command) {
 
       console.log(`⚡ Menginjeksi konteks terisolasi '${targetTag}'...`);
 
-      const child: ChildProcess = spawn(cmd, args, {
+      const child = spawn(cmd, args, {
         stdio: 'inherit',
         shell: true,
         env: { ...process.env, ...parsedEnv }
-      });
+      }) as unknown as { on: (event: string, cb: (...args: any[]) => void) => void };
 
       child.on('error', (err: Error) => {
         console.error(`❌ Gagal menjalankan proses: ${err.message}`);
