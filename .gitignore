@@ -1,42 +1,78 @@
-# Lembaran .gitignore
+# ═══════════════════════════════════════════════════════════
+# 📜 LEMBARAN .GITIGNORE
+# Brankas Arsip Digital Personal - Buatan Indonesia 🇮🇩
+# ═══════════════════════════════════════════════════════════
 
-# Hasil Lint & Audit (file sementara, jangan di-commit)
-lint-results-*.txt
-eslint-report.json
+# ═══════════════════════════════════════════════════════════
+# 🔒 KEAMANAN & RAHASIA (JANGAN PERNAH DI-COMMIT)
+# ═══════════════════════════════════════════════════════════
 
-
-# testing
-/coverage
-/testsprite_tests/
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
+# Environment & Secrets
+.env*
+!.env.example
+!.env.template
 *.pem
+*.key
+*.crt
+*.secret
 
-# debug
+# Lembaran Vault (Database Terenkripsi)
+.lembaran/
+.lembaran-db.json
+*.lembaran
+
+# Credentials & Tokens
+credentials.json
+tokens.json
+*.token
+*.credentials
+
+# ═══════════════════════════════════════════════════════════
+# 🏗️ BUILD ARTIFACTS (HASIL KOMPILASI)
+# ═══════════════════════════════════════════════════════════
+
+# Next.js (Web)
+.next/
+out/
+build/
+dist/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Node.js
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# Bun
+bun.lockb.lock
 
-# vercel
-.vercel
+# ═══════════════════════════════════════════════════════════
+# 🧪 TESTING & DEBUGGING
+# ═══════════════════════════════════════════════════════════
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# Test Coverage
+coverage/
 
-# agents & skills
+# Test Results (kecuali template)
+testsprite_tests/
+!testsprite_tests/README.md
+!testsprite_tests/templates/
+
+# Logs
+*.log
+dev_server.log
+dev_output.log
+
+# ═══════════════════════════════════════════════════════════
+# 💻 AI AGENT CONFIGS (PRIBADI - TIDAK PERLU DI-COMMIT)
+# ═══════════════════════════════════════════════════════════
+
+# AI Agent Directories (semua agent)
 .agents/
 .adal/
 .aistudio/
@@ -78,20 +114,106 @@ next-env.d.ts
 .windsurf/
 .kode/
 .neovate/
-dev_server.log
-dev_output.log
-*.log
 
-# Catch-all for skills directories
+# Skills directories (catch-all)
 **/skills/
 .*/*/skills/
 
-# CLI Artifacts
-lembaran.exe
-.lembaran-db.json
-.lembaran/
-packages/web/.next
-packages/web/out
-packages/cli/dist
-node_modules
-*.log
+# ═══════════════════════════════════════════════════════════
+# 🖥️ SYSTEM & EDITOR FILES
+# ═══════════════════════════════════════════════════════════
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.fuse_hidden*
+.Trash-*
+
+# IDE & Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Vercel
+.vercel/
+
+# ═══════════════════════════════════════════════════════════
+# 📦 PUBLIKASI & PACKAGES
+# ═══════════════════════════════════════════════════════════
+
+# CLI Build Artifacts
+packages/cli/dist/
+packages/cli/*.exe
+packages/cli/*.bin
+
+# NPM Package (jika publish)
+*.tgz
+*.tar.gz
+
+# ═══════════════════════════════════════════════════════════
+# ✅ YANG HARUS DI-COMMIT (PUBLIK)
+# ═══════════════════════════════════════════════════════════
+
+# ✅ Source Code
+# *.ts
+# *.tsx
+# *.js
+# *.jsx
+# *.css
+# *.json
+
+# ✅ Dokumentasi
+# docs/*.md
+# README.md
+# CHANGELOG.md
+# PRD.md
+# CONTRIBUTING.md
+# SECURITY.md
+
+# ✅ Konfigurasi
+# package.json
+# tsconfig.json
+# next.config.ts
+# eslint.config.mjs
+# .github/
+
+# ✅ Scripts
+# scripts/*.ts
+# scripts/*.sh
+
+# ✅ Git Hooks
+# .githooks/
+# .git/hooks/ (auto-generated)
+
+# ═══════════════════════════════════════════════════════════
+# 📝 CATATAN
+# ═══════════════════════════════════════════════════════════
+
+# File yang TIDAK ada di .gitignore akan otomatis TER-TRACK
+# Jadi tidak perlu explicit include di sini.
+
+# Jika butuh commit file yang di-ignore:
+# git add -f <filename>
+
+# Untuk cek file yang di-ignore:
+# git check-ignore -v <filename>
+
+# ═══════════════════════════════════════════════════════════
+# 🇮🇩 DIBUAT DENGAN BANGGA DI INDONESIA
+# ═══════════════════════════════════════════════════════════
