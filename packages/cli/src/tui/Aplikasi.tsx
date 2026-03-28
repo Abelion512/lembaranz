@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Box, useApp, useInput } from 'ink';
 import { BarStatus } from './BarStatus.js';
 import { LayarSelamat } from './LayarSelamat.js';
@@ -18,6 +18,12 @@ interface AplikasiProps {
     versi: string;
 }
 
+interface SessionStats {
+    startTime: number;
+    menuVisits: number;
+    screensViewed: string[];
+}
+
 export const Aplikasi: React.FC<AplikasiProps> = ({ konteks, versi }) => {
     const { exit } = useApp();
     const [layar, setLayar] = useState<Layar>('selamat');
@@ -25,7 +31,24 @@ export const Aplikasi: React.FC<AplikasiProps> = ({ konteks, versi }) => {
     const [aksiTerakhir, setAksiTerakhir] = useState<string | undefined>();
     const [exitAttempts, setExitAttempts] = useState(0);
 
-    const keMenu = useCallback(() => setLayar('menu'), []);
+    // Session tracking
+    const sessionStats = useRef<SessionStats>({
+        startTime: Date.now(),
+        menuVisits: 0,
+        screensViewed: []
+    });
+
+    const keMenu = useCallback(() => {
+        sessionStats.current.menuVisits++;
+        setLayar('menu');
+    }, []);
+
+    // Track screen views
+    React.useEffect(() => {
+        if (layar !== 'selamat' && !sessionStats.current.screensViewed.includes(layar)) {
+            sessionStats.current.screensViewed.push(layar);
+        }
+    }, [layar]);
 
     const handlePilih = useCallback((aksi: string) => {
         setAksiTerakhir(aksi);
@@ -50,28 +73,60 @@ export const Aplikasi: React.FC<AplikasiProps> = ({ konteks, versi }) => {
                 setLayar('pesan');
                 break;
             case 'keluar':
-                exit();
+                showSessionSummaryAndExit();
                 break;
             default:
                 setPesan({ jenis: 'info', judul: `Fitur "${aksi}" akan segera hadir di versi TUI berikutnya.` });
                 setLayar('pesan');
                 break;
         }
-    }, [exit]);
+    }, []);
 
-    // Global exit handler with double-verify
+    const showSessionSummaryAndExit = () => {
+        const duration = Math.floor((Date.now() - sessionStats.current.startTime) / 1000);
+        const minutes = Math.floor(duration / 60);
+        const seconds = duration % 60;
+        const screens = sessionStats.current.screensViewed.join(', ') || 'Menu Utama';
+
+        console.log('\n╭─────────────────────────────────────────────────────────────────╮');
+        console.log('│  📊 Session Summary                                             │');
+        console.log('├─────────────────────────────────────────────────────────────────┤');
+        console.log(`│  Duration:    ${String(minutes).padStart(2)}m ${String(seconds).padStart(2)}s${' '.repeat(35)}│`);
+        console.log(`│  Menu Visits: ${String(sessionStats.current.menuVisits).padStart(2)}${' '.repeat(48)}│`);
+        console.log(`│  Screens:     ${screens.substring(0, 42).padEnd(42)}│`);
+        console.log('├─────────────────────────────────────────────────────────────────┤');
+        console.log('│  💡 Tip: Gunakan "lembaran cari" untuk mencari catatan lama    │');
+        console.log('╰─────────────────────────────────────────────────────────────────╯');
+        console.log('\n👋 Sampai jumpa di lain waktu!\n');
+        exit();
+    };
+
+    // Global exit handler with double-verify and info
     useInput((input, key) => {
         // Check for exit keys (Ctrl+C, Q, Esc)
         const isExitKey = (key.ctrl && input === 'c') || input === 'q' || key.escape;
 
         if (isExitKey) {
             if (exitAttempts === 0) {
-                // First attempt - show warning
+                // First attempt - show warning with info
                 setExitAttempts(1);
                 setPesan({
                     jenis: 'info',
                     judul: '⚠️  Tekan sekali lagi untuk keluar (atau tunggu 3 detik)'
                 });
+
+                // Show exit info after 1 second
+                setTimeout(() => {
+                    if (exitAttempts === 1) {
+                        console.log('\n╭─────────────────────────────────────────────────────────────────╮');
+                        console.log('│  ℹ️  Exit Info                                                   │');
+                        console.log('├─────────────────────────────────────────────────────────────────┤');
+                        console.log('│  • Tekan Ctrl+C / Q / Esc sekali lagi untuk keluar             │');
+                        console.log('│  • Atau tunggu 3 detik untuk membatalkan                       │');
+                        console.log('│  • Session summary akan ditampilkan setelah keluar             │');
+                        console.log('╰─────────────────────────────────────────────────────────────────╯\n');
+                    }
+                }, 1000);
 
                 // Auto-reset after 3 seconds
                 setTimeout(() => {
@@ -79,9 +134,8 @@ export const Aplikasi: React.FC<AplikasiProps> = ({ konteks, versi }) => {
                     setPesan(null);
                 }, 3000);
             } else {
-                // Second attempt - actually exit
-                console.log('\n👋 Sampai jumpa! Lembaran ditutup.\n');
-                exit();
+                // Second attempt - show session summary and exit
+                showSessionSummaryAndExit();
             }
             return;
         }
