@@ -14,8 +14,8 @@ export class AuditLog {
         try {
             // Dynamic imports for Node.js ESM environments
             const [fs, path] = await Promise.all([
-                import('node:fs/promises'),
-                import('node:path')
+                import('fs/promises'),
+                import('path')
             ]);
 
             const sakuDir = (await Laras.temukanJalur('saku')).replace('saku.json', '');
@@ -40,8 +40,8 @@ export class AuditLog {
 
         try {
             const [fs, path] = await Promise.all([
-                import('node:fs/promises'),
-                import('node:path')
+                import('fs/promises'),
+                import('path')
             ]);
 
             const sakuDir = (await Laras.temukanJalur('saku')).replace('saku.json', '');

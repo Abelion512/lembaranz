@@ -1,6 +1,6 @@
 import { StorageAdapter, LembaranSchema } from './types';
-import fs from 'node:fs/promises';
-import path from 'node:path';
+import fs from 'fs/promises';
+import path from 'path';
 
 const DEFAULT_DB_FILE = '.lembaran-db.json';
 
@@ -27,7 +27,7 @@ export class FileAdapter implements StorageAdapter {
         }
 
         if (process.env.DEBUG === 'true') {
-            if (process.env.DEBUG === 'true') console.log(`[FILE_ADAPTER] Open: ${this.filePath}`);
+            console.log(`[FILE_ADAPTER] Open: ${this.filePath}`);
         }
     }
 

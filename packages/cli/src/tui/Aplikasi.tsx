@@ -103,8 +103,8 @@ export const Aplikasi: React.FC<AplikasiProps> = ({ konteks, versi }) => {
     }[layar] || 'Menu Utama';
 
     return (
-        <Box flexDirection="column">
-            <Box flexDirection="column" marginBottom={1}>
+        <Box flexDirection="column" key="aplikasi-root">
+            <Box flexDirection="column" marginBottom={1} key="aplikasi-content">
                 {renderLayar()}
             </Box>
             <BarStatus konteks={konteks} versi={versi} layar={namaLayar} />

@@ -6,15 +6,49 @@
         "mulai_menulis": "Mulai Menulis",
         "unduh_app": "Unduh App"
     },
+    "Aksi": {
+        "Kembali": "Kembali",
+        "Simpan": "Simpan",
+        "Batal": "Batal",
+        "Hapus": "Hapus",
+        "Ubah": "Ubah",
+        "BukaBrankas": "Buka Brankas"
+    },
+    "Selasar": {
+        "Dokumentasi": "Dokumentasi",
+        "Fitur": "Fitur",
+        "Changelog": "Versi",
+        "Bantuan": "Bantuan",
+        "Produk": "Produk",
+        "Keamanan": "Keamanan",
+        "Cari": "Cari dokumentasi...",
+        "Pengenalan": "Pengenalan",
+        "Ringkasan": "Ringkasan",
+        "Berdikari": "Mulai Berdikari",
+        "Performa": "Optimasi Performa",
+        "Instalasi": "Instalasi & Penggunaan",
+        "PasangCLI": "Pasang CLI",
+        "Referensi": "Referensi",
+        "DaftarPerintah": "Daftar Perintah",
+        "StrukturData": "Struktur Data"
+    },
+    "Kemudi": {
+        "HakCipta": "© 2026 Lembaran Open Source.",
+        "Privasi": "Privasi",
+        "Ketentuan": "Ketentuan",
+        "Bantuan": "Bantuan",
+        "Unduh": "Unduh App"
+    },
     "Landing": {
+        "KataKunci": ["Berdikari", "Aman", "Cerdas", "Pribadi", "Instan"],
         "badge": "Kecerdasan Personal Lokal-First",
         "hero_prefix": "Aksara yang",
         "hero_words": [
-            "Berdikari",
+            "Berwibawa",
             "Aman",
-            "Cerdas",
+            "Tangguh",
             "Pribadi",
-            "Instan"
+            "Efisien"
         ],
         "tagline": "Brankas aksara personal yang mengutamakan privasi absolut, performa instan, dan kecerdasan buatan on-device.",
         "footer_copyright": "© 2025 Lembaran Open Source.",
@@ -56,7 +90,12 @@
         "buka_navigasi": "Buka navigasi",
         "tutup": "Tutup sidebar",
         "cari_placeholder": "Cari di halaman ini...",
-        "footer": "© 2026 Lembaran Documentation Engine."
+        "footer": "© 2026 Lembaran Documentation Engine.",
+        "pusat_bantuan": "Pusat Bantuan",
+        "pusat_bantuan_desc": "Selamat datang di dokumentasi resmi Lembaran. Temukan panduan untuk menguasai kedaulatan data Anda.",
+        "footer_tanya_judul": "Butuh bantuan lebih lanjut?",
+        "footer_tanya_desc": "Buka diskusi di repositori GitHub kami untuk bertanya langsung kepada pengembang.",
+        "footer_tanya_tombol": "Buka Diskusi GitHub"
     },
     "SaklarBahasa": {
         "label": "Bahasa",

@@ -1,6 +1,6 @@
 # Panduan Mulai Cepat Lembaran
 
-Selamat datang di **Lembaran**, platform brankas aksara personal yang puitis dan aman. Panduan ini akan membantu Anda menyiapkan sistem dan memulai perjalanan menuju kedaulatan data.
+Selamat datang di **Lembaran**, platform brankas data personal yang aman dan terenkripsi. Panduan ini akan membantu Anda menyiapkan sistem dan mengelola data Anda secara mandiri.
 
 ## ⚡ Prasyarat
 
@@ -27,12 +27,9 @@ Jika Anda lebih suka menyiapkannya secara manual:
 git clone https://github.com/Abelion512/lembaran.git
 cd lembaran
 
-# Instal dependensi
+# Instal dependensi dan daftarkan CLI
 bun install
-
-# Instal CLI secara global
-cd packages/cli
-bun install -g .
+bun link
 ```
 
 ## 🎭 Menjalankan Pertama Kali
@@ -45,7 +42,7 @@ lembaran mulai
 ### Langkah Persiapan Awal:
 1.  **Inisialisasi Brankas**: Sistem akan mendeteksi jika brankas Anda belum disiapkan.
 2.  **Buat Kata Sandi**: Pilih kata sandi yang kuat. **Penting:** Kami tidak menyimpan kata sandi Anda. Jika Anda lupas, data Anda tidak dapat dipulihkan.
-3.  **Mulai Menulis**: Gunakan perintah `ukir` atau antarmuka web untuk menyimpan "Aksara" (catatan) pertama Anda.
+3.  **Mulai Menulis**: Gunakan perintah `ukir` atau antarmuka web untuk menyimpan catatan pertama Anda.
 
 ## 🌐 Antarmuka Web
 

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import {
     Key, Mail, Github,
     Layout, Bot, ShieldCheck,
@@ -469,8 +470,7 @@ const OfficialIcon = ({ name, size }: { name: string, size: number }) => {
 
     if (domain && !imgError && domain !== 'google.com') {
         return (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
                 src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
                 alt={name}
                 width={size}
@@ -478,6 +478,7 @@ const OfficialIcon = ({ name, size }: { name: string, size: number }) => {
                 key={domain}
                 className="rounded-sm object-contain"
                 onError={() => setImgError(true)}
+                unoptimized
             />
         );
     }

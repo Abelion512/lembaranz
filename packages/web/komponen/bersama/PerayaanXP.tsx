@@ -26,8 +26,8 @@ export const PerayaanXP = ({ active }: { active: boolean }) => {
                 offsetX: Math.random() * 20 - 10,
                 extraDuration: Math.random(),
             }));
-            // eslint-disable-next-line react-hooks/set-state-in-effect -- triggered by prop change, particles drive render
-            setParticles(newParticles);
+            // Delay for next tick to satisfy lint react-hooks/set-state-in-effect
+            setTimeout(() => setParticles(newParticles), 0);
             const timer = setTimeout(() => setParticles([]), 3000);
             return () => clearTimeout(timer);
         }

@@ -30,7 +30,9 @@ export function bacaBerkas(namaBerkas: string): string | null {
             if (fs.existsSync(p) && fs.statSync(p).isFile()) {
                 return fs.readFileSync(p, 'utf8');
             }
-        } catch (_e) { }
+        } catch (_e) {
+            // Diabaikan: kegagalan IO pada lokasi pencarian tertentu
+        }
     }
 
     // Usaha terakhir: telusuri direktori ke atas dengan batasan ketat (max 2 level)
@@ -39,7 +41,9 @@ export function bacaBerkas(namaBerkas: string): string | null {
         const target = path.join(currentDir, normalizedRelativePath);
         try {
             if (fs.existsSync(target) && fs.statSync(target).isFile()) return fs.readFileSync(target, 'utf8');
-        } catch (_e) { }
+        } catch (_e) {
+            // Diabaikan: kegagalan IO pada traversal direktori
+        }
 
         const parent = path.dirname(currentDir);
         if (parent === currentDir) break;

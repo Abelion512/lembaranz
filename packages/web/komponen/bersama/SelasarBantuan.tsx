@@ -11,34 +11,36 @@ import {
 } from 'lucide-react';
 import { haptic } from '@lembaran/core/Indera';
 import { usePathname } from '@/i18n/navigation';
-
-const SECTIONS = [
-    {
-        title: 'Pengenalan',
-        items: [
-            { id: '', label: 'Ringkasan', icon: Book },
-            { id: 'publik', label: 'Mulai Berdikari', icon: Rocket },
-            { id: 'keamanan', label: 'Keamanan', icon: Shield },
-            { id: 'performa', label: 'Performa', icon: Zap },
-        ]
-    },
-    {
-        title: 'Instalasi',
-        items: [
-            { id: 'cli', label: 'Pasang CLI', icon: Download },
-        ]
-    },
-    {
-        title: 'Referensi',
-        items: [
-            { id: 'perintah', label: 'Daftar Perintah', icon: Command },
-            { id: 'struktur', label: 'Struktur Data', icon: Database },
-        ]
-    },
-];
+import { useTranslations } from 'next-intl';
 
 export const SelasarBantuan = () => {
+    const t = useTranslations();
     const pathname = usePathname();
+
+    const SECTIONS = [
+        {
+            title: t('Selasar.Pengenalan') || 'Pengenalan',
+            items: [
+                { id: '', label: t('Selasar.Ringkasan') || 'Ringkasan', icon: Book },
+                { id: 'publik', label: t('Selasar.Berdikari') || 'Mulai Berdikari', icon: Rocket },
+                { id: 'keamanan', label: t('Selasar.Keamanan') || 'Keamanan', icon: Shield },
+                { id: 'performa', label: t('Selasar.Performa') || 'Performa', icon: Zap },
+            ]
+        },
+        {
+            title: t('Selasar.Instalasi') || 'Instalasi',
+            items: [
+                { id: 'cli', label: t('Selasar.PasangCLI') || 'Pasang CLI', icon: Download },
+            ]
+        },
+        {
+            title: t('Selasar.Referensi') || 'Referensi',
+            items: [
+                { id: 'perintah', label: t('Selasar.DaftarPerintah') || 'Daftar Perintah', icon: Command },
+                { id: 'struktur', label: t('Selasar.StrukturData') || 'Struktur Data', icon: Database },
+            ]
+        },
+    ];
 
     const isActive = (id: string) => {
         const fullPath = id === '' ? '/bantuan' : `/bantuan/${id}`;

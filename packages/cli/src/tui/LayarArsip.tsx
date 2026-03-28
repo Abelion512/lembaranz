@@ -85,7 +85,7 @@ export const LayarArsip: React.FC<LayarArsipProps> = ({ onKembali }) => {
 
     if (selectedNoteId && selectedNote) {
         return (
-            <Box flexDirection="column" padding={1}>
+            <Box flexDirection="column" padding={1} key="note-detail-container">
                 <Box borderStyle="round" borderColor="cyan" paddingX={1} marginBottom={1}>
                     <Text bold color="cyan">📖 {selectedNote.title || 'Tanpa Judul'}</Text>
                 </Box>
@@ -96,7 +96,7 @@ export const LayarArsip: React.FC<LayarArsipProps> = ({ onKembali }) => {
                         <Text>{bersihkanAksaraTampilan(selectedNote.content) || '(Catatan Kosong)'}</Text>
                     </Box>
                     <Box>
-                        {selectedNote.tags?.map(t => <Text key={t} color="blue"> #{t}</Text>)}
+                        {selectedNote.tags?.map((t, idx) => <Text key={`${t}-${idx}`} color="blue"> #{t}</Text>)}
                     </Box>
                 </Box>
                 <Box marginTop={1} paddingX={1}>
@@ -107,7 +107,7 @@ export const LayarArsip: React.FC<LayarArsipProps> = ({ onKembali }) => {
     }
 
     return (
-        <Box flexDirection="column" padding={1}>
+        <Box flexDirection="column" padding={1} key="arsip-list-container">
             <Box borderStyle="round" borderColor="blue" paddingX={1} marginBottom={1} justifyContent="space-between">
                 <Text color="blue" bold>📂 JELAJAH ARSIP</Text>
                 <Text color="gray">[{filteredNotes.length} catatan]</Text>

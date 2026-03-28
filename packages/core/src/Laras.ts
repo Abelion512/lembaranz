@@ -18,9 +18,9 @@ export class Laras {
         if (typeof window !== 'undefined') return '';
 
         // Dynamic imports for ESM/Node compatibility
-        const path = await import('node:path');
-        const os = await import('node:os');
-        const fs = await import('node:fs');
+        const path = await import('path');
+        const os = await import('os');
+        const fs = await import('fs');
 
         const SAKU_DIR = path.join(os.homedir(), '.lembaran');
 
@@ -40,7 +40,7 @@ export class Laras {
         }
 
         if (process.env.DEBUG === 'true') {
-            if (process.env.DEBUG === 'true') console.log(`[LARAS] Jalur ${konteks}: ${jalur}`);
+            console.log(`[LARAS] Jalur ${konteks}: ${jalur}`);
         }
         return jalur;
     }
@@ -51,8 +51,8 @@ export class Laras {
     private static async temukanAkarProyek(dir: string = (typeof process !== 'undefined' ? process.cwd() : '')): Promise<string | null> {
         if (typeof window !== 'undefined') return null;
 
-        const path = await import('node:path');
-        const fs = await import('node:fs');
+        const path = await import('path');
+        const fs = await import('fs');
 
         const check = (curr: string): string | null => {
             if (fs.existsSync(path.join(curr, '.git')) || fs.existsSync(path.join(curr, 'package.json'))) {
@@ -71,8 +71,8 @@ export class Laras {
     static async deteksiKonteksOtomatis(): Promise<KonteksLaras> {
         if (typeof window !== 'undefined') return 'saku';
 
-        const path = await import('node:path');
-        const fs = await import('node:fs');
+        const path = await import('path');
+        const fs = await import('fs');
 
         const root = await this.temukanAkarProyek();
         if (root && fs.existsSync(path.join(root, this.PELATARAN_DIR, this.PELATARAN_FILE))) {
@@ -87,8 +87,8 @@ export class Laras {
     static async bacaEnv(): Promise<Record<string, string>> {
         if (typeof window !== 'undefined') return {};
 
-        const path = await import('node:path');
-        const fs = await import('node:fs');
+        const path = await import('path');
+        const fs = await import('fs');
 
         const root = await this.temukanAkarProyek();
         if (!root) return {};
@@ -121,8 +121,8 @@ export class Laras {
     static async simpanEnv(key: string, value: string): Promise<void> {
         if (typeof window !== 'undefined') return;
 
-        const path = await import('node:path');
-        const fs = await import('node:fs');
+        const path = await import('path');
+        const fs = await import('fs');
 
         const root = await this.temukanAkarProyek();
         if (!root) throw new Error('Akar proyek tidak ditemukan.');

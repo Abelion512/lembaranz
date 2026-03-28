@@ -90,14 +90,14 @@ export const LayarBukaBrankas: React.FC<LayarBukaBrankasProps> = ({ onBerhasil }
     if (isInit === null) return <Box padding={1}><Text color="cyan"><Spinner type="dots" /></Text></Box>;
 
     return (
-        <Box flexDirection="column" padding={1} alignItems="center">
+        <Box flexDirection="column" padding={1} alignItems="center" key="buka-brankas-root">
             <Box borderStyle="round" borderColor="yellow" paddingX={2} marginBottom={1}>
                 <Text bold color="yellow">
                     {mode === 'setup' ? '🔐 SIAPKAN BRANKAS BARU' : (mode === 'mnemonic' ? '🆘 PEMULIHAN AKSES' : '🔒 BRANKAS TERKUNCI')}
                 </Text>
             </Box>
 
-            <Box flexDirection="column" width={50} alignItems="center">
+            <Box flexDirection="column" width={50} alignItems="center" key="form-container">
                 <Text>
                     {mode === 'setup'
                         ? 'Tetapkan kata sandi utama untuk mengamankan aksara Anda.'
@@ -126,19 +126,19 @@ export const LayarBukaBrankas: React.FC<LayarBukaBrankasProps> = ({ onBerhasil }
                 </Box>
 
                 {isLoading && (
-                    <Box marginTop={1}>
+                    <Box marginTop={1} key="loading-box">
                         <Text color="cyan"><Spinner type="dots" /> Memproses...</Text>
                     </Box>
                 )}
 
                 {error && (
-                    <Box marginTop={1}>
+                    <Box marginTop={1} key="error-box">
                         <Text color="red">❌ {error}</Text>
                     </Box>
                 )}
 
                 {!isLoading && (
-                    <Box marginTop={1} flexDirection="column" alignItems="center">
+                    <Box marginTop={1} flexDirection="column" alignItems="center" key="help-box">
                         <Text color="gray" dimColor>Tekan [Enter] untuk konfirmasi</Text>
                         {mode === 'unlock' && (
                             <Text color="blue" dimColor>Tekan [r] untuk menggunakan Kunci Kertas</Text>

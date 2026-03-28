@@ -1,5 +1,6 @@
 export * from './Arsip';
 export * from './AuditLog';
+export * from './CrashReporter';
 export * from './Brankas';
 export * from './Gudang';
 export * from './GunakanTunda';

@@ -1,10 +1,35 @@
 {
   "name": "@lembaran/cli",
-  "version": "3.2.0",
+  "version": "3.4.0",
+  "description": "Lembaran CLI - Brankas Aksara Personal yang Berdikari",
+  "author": "Abelion Lavv <agen.salva@gmail.com>",
+  "license": "MIT",
   "private": false,
   "type": "module",
+  "keywords": [
+    "lembaran",
+    "notes",
+    "vault",
+    "encrypted",
+    "cli",
+    "privacy",
+    "local-first",
+    "indonesia"
+  ],
+  "homepage": "https://github.com/Abelion512/lembaran#readme",
+  "bugs": {
+    "url": "https://github.com/Abelion512/lembaran/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Abelion512/lembaran.git"
+  },
   "bin": {
     "lembaran": "./src/main.ts"
+  },
+  "engines": {
+    "bun": ">=1.3.0",
+    "node": ">=20.0.0"
   },
   "scripts": {
     "start": "bun ./src/main.ts",

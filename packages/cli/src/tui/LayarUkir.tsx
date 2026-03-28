@@ -52,13 +52,13 @@ export const LayarUkir: React.FC<LayarUkirProps> = ({ onKembali }) => {
     });
 
     return (
-        <Box flexDirection="column" padding={1}>
+        <Box flexDirection="column" padding={1} key="ukir-root">
             <Box borderStyle="round" borderColor="green" paddingX={1} marginBottom={1}>
                 <Text bold color="green">📝 UKIR AKSARA BARU</Text>
             </Box>
 
             {step === 'title' && (
-                <Box flexDirection="column">
+                <Box flexDirection="column" key="step-title">
                     <Text>Masukkan judul catatan:</Text>
                     <Box marginTop={1} borderStyle="single" borderColor="gray" paddingX={1}>
                         <TextInput
@@ -75,7 +75,7 @@ export const LayarUkir: React.FC<LayarUkirProps> = ({ onKembali }) => {
             )}
 
             {step === 'content' && (
-                <Box flexDirection="column">
+                <Box flexDirection="column" key="step-content">
                     <Text>Judul: <Text color="green" bold>{title}</Text></Text>
                     <Box marginTop={1}>
                         <Text>Masukkan isi aksara:</Text>
@@ -95,13 +95,13 @@ export const LayarUkir: React.FC<LayarUkirProps> = ({ onKembali }) => {
             )}
 
             {step === 'saving' && (
-                <Box>
+                <Box key="step-saving">
                     <Text color="cyan"><Spinner type="dots" /> Mengabadikan aksara...</Text>
                 </Box>
             )}
 
             {step === 'error' && (
-                <Box flexDirection="column">
+                <Box flexDirection="column" key="step-error">
                     <Text color="red" bold>❌ Terjadi Kesalahan:</Text>
                     <Text color="red">{errorMessage}</Text>
                     <Box marginTop={1}>

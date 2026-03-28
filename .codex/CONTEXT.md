@@ -3,7 +3,7 @@
 > **Catatan**: Dokumen ini adalah pedoman teknis tingkat 3. Hierarki lengkap: `.Jules/SPEC.md` (Utama) → `.agent/rules/proyek.md` (Proyek) → dokumen ini (Teknis).
 
 Panduan konteks teknis untuk arsitektur, setup lingkungan, aturan locale, dan standar keamanan Lembaran.
-_Diperbarui: 28 Februari 2026 — v3.2.0_
+_Diperbarui: 28 Maret 2026 — v3.4.0_
 
 ## 🏛️ Arsitektur & Terminologi
 
@@ -23,7 +23,7 @@ Proyek ini menggunakan konvensi penamaan **Indonesia Puitis** untuk menjaga kede
 lembaran/
 ├── packages/
 │   ├── core/       — @lembaran/core (logika bisnis, enkripsi, storage)
-│   ├── web/        — @lembaran/web (Next.js 15, Glass OS aesthetic)
+│   ├── web/        — @lembaran/web (Next.js 16, Glass OS aesthetic)
 │   └── cli/        — @lembaran/cli (TUI berbasis Ink/React)
 ├── docs/           — Dokumentasi bilingual (id/ & en/)
 ├── .agent/         — Aturan & workflow untuk AI agent
@@ -47,7 +47,20 @@ bun run dev
 lembaran
 ```
 
-> ⚠️ **Catatan Lingkungan**: Dev server menggunakan **Webpack** (bukan Turbopack) karena proyek berjalan di partisi NTFS/exFAT yang tidak mendukung symlink dari Turbopack. Node.js v20+ diperlukan.
+> ⚠️ **Catatan Lingkungan**: Dev server menggunakan **Webpack** (bukan Turbopack) karena proyek berjalan di partisi NTFS/exFAT yang tidak mendukung symlink dari Turbopack. Node.js v20+ atau Bun v1.3+ diperlukan.
+
+### Instalasi CLI
+
+Untuk instalasi global yang benar:
+```bash
+# Dari root monorepo (RECOMMENDED)
+bun link
+
+# Atau via script instalasi
+curl -fsSL https://lembaran.vercel.app/install.sh | bash
+```
+
+> 💡 **Note**: Gunakan `bun link` dari root monorepo untuk menangani workspace dependencies dengan benar. Hindari `bun install -g .` dari subdirektori.
 
 ## 🔒 Standar Keamanan (Sentinel)
 

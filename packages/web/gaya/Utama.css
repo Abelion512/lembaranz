@@ -21,17 +21,17 @@
     --text-muted: rgba(60, 60, 67, 0.6);
     --glass-bg: rgba(255, 255, 255, 0.75);
     --glass-border: rgba(0, 0, 0, 0.05);
-    --glass-blur: 32px;
+    --glass-blur: 64px;
     --separator: #C6C6C8;
     --noise-opacity: 0.02;
     --font-weight-thin: 200;
     --font-weight-light: 300;
     --font-weight-normal: 400;
-    --tracking-spacious: 0.05em;
+    --tracking-spacious: 0.1em;
 }
 
 [data-theme='dark'] {
-    --background: #000000;
+    --background: #0a0a0f;
     --surface: #1C1C1E;
     --text-primary: #FFFFFF;
     --text-secondary: rgba(235, 235, 245, 0.85);
@@ -74,8 +74,39 @@
         letter-spacing: 0.05em;
     }
 
+    /* Adaptive Micro Scrollbar (Liquid Glass) */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+        background-color: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        background-color: var(--separator);
+        border-radius: 10px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+        transition: background-color 0.2s;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: var(--text-muted);
+        border: 1px solid transparent;
+    }
+    ::-webkit-scrollbar-track {
+        background-color: transparent;
+    }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Global Icon Refinement */
+    .lucide {
+        stroke-width: 1.5;
+        transition: stroke-width 0.2s;
+    }
+
+    button:hover .lucide,
+    a:hover .lucide {
+        stroke-width: 2;
+    }
 }
 
 @layer components {

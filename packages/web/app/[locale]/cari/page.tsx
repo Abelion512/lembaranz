@@ -101,11 +101,11 @@ export default function SearchPage() {
             }
             return null;
         }).filter(Boolean) as (Note & { isSmartMatch: boolean })[];
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [debouncedQuery, notes, decryptedCount]);
+        // Indikasi hasil pencarian cerdas
+    }, [debouncedQuery, notes]);
 
     return (
-        <div className="flex-1 flex flex-col min-h-0 px-5 pt-14 pb-32 overflow-hidden bg-[var(--background)]">
+        <div className="flex-1 flex flex-col min-h-0 px-5 pt-14 pb-32 overflow-hidden bg-(--background)">
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-3xl font-bold tracking-tight">Cari</h1>
                 {decryptedCount > 0 && (
@@ -117,7 +117,7 @@ export default function SearchPage() {
             </div>
 
             <div className="relative mb-8">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)]">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-(--text-secondary)">
                     <SearchIcon size={20} />
                 </div>
                 <input
@@ -125,13 +125,13 @@ export default function SearchPage() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Cari judul atau isi..."
-                    className="w-full pl-12 pr-12 py-4 rounded-2xl bg-[var(--surface)] border-none focus:ring-2 focus:ring-blue-500/50 focus:outline-none shadow-sm text-[17px] placeholder:opacity-40 transition-all"
+                    className="w-full pl-12 pr-12 py-4 rounded-2xl bg-(--surface) border-none focus:ring-2 focus:ring-blue-500/50 focus:outline-none shadow-sm text-[17px] placeholder:opacity-40 transition-all"
                     aria-label="Kotak pencarian"
                 />
                 {query && (
                     <button
                         onClick={() => { setQuery(""); haptic.light(); }}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-[var(--separator)]/10 text-[var(--text-secondary)] active:scale-90 transition-all"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-(--separator)/10 text-(--text-secondary) active:scale-90 transition-all"
                         aria-label="Bersihkan pencarian"
                     >
                         <X size={18} />
@@ -167,7 +167,7 @@ export default function SearchPage() {
                                                 <Highlight text={note.title || 'Tanpa Judul'} query={debouncedQuery} />
                                             </h3>
                                             {note.isSmartMatch && (
-                                                <span className="flex-shrink-0 text-[9px] font-black bg-blue-500 text-white px-1.5 py-0.5 rounded uppercase tracking-tighter">
+                                                <span className="shrink-0 text-[9px] font-black bg-blue-500 text-white px-1.5 py-0.5 rounded uppercase tracking-tighter">
                                                     Isi
                                                 </span>
                                             )}
@@ -176,12 +176,12 @@ export default function SearchPage() {
                                             <span className="text-[11px] font-bold text-blue-500 opacity-40">
                                                 {new Date(note.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
                                             </span>
-                                            <p className="text-[11px] text-[var(--text-secondary)] truncate opacity-70">
+                                            <p className="text-[11px] text-(--text-secondary) truncate opacity-70">
                                                 <Highlight text={note.preview || 'Tanpa pratinjau'} query={debouncedQuery} />
                                             </p>
                                         </div>
                                     </div>
-                                    <ChevronRight size={14} className="text-[var(--separator)]" />
+                                    <ChevronRight size={14} className="text-(--separator)" />
                                 </Link>
                                 {index < filteredNotes.length - 1 && <div className="ios-separator"></div>}
                             </React.Fragment>

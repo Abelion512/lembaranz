@@ -1,12 +1,14 @@
 # Lembaran - Agent Guidelines
 
+> **Version**: 3.4.0 | **Updated**: 28 Maret 2026
+
 ## 🏛️ Struktur Monorepo (Packages)
 
 Proyek ini mengikuti konvensi penamaan 'Indonesia Puitis' dalam struktur monorepo:
 
 - `packages/core/src`: Logika inti, penyimpanan, dan utilitas (Jiwa).
 - `packages/cli/src`: Antarmuka terminal (TUI).
-- `packages/web/app`: Aplikasi Next.js (GUI & Landing Page).
+- `packages/web/app`: Aplikasi Next.js 16 (GUI & Landing Page).
 
 ## 🤖 Aturan Agen
 
@@ -37,16 +39,49 @@ Proyek ini mengikuti konvensi penamaan 'Indonesia Puitis' dalam struktur monorep
 - `bun run dev`: Jalankan Web (port 1400).
 - `bun run cli`: Jalankan CLI TUI.
 - `bun run test:perf`: Stress-test 1000 catatan.
+- `bun link`: Daftarkan CLI secara global (dari root).
+
+### Instalasi untuk Publikasi
+
+```bash
+# Development
+bun install && bun link
+
+# Build produksi
+bun run build
+
+# Publish ke npm (jika public)
+npm publish --access public
+```
 
 _Detail teknis kapabilitas Jules tersedia di `.Jules/MCP_CAPABILITIES.md`._
 
-## 📚 Sistem Dokumentasi Dinamis (v3.1.0)
+## 📚 Sistem Dokumentasi Dinamis (v3.4.0)
 
 Semua halaman bantuan di `/bantuan` kini menggunakan `DocRenderer.tsx`.
 
 - **Sumber Data**: Berkas `.md` di direktori `docs/` root.
 - **Sinkronisasi**: Menjalankan `bun run sinkron-aset` sebelum build akan menyalin dokumen ke `public/docs` untuk akses produksi.
 - **Tipografi**: Gunakan font-weight 300 (Thin) dan tracking-wide untuk menjaga estetika premium.
+
+## 🔧 Perubahan Terbaru (v3.4.0)
+
+### Fixed
+- Error handling dengan `{ cause: e }` untuk debugging yang lebih baik
+- TypeScript errors di CLI (ChildProcess typing)
+- Tailwind CSS warnings (var() syntax)
+- Instalasi CLI dengan `bun link` (workspace dependencies)
+- Proteksi timpa file .env di CLI
+
+### Added
+- Terjemahan lengkap untuk navigasi bantuan
+- Dokumentasi instalasi yang lebih jelas
+
+### Tech Stack Updates
+- Next.js 16.1.6 (App Router)
+- React 19.2.4
+- Tailwind CSS v4
+- Bun 1.3.11+
 
 ## 🛠️ Peningkatan CLI
 

@@ -29,10 +29,10 @@ const COMPARISON_DATA = [
         app: 'Butuh Resource Lebih'
     },
     {
-        feature: 'Saran Peran',
-        cli: 'Senior / Master',
-        web: 'Pemula / Junior',
-        app: 'Explorer / Power User'
+        feature: 'Target Pengguna',
+        cli: 'DevOps / Admin',
+        web: 'Pengguna Umum',
+        app: 'Power User'
     }
 ];
 
@@ -86,8 +86,8 @@ export const TabelPerbandingan = () => {
 
             <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="p-6 rounded-2xl bg-blue-500/5 border border-blue-500/10">
-                    <p className="text-xs font-bold text-blue-500 uppercase mb-2">Saran Maestro</p>
-                    <p className="text-sm text-gray-400">Gunakan CLI untuk automasi script dan manajemen server jarak jauh.</p>
+                    <p className="text-xs font-bold text-blue-500 uppercase mb-2">Rekomendasi CLI</p>
+                    <p className="text-sm text-gray-400">Gunakan CLI untuk automasi script dan manajemen data via terminal.</p>
                 </div>
                 <div className="p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
                     <p className="text-xs font-bold text-emerald-500 uppercase mb-2">Biometrik Web</p>

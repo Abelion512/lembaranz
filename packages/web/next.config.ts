@@ -1,5 +1,5 @@
 import type { NextConfig } from 'next';
-import path from 'node:path';
+import path from 'path';
 import { config as loadDotenv } from 'dotenv';
 import createNextIntlPlugin from 'next-intl/plugin';
 
@@ -20,14 +20,27 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/docs/:path*',
+        destination: '/bantuan/:path*',
+        permanent: true,
+      },
+    ];
+  },
   webpack: (config, { isServer, webpack }) => {
-    if (!isServer) {
-      config.plugins.push(
-        new webpack.NormalModuleReplacementPlugin(/^node:/, (resource: { request: string }) => {
-          resource.request = resource.request.replace(/^node:/, '');
-        })
-      );
+    config.plugins.push(
+      new webpack.NormalModuleReplacementPlugin(/^node:/, (resource: { request: string }) => {
+        resource.request = resource.request.replace(/^node:/, '');
+      })
+    );
 
+    // Fix TypeScript extension resolution for @lembaran/core
+    // Remove .js from extensions and prioritize .ts/.tsx
+    config.resolve.extensions = ['.ts', '.tsx', '.mjs', '.cjs', '.js', '.jsx', '.json'];
+
+    if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,

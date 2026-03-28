@@ -5,18 +5,9 @@ lint-results-*.txt
 eslint-report.json
 
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-
 # testing
 /coverage
+/testsprite_tests/
 
 # next.js
 /.next/

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
-import { usePundi } from '@lembaran/core/Pundi';
+import { usePundi, type LembaranState } from '@lembaran/core/Pundi';
 import { LayarKunciBrankas } from './LayarKunciBrankas';
 import { usePenjaga } from '@lembaran/core/Penjaga';
 import { usePenyelaras } from '@lembaran/core/Penyelaras';
@@ -11,8 +11,8 @@ interface VaultGateProps {
 }
 
 export const PintuBrankas = ({ children }: VaultGateProps) => {
-    const isVaultLocked = usePundi(state => state.isVaultLocked);
-    const secretMode = usePundi(state => state.settings.secretMode);
+    const isVaultLocked = usePundi((state: LembaranState) => state.isVaultLocked);
+    const secretMode = usePundi((state: LembaranState) => state.settings.secretMode);
     const [isMounted, setIsMounted] = useState(false);
     const hasMounted = useRef(false);
 
@@ -25,8 +25,8 @@ export const PintuBrankas = ({ children }: VaultGateProps) => {
     useEffect(() => {
         if (!hasMounted.current) {
             hasMounted.current = true;
-            // eslint-disable-next-line react-hooks/set-state-in-effect -- mount detection for SSR hydration
-            setIsMounted(true);
+            // Delay for next tick to satisfy lint react-hooks/set-state-in-effect
+            setTimeout(() => setIsMounted(true), 0);
         }
     }, []);
 

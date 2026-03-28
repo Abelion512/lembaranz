@@ -23,17 +23,17 @@ export const LayarSelamat: React.FC<LayarSelamatProps> = ({ konteks, versi, onSe
     }, [onSelesai]);
 
     return (
-        <Box flexDirection="column" alignItems="center" justifyContent="center" padding={1}>
-            <Box>
+        <Box flexDirection="column" alignItems="center" justifyContent="center" padding={1} key="selamat-root">
+            <Box key="logo-box">
                 <Text color="cyan">{LOGO}</Text>
             </Box>
 
-            <Box marginTop={1} flexDirection="column" alignItems="center">
+            <Box marginTop={1} flexDirection="column" alignItems="center" key="info-box">
                 <Text color="gray" dimColor>Brankas Aksara Personal yang Berdikari</Text>
                 <Text color="gray" dimColor>v{versi} • Konteks: <Text color="yellow" bold>{konteks.toUpperCase()}</Text></Text>
             </Box>
 
-            <Box marginTop={1}>
+            <Box marginTop={1} key="loading-box">
                 <Text color="gray" dimColor italic>Memuat antarmuka...</Text>
             </Box>
         </Box>

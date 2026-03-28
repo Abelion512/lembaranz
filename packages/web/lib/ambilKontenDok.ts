@@ -36,7 +36,6 @@ let cacheMetadata: IndeksMetadata | null = null;
  */
 export async function ambilKontenDok(slug: string, lang: 'id' | 'en' = 'id') {
     if (!slug || typeof slug !== 'string') return null;
-    if (lang !== 'id' && lang !== 'en') return null;
 
     const slugDibersihkan = slug.trim().replace(/[^a-zA-Z0-9_-]/g, '');
 
@@ -60,8 +59,6 @@ export async function ambilKontenDok(slug: string, lang: 'id' | 'en' = 'id') {
  * Menggunakan cache in-memory untuk meningkatkan performa pembacaan.
  */
 export async function ambilMetadataBantuan(lang: 'id' | 'en' = 'id') {
-    const validLang = (lang === 'id' || lang === 'en') ? lang : 'id';
-
     if (!cacheMetadata) {
         const raw = bacaBerkas('docs/indeks.json');
         if (!raw) {
@@ -76,5 +73,5 @@ export async function ambilMetadataBantuan(lang: 'id' | 'en' = 'id') {
         }
     }
 
-    return cacheMetadata![validLang] || cacheMetadata!['id'];
+    return cacheMetadata![lang] || cacheMetadata!['id'];
 }

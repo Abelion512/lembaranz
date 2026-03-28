@@ -72,7 +72,7 @@ function AddNoteContent() {
 
     const handleSelectSuggestion = (name: string, domain: string) => {
         // Respect brand-specific casing
-        let formattedName = name;
+        let formattedName: string;
         if (name.toLowerCase() === 'n8n') formattedName = 'n8n';
         else if (name.toLowerCase() === 'v0') formattedName = 'v0';
         else if (name.toLowerCase() === 's3') formattedName = 'S3';

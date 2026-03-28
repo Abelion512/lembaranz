@@ -21,7 +21,9 @@ export const PenyaringRute = ({ children }: { children: React.ReactNode }) => {
         '/tentang'
     ];
 
-    const isPublik = rutePublik.includes(pathname) || pathname.startsWith('/bantuan/');
+    // Normalisasi: hapus prefix locale (/id/... atau /en/...) sebelum pengecekan
+    const pathnameNormal = pathname.replace(/^\/(id|en)/, '') || '/';
+    const isPublik = rutePublik.includes(pathnameNormal) || pathnameNormal.startsWith('/bantuan/');
 
     if (isPublik) {
         return <div className="flex-1 flex flex-col w-full min-h-screen bg-[var(--background)]">{children}</div>;

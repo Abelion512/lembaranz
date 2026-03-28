@@ -4,7 +4,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { AppSettings, UserProfile } from './Rumus';
 
-interface LembaranState {
+export interface LembaranState {
     settings: AppSettings;
     profile: UserProfile;
     isVaultLocked: boolean;

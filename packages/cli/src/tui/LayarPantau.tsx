@@ -60,9 +60,9 @@ export const LayarPantau: React.FC<LayarPantauProps> = ({ konteks, onKembali }) 
                 <Text color="blue" bold>📊 Status Sistem [{konteks.toUpperCase()}]</Text>
             </Box>
 
-            <Box flexDirection="column" paddingX={1} gap={0}>
+            <Box flexDirection="column" paddingX={1} gap={0} key="status-container">
                 {/* Brankas Status */}
-                <Box borderStyle="round" borderColor={isInit ? 'green' : 'yellow'} paddingX={1} flexDirection="column" marginBottom={1}>
+                <Box key="brankas-status" borderStyle="round" borderColor={isInit ? 'green' : 'yellow'} paddingX={1} flexDirection="column" marginBottom={1}>
                     <Text bold>🔐 Brankas</Text>
                     <Text color={isInit ? 'green' : 'yellow'}>
                         {isInit ? '✅ Terinisialisasi' : '⚠️ Belum Disiapkan'}
@@ -73,7 +73,7 @@ export const LayarPantau: React.FC<LayarPantauProps> = ({ konteks, onKembali }) 
                 </Box>
 
                 {/* Security */}
-                <Box borderStyle="round" borderColor="green" paddingX={1} flexDirection="column" marginBottom={1}>
+                <Box key="security-status" borderStyle="round" borderColor="green" paddingX={1} flexDirection="column" marginBottom={1}>
                     <Text bold>🛡️ Keamanan</Text>
                     <Text color="green">✅ AES-GCM 256-bit</Text>
                     <Text color="green">✅ Argon2id (OWASP)</Text>
@@ -83,22 +83,22 @@ export const LayarPantau: React.FC<LayarPantauProps> = ({ konteks, onKembali }) 
 
                 {/* Stats */}
                 {stats && (
-                    <Box borderStyle="round" borderColor="cyan" paddingX={1} flexDirection="column" marginBottom={1}>
+                    <Box key="stats-section" borderStyle="round" borderColor="cyan" paddingX={1} flexDirection="column" marginBottom={1}>
                         <Text bold>📂 Statistik</Text>
-                        <Text color="cyan">Catatan: <Text bold>{stats.notes}</Text></Text>
-                        <Text color="magenta">Folder: <Text bold>{stats.folders}</Text></Text>
+                        <Text color="cyan">Catatan: <Text bold key="stats-notes">{stats.notes}</Text></Text>
+                        <Text color="magenta">Folder: <Text bold key="stats-folders">{stats.folders}</Text></Text>
                     </Box>
                 )}
 
                 {/* Environment */}
                 {envKeys.length > 0 && (
-                    <Box borderStyle="round" borderColor="gray" paddingX={1} flexDirection="column">
+                    <Box key="env-section" borderStyle="round" borderColor="gray" paddingX={1} flexDirection="column">
                         <Text bold>🌱 Pelataran (.env)</Text>
                         <Text color="gray">{envKeys.length} variabel terdeteksi</Text>
-                        {envKeys.slice(0, 5).map((k) => (
-                            <Text key={k} color="gray"> ├ {k}</Text>
+                        {envKeys.slice(0, 5).map((k, idx) => (
+                            <Text key={`env-${k}-${idx}`} color="gray"> ├ {k}</Text>
                         ))}
-                        {envKeys.length > 5 && <Text color="gray"> └ ...dan {envKeys.length - 5} lainnya</Text>}
+                        {envKeys.length > 5 && <Text key="env-more" color="gray"> └ ...dan {envKeys.length - 5} lainnya</Text>}
                     </Box>
                 )}
             </Box>

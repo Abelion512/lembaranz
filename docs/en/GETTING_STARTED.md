@@ -27,12 +27,9 @@ If you prefer to set it up manually:
 git clone https://github.com/Abelion512/lembaran.git
 cd lembaran
 
-# Install dependencies
+# Install dependencies and register CLI
 bun install
-
-# Install CLI globally
-cd packages/cli
-bun install -g .
+bun link
 ```
 
 ## 🎭 First Run

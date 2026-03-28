@@ -46,8 +46,8 @@ export const LayarKeamanan: React.FC<LayarKeamananProps> = ({ onKembali }) => {
             </Box>
 
             <Box flexDirection="column" paddingX={1} gap={0}>
-                {ITEMS.map((item) => (
-                    <Box key={item.judul} borderStyle="round" borderColor={item.warna} paddingX={1} flexDirection="column" marginBottom={1}>
+                {ITEMS.map((item, index) => (
+                    <Box key={`${item.judul}-${index}`} borderStyle="round" borderColor={item.warna} paddingX={1} flexDirection="column" marginBottom={1}>
                         <Text bold>{item.judul}</Text>
                         <Text color={item.warna}>{item.status}</Text>
                         <Text color="gray" dimColor>{item.detail}</Text>

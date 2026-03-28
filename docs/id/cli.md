@@ -1,5 +1,5 @@
 
-Lembaran CLI adalah pendamping setia bagi para pengembang. Ia dirancang untuk kecepatan, otomatisasi, dan kemudahan integrasi dengan alur kerja terminal Anda.
+Lembaran CLI adalah alat bantu utama untuk pengelolaan data. Ia dirancang untuk kecepatan, otomatisasi, dan kemudahan integrasi dengan alur kerja terminal Anda.
 
 ## Instalasi
 
@@ -62,4 +62,4 @@ Lembaran dirancang agar data Anda tetap aman dan dapat diakses selama bertahun-t
 4.  **Kedaulatan AI**: Dengan menggunakan `lembaran pengaturan`, Anda dapat dengan mudah mengganti provider AI (Gemini, dsb) kapan saja tanpa mengubah kode aplikasi.
 
 ---
-*Dibuat dengan ❤️ untuk para pengukir aksara yang mendambakan kebebasan digital.*
+*Dibuat untuk kebebasan digital dan kemandirian data.*

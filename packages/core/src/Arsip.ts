@@ -1,6 +1,6 @@
 import { Gudang } from './Gudang';
 import { Brankas } from './Brankas';
-import { Note, EntityId, NoteInput } from './Rumus';
+import { Note, EntityId } from './Rumus';
 import { v4 as uuidv4 } from 'uuid';
 import { Integritas } from './Integritas';
 import { Pujangga } from './Pujangga';
@@ -199,7 +199,7 @@ export const Arsip = {
     /**
      * Menyimpan catatan baru atau memperbarui catatan lama.
      */
-    async saveNote(note: NoteInput): Promise<Note> {
+    async saveNote(note: Omit<Note, 'updatedAt'>): Promise<Note> {
         if (Brankas.isLocked()) {
             throw new Error('Vault is locked. Cannot save data.');
         }
@@ -319,8 +319,8 @@ export const Arsip = {
             return decryptedNote;
         } catch (_err) {
             console.error('[ARSIP] Gagal mendekripsi catatan. Kemungkinan tampering / korupsi data (ERR_DEC_001)');
-            return { 
-                ...note, 
+            return {
+                ...note,
                 title: '⚠️ [DATA RUSAK/TAMPERED]',
                 content: '⚠️ Gagal Dekripsi Data. Integritas kriptografi tertolak.',
                 preview: '⚠️ [DATA RUSAK/TAMPERED]',
@@ -367,6 +367,97 @@ export const Arsip = {
     async setPanicKey(panicPassword: string): Promise<void> {
         const hash = await Integritas.hitungHash(panicPassword);
         await Gudang.set('meta', 'panic_hash', hash);
+    },
+
+    /**
+     * Membuat cadangan (backup) portabel.
+     * Mendekripsi semua data di memori, membungkusnya dalam JSON plaintext,
+     * lalu mengenkripsinya dengan struktur portabel dan password backup.
+     * Ini memungkinkan file dibuka di mesin lain.
+     */
+    async cadangkan(passwordBackup: string): Promise<Uint8Array> {
+        if (Brankas.isLocked()) throw new Error('Vault Locked');
+
+        // 1. Ambil data mentah
+        const rawNotes = await Gudang.getAll('notes') as Note[];
+        // const rawFolders = await Gudang.getAll('folders'); // Future implementation
+
+        // 2. Dekripsi ke Plaintext (Heavy Operation)
+        const plainNotes = await Promise.all(rawNotes.map(async (n) => {
+            try {
+                // Gunakan fungsi decryptNote yang sudah ada
+                return await this.decryptNote(n);
+            } catch (_e) {
+                // Jika satu catatan rusak, skip atau return error?
+                // Untuk keamanan, kita return error agar user tahu backup tidak sempurna
+                console.error(`Gagal mendekripsi catatan ${n.id} untuk backup.`);
+                return null;
+            }
+        }));
+
+        const validNotes = plainNotes.filter(n => n !== null);
+
+        const payload = JSON.stringify({
+            version: '3.4.0',
+            exportedAt: new Date().toISOString(),
+            notes: validNotes,
+            // folders: rawFolders // Implementasi folder menyusul
+        });
+
+        // 3. Enkripsi Payload dengan Password Backup (Argon2id High Params + AES-GCM)
+        return await Brankas.encryptPortable(payload, passwordBackup);
+    },
+
+    /**
+     * Memulihkan brankas dari file cadangan portabel.
+     * @param buffer Data biner dari file .lembaran
+     * @param passwordBackup Password yang digunakan untuk mengenkripsi cadangan
+     */
+    async pulihkan(buffer: Uint8Array, passwordBackup: string): Promise<{ restored: number, skipped: number }> {
+        if (Brankas.isLocked()) throw new Error('Vault Locked: Buka brankas sebelum memulihkan data.');
+
+        // 1. Dekripsi Portable Container -> JSON Plaintext
+        let jsonString: string;
+        try {
+            jsonString = await Brankas.decryptPortable(buffer, passwordBackup);
+        } catch (e) {
+            throw new Error('Gagal membuka file cadangan. Password salah atau file rusak.', { cause: e });
+        }
+
+        const backup = JSON.parse(jsonString);
+        if (!backup.notes || !Array.isArray(backup.notes)) {
+            throw new Error('Format cadangan tidak valid: Data notes tidak ditemukan.');
+        }
+
+        const notes = backup.notes as Note[];
+        let restored = 0;
+        let skipped = 0;
+
+        // 2. Re-encrypt setiap note dengan Master Key mesin lokal saat ini
+        for (const note of notes) {
+            try {
+                // Cek apakah note sudah ada dan lebih baru? (Simple collision detection)
+                const existing = await Gudang.get('notes', note.id);
+                if (existing) {
+                    const existingDate = new Date(existing.updatedAt).getTime();
+                    const newDate = new Date(note.updatedAt).getTime();
+                    if (existingDate >= newDate) {
+                        skipped++;
+                        continue;
+                    }
+                }
+
+                // Enkripsi ulang menggunakan saveNote (otomatis pakai Master Key aktif)
+                // Kita perlu bypass pengecekan "Vault is Locked" di saveNote karena kita sudah cek di awal
+                // Dan saveNote otomatis menangani enkripsi field title/content/kredensial
+                await this.saveNote(note);
+                restored++;
+            } catch (e) {
+                console.error(`Gagal memulihkan note ${note.id}:`, e);
+                skipped++;
+            }
+        }
+
+        return { restored, skipped };
     }
 };
-

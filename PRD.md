@@ -1,88 +1,150 @@
 # Product Requirements Document (PRD): Lembaran
 
-**Versi:** 3.3.0
-**Status:** Dokumentasi Sistem Menyeluruh
-**Pemilik Produk:** Abelion Lavv
-**Bahasa:** Bahasa Indonesia (Terminologi Puitis)
+### STATUS: FINAL — Siap di-execute (v3.5.0)
+
+> Lembaran: Ekosistem kedaulatan data dan manajemen arsip digital personal.
+> Menggabungkan keamanan tingkat tinggi dengan estetika premium "Liquid Glass".
+> **Konvensi Nama:** Indonesia Puitis (Jiwa, Raga, Suara, Aksara, Brankas).
 
 ---
 
-## 1. Visi & Filosofi
-Lembaran adalah platform manajemen arsip digital personal yang berfokus pada kedaulatan data dan pengalaman pengguna premium. Proyek ini menggabungkan keamanan tingkat militer dengan estetika yang terinspirasi dari iOS, dirancang khusus untuk pengembang dan individu yang memprioritaskan privasi.
+## 1. Identitas & Filosofi (Visi)
 
-### Prinsip Utama:
-*   **Local-First:** Data disimpan secara lokal di perangkat pengguna sebagai sumber kebenaran utama (*source of truth*).
-*   **Privacy-First:** Enkripsi *End-to-End* (E2EE) wajib untuk semua data sensitif menggunakan mesin **Brankas**.
-*   **Estetika Premium:** Antarmuka *Liquid Glass* yang minimalis, menggunakan tipografi *Thin & Spacious* (font-weight 300).
-*   **Kedaulatan Aksara:** Memberikan kendali penuh kepada pengguna atas data mereka melalui format terbuka dan alat manajemen mandiri.
+Lembaran bukan sekadar aplikasi catatan, melainkan benteng digital bagi pemiliknya. Dirancang untuk pengembang dan individu yang memprioritaskan kedaulatan data di atas kenyamanan cloud publik.
+
+- **Visi:** Menjadi standar emas untuk penyimpanan rahasia dan catatan personal yang terenkripsi penuh.
+- **Prinsip Utama:**
+  - **Local-First:** Data Anda, di perangkat Anda.
+  - **Privacy-First:** Enkripsi Zero-Knowledge menggunakan **Brankas**.
+  - **Estetika Premium:** Antarmuka minimalis, tipografi *Thin & Spacious*.
+  - **Kedaulatan Aksara:** Kontrol penuh melalui format terbuka.
+
+- **Target Pengguna:**
+  1. **Pengembang:** Butuh manajemen `.env` (Laras) dan CLI (Suara) yang aman.
+  2. **Pegiat Privasi:** Menghindari pengawasan cloud.
+  3. **Power Users:** Navigasi cepat (Slash Commands, Vim-mode).
 
 ---
 
-## 2. Target Pengguna
-1.  **Pengembang Perangkat Lunak:** Membutuhkan tempat aman untuk menyimpan kredensial, catatan teknis, dan bekerja melalui terminal (CLI/TUI).
-2.  **Pegiat Privasi:** Individu yang menghindari solusi *cloud* publik dan menginginkan enkripsi transparan yang bisa diaudit.
-3.  **Power Users:** Pengguna yang menyukai sistem navigasi cepat (Vim-mode, Slash Commands) dan visualisasi data yang cerdas.
+## 2. Susunan Teknologi (Tech Stack)
+
+### Inti (The Core)
+- **Framework:** Next.js 16 (App Router)
+- **Runtime:** Bun (Backend & CLI)
+- **Language:** TypeScript 5.x
+- **Kriptografi:** `@noble/ciphers` (AES-GCM 256-bit), `@noble/hashes` (Argon2id, SHA-256)
+- **Database Lokal:** IndexedDB (Web) & Local Filesystem (CLI) via `@lembaran/core`
+
+### Antarmuka (The Interface)
+- **Web (Raga):** React 19, Tailwind CSS v4 (CSS-first)
+- **CLI (Suara):** Ink (React in Terminal), CMD: `lembaran`
+- **Animation:** Motion v12
+- **Editor:** Tiptap (Markdown based)
 
 ---
 
-## 3. Fitur Utama (The Core Features)
+## 3. Sistem Estetika (Design System)
 
-### A. Brankas (Sistem Keamanan & Enkripsi)
-*   **Enkripsi AES-GCM 256-bit:** Melindungi seluruh konten catatan, judul, dan metadata folder.
-*   **Derivasi Kunci Argon2id:** Mengubah kata sandi pengguna menjadi kunci enkripsi yang kuat secara lokal (WebAssembly).
-*   **Zero-Knowledge Architecture:** Kata sandi dan kunci tidak pernah disimpan di disk atau dikirim ke jaringan.
-*   **Auto-Lock:** Brankas akan mengunci secara otomatis setelah periode tidak aktif atau saat aplikasi ditutup.
-*   **Panic Key:** Protokol penghapusan data instan jika terjadi situasi darurat.
+### "Liquid Glass" Aesthetic
+- **Colors (Dark Mode):**
+  - BG Utama: `#0a0a0f`
+  - Cards/Panels: `rgba(26, 26, 46, 0.6)` + `backdrop-blur(12px)`
+  - Accent: `#6C63FF` (Jiwa Purple)
+  - Integrity Green: `#00D4AA` (Sentinel Teal)
+- **Typography:**
+  - Heading: `Syne` (Google Fonts)
+  - Body: `Plus Jakarta Sans` (Weight 300/400)
+  - Mono: `JetBrains Mono`
+- **Motion Specs:**
+  - Reveal: Staggered reveal 0.05s
+  - Transition: Soft spring transitions, no bounce.
+
+---
+
+## 4. Arsitektur & Fitur Utama
+
+### A. Brankas (Lapisan Keamanan)
+- **Jiwa:** Mesin enkripsi AES-GCM 256-bit.
+- **Zero-Knowledge:** Kunci derivasi Argon2id di sisi client.
+- **Auto-Lock:** Penguncian otomatis setelah 1 menit tidak aktif.
+- **Panic Key:** Protokol penghapusan darurat.
 
 ### B. Gudang Aksara (Manajemen Catatan)
-*   **Editor Tiptap Modern:** Mendukung Markdown, Vim-mode, dan *Slash Commands* (/).
-*   **Segel Digital (Integritas):** Validasi HMAC/SHA-256 untuk memastikan data tidak dimanipulasi oleh pihak luar.
-*   **Organisasi Dinamis:** Folder, penyematan (*pinning*), dan tagar untuk pengelompokan informasi.
-*   **Ekspor Berdikari:** Mendukung format `.lembaran` (terenkripsi) dan Markdown standar.
+- **Raga:** Editor modern dengan *Slash Commands* (/).
+- **Segel Digital:** Integritas data via HMAC/SHA-256.
+- **Organisasi:** Folder, Tagar, dan Peta (Graph View).
 
-### C. Sentinel & Pujangga (Kecerdasan Otonom)
-*   **Sentinel Sovereign:** Agen latar belakang yang memantau integritas sistem dan melakukan pemulihan mandiri (*self-healing*).
-*   **Pujangga Engine:** Manajer penyedia AI (Gemini/Lokal) yang membantu penyusunan konten tanpa membocorkan rahasia melalui *Secret Scrubber*.
-*   **Laporan Privasi:** Audit transparan terhadap setiap aksi yang dilakukan oleh agen AI.
-
-### D. Jelajah & Peta (Navigasi & Visualisasi)
-*   **Peta Catatan:** Visualisasi hubungan antar catatan menggunakan graf dinamis.
-*   **Pencarian Cepat:** *Fuzzy search* instan bahkan pada ribuan catatan melalui *Session Cache*.
-
-### E. Antarmuka Terminal (CLI/TUI)
-*   **Binary `lembaran`:** Perintah langsung untuk mengelola arsip (`ukir`, `jelajah`, `tanam`).
-*   **TUI Interaktif:** Antarmuka visual terminal yang puitis untuk manajemen data tanpa meninggalkan lingkungan pengembangan.
+### C. Laras & Pundi (Manajemen Konfigurasi)
+- **Laras:** Pengelola variabel lingkungan (.env) terenkripsi.
+- **Mode Hantu:** Injeksi variabel langsung ke memori tanpa menulis file fisik.
+- **Pundi:** Dashboard statistik real-time (jumlah aksara, kapasitas brankas).
 
 ---
 
-## 4. Spesifikasi Teknis
-*   **Framework:** Next.js 16 (App Router), React 19.
-*   **Runtime:** Bun (Backend & CLI).
-*   **Penyimpanan Utama:** IndexedDB (Browser), Local Filesystem (CLI).
-*   **Styling:** Tailwind CSS 4 dengan kustomisasi *Glassmorphism*.
-*   **Kriptografi:** `@noble/ciphers` (AES-GCM), `@noble/hashes` (SHA-256, Argon2id).
-*   **Monorepo Struktur:**
-    - `packages/core`: Logika bisnis & keamanan (Jiwa).
-    - `packages/web`: Antarmuka grafis (Raga).
-    - `packages/cli`: Antarmuka terminal (Suara).
+## 5. Struktur Aplikasi & Halaman
+
+### Raga (Web UI)
+- `/` — Landing Page: Estetika Liquid Glass, status Brankas.
+- `/masuk` — Dekripsi Brankas: Password prompt (Argon2id).
+- `/jelajah` — Gudang Aksara: Sidebar pencarian fuzzy, masonry grid untuk catatan.
+- `/ukir` — Editor: Tiptap dengan Vim-mode & Markdown support.
+- `/laras` — Environment Manager: Pengelolaan file `.env` antar proyek.
+- `/peta` — Visualisasi: Graph view hubungan antar aksara.
+- `/bantuan` — Dokumentasi: Rendered dari `docs/*.md`.
+
+### Suara (CLI TUI)
+- `lembaran` — Masuk ke TUI interaktif.
+- `lembaran ukir` — Buat catatan baru langsung dari terminal.
+- `lembaran laras` — Kelola variabel lingkungan proyek.
+- `lembaran tanam` — Impor direktori ke dalam brankas.
 
 ---
 
-## 5. Pengalaman Pengguna (UX)
-*   **Navigasi Pill-Style:** Kemudi bawah yang minimalis untuk akses cepat.
-*   **Tipografi:** Fokus pada keterbacaan tinggi dengan nuansa "Developer Vibes".
-*   **Haptic & Audio:** Feedback suara puitis untuk aksi-aksi kritis (v2.9.0+).
-*   **Bantuan Dinamis:** Sistem dokumentasi terintegrasi di `/bantuan` yang mengambil data langsung dari berkas Markdown.
+## 6. Urutan Pembangunan (Roadmap)
+
+### Fase 1 — Pondasi (MVP)
+- [ ] Setup Monorepo (Core, Web, CLI).
+- [ ] Implementasi Brankas (AES-GCM + Argon2id).
+- [ ] Editor Dasar (Tiptap + Markdown).
+- [ ] Gudang Aksara (Local Storage wrapper).
+
+### Fase 2 — Fitur Utama (Ciri Khas)
+- [ ] Laras (.env manager) & Mode Hantu.
+- [ ] TUI Interaktif (cli package).
+- [ ] Peta Aksara (Graph visualization).
+- [ ] Sentinel Auto-Lock.
+
+### Fase 3 — Ekspansi (Community & Sync)
+- [ ] Sync Bridge (E2EE sync to personal cloud).
+- [ ] Collaboration (Yjs/CRDT).
+- [ ] Biometric Unlock (WebAuthn).
 
 ---
 
-## 6. Roadmap & Masa Depan
-1.  **Biometrik Penuh:** Integrasi WebAuthn untuk pembukaan brankas via sidik jari/wajah.
-2.  **Sync Bridge:** Sinkronisasi terenkripsi ke penyimpanan *cloud* pribadi (Google Drive/Dropbox).
-3.  **Encrypted Attachments:** Dukungan penyimpanan gambar dan PDF yang terenkripsi penuh.
-4.  **Collaboration (CRDT):** Berbagi catatan terenkripsi dengan protokol Yjs untuk kolaborasi tanpa konflik.
+## 7. Variabel Lingkungan (.env)
+
+| Kunci | Deskripsi | Wajib |
+|---|---|---|
+| `NODE_ENV` | `development` atau `production` | Ya |
+| `NEXT_PUBLIC_APP_URL` | URL Utama aplikasi | Ya |
+| `ENCRYPTION_SALT` | Garam default untuk derivasi kunci | Ya |
+| `SECRET_SCRUBBER_LEVEL` | Tingkat filter data sensitif di AI | Opsional |
 
 ---
 
-## 7. Kesimpulan
-Lembaran bukan sekadar aplikasi catatan, melainkan ekosistem kedaulatan data. Dengan menggabungkan teknologi modern dan filosofi privasi yang teguh, Lembaran memberikan ketenangan pikiran bagi pemiliknya dalam mengelola aksara-aksara berharga mereka.
+## 8. Detail Implementasi V1
+
+### Komponen Brankas (Vault)
+- Harus memiliki indikator visual "Terkunci" atau "Terbuka".
+- Input password tidak boleh bisa di-copy/paste.
+- Progress bar saat derivasi kunci Argon2id (karena intensif CPU).
+
+### Editor Ukir
+- Bar navigasi minimalis (Pill-style).
+- Floating menu untuk formatting.
+- Shortcut `CMD+S` untuk simpan dengan Segel Digital.
+
+---
+
+*PRD Akhir — Lembaran (Abelion Lavv).*
+*Status: Locked v3.5.0.*

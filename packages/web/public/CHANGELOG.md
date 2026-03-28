@@ -2,6 +2,18 @@
 
 Semua perubahan penting pada proyek ini akan didokumentasikan di file ini.
 
+## [3.4.0] - 2026-03-28
+### Fixed
+- **Perbaikan Error Handling**: Menambahkan `cause` pada semua error yang dilempar untuk debugging yang lebih baik (Arsip.ts, Brankas.ts).
+- **Perbaikan TypeScript/ESLint**: Menghapus semua warning dari console dan memperbaiki dependency arrays di React hooks.
+- **Optimasi Gambar**: Mengganti tag `<img>` dengan komponen `<Image>` dari Next.js untuk optimasi performa.
+- **Perbaikan Instalasi CLI**: Mengganti `bun install -g .` dengan `bun link` untuk menangani workspace dependencies dengan benar.
+- **Proteksi Timpa .env**: Menambahkan konfirmasi sebelum menimpa file .env yang sudah ada di perintah `env muat`.
+### Added
+- **Terjemahan Lengkap**: Menambahkan semua kunci terjemahan yang hilang untuk navigasi bantuan (Selasar).
+### Changed
+- **Dokumentasi Instalasi**: Memperbarui panduan instalasi di semua dokumen (MULAI_CEPAT.md, GETTING_STARTED.md) dengan perintah `bun link`.
+
 ## [3.3.0] - 2026-02-22
 ### Added
 - **Restorasi TUI Modern**: Pengembalian antarmuka interaktif berbasis Ink/React yang lebih visual dan intuitif.

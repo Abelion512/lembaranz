@@ -47,12 +47,12 @@ export const LayarKredensial: React.FC<LayarKredensialProps> = ({ onKembali }) =
     });
 
     return (
-        <Box flexDirection="column" padding={1}>
+        <Box flexDirection="column" padding={1} key="kredensial-root">
             <Box borderStyle="round" borderColor="magenta" paddingX={1} marginBottom={1}>
                 <Text bold color="magenta">🔑 TANAM KREDENSIAL BARU</Text>
             </Box>
 
-            <Box flexDirection="column">
+            <Box flexDirection="column" key="kredensial-form">
                 {step === 'label' && (
                     <>
                         <Text>Nama Layanan:</Text>
@@ -78,7 +78,7 @@ export const LayarKredensial: React.FC<LayarKredensialProps> = ({ onKembali }) =
                     </>
                 )}
                 {step === 'saving' && (
-                    <Box>
+                    <Box key="step-saving">
                         <Text color="cyan"><Spinner type="dots" /> Menyimpan kredensial...</Text>
                     </Box>
                 )}

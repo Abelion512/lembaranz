@@ -44,9 +44,8 @@ echo -e "${BLUE}Menyiapkan dependensi...${NC}"
 bun install
 
 echo -e "${BLUE}Menginstal Lembaran CLI secara global...${NC}"
-cd packages/cli
-chmod +x src/main.ts
-bun install -g .
+# Gunakan 'bun link' dari root monorepo untuk menangani workspace dependencies
+bun link
 
 echo -e "\n${GREEN}INSTALASI BERHASIL!${NC}"
 echo -e "Gunakan perintah: ${BLUE}lembaran mulai${NC}"

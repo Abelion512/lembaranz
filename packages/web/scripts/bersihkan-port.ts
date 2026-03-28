@@ -7,7 +7,7 @@
 const PORT = 1400;
 
 async function bersihkanPort(port: number) {
-    const { execSync } = await import('node:child_process');
+    const { execSync } = await import('child_process');
     const isWindows = process.platform === 'win32';
 
     try {

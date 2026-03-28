@@ -1,12 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { LucideIcon, Shield, Terminal, BookOpen, Rocket, Zap, Layers, Globe } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { LembaranDok } from '@/komponen/bersama/LembaranDok';
 import { SaklarBahasa } from '@/komponen/bersama/SaklarBahasa';
-import { ambilTerjemahan } from '@/lib/ambilTerjemahan';
 import { ambilMetadataBantuan, ButirMetadata } from '@/lib/ambilKontenDok';
 
 const IKON_MAP: Record<string, LucideIcon> = {
@@ -19,13 +18,6 @@ const IKON_MAP: Record<string, LucideIcon> = {
     Globe
 };
 
-const DEFAULT_UI = {
-    title: "Pusat Bantuan",
-    desc: "Selamat datang di dokumentasi resmi Lembaran. Temukan panduan untuk menguasai kedaulatan data Anda.",
-    footerTitle: "Butuh bantuan lebih lanjut?",
-    footerDesc: "Buka diskusi di repositori GitHub kami untuk bertanya langsung kepada pengembang.",
-    footerBtn: "Buka Diskusi GitHub"
-};
 
 interface KartuBantuan extends Omit<ButirMetadata, 'icon'> {
     id: string;
@@ -34,7 +26,7 @@ interface KartuBantuan extends Omit<ButirMetadata, 'icon'> {
 
 export default function AnjunganBantuan() {
     const lang = useLocale() as 'id' | 'en';
-    const [ui, setUi] = useState(DEFAULT_UI);
+    const t = useTranslations('Bantuan');
     const [cards, setCards] = useState<KartuBantuan[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -44,7 +36,6 @@ export default function AnjunganBantuan() {
             setLoading(true);
             try {
                 setError(null);
-                // 1. Ambil Metadata Bantuan (Source of Truth)
                 const metadata = await ambilMetadataBantuan(lang);
                 if (metadata) {
                     const mappedCards = Object.entries(metadata).map(([id, data]: [string, ButirMetadata]): KartuBantuan => ({
@@ -55,20 +46,6 @@ export default function AnjunganBantuan() {
                     setCards(mappedCards);
                 } else {
                     setError("Gagal memuat metadata dokumentasi.");
-                }
-
-                // 2. Terjemahkan UI statis jika bukan Indonesia
-                if (lang === 'en') {
-                    const [title, desc, footerTitle, footerDesc, footerBtn] = await Promise.all([
-                        ambilTerjemahan(DEFAULT_UI.title, 'en'),
-                        ambilTerjemahan(DEFAULT_UI.desc, 'en'),
-                        ambilTerjemahan(DEFAULT_UI.footerTitle, 'en'),
-                        ambilTerjemahan(DEFAULT_UI.footerDesc, 'en'),
-                        ambilTerjemahan(DEFAULT_UI.footerBtn, 'en'),
-                    ]);
-                    setUi({ title, desc, footerTitle, footerDesc, footerBtn });
-                } else {
-                    setUi(DEFAULT_UI);
                 }
             } catch (error) {
                 console.error('[Bantuan] Load error:', error);
@@ -82,8 +59,8 @@ export default function AnjunganBantuan() {
 
     return (
         <LembaranDok
-            title={ui.title}
-            description={ui.desc}
+            title={t('pusat_bantuan') || "Pusat Bantuan"}
+            description={t('pusat_bantuan_desc') || "Selamat datang di dokumentasi resmi Lembaran. Temukan panduan untuk menguasai kedaulatan data Anda."}
         >
             <div className="flex justify-between items-center mb-8">
                 {loading && (
@@ -126,15 +103,15 @@ export default function AnjunganBantuan() {
             </div>
 
             <section className="p-12 rounded-[2.5rem] bg-blue-500 text-white shadow-2xl shadow-blue-500/20 flex flex-col items-center text-center">
-                <h2 className="text-2xl font-black mb-4">{ui.footerTitle}</h2>
-                <p className="text-blue-100 mb-8 font-medium">{ui.footerDesc}</p>
+                <h2 className="text-2xl font-black mb-4">{t('footer_tanya_judul') || "Butuh bantuan lebih lanjut?"}</h2>
+                <p className="text-blue-100 mb-8 font-medium">{t('footer_tanya_desc') || "Buka diskusi di repositori GitHub kami untuk bertanya langsung kepada pengembang."}</p>
                 <a
                     href="https://github.com/Abelion512/lembaran/discussions"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-6 py-3 bg-white text-blue-500 rounded-full font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all"
                 >
-                    {ui.footerBtn}
+                    {t('footer_tanya_tombol') || "Buka Diskusi GitHub"}
                 </a>
             </section>
         </LembaranDok>

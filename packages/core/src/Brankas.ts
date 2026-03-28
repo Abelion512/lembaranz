@@ -3,6 +3,10 @@ import { argon2id } from '@noble/hashes/argon2.js';
 /**
  * Brankas Engine: Web Crypto API & Argon2id implementation
  * Standards: AES-GCM 256-bit, Argon2id (Pure JS)
+ *
+ * Version 3.4.0 Updates:
+ * - Added Quantum-Resistant Portable Backup Format
+ * - High-Memory Cost KDF for Backups
  */
 
 const ALGO_ENC = 'AES-GCM';
@@ -177,7 +181,108 @@ export class Brankas {
             }
             this.decryptionCache.set(packed, result);
         }
-        
+
         return result;
+    }
+
+    /**
+     * Enkripsi Portabel (Quantum-Resistant Symmetric Structure)
+     * Format: [Magic:4][Ver:1][Salt:32][IV:12][Ciphertext:N]
+     * Salt ditingkatkan ke 32 bytes (256-bit) untuk menahan pre-computation attack masa depan.
+     */
+    static async encryptPortable(data: string, password: string): Promise<Uint8Array> {
+        // 1. Generate Salt 32-byte (256-bit)
+        const salt = crypto.getRandomValues(new Uint8Array(32));
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+
+        // 2. Derive Ephemeral Key (High Cost for Future Proofing)
+        // Kita gunakan parameter custom yang lebih berat untuk export file
+        // 4 Iterations, 64MB RAM Cost
+        const hash = argon2id(password, salt, {
+            t: 4,
+            m: 64 * 1024,
+            dkLen: 32,
+            p: 1
+        });
+
+        const key = await crypto.subtle.importKey(
+            'raw',
+            hash as BufferSource,
+            { name: ALGO_ENC, length: 256 },
+            false,
+            ['encrypt']
+        );
+
+        const encoder = new TextEncoder();
+        const encryptedBuffer = await crypto.subtle.encrypt(
+            { name: 'AES-GCM', iv },
+            key,
+            encoder.encode(data)
+        );
+
+        // 3. Construct Binary Format
+        // Magic: LMBR (0x4C 0x4D 0x42 0x52)
+        const magic = new Uint8Array([0x4C, 0x4D, 0x42, 0x52]);
+        const version = new Uint8Array([0x01]); // Version 1
+
+        // Structure: [Magic 4][Ver 1][Salt 32][IV 12][Ciphertext N]
+        const result = new Uint8Array(
+            magic.length + version.length + salt.length + iv.length + encryptedBuffer.byteLength
+        );
+
+        let offset = 0;
+        result.set(magic, offset); offset += magic.length;
+        result.set(version, offset); offset += version.length;
+        result.set(salt, offset); offset += salt.length;
+        result.set(iv, offset); offset += iv.length;
+        result.set(new Uint8Array(encryptedBuffer), offset);
+
+        return result;
+    }
+
+    static async decryptPortable(buffer: Uint8Array, password: string): Promise<string> {
+        // Header Parsing
+        if (buffer.length < 50) throw new Error('File terlalu kecil atau rusak.');
+
+        // Check Magic
+        const magic = new TextDecoder().decode(buffer.slice(0, 4));
+        if (magic !== 'LMBR') throw new Error('Bukan file .lembaran yang valid (Magic Mismatch).');
+
+        // Check Version
+        const version = buffer[4];
+        if (version !== 1) throw new Error(`Versi file tidak didukung: v${version}`);
+
+        // Extract params based on Version 1 Layout
+        const salt = buffer.slice(5, 37); // 32 bytes (5 + 32 = 37)
+        const iv = buffer.slice(37, 49);  // 12 bytes (37 + 12 = 49)
+        const ciphertext = buffer.slice(49);
+
+        // Re-derive Key
+        const hash = argon2id(password, salt, {
+            t: 4,
+            m: 64 * 1024,
+            dkLen: 32,
+            p: 1
+        });
+
+        const key = await crypto.subtle.importKey(
+            'raw',
+            hash as BufferSource,
+            { name: ALGO_ENC, length: 256 },
+            false,
+            ['decrypt']
+        );
+
+        try {
+            const decrypted = await crypto.subtle.decrypt(
+                { name: 'AES-GCM', iv },
+                key,
+                ciphertext
+            );
+            return new TextDecoder().decode(decrypted);
+        } catch (e) {
+            // Usually AES-GCM throws if tag mismatch (auth fail) or key wrong
+            throw new Error('Gagal membuka berkas: Password salah atau integritas data rusak.', { cause: e });
+        }
     }
 }

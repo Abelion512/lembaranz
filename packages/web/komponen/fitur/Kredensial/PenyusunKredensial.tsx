@@ -80,7 +80,9 @@ export const PenyusunKredensial = ({ data, onChange }: PenyusunKredensialProps) 
 
             onChange(newData);
             haptic.success();
-        } catch (_err) { } finally {
+        } catch (_err) {
+            // Diabaikan: kegagalan paste bersifat non-kritis
+        } finally {
             setTimeout(() => setIsPasting(false), 500);
         }
     };

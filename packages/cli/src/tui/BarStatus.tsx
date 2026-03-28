@@ -9,7 +9,7 @@ interface BarStatusProps {
 
 export const BarStatus: React.FC<BarStatusProps> = ({ konteks, versi, layar }) => {
     return (
-        <Box borderStyle="single" borderColor="gray" paddingX={1} justifyContent="space-between">
+        <Box borderStyle="single" borderColor="gray" paddingX={1} justifyContent="space-between" key={`bar-${konteks}-${layar}`}>
             <Text>
                 <Text color="cyan" bold>📜 Lembaran</Text>
                 <Text color="gray"> {versi}</Text>

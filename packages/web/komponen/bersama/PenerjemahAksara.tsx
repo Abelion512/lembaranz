@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { Marked } from 'marked';
 import { useLocale, useTranslations } from 'next-intl';
 import { ambilKontenDok } from '@/lib/ambilKontenDok';
-import { ambilTerjemahanDokumen } from '@/lib/ambilTerjemahan';
 
 interface PenerjemahAksaraProps {
     slug: string;
@@ -55,7 +54,6 @@ export function PenerjemahAksara({ slug }: PenerjemahAksaraProps) {
         () => kontenCache.get(cacheKey) ?? null
     );
     const [loading, setLoading] = useState(!kontenCache.has(cacheKey));
-    const [isAITranslated, setIsAITranslated] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
@@ -65,22 +63,11 @@ export function PenerjemahAksara({ slug }: PenerjemahAksaraProps) {
                 const cached = kontenCache.get(cacheKey)!;
                 setHtmlContent(cached);
                 setLoading(false);
-                setIsAITranslated(false);
                 return;
             }
 
             setLoading(true);
-            setIsAITranslated(false);
-
-            let content = await ambilKontenDok(slug, lang);
-
-            if (!content && lang === 'en') {
-                const idContent = await ambilKontenDok(slug, 'id');
-                if (idContent) {
-                    content = await ambilTerjemahanDokumen(idContent, 'en');
-                    if (!cancelled) setIsAITranslated(true);
-                }
-            }
+            const content = await ambilKontenDok(slug, lang);
 
             if (cancelled) return;
 
@@ -98,6 +85,61 @@ export function PenerjemahAksara({ slug }: PenerjemahAksaraProps) {
         return () => { cancelled = true; };
     }, [slug, lang, cacheKey]);
 
+
+    const contentRef = React.useRef<HTMLDivElement>(null);
+
+    // Pasang tombol salin pada semua blok kode setelah render
+    useEffect(() => {
+        const el = contentRef.current;
+        if (!el || !htmlContent) return;
+
+        const blocks = el.querySelectorAll('pre');
+        const cleanups: (() => void)[] = [];
+
+        blocks.forEach((pre) => {
+            // Hindari duplikasi tombol
+            if (pre.querySelector('.tombol-salin')) return;
+
+            pre.style.position = 'relative';
+
+            const btn = document.createElement('button');
+            btn.className = 'tombol-salin';
+            btn.title = 'Salin kode';
+            btn.setAttribute('aria-label', 'Salin kode');
+            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
+            btn.style.cssText = `
+                position:absolute; top:12px; right:12px;
+                display:flex; align-items:center; gap:4px;
+                padding:4px 10px; border-radius:8px;
+                background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1);
+                color:rgba(255,255,255,0.6); cursor:pointer; font-size:11px; font-weight:700;
+                letter-spacing:0.05em; transition:all 0.2s; z-index:10;
+                backdrop-filter:blur(4px);
+            `;
+
+            const onClick = () => {
+                const code = pre.querySelector('code')?.innerText ?? pre.innerText;
+                navigator.clipboard.writeText(code).then(() => {
+                    btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Tersalin`;
+                    btn.style.color = '#34C759';
+                    btn.style.borderColor = 'rgba(52,199,89,0.3)';
+                    btn.style.background = 'rgba(52,199,89,0.1)';
+                    setTimeout(() => {
+                        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
+                        btn.style.color = 'rgba(255,255,255,0.6)';
+                        btn.style.borderColor = 'rgba(255,255,255,0.1)';
+                        btn.style.background = 'rgba(255,255,255,0.08)';
+                    }, 2000);
+                });
+            };
+
+            btn.addEventListener('click', onClick);
+            pre.appendChild(btn);
+            cleanups.push(() => btn.removeEventListener('click', onClick));
+        });
+
+        return () => cleanups.forEach(fn => fn());
+    }, [htmlContent]);
 
     if (loading && !htmlContent) {
         return (
@@ -126,24 +168,14 @@ export function PenerjemahAksara({ slug }: PenerjemahAksaraProps) {
                     <div className="w-4 h-4 rounded-full border-2 border-blue-500/20 border-t-blue-500 animate-spin" />
                 </div>
             )}
-            {isAITranslated && (
-                <div className="mb-12 p-6 rounded-3xl bg-blue-500/5 border border-blue-500/10 flex items-center gap-4">
-                    <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                    <p className="text-xs font-medium text-blue-500/80 italic">
-                        {lang === 'en'
-                            ? "This page has been dynamically translated by Linguis AI."
-                            : "Halaman ini diterjemahkan secara dinamis oleh AI Linguis."}
-                    </p>
-                </div>
-            )}
-            <div className="prose dark:prose-invert prose-blue max-w-none
-                prose-headings:font-light prose-headings:tracking-[0.1em] prose-headings:uppercase
+            <div ref={contentRef} className="prose dark:prose-invert prose-blue max-w-none
+                prose-headings:font-light prose-headings:tracking-widest prose-headings:uppercase
                 prose-h1:text-4xl prose-h1:mb-12
-                prose-p:text-lg prose-p:font-light prose-p:leading-relaxed prose-p:tracking-wide prose-p:text-[var(--text-secondary)]
+                prose-p:text-lg prose-p:font-light prose-p:leading-relaxed prose-p:tracking-wide prose-p:text-(--text-secondary)
                 prose-li:font-light prose-li:tracking-wide
                 prose-code:text-blue-500 prose-code:bg-blue-500/5 prose-code:px-2 prose-code:py-0.5 prose-code:rounded-lg
-                prose-pre:bg-black/50 prose-pre:backdrop-blur-md prose-pre:border prose-pre:border-white/5 prose-pre:rounded-[2rem] prose-pre:p-8
-                prose-strong:text-[var(--text-primary)] prose-strong:font-bold">
+                prose-pre:bg-black/50 prose-pre:backdrop-blur-md prose-pre:border prose-pre:border-white/5 prose-pre:rounded-4xl prose-pre:p-8
+                prose-strong:text-(--text-primary) prose-strong:font-bold">
                 <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
             </div>
         </div>

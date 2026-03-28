@@ -6,7 +6,41 @@
         "mulai_menulis": "Start Writing",
         "unduh_app": "Download App"
     },
+    "Aksi": {
+        "Kembali": "Back",
+        "Simpan": "Save",
+        "Batal": "Cancel",
+        "Hapus": "Delete",
+        "Ubah": "Edit",
+        "BukaBrankas": "Open Vault"
+    },
+    "Selasar": {
+        "Dokumentasi": "Documentation",
+        "Fitur": "Features",
+        "Changelog": "Changelog",
+        "Bantuan": "Help",
+        "Produk": "Products",
+        "Keamanan": "Security",
+        "Cari": "Search documentation...",
+        "Pengenalan": "Introduction",
+        "Ringkasan": "Summary",
+        "Berdikari": "Get Started",
+        "Performa": "Performance Optimization",
+        "Instalasi": "Installation & Usage",
+        "PasangCLI": "Install CLI",
+        "Referensi": "Reference",
+        "DaftarPerintah": "Command List",
+        "StrukturData": "Data Structure"
+    },
+    "Kemudi": {
+        "HakCipta": "© 2026 Lembaran Open Source.",
+        "Privasi": "Privacy",
+        "Ketentuan": "Terms",
+        "Bantuan": "Support",
+        "Unduh": "Download App"
+    },
     "Landing": {
+        "KataKunci": ["Sovereign", "Secure", "Intelligent", "Private", "Instant"],
         "badge": "Local-First Personal Intelligence",
         "hero_prefix": "Notes that are",
         "hero_words": [
@@ -56,7 +90,12 @@
         "buka_navigasi": "Open navigation",
         "tutup": "Close sidebar",
         "cari_placeholder": "Search this page...",
-        "footer": "© 2026 Lembaran Documentation Engine."
+        "footer": "© 2026 Lembaran Documentation Engine.",
+        "pusat_bantuan": "Help Center",
+        "pusat_bantuan_desc": "Welcome to Lembaran official documentation. Find guides to master your data sovereignty.",
+        "footer_tanya_judul": "Need more help?",
+        "footer_tanya_desc": "Open a discussion on our GitHub repository to ask the developers directly.",
+        "footer_tanya_tombol": "Open GitHub Discussion"
     },
     "SaklarBahasa": {
         "label": "Language",
