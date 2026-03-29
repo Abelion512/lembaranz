@@ -1,4 +1,4 @@
-name: Release
+name: rilis
 
 on:
   push:
@@ -7,27 +7,34 @@ on:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
 jobs:
-  release:
-    name: Release & Publish
+  rilis:
+    name: Rilis Paket ke NPM
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Pasang Bun
+        uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
 
-      - name: Install dependencies
+      - name: Pasang Dependensi
         run: bun install --frozen-lockfile
 
-      - name: Create Release Pull Request or Publish to NPM
+      - name: Buat Pull Request Rilis atau Publish ke NPM
         id: changesets
         uses: changesets/action@v1
         with:
-          # This expects a script named 'version-packages' and 'ci:release' in root package.json
+          # Ekspektasi skrip 'version-packages' dan 'ci:release' di root package.json
           version: bun run version-packages
           publish: bun run ci:release
         env:
