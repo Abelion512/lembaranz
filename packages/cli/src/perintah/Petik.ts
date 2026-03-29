@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { Arsip } from '@lembaran/core';
+import { Arsip } from '@abelionorg/core';
 import fs from 'node:fs/promises';
 import prompts from 'prompts';
 import { siapkanKonteks, bukaBrankasCLI } from '../utils.js';
@@ -28,7 +28,13 @@ export function registrasiPerintahPetik(program: Command) {
       }
 
       try {
-        const buffer = await Arsip.cadangkan(res.pw);
+        const hasil = await Arsip.cadangkan(res.pw);
+        if (hasil.error) {
+          console.error('❌ Gagal mengekspor:', hasil.error.message);
+          return;
+        }
+
+        const buffer = hasil.data!;
         const filename = `lembaran-petikan-${new Date().toISOString().split('T')[0]}.lembaran`;
 
         await fs.writeFile(filename, buffer);

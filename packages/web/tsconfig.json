@@ -21,8 +21,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@lembaran/core": ["../core/src/index.ts"],
-      "@lembaran/core/*": ["../core/src/*"]
+      "@abelionorg/core": ["../core/src/index.ts"],
+      "@abelionorg/core/*": ["../core/src/*"]
     }
   },
   "include": [

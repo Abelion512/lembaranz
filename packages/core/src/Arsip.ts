@@ -1,5 +1,5 @@
 import { Gudang } from './Gudang';
-import { Brankas } from './Brankas';
+import { Brankas, Hasil } from './Brankas';
 import { Note, EntityId } from './Rumus';
 import { v4 as uuidv4 } from 'uuid';
 import { Integritas } from './Integritas';
@@ -10,12 +10,13 @@ import { Pujangga } from './Pujangga';
  * Menangani siklus hidup data dari enkripsi, penyimpanan, hingga pemulihan.
  */
 export const Arsip = {
-    /**
-     * Memeriksa apakah brankas sudah pernah diinisialisasi.
-     */
-    async isVaultInitialized(): Promise<boolean> {
-        const validator = await Gudang.get('meta', 'auth_validator');
-        return !!validator;
+    async isVaultInitialized(): Promise<Hasil<boolean>> {
+        try {
+            const validator = await Gudang.get('meta', 'auth_validator');
+            return { data: !!validator, error: null };
+        } catch (e) {
+            return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
+        }
     },
 
     /**
@@ -23,23 +24,35 @@ export const Arsip = {
      * @param password Kata sandi utama
      * @param mnemonic 12 kata kunci pemulihan (opsional)
      */
-    async setupVault(password: string, mnemonic?: string): Promise<void> {
+    async setupVault(password: string, mnemonic?: string): Promise<Hasil<void>> {
         if (process.env.DEBUG === 'true') console.log('[ARSIP] Memulai setupVault...');
 
-        const masterKey = await Brankas.generateMasterKey();
-        const masterKeyBuffer = await Brankas.exportRawKey(masterKey);
+        const genResult = await Brankas.generateMasterKey();
+        if (genResult.error) return genResult;
+        const masterKey = genResult.data;
+
+        const exportResult = await Brankas.exportRawKey(masterKey);
+        if (exportResult.error) return exportResult;
+        const masterKeyBuffer = exportResult.data;
 
         const salt = crypto.getRandomValues(new Uint8Array(16));
         const saltHex = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
-        const passwordKey = await Brankas.deriveKey(password, salt);
+        
+        const deriveResult = await Brankas.deriveKey(password, salt);
+        if (deriveResult.error) return deriveResult;
+        const passwordKey = deriveResult.data;
 
-        const wrappedKey = await Brankas.encryptPacked(
+        const wrapResult = await Brankas.encryptPacked(
             btoa(String.fromCharCode(...new Uint8Array(masterKeyBuffer))),
             passwordKey
         );
+        if (wrapResult.error) return wrapResult;
+        const wrappedKey = wrapResult.data;
 
         const validator = 'LEMBARAN_SECURED_V3';
-        const encryptedValidator = await Brankas.encryptPacked(validator, masterKey);
+        const valEncryptResult = await Brankas.encryptPacked(validator, masterKey);
+        if (valEncryptResult.error) return valEncryptResult;
+        const encryptedValidator = valEncryptResult.data;
 
         await Gudang.set('meta', 'auth_salt', saltHex);
         await Gudang.set('meta', 'auth_wrapped_key', wrappedKey);
@@ -48,25 +61,31 @@ export const Arsip = {
         if (mnemonic) {
             const mnemonicSalt = crypto.getRandomValues(new Uint8Array(16));
             const mSaltHex = Array.from(mnemonicSalt).map(b => b.toString(16).padStart(2, '0')).join('');
-            const recoveryKey = await Brankas.deriveKey(mnemonic, mnemonicSalt);
+            
+            const mDeriveResult = await Brankas.deriveKey(mnemonic, mnemonicSalt);
+            if (mDeriveResult.error) return mDeriveResult;
+            const recoveryKey = mDeriveResult.data;
 
-            const recoveryWrappedKey = await Brankas.encryptPacked(
+            const mWrapResult = await Brankas.encryptPacked(
                 btoa(String.fromCharCode(...new Uint8Array(masterKeyBuffer))),
                 recoveryKey
             );
+            if (mWrapResult.error) return mWrapResult;
+            const recoveryWrappedKey = mWrapResult.data;
 
             await Gudang.set('meta', 'recovery_salt', mSaltHex);
             await Gudang.set('meta', 'recovery_wrapped_key', recoveryWrappedKey);
         }
 
         Brankas.setActiveKey(masterKey);
+        return { data: undefined, error: null };
     },
 
     /**
      * Membuka brankas menggunakan kata sandi.
      * Mendukung migrasi otomatis dari V2 ke V3.
      */
-    async unlockVault(password: string): Promise<boolean> {
+    async unlockVault(password: string): Promise<Hasil<boolean>> {
         try {
             // Panic Key Check
             const panicHash = await Gudang.get('meta', 'panic_hash') as string;
@@ -74,7 +93,7 @@ export const Arsip = {
                 const currentHash = await Integritas.hitungHash(password);
                 if (currentHash === panicHash) {
                     await this.destroyAllData();
-                    return false;
+                    return { data: false, error: null };
                 }
             }
 
@@ -82,21 +101,31 @@ export const Arsip = {
             const authValidator = await Gudang.get('meta', 'auth_validator') as string;
             const wrappedKey = await Gudang.get('meta', 'auth_wrapped_key') as string;
 
-            if (!saltHex || !authValidator) return false;
+            if (!saltHex || !authValidator) return { data: null, error: new Error('Data otentikasi tidak lengkap') };
 
             const salt = new Uint8Array(saltHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
-            const passwordKey = await Brankas.deriveKey(password, salt);
+            
+            const deriveResult = await Brankas.deriveKey(password, salt);
+            if (deriveResult.error) return deriveResult as Hasil<boolean>;
+            const passwordKey = deriveResult.data;
 
             // Coba V3 (Decoupled Master Key)
             if (wrappedKey) {
-                const masterKeyBase64 = await Brankas.decryptPacked(wrappedKey, passwordKey);
-                const masterKeyBuffer = Uint8Array.from(atob(masterKeyBase64), c => c.charCodeAt(0)).buffer;
-                const masterKey = await Brankas.importRawKey(masterKeyBuffer);
+                const decResult = await Brankas.decryptPacked(wrappedKey, passwordKey);
+                if (decResult.error) return decResult as Hasil<boolean>;
+                
+                const masterKeyBuffer = Uint8Array.from(atob(decResult.data), c => c.charCodeAt(0)).buffer;
+                
+                const importResult = await Brankas.importRawKey(masterKeyBuffer);
+                if (importResult.error) return importResult as Hasil<boolean>;
+                const masterKey = importResult.data;
 
-                const decryptedValidator = await Brankas.decryptPacked(authValidator, masterKey);
-                if (decryptedValidator === 'LEMBARAN_SECURED_V3') {
+                const valResult = await Brankas.decryptPacked(authValidator, masterKey);
+                if (valResult.error) return valResult as Hasil<boolean>;
+
+                if (valResult.data === 'LEMBARAN_SECURED_V3') {
                     Brankas.setActiveKey(masterKey);
-                    return true;
+                    return { data: true, error: null };
                 }
             } else {
                 // Migrasi dari V2 (Master Key = Password Key)
@@ -108,71 +137,89 @@ export const Arsip = {
                     bytes[i] = binaryString.charCodeAt(i);
                 }
 
-                const decrypted = await Brankas.decrypt(bytes.buffer, iv, passwordKey);
-                if (decrypted === 'LEMBARAN_SECURED_V2') {
+                const decResult = await Brankas.decrypt(bytes.buffer, iv, passwordKey);
+                if (decResult.error) return decResult as Hasil<boolean>;
+
+                if (decResult.data === 'LEMBARAN_SECURED_V2') {
                     Brankas.setActiveKey(passwordKey);
                     // Lakukan migrasi ke V3 agar support reset password & recovery yang lebih baik
-                    await this.resetPassword(password);
-                    return true;
+                    const resetRes = await this.resetPassword(password);
+                    if (resetRes.error) console.warn('[ARSIP] Gagal migrasi otomatis ke V3:', resetRes.error.message);
+                    return { data: true, error: null };
                 }
             }
 
-            return false;
-        } catch (_e) {
-            console.error('[ARSIP] Gagal membuka brankas (ERR_AUTH_001)');
-            return false;
+            return { data: false, error: null };
+        } catch (e) {
+            return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
         }
     },
 
     /**
      * Memulihkan akses brankas menggunakan Kunci Kertas (mnemonic).
      */
-    async recoverVault(mnemonic: string): Promise<boolean> {
+    async recoverVault(mnemonic: string): Promise<Hasil<boolean>> {
         try {
             const mSaltHex = await Gudang.get('meta', 'recovery_salt') as string;
             const wrappedKey = await Gudang.get('meta', 'recovery_wrapped_key') as string;
 
-            if (!mSaltHex || !wrappedKey) return false;
+            if (!mSaltHex || !wrappedKey) return { data: null, error: new Error('Data pemulihan tidak ditemukan') };
 
             const mSalt = new Uint8Array(mSaltHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
-            const recoveryKey = await Brankas.deriveKey(mnemonic, mSalt);
+            
+            const deriveResult = await Brankas.deriveKey(mnemonic, mSalt);
+            if (deriveResult.error) return deriveResult as Hasil<boolean>;
+            const recoveryKey = deriveResult.data;
 
-            const decryptedKeyBase64 = await Brankas.decryptPacked(wrappedKey, recoveryKey);
-            const keyBuffer = Uint8Array.from(atob(decryptedKeyBase64), c => c.charCodeAt(0)).buffer;
-            const masterKey = await Brankas.importRawKey(keyBuffer);
-
-            Brankas.setActiveKey(masterKey);
-            return true;
-        } catch (_e) {
-            console.error('[ARSIP] Pemulihan gagal (ERR_REC_001)');
-            return false;
+            const decResult = await Brankas.decryptPacked(wrappedKey, recoveryKey);
+            if (decResult.error) return decResult as Hasil<boolean>;
+            
+            const keyBuffer = Uint8Array.from(atob(decResult.data), c => c.charCodeAt(0)).buffer;
+            
+            const importResult = await Brankas.importRawKey(keyBuffer);
+            if (importResult.error) return importResult as Hasil<boolean>;
+            
+            Brankas.setActiveKey(importResult.data);
+            return { data: true, error: null };
+        } catch (e) {
+            return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
         }
     },
 
     /**
      * Menetapkan kata sandi baru untuk brankas yang sedang terbuka.
      */
-    async resetPassword(newPassword: string): Promise<void> {
+    async resetPassword(newPassword: string): Promise<Hasil<void>> {
         const masterKey = Brankas.getActiveKey();
-        if (!masterKey) throw new Error('Vault Locked');
+        if (!masterKey) return { data: null, error: new Error('Brankas Terkunci') };
 
-        const masterKeyBuffer = await Brankas.exportRawKey(masterKey);
+        const exportResult = await Brankas.exportRawKey(masterKey);
+        if (exportResult.error) return exportResult;
+        const masterKeyBuffer = exportResult.data;
 
         const salt = crypto.getRandomValues(new Uint8Array(16));
         const saltHex = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
-        const passwordKey = await Brankas.deriveKey(newPassword, salt);
+        
+        const deriveResult = await Brankas.deriveKey(newPassword, salt);
+        if (deriveResult.error) return deriveResult;
+        const passwordKey = deriveResult.data;
 
-        const wrappedKey = await Brankas.encryptPacked(
+        const wrapResult = await Brankas.encryptPacked(
             btoa(String.fromCharCode(...new Uint8Array(masterKeyBuffer))),
             passwordKey
         );
+        if (wrapResult.error) return wrapResult;
+        const wrappedKey = wrapResult.data;
 
         await Gudang.set('meta', 'auth_salt', saltHex);
         await Gudang.set('meta', 'auth_wrapped_key', wrappedKey);
 
         const validator = 'LEMBARAN_SECURED_V3';
-        const encryptedValidator = await Brankas.encryptPacked(validator, masterKey);
-        await Gudang.set('meta', 'auth_validator', encryptedValidator);
+        const valEncryptResult = await Brankas.encryptPacked(validator, masterKey);
+        if (valEncryptResult.error) return valEncryptResult;
+        
+        await Gudang.set('meta', 'auth_validator', valEncryptResult.data);
+        return { data: undefined, error: null };
     },
 
     /**
@@ -199,114 +246,129 @@ export const Arsip = {
     /**
      * Menyimpan catatan baru atau memperbarui catatan lama.
      */
-    async saveNote(note: Omit<Note, 'updatedAt'>): Promise<Note> {
+    async saveNote(note: Omit<Note, 'updatedAt'>): Promise<Hasil<Note>> {
         if (Brankas.isLocked()) {
-            throw new Error('Vault is locked. Cannot save data.');
+            return { data: null, error: new Error('Brankas terkunci. Tidak dapat menyimpan data.') };
         }
 
-        let title = note.title;
-        if (!title || title === 'Tanpa Judul') {
-            title = await Pujangga.sarankanJudul(note.content);
+        try {
+            let title = note.title;
+            if (!title || title === 'Tanpa Judul') {
+                title = await Pujangga.sarankanJudul(note.content);
+            }
+
+            const suggestedTags = await Pujangga.sarankanTag(note.content);
+            const tags = Array.from(new Set([...(note.tags || []), ...suggestedTags]));
+
+            const noteWithId = {
+                ...note,
+                title,
+                tags,
+                id: note.id || uuidv4(),
+                createdAt: note.createdAt || new Date().toISOString(),
+            } as Note;
+
+            const checkHash = await Integritas.hitungHash(noteWithId);
+
+            const existing = await Gudang.get("notes", noteWithId.id);
+            if (existing && existing._hash === checkHash) {
+                return { data: existing, error: null };
+            }
+
+            const preview = await Pujangga.ringkasCerdas(noteWithId.content);
+
+            const [resTitle, resContent, resPreview] = await Promise.all([
+                Brankas.encryptPacked(noteWithId.title),
+                Brankas.encryptPacked(noteWithId.content),
+                Brankas.encryptPacked(preview)
+            ]);
+
+            if (resTitle.error) return resTitle as Hasil<Note>;
+            if (resContent.error) return resContent as Hasil<Note>;
+            if (resPreview.error) return resPreview as Hasil<Note>;
+
+            let secureKredensial: string | undefined = undefined;
+            if (note.kredensial) {
+                const credsStr = typeof note.kredensial === 'string' ? note.kredensial : JSON.stringify(note.kredensial);
+                const resCreds = await Brankas.encryptPacked(credsStr);
+                if (resCreds.error) return resCreds as Hasil<Note>;
+                secureKredensial = resCreds.data;
+            }
+
+            const finalNote: Note = {
+                ...noteWithId,
+                title: resTitle.data,
+                content: resContent.data,
+                preview: resPreview.data,
+                kredensial: secureKredensial as any,
+                updatedAt: new Date().toISOString(),
+                _hash: checkHash,
+            };
+
+            await Gudang.set('notes', finalNote.id, finalNote);
+            return { data: finalNote, error: null };
+        } catch (e) {
+            return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
         }
-
-        const suggestedTags = await Pujangga.sarankanTag(note.content);
-        const tags = Array.from(new Set([...(note.tags || []), ...suggestedTags]));
-
-        const noteWithId = {
-            ...note,
-            title,
-            tags,
-            id: note.id || uuidv4(),
-            createdAt: note.createdAt || new Date().toISOString(),
-        } as Note;
-
-        const checkHash = await Integritas.hitungHash(noteWithId);
-
-        const existing = await Gudang.get("notes", noteWithId.id);
-        if (existing && existing._hash === checkHash) {
-            return existing;
-        }
-
-        const preview = await Pujangga.ringkasCerdas(noteWithId.content);
-
-        const [secureTitle, secureContent, securePreview] = await Promise.all([
-            Brankas.encryptPacked(noteWithId.title),
-            Brankas.encryptPacked(noteWithId.content),
-            Brankas.encryptPacked(preview)
-        ]);
-
-        let secureKredensial: typeof note.kredensial | string = note.kredensial;
-        if (note.kredensial && typeof note.kredensial !== 'string') {
-            secureKredensial = await Brankas.encryptPacked(JSON.stringify(note.kredensial));
-        }
-
-        const finalNote: Note = {
-            ...noteWithId,
-            title: secureTitle,
-            content: secureContent,
-            preview: securePreview,
-            kredensial: secureKredensial as Note['kredensial'],
-            updatedAt: new Date().toISOString(),
-            _hash: checkHash,
-        };
-
-        await Gudang.set('notes', finalNote.id, finalNote);
-        return finalNote;
     },
 
     /**
      * Mengambil seluruh catatan yang sudah didekripsi minimal.
      */
-    async getAllNotes(): Promise<Note[]> {
-        if (Brankas.isLocked()) throw new Error('Vault Locked');
-        const rawNotes = await Gudang.getAll('notes') as Note[];
+    async getAllNotes(): Promise<Hasil<Note[]>> {
+        if (Brankas.isLocked()) return { data: null, error: new Error('Brankas terkunci') };
+        
+        try {
+            const rawNotes = await Gudang.getAll('notes') as Note[];
+            rawNotes.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 
-        rawNotes.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+            const decrypted = await Promise.all(rawNotes.map(async n => {
+                const resTitle = await Brankas.decryptPacked(n.title);
+                const resPreview = await Brankas.decryptPacked(n.preview || '');
 
-        const decrypted = await Promise.all(rawNotes.map(async n => {
-            let safeTitle: string;
-            let safePreview: string;
+                return {
+                    ...n,
+                    title: resTitle.error ? '⚠️ [DATA RUSAK]' : resTitle.data,
+                    preview: resPreview.error ? '⚠️ [DATA RUSAK]' : resPreview.data,
+                    content: '🔒 Terkunci', 
+                    kredensial: undefined
+                };
+            }));
 
-            try {
-                safeTitle = await Brankas.decryptPacked(n.title);
-            } catch (_e) {
-                safeTitle = '⚠️ [DATA RUSAK/TAMPERED]';
-            }
-
-            try {
-                safePreview = await Brankas.decryptPacked(n.preview || '');
-            } catch (_e) {
-                safePreview = '⚠️ [DATA RUSAK/TAMPERED]';
-            }
-
-            return {
-                ...n,
-                title: safeTitle,
-                preview: safePreview,
-                content: '🔒 Terkunci', // Jauhkan konten dari RAM di list all notes
-                kredensial: undefined
-            };
-        }));
-
-        return decrypted;
+            return { data: decrypted, error: null };
+        } catch (e) {
+            return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
+        }
     },
 
     /**
      * Mendekripsi catatan secara penuh.
      */
-    async decryptNote(note: Note): Promise<Note> {
+    async decryptNote(note: Note): Promise<Hasil<Note>> {
         try {
-            const [title, content, credsRaw] = await Promise.all([
-                Brankas.decryptPacked(note.title),
-                Brankas.decryptPacked(note.content),
-                typeof note.kredensial === 'string' ? Brankas.decryptPacked(note.kredensial) : null
-            ]);
+            const resTitle = await Brankas.decryptPacked(note.title);
+            if (resTitle.error) return resTitle as Hasil<Note>;
+
+            const resContent = await Brankas.decryptPacked(note.content);
+            if (resContent.error) return resContent as Hasil<Note>;
+
+            let decodedCreds = note.kredensial;
+            if (typeof note.kredensial === 'string') {
+                const resCreds = await Brankas.decryptPacked(note.kredensial);
+                if (!resCreds.error) {
+                    try {
+                        decodedCreds = JSON.parse(resCreds.data);
+                    } catch {
+                        decodedCreds = resCreds.data;
+                    }
+                }
+            }
 
             const decryptedNote = {
                 ...note,
-                title,
-                content,
-                kredensial: credsRaw ? JSON.parse(credsRaw) : note.kredensial
+                title: resTitle.data,
+                content: resContent.data,
+                kredensial: decodedCreds
             };
 
             if (note._hash) {
@@ -316,16 +378,9 @@ export const Arsip = {
                 }
             }
 
-            return decryptedNote;
-        } catch (_err) {
-            console.error('[ARSIP] Gagal mendekripsi catatan. Kemungkinan tampering / korupsi data (ERR_DEC_001)');
-            return {
-                ...note,
-                title: '⚠️ [DATA RUSAK/TAMPERED]',
-                content: '⚠️ Gagal Dekripsi Data. Integritas kriptografi tertolak.',
-                preview: '⚠️ [DATA RUSAK/TAMPERED]',
-                kredensial: undefined
-            };
+            return { data: decryptedNote, error: null };
+        } catch (e) {
+            return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
         }
     },
 
@@ -339,11 +394,15 @@ export const Arsip = {
     /**
      * Mengambil catatan spesifik berdasarkan ID dan mendekripsinya.
      */
-    async getNoteById(id: EntityId): Promise<Note | undefined> {
-        if (Brankas.isLocked()) throw new Error('Vault Locked');
-        const note = await Gudang.get('notes', id) as Note;
-        if (!note) return undefined;
-        return this.decryptNote(note);
+    async getNoteById(id: EntityId): Promise<Hasil<Note | undefined>> {
+        if (Brankas.isLocked()) return { data: null, error: new Error('Brankas terkunci') };
+        try {
+            const note = await Gudang.get('notes', id) as Note;
+            if (!note) return { data: undefined, error: null };
+            return this.decryptNote(note);
+        } catch (e) {
+            return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
+        }
     },
 
     /**
@@ -375,37 +434,32 @@ export const Arsip = {
      * lalu mengenkripsinya dengan struktur portabel dan password backup.
      * Ini memungkinkan file dibuka di mesin lain.
      */
-    async cadangkan(passwordBackup: string): Promise<Uint8Array> {
-        if (Brankas.isLocked()) throw new Error('Vault Locked');
+    async cadangkan(passwordBackup: string): Promise<Hasil<Uint8Array>> {
+        if (Brankas.isLocked()) return { data: null, error: new Error('Brankas terkunci') };
 
-        // 1. Ambil data mentah
-        const rawNotes = await Gudang.getAll('notes') as Note[];
-        // const rawFolders = await Gudang.getAll('folders'); // Future implementation
-
-        // 2. Dekripsi ke Plaintext (Heavy Operation)
-        const plainNotes = await Promise.all(rawNotes.map(async (n) => {
-            try {
-                // Gunakan fungsi decryptNote yang sudah ada
-                return await this.decryptNote(n);
-            } catch (_e) {
-                // Jika satu catatan rusak, skip atau return error?
-                // Untuk keamanan, kita return error agar user tahu backup tidak sempurna
-                console.error(`Gagal mendekripsi catatan ${n.id} untuk backup.`);
-                return null;
+        try {
+            const rawNotes = await Gudang.getAll('notes') as Note[];
+            
+            const plainNotes: Note[] = [];
+            for (const n of rawNotes) {
+                const res = await this.decryptNote(n);
+                if (res.error) {
+                    console.error(`[ARSIP] Gagal dekripsi catatan ${n.id} untuk cadangan.`);
+                    continue; 
+                }
+                plainNotes.push(res.data);
             }
-        }));
 
-        const validNotes = plainNotes.filter(n => n !== null);
+            const payload = JSON.stringify({
+                version: '3.5.0',
+                exportedAt: new Date().toISOString(),
+                notes: plainNotes,
+            });
 
-        const payload = JSON.stringify({
-            version: '3.4.0',
-            exportedAt: new Date().toISOString(),
-            notes: validNotes,
-            // folders: rawFolders // Implementasi folder menyusul
-        });
-
-        // 3. Enkripsi Payload dengan Password Backup (Argon2id High Params + AES-GCM)
-        return await Brankas.encryptPortable(payload, passwordBackup);
+            return await Brankas.encryptPortable(payload, passwordBackup);
+        } catch (e) {
+            return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
+        }
     },
 
     /**
@@ -413,29 +467,23 @@ export const Arsip = {
      * @param buffer Data biner dari file .lembaran
      * @param passwordBackup Password yang digunakan untuk mengenkripsi cadangan
      */
-    async pulihkan(buffer: Uint8Array, passwordBackup: string): Promise<{ restored: number, skipped: number }> {
-        if (Brankas.isLocked()) throw new Error('Vault Locked: Buka brankas sebelum memulihkan data.');
+    async pulihkan(buffer: Uint8Array, passwordBackup: string): Promise<Hasil<{ restored: number, skipped: number }>> {
+        if (Brankas.isLocked()) return { data: null, error: new Error('Brankas terkunci: Buka brankas sebelum memulihkan data.') };
 
-        // 1. Dekripsi Portable Container -> JSON Plaintext
-        let jsonString: string;
         try {
-            jsonString = await Brankas.decryptPortable(buffer, passwordBackup);
-        } catch (e) {
-            throw new Error('Gagal membuka file cadangan. Password salah atau file rusak.', { cause: e });
-        }
+            const resDec = await Brankas.decryptPortable(buffer, passwordBackup);
+            if (resDec.error) return { data: null, error: new Error('Gagal membuka file cadangan. Password salah atau file rusak.', { cause: resDec.error }) };
 
-        const backup = JSON.parse(jsonString);
-        if (!backup.notes || !Array.isArray(backup.notes)) {
-            throw new Error('Format cadangan tidak valid: Data notes tidak ditemukan.');
-        }
+            const backup = JSON.parse(resDec.data);
+            if (!backup.notes || !Array.isArray(backup.notes)) {
+                return { data: null, error: new Error('Format cadangan tidak valid: Data notes tidak ditemukan.') };
+            }
 
-        const notes = backup.notes as Note[];
-        let restored = 0;
-        let skipped = 0;
+            const notes = backup.notes as Note[];
+            let restored = 0;
+            let skipped = 0;
 
-        // 2. Re-encrypt setiap note dengan Master Key mesin lokal saat ini
-        for (const note of notes) {
-            try {
+            for (const note of notes) {
                 // Cek apakah note sudah ada dan lebih baru? (Simple collision detection)
                 const existing = await Gudang.get('notes', note.id);
                 if (existing) {
@@ -448,16 +496,18 @@ export const Arsip = {
                 }
 
                 // Enkripsi ulang menggunakan saveNote (otomatis pakai Master Key aktif)
-                // Kita perlu bypass pengecekan "Vault is Locked" di saveNote karena kita sudah cek di awal
-                // Dan saveNote otomatis menangani enkripsi field title/content/kredensial
-                await this.saveNote(note);
-                restored++;
-            } catch (e) {
-                console.error(`Gagal memulihkan note ${note.id}:`, e);
-                skipped++;
+                const resSave = await this.saveNote(note);
+                if (resSave.error) {
+                    console.error(`[ARSIP] Gagal memulihkan note ${note.id}:`, resSave.error.message);
+                    skipped++;
+                } else {
+                    restored++;
+                }
             }
-        }
 
-        return { restored, skipped };
+            return { data: { restored, skipped }, error: null };
+        } catch (e) {
+            return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
+        }
     }
 };

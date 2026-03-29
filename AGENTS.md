@@ -1,6 +1,6 @@
 # Lembaran - Agent Guidelines
 
-> **Version**: 3.4.0 | **Updated**: 28 Maret 2026
+> **Version**: 3.5.0 | **Updated**: 29 Maret 2026
 
 ## 🏛️ Struktur Monorepo (Packages)
 
@@ -64,7 +64,7 @@ Semua halaman bantuan di `/bantuan` kini menggunakan `DocRenderer.tsx`.
 - **Sinkronisasi**: Menjalankan `bun run sinkron-aset` sebelum build akan menyalin dokumen ke `public/docs` untuk akses produksi.
 - **Tipografi**: Gunakan font-weight 300 (Thin) dan tracking-wide untuk menjaga estetika premium.
 
-## 🔧 Perubahan Terbaru (v3.4.0)
+## 🔧 Perubahan Terbaru (v3.5.0)
 
 ### Fixed
 - Error handling dengan `{ cause: e }` untuk debugging yang lebih baik
@@ -72,8 +72,13 @@ Semua halaman bantuan di `/bantuan` kini menggunakan `DocRenderer.tsx`.
 - Tailwind CSS warnings (var() syntax)
 - Instalasi CLI dengan `bun link` (workspace dependencies)
 - Proteksi timpa file .env di CLI
+- [NEW] Root layout crash (Missing html/body) di Next.js 16.1.6
+- [NEW] Locale routing doubling (/en/id/ fix)
 
 ### Added
+- [NEW] Support @abelionorg scope untuk seluruh monorepo
+- [NEW] install.sh universal CLI Installer (Bash/CURL)
+- [NEW] proxy.ts convention untuk Next.js 16 (menggantikan middleware.ts)
 - Terjemahan lengkap untuk navigasi bantuan
 - Dokumentasi instalasi yang lebih jelas
 

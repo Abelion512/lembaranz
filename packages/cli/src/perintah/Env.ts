@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { Arsip } from '@lembaran/core';
+import { Arsip } from '@abelionorg/core';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
@@ -29,25 +29,47 @@ export function registrasiPerintahEnv(program: Command) {
         const content = await fs.readFile(envPath, 'utf8');
         const title = `.env - ${targetTag}`;
 
-        const notes = await Arsip.getAllNotes();
+        const hasilNotes = await Arsip.getAllNotes();
+        if (hasilNotes.error) {
+          console.error('❌ Gagal membaca brankas:', hasilNotes.error.message);
+          return;
+        }
+
+        const notes = hasilNotes.data!;
         const existing = notes.find(n => n.title === title && n.tags.includes('env'));
 
         if (existing) {
-          const fullNote = await Arsip.getNoteById(existing.id);
-          if (fullNote) {
-            fullNote.content = content;
-            fullNote.updatedAt = new Date().toISOString();
-            await Arsip.saveNote(fullNote);
-            console.log(`✅ Berhasil memperbarui profil .env: ${targetTag}`);
+          const hasilFull = await Arsip.getNoteById(existing.id);
+          if (hasilFull.error) {
+            console.error('❌ Gagal mendekripsi profil .env:', hasilFull.error.message);
             return;
           }
+
+          const fullNote = hasilFull.data!;
+          fullNote.content = content;
+          fullNote.updatedAt = new Date().toISOString();
+          
+          const hasilSave = await Arsip.saveNote(fullNote);
+          if (hasilSave.error) {
+            console.error('❌ Gagal memperbarui profil .env:', hasilSave.error.message);
+            return;
+          }
+
+          console.log(`✅ Berhasil memperbarui profil .env: ${targetTag}`);
+          return;
         }
 
-        await Arsip.saveNote({
+        const hasilNew = await Arsip.saveNote({
           id: '', title, content,
           folderId: null, isPinned: false, isFavorite: false,
           tags: ['env', targetTag], createdAt: new Date().toISOString()
         });
+
+        if (hasilNew.error) {
+          console.error('❌ Gagal menyimpan profil .env baru:', hasilNew.error.message);
+          return;
+        }
+
         console.log(`✅ Berhasil menyimpan profil .env: ${targetTag} ke dalam brankas.`);
       } catch (e: unknown) {
         if (e && typeof e === 'object' && 'code' in e && e.code === 'ENOENT') {
@@ -68,17 +90,24 @@ export function registrasiPerintahEnv(program: Command) {
       if (!(await bukaBrankasCLI())) return console.log('❌ Akses ditolak.');
 
       const title = `.env - ${tag}`;
-      const notes = await Arsip.getAllNotes();
+      const hasilNotes = await Arsip.getAllNotes();
+      if (hasilNotes.error) {
+        return console.log(`❌ Gagal membaca brankas: ${hasilNotes.error.message}`);
+      }
+
+      const notes = hasilNotes.data!;
       const existingHeader = notes.find(n => n.title === title && n.tags.includes('env'));
 
       if (!existingHeader) {
         return console.log(`❌ Profil .env dengan tag '${tag}' tidak ditemukan di brankas.`);
       }
 
-      const fullNote = await Arsip.getNoteById(existingHeader.id);
-      if (!fullNote) {
-        return console.log(`❌ Gagal mendekripsi profil .env '${tag}'.`);
+      const hasilFull = await Arsip.getNoteById(existingHeader.id);
+      if (hasilFull.error) {
+        return console.log(`❌ Gagal mendekripsi profil .env '${tag}': ${hasilFull.error.message}`);
       }
+
+      const fullNote = hasilFull.data!;
 
       const envPath = path.join(process.cwd(), '.env');
       try {
@@ -119,7 +148,12 @@ export function registrasiPerintahEnv(program: Command) {
       await siapkanKonteks(program.opts());
       if (!(await bukaBrankasCLI())) return console.log('❌ Akses ditolak.');
 
-      const notes = await Arsip.getAllNotes();
+      const hasilNotes = await Arsip.getAllNotes();
+      if (hasilNotes.error) {
+        return console.log(`❌ Gagal membaca brankas: ${hasilNotes.error.message}`);
+      }
+
+      const notes = hasilNotes.data!;
       const envNotes = notes.filter(n => n.tags.includes('env') && n.title.startsWith('.env - '));
 
       if (envNotes.length === 0) {
@@ -151,17 +185,24 @@ export function registrasiPerintahEnv(program: Command) {
       if (!(await bukaBrankasCLI())) return console.log('❌ Akses ditolak.');
 
       const title = `.env - ${targetTag}`;
-      const notes = await Arsip.getAllNotes();
+      const hasilNotes = await Arsip.getAllNotes();
+      if (hasilNotes.error) {
+        return console.log(`❌ Gagal membaca brankas: ${hasilNotes.error.message}`);
+      }
+
+      const notes = hasilNotes.data!;
       const existingHeader = notes.find(n => n.title === title && n.tags.includes('env'));
 
       if (!existingHeader) {
         return console.log(`❌ Profil .env dengan tag '${targetTag}' tidak ditemukan di brankas.`);
       }
 
-      const fullNote = await Arsip.getNoteById(existingHeader.id);
-      if (!fullNote) {
-        return console.log(`❌ Gagal mendekripsi profil .env '${targetTag}'.`);
+      const hasilFull = await Arsip.getNoteById(existingHeader.id);
+      if (hasilFull.error) {
+        return console.log(`❌ Gagal mendekripsi profil .env '${targetTag}': ${hasilFull.error.message}`);
       }
+
+      const fullNote = hasilFull.data!;
 
       // Parsing raw .env text to an object
       const parsedEnv: Record<string, string> = {};

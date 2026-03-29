@@ -3,7 +3,7 @@
 import { Link } from '@/i18n/navigation';
 import { ChevronLeft, FileText, ScrollText, Shield, Github, Heart } from 'lucide-react';
 import packageJson from '../../../package.json';
-import { haptic } from '@lembaran/core/Indera';
+import { haptic } from '@abelionorg/core/Indera';
 
 export default function TentangPage() {
     return (

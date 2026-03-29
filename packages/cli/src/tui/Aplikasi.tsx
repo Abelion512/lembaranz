@@ -16,6 +16,8 @@ type Layar = 'selamat' | 'menu' | 'pantau' | 'keamanan' | 'pesan' | 'jelajah' | 
 interface AplikasiProps {
     konteks: string;
     versi: string;
+    layarAwal?: Layar;
+    filterAwal?: string;
 }
 
 interface SessionStats {
@@ -24,9 +26,9 @@ interface SessionStats {
     screensViewed: string[];
 }
 
-export const Aplikasi: React.FC<AplikasiProps> = ({ konteks, versi }) => {
+export const Aplikasi: React.FC<AplikasiProps> = ({ konteks, versi, layarAwal, filterAwal }) => {
     const { exit } = useApp();
-    const [layar, setLayar] = useState<Layar>('selamat');
+    const [layar, setLayar] = useState<Layar>(layarAwal || 'selamat');
     const [pesan, setPesan] = useState<{ jenis: 'sukses' | 'info'; judul: string } | null>(null);
     const [aksiTerakhir, setAksiTerakhir] = useState<string | undefined>();
     const [exitAttempts, setExitAttempts] = useState(0);
@@ -153,7 +155,7 @@ export const Aplikasi: React.FC<AplikasiProps> = ({ konteks, versi }) => {
             case 'pantau':
                 return <LayarPantau konteks={konteks} onKembali={keMenu} />;
             case 'jelajah':
-                return <LayarArsip onKembali={keMenu} />;
+                return <LayarArsip onKembali={keMenu} pencarianAwal={filterAwal} />;
             case 'ukir':
                 return <LayarUkir onKembali={keMenu} />;
             case 'kredensial':

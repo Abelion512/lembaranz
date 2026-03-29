@@ -1,4 +1,4 @@
-# Lembaran
+# Lembaran Pro
 
 **Brankas Arsip Digital Personal Buatan Indonesia** 🇮🇩
 
@@ -6,7 +6,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Made in Indonesia](https://img.shields.io/badge/Made%20with%20%E2%9D%A4%EF%B8%8F-Indonesia-red)](https://github.com/Abelion512/lembaran)
 
-> **Kedaulatan Data untuk Semua.** Enkripsi zero-knowledge, fokus CLI/TUI, tanpa gimmick.
+![Mockup TUI Lembaran](docs/images/tui-mockup.png)
+
+> **Kedaulatan Data untuk Semua.** Enkripsi zero-knowledge, fokus CLI/TUI premium, tanpa gimmick. Abadikan aksara, amankan jiwa.
+
+![Mockup Web Lembaran](docs/images/web-mockup.png)
 
 ---
 
@@ -16,13 +20,13 @@
 
 ```bash
 # Cara tercepat (recommended)
-curl -fsSL https://lembaran.vercel.app/install.sh | bash
+curl -sS https://lembaran.id/install.sh | bash
 
 # Atau via Bun
-bun install -g Abelion512/lembaran
+bun install -g @abelionorg/cli
 
 # Atau via npm
-npm install -g @lembaran/cli
+npm install -g @abelionorg/cli
 ```
 
 ### Penggunaan Pertama
@@ -59,10 +63,10 @@ lembaran petik    # Export catatan
 ```
 
 ### 🌐 Web (Landing & Docs)
-- Landing page informatif
+- Landing page informatif (lembaran.id)
 - Dokumentasi lengkap (Bahasa Indonesia)
-- Changelog terupdate
-- **Web vault: Coming soon** (fokus saat ini: CLI/TUI)
+- Changelog terupdate (Sync via CI/CD)
+- **Fokus: Etalase & Dokumentasi** (Vault murni di CLI/TUI)
 
 ---
 
@@ -146,6 +150,17 @@ Lembaran adalah proyek open source buatan pengembang Indonesia untuk mendukung k
 
 ---
 
-**Versi:** 3.4.0 | **Status:** Production Ready | **Fokus:** CLI/TUI
+### 🚀 Automasi Rilis (CI/CD)
+
+Proyek ini menggunakan **Changesets** dan **GitHub Actions** untuk manajemen versi otomatis.
+1. Setiap Pull Request atau Push ke `main` akan divalidasi oleh `CI` (Lint & Build).
+2. Jika terdapat file `.changeset/*.md`, GitHub Action akan otomatis membuka Pull Request baru berjudul **"Version Packages"**.
+3. Setelah PR tersebut di-merge, sistem akan mempublikasikan paket secara otomatis ke NPM `@abelionorg`.
+
+**PENTING**: Anda harus menambahkan `NPM_TOKEN` (tipe Automation) ke **GitHub Repo > Settings > Secrets and variables > Actions** agar sistem publikasi dapat berjalan.
+
+---
+
+**Versi:** 3.5.0 | **Status:** Production Ready | **Fokus:** CLI/TUI First
 
 Made with ❤️ in Indonesia 🇮🇩

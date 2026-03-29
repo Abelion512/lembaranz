@@ -3,7 +3,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Search, X } from 'lucide-react';
-import { SaklarSuasana } from '@/komponen/landing/SaklarSuasana';
 import { Link } from '@/i18n/navigation';
 import { SelasarBantuan } from './SelasarBantuan';
 
@@ -71,7 +70,7 @@ export const LembaranDok = ({ title: _title, description: _description, children
                         </Link>
 
                         <div className="hidden lg:flex items-center gap-6 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] ml-8">
-                            <Link href="/pustaka" className="hover:text-blue-500 transition-colors">{t('Selasar.Produk')}</Link>
+                            <Link href="/" className="hover:text-blue-500 transition-colors">{t('Selasar.Produk')}</Link>
                             <Link href="/bantuan" className="hover:text-blue-500 transition-colors">{t('Selasar.Bantuan')}</Link>
                             <a href="https://github.com/Abelion512/lembaran" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transition-colors">GitHub</a>
                         </div>
@@ -89,10 +88,9 @@ export const LembaranDok = ({ title: _title, description: _description, children
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <SaklarSuasana />
-                        <Link href="/pustaka" className="hidden sm:flex px-6 py-2.5 bg-[#text-primary] bg-blue-500 text-white rounded-full font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-blue-500/10 active:scale-95 transition-all hover:bg-blue-600">
-                            {t('Aksi.BukaBrankas')}
-                        </Link>
+                        <a href="https://www.npmjs.com/org/abelion512" target="_blank" rel="noopener noreferrer" className="hidden sm:flex px-6 py-2.5 bg-[#cb3837] text-white rounded-full font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-red-500/10 active:scale-95 transition-all hover:bg-red-600">
+                            NPM Registry
+                        </a>
                     </div>
                 </div>
 

@@ -3,9 +3,7 @@ import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { routing } from '@/i18n/routing';
-import { PenyamarIdentitas } from '@/komponen/bersama/PenyamarIdentitas';
 import { PengaturSuasana } from '@/komponen/bersama/PengaturSuasana';
-import { PenyaringRute } from '@/komponen/bersama/PenyaringRute';
 import { Inter } from 'next/font/google';
 import '@/gaya/Utama.css';
 import type { Metadata, Viewport } from 'next';
@@ -54,18 +52,13 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     const messages = await getMessages();
 
     return (
-        <html lang={locale} suppressHydrationWarning>
-            <body className={`${inter.variable} font-sans bg-gray-50 dark:bg-black overflow-x-hidden`}>
-                <NextIntlClientProvider messages={messages} locale={locale}>
-                    <main className="min-h-screen w-full flex">
-                        <PenyamarIdentitas />
-                        <PengaturSuasana />
-                        <PenyaringRute>
-                            {children}
-                        </PenyaringRute>
-                    </main>
-                </NextIntlClientProvider>
-            </body>
-        </html>
+        <NextIntlClientProvider messages={messages} locale={locale}>
+            <main className={`${inter.variable} font-sans bg-gray-50 dark:bg-black overflow-x-hidden min-h-screen w-full flex flex-col`}>
+                <PengaturSuasana />
+                <div className="flex-1 w-full min-w-0">
+                    {children}
+                </div>
+            </main>
+        </NextIntlClientProvider>
     );
 }

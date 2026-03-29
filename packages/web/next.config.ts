@@ -36,7 +36,7 @@ const nextConfig: NextConfig = {
       })
     );
 
-    // Fix TypeScript extension resolution for @lembaran/core
+    // Fix TypeScript extension resolution for @abelionorg/core
     // Remove .js from extensions and prioritize .ts/.tsx
     config.resolve.extensions = ['.ts', '.tsx', '.mjs', '.cjs', '.js', '.jsx', '.json'];
 

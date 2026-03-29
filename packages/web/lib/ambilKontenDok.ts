@@ -6,14 +6,16 @@ import { bacaBerkas } from '@/lib/bacaBerkas';
  * Mapping eksplisit slug bantuan untuk keamanan dan konsistensi.
  */
 const PETA_SLUG: Record<string, string> = {
-    'MULAI_CEPAT': 'MULAI_CEPAT',
+    'MULAI_CEPAT': 'panduan/MULAI_CEPAT',
     'GETTING_STARTED': 'GETTING_STARTED',
-    'cli': 'cli',
-    'keamanan': 'keamanan',
-    'perintah': 'perintah',
-    'performa': 'performa',
-    'struktur': 'struktur',
-    'publik': 'publik'
+    'cli': 'panduan/cli',
+    'keamanan': 'keamanan/keamanan',
+    'perintah': 'panduan/perintah',
+    'performa': 'arsip/performa',
+    'struktur': 'panduan/struktur',
+    'publik': 'panduan/publik',
+    'sentinel-sovereign': 'keamanan/sentinel-sovereign',
+    'sentinel-guard': 'keamanan/sentinel-guard'
 };
 
 export interface ButirMetadata {
@@ -37,7 +39,7 @@ let cacheMetadata: IndeksMetadata | null = null;
 export async function ambilKontenDok(slug: string, lang: 'id' | 'en' = 'id') {
     if (!slug || typeof slug !== 'string') return null;
 
-    const slugDibersihkan = slug.trim().replace(/[^a-zA-Z0-9_-]/g, '');
+    const slugDibersihkan = slug.trim().replace(/[^a-zA-Z0-9_/-]/g, '');
 
     if (!slugDibersihkan || (slug.length > 4 && slugDibersihkan.length < slug.length / 2)) {
         return null;

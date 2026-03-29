@@ -17,10 +17,15 @@ export const LayarBukaBrankas: React.FC<LayarBukaBrankasProps> = ({ onBerhasil }
 
     useEffect(() => {
         const check = async () => {
-            const { Arsip } = await import('@lembaran/core');
-            const initialized = await Arsip.isVaultInitialized();
-            setIsInit(initialized);
-            if (!initialized) setMode('setup');
+            const { Arsip } = await import('@abelionorg/core');
+            const hasil = await Arsip.isVaultInitialized();
+            if (hasil.error) {
+                setError('Gagal memeriksa status brankas.');
+                setIsInit(false);
+            } else {
+                setIsInit(hasil.data);
+                if (!hasil.data) setMode('setup');
+            }
         };
         check();
     }, []);
@@ -35,16 +40,20 @@ export const LayarBukaBrankas: React.FC<LayarBukaBrankasProps> = ({ onBerhasil }
         setError(null);
 
         try {
-            const { Arsip } = await import('@lembaran/core');
+            const { Arsip } = await import('@abelionorg/core');
             if (mode === 'setup') {
-                await Arsip.setupVault(password);
-                onBerhasil();
+                const hasil = await Arsip.setupVault(password);
+                if (hasil.error) {
+                    setError(hasil.error.message || 'Gagal menyiapkan brankas.');
+                } else {
+                    onBerhasil();
+                }
             } else {
-                const ok = await Arsip.unlockVault(password);
-                if (ok) {
+                const hasil = await Arsip.unlockVault(password);
+                if (!hasil.error && hasil.data) {
                     onBerhasil();
                 } else {
-                    setError('Kata sandi salah.');
+                    setError(hasil.error?.message || 'Kata sandi salah.');
                 }
             }
         } catch (_e) {
@@ -58,14 +67,14 @@ export const LayarBukaBrankas: React.FC<LayarBukaBrankasProps> = ({ onBerhasil }
         setIsLoading(true);
         setError(null);
         try {
-            const { Arsip } = await import('@lembaran/core');
-            const ok = await Arsip.recoverVault(mnemonic);
-            if (ok) {
+            const { Arsip } = await import('@abelionorg/core');
+            const hasil = await Arsip.recoverVault(mnemonic);
+            if (!hasil.error && hasil.data) {
                 // Force user to set new password after recovery
                 setMode('setup');
                 setPassword('');
             } else {
-                setError('Kunci kertas tidak valid.');
+                setError(hasil.error?.message || 'Kunci kertas tidak valid.');
             }
         } catch (_e) {
             setError('Gagal memulihkan brankas.');

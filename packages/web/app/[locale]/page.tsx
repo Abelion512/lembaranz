@@ -13,7 +13,6 @@ import { PasangTerminal } from '@/komponen/landing/PasangTerminal';
 import { TabelPerbandingan } from '@/komponen/landing/TabelPerbandingan';
 import { EtalaseLokal } from '@/komponen/landing/EtalaseLokal';
 import { PratinjauLaras } from '@/komponen/landing/PratinjauLaras';
-import { SaklarSuasana } from '@/komponen/landing/SaklarSuasana';
 import { PendaratanKaki } from '@/komponen/landing/PendaratanKaki';
 
 export default function LandingPage() {
@@ -45,10 +44,10 @@ export default function LandingPage() {
                         <Link href="/bantuan" className="hover:text-blue-500 transition-colors">{t('Selasar.Dokumentasi')}</Link>
                     </nav>
                     <div className="w-px h-6 bg-(--separator)/10 mx-2 hidden md:block"></div>
-                    <SaklarSuasana />
-                    <Link href="/pustaka" className="px-6 py-2.5 bg-blue-500 text-white rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20 active:scale-95 opacity-50 cursor-not-allowed" title="Fitur CLI/TUI - Segera hadir untuk web">
-                        {t('Aksi.BukaBrankas')} <span className="text-[8px] ml-1">(CLI)</span>
-                    </Link>
+                    
+                    <a href="https://www.npmjs.com/org/abelion512" target="_blank" rel="noopener noreferrer" className="px-6 py-2.5 bg-[#cb3837] text-white rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-red-600 transition-all shadow-lg shadow-red-500/20 active:scale-95" title="Buka NPM Registry">
+                        NPM Registry
+                    </a>
                 </div>
             </header>
 
@@ -78,18 +77,18 @@ export default function LandingPage() {
                         </div>
 
                         <div className="flex flex-col items-center justify-center gap-2 mb-8">
-                            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+                            <h1 className="text-4xl md:text-7xl font-bold tracking-tighter flex flex-wrap items-center justify-center gap-x-4 gap-y-2 uppercase">
                                 <span className="text-gray-400">Aksara yang</span>
-                                <div className="inline-flex items-center gap-3">
-                                    <div className="relative h-[1.2em] flex items-center overflow-hidden">
+                                <div className="inline-flex items-center">
+                                    <div className="relative flex items-center overflow-hidden">
                                         <AnimatePresence mode="wait">
                                             <motion.span
                                                 key={WORDS[wordIndex]}
-                                                initial={{ y: 40, opacity: 0 }}
-                                                animate={{ y: 0, opacity: 1 }}
-                                                exit={{ y: -40, opacity: 0 }}
-                                                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                                                className="text-blue-500 whitespace-nowrap"
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -10 }}
+                                                transition={{ duration: 0.3, ease: 'easeOut' }}
+                                                className="text-blue-500 whitespace-nowrap inline-block"
                                             >
                                                 {WORDS[wordIndex]}.
                                             </motion.span>
@@ -99,16 +98,20 @@ export default function LandingPage() {
                             </h1>
                         </div>
 
-                        <p className="text-sm md:text-lg text-gray-500 max-w-xl mx-auto mb-16 leading-relaxed font-medium px-4">
+                        <p className="text-sm md:text-lg text-gray-400/80 max-w-xl mx-auto mb-16 leading-relaxed font-medium px-4">
                             {t('Landing.tagline')}
                         </p>
                         <div className="flex flex-wrap items-center justify-center gap-6 mb-24">
-                            <Link href="/pustaka" className="px-8 py-3.5 bg-(--text-primary) text-(--background) rounded-xl font-bold flex items-center gap-3 hover:scale-105 hover:shadow-2xl transition-all">
-                                {t('Navigasi.mulai_menulis')} <ArrowRight size={16} />
+                            <div className="group relative">
+                                <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                                <div className="relative px-8 py-4 bg-black/80 border border-white/10 rounded-2xl font-mono text-sm text-green-400 flex items-center gap-4 shadow-2xl backdrop-blur-xl">
+                                    <span className="text-gray-600 select-none">❯</span>
+                                    <span>npm install -g @abelionorg/cli</span>
+                                </div>
+                            </div>
+                            <Link href="/bantuan/MULAI_CEPAT" className="px-8 py-4 bg-white/5 border border-white/10 rounded-2xl font-bold flex items-center gap-3 hover:bg-white/10 transition-all active:scale-95 shadow-lg shadow-white/5">
+                                {t('Selasar.Dokumentasi')} <ArrowRight size={16} className="text-blue-500" />
                             </Link>
-                            <a href="#native" className="px-8 py-3.5 bg-white/5 border border-white/10 rounded-xl font-bold flex items-center gap-3 hover:bg-white/10 transition-all">
-                                <Download size={16} /> {t('Navigasi.unduh_app')}
-                            </a>
                         </div>
                         </motion.div>
                     </motion.div>

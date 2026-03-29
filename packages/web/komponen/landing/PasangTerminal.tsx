@@ -4,17 +4,19 @@ import React, { useState } from 'react';
 import { Terminal, Copy, Check } from 'lucide-react';
 
 const COMMANDS = {
-    npm: 'npm install -g Abelion512/lembaran',
-    yarn: 'yarn global add Abelion512/lembaran',
-    bun: 'bun install -g Abelion512/lembaran',
+    curl: 'curl -sS https://lembaran.id/install.sh | bash',
+    bun: 'bun install -g @abelionorg/cli',
+    npm: 'npm install -g @abelionorg/cli',
+    yarn: 'yarn global add @abelionorg/cli',
 };
 
 export const PasangTerminal = () => {
-    const [method, setMethod] = useState<keyof typeof COMMANDS>('bun');
+    const [method, setMethod] = useState<keyof typeof COMMANDS>('curl');
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(COMMANDS[method]);
+        const textToCopy = COMMANDS[method];
+        navigator.clipboard.writeText(textToCopy);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
@@ -34,12 +36,14 @@ export const PasangTerminal = () => {
                             <span>Pasang via Terminal</span>
                         </div>
                     </div>
-                    <div className="flex bg-black/20 p-1 rounded-lg">
-                        {(['npm', 'yarn', 'bun'] as const).map((m) => (
+                    <div className="flex bg-black/40 p-1 rounded-xl border border-white/5">
+                        {(['curl', 'bun', 'npm', 'yarn'] as const).map((m) => (
                             <button
                                 key={m}
                                 onClick={() => setMethod(m)}
-                                className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${method === m ? 'bg-blue-500 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'
+                                className={`px-4 py-1.5 text-[10px] font-black rounded-lg transition-all duration-300 ${method === m
+                                    ? 'bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)]'
+                                    : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'
                                     }`}
                             >
                                 {m.toUpperCase()}

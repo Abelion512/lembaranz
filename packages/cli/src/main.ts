@@ -6,6 +6,7 @@ import { registrasiPerintahPetik } from './perintah/Petik.js';
 import { registrasiPerintahPengaturan } from './perintah/Pengaturan.js';
 import { registrasiPerintahPantau } from './perintah/Pantau.js';
 import { registrasiPerintahKeamanan } from './perintah/Keamanan.js';
+import { registrasiPerintahJelajah } from './perintah/Jelajah.js';
 import { registrasiPerintahMulai, jalankanTUI } from './perintah/Mulai.js';
 import { siapkanKonteks } from './utils.js';
 import pkg from '../package.json' assert { type: 'json' };
@@ -35,6 +36,7 @@ registrasiPerintahPetik(program);
 registrasiPerintahPengaturan(program);
 registrasiPerintahPantau(program, VERSI);
 registrasiPerintahKeamanan(program);
+registrasiPerintahJelajah(program, VERSI);
 registrasiPerintahMulai(program, VERSI);
 
 // Default: TUI interaktif penuh

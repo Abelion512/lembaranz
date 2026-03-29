@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { Arsip } from '@lembaran/core';
+import { Arsip } from '@abelionorg/core';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import prompts from 'prompts';
@@ -43,7 +43,13 @@ export function registrasiPerintahTanam(program: Command) {
 
         try {
             console.log('⏳ Sedang memulihkan dan mengenkripsi ulang data...');
-            const { restored, skipped } = await Arsip.pulihkan(buffer, res.pw);
+            const hasil = await Arsip.pulihkan(buffer, res.pw);
+            if (hasil.error) {
+                console.error('❌ Gagal memulihkan:', hasil.error.message);
+                return;
+            }
+
+            const { restored, skipped } = hasil.data!;
             console.log(`✅ Pemulihan selesai:`);
             console.log(`   - Dipulihkan: ${restored} catatan`);
             console.log(`   - Dilewati (Lebih baru): ${skipped} catatan`);
@@ -67,10 +73,15 @@ export function registrasiPerintahTanam(program: Command) {
 async function tanamMarkdown(filepath: string) {
     const content = await fs.readFile(filepath, 'utf8');
     const title = path.basename(filepath, '.md');
-    await Arsip.saveNote({
+    const hasil = await Arsip.saveNote({
       id: '', title, content,
       folderId: null, isPinned: false, isFavorite: false,
       tags: ['impor'], createdAt: new Date().toISOString()
     });
-    console.log(`  ├── ✅ ${title}`);
+
+    if (hasil.error) {
+        console.log(`  ├── ❌ Gagal menanam ${title}: ${hasil.error.message}`);
+    } else {
+        console.log(`  ├── ✅ ${title}`);
+    }
 }

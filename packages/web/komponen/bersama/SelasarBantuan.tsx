@@ -9,7 +9,7 @@ import {
     ExternalLink,
     ChevronLeft
 } from 'lucide-react';
-import { haptic } from '@lembaran/core/Indera';
+import { haptic } from '@abelionorg/core/Indera';
 import { usePathname } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 

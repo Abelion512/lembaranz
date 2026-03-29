@@ -1,17 +1,17 @@
 import { Command } from 'commander';
-import { KonteksLaras } from '@lembaran/core';
+import { KonteksLaras } from '@abelionorg/core';
 import React from 'react';
 import { render } from 'ink';
 import { siapkanKonteks, masukLayarTUI, keluarLayarTUI } from '../utils.js';
 
-export const jalankanTUI = async (konteks: KonteksLaras, versi: string) => {
+export const jalankanTUI = async (konteks: KonteksLaras, versi: string, layarAwal?: string, filterAwal?: string) => {
     masukLayarTUI();
 
     // Dynamic import
     const { Aplikasi } = await import('../tui/Aplikasi.js');
 
     const { waitUntilExit } = render(
-        React.createElement(Aplikasi, { konteks, versi }),
+        React.createElement(Aplikasi, { konteks, versi, layarAwal: layarAwal as any, filterAwal }),
         { exitOnCtrlC: false } // Handle in Aplikasi.tsx
     );
 

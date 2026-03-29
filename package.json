@@ -38,13 +38,16 @@
     "lembaran": "./packages/cli/src/main.ts"
   },
   "scripts": {
-    "dev": "bun --filter @lembaran/web dev",
-    "build": "bun --filter @lembaran/web build",
-    "start": "bun --filter @lembaran/web start",
-    "cli": "bun --filter @lembaran/cli start",
+    "dev": "bun --filter @abelionorg/web dev",
+    "build": "bun --filter @abelionorg/web build",
+    "start": "bun --filter @abelionorg/web start",
+    "cli": "bun --filter @abelionorg/cli start",
     "lint": "bun --filter \"*\" lint",
     "test:perf": "bun packages/core/src/scripts/inject-perf-data.ts",
-    "sinkron-aset": "bun --filter @lembaran/web sinkron-aset"
+    "sinkron-aset": "bun --filter @abelionorg/web sinkron-aset",
+    "version-packages": "changeset version",
+    "ci:release": "changeset publish",
+    "bersih": "bun --filter @abelionorg/web bersih"
   },
   "dependencies": {
     "@abelion/tagger-public": "^1.1.0",

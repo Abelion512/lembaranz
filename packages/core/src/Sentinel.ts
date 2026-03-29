@@ -14,30 +14,26 @@ const LOCKOUT_DURATION = 5 * 60 * 1000; // 5 minutes
 const rateLimitStore = new Map<string, RateLimitState>();
 
 export const Sentinel = {
-    /**
-     * Constant-time string comparison to prevent timing attacks
-     * @param a First string
-     * @param b Second string
-     * @returns true if strings are equal
-     */
     constantTimeCompare(a: string, b: string): boolean {
         const encoder = new TextEncoder();
         const aBytes = encoder.encode(a);
         const bBytes = encoder.encode(b);
 
+        let result = 0;
+        const len = aBytes.length;
+
         // Length check (still constant-time)
-        if (aBytes.length !== bBytes.length) {
-            // Still do comparison to maintain constant time
-            let _dummy = 0;
-            for (let i = 0; i < aBytes.length; i++) {
-                _dummy |= aBytes[i] ^ aBytes[i];
+        if (len !== bBytes.length) {
+            result = 1; // Mismatch
+            // Dummy operation to avoid timing clues based on string length differences
+            for (let i = 0; i < bBytes.length; i++) {
+                result |= bBytes[i] ^ bBytes[i];
             }
             return false;
         }
 
         // Byte-by-byte comparison (constant-time)
-        let result = 0;
-        for (let i = 0; i < aBytes.length; i++) {
+        for (let i = 0; i < len; i++) {
             result |= aBytes[i] ^ bBytes[i];
         }
 

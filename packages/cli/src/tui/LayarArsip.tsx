@@ -3,10 +3,11 @@ import { Box, Text, useInput } from 'ink';
 import TextInput from 'ink-text-input';
 import Spinner from 'ink-spinner';
 import { PilihanModern } from './komponen/PilihanModern.js';
-import { Note } from '@lembaran/core';
+import { Note } from '@abelionorg/core';
 
 interface LayarArsipProps {
     onKembali: () => void;
+    pencarianAwal?: string;
 }
 
 /**
@@ -35,18 +36,23 @@ const bersihkanAksaraPencarian = (teks: string): string => {
         .trim();
 };
 
-export const LayarArsip: React.FC<LayarArsipProps> = ({ onKembali }) => {
+export const LayarArsip: React.FC<LayarArsipProps> = ({ onKembali, pencarianAwal }) => {
     const [notes, setNotes] = useState<Note[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [search, setSearch] = useState('');
+    const [search, setSearch] = useState(pencarianAwal || '');
     const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
 
     useEffect(() => {
         const load = async () => {
             try {
-                const { Arsip } = await import('@lembaran/core');
-                const all = await Arsip.getAllNotes();
-                setNotes(all || []);
+                const { Arsip } = await import('@abelionorg/core');
+                const hasil = await Arsip.getAllNotes();
+                if (hasil.error) {
+                    // Tampilkan galat jika diperlukan, atau biarkan kosong
+                    setNotes([]);
+                } else {
+                    setNotes(hasil.data || []);
+                }
             } catch (_e) {
                 // Keep TUI running
             } finally {

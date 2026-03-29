@@ -1,4 +1,4 @@
-import { Laras, Gudang, Pujangga, KonteksLaras, Arsip } from '@lembaran/core';
+import { Laras, Gudang, Pujangga, KonteksLaras, Arsip } from '@abelionorg/core';
 import prompts from 'prompts';
 
 export interface OpsiGlobal {
@@ -30,7 +30,13 @@ export const bukaBrankasCLI = async (): Promise<boolean> => {
     message: 'Masukkan kata sandi brankas:'
   });
   if (!res.pw) return false;
-  return await Arsip.unlockVault(res.pw);
+  
+  const hasil = await Arsip.unlockVault(res.pw);
+  if (hasil.error) {
+    console.log(`❌ Gagal membuka brankas: ${hasil.error.message}`);
+    return false;
+  }
+  return !!hasil.data;
 };
 
 export const masukLayarTUI = () => {

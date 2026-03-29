@@ -9,6 +9,12 @@ import { argon2id } from '@noble/hashes/argon2.js';
  * - High-Memory Cost KDF for Backups
  */
 
+/**
+ * Hasil: Standar pengembalian data untuk operasi Brankas.
+ * Mencegah manipulasi error yang tidak terduga (crash).
+ */
+export type Hasil<T> = { data: T; error: null } | { data: null; error: Error };
+
 const ALGO_ENC = 'AES-GCM';
 const MAX_CACHE_ITEMS = 100;
 
@@ -22,34 +28,32 @@ export class Brankas {
     private static decryptionCache = new Map<string, string>();
 
     /**
-     * Derives a CryptoKey from a password and salt using Argon2id
-     * @param extractable Whether the key should be extractable (needed for recovery setup)
+     * @param extractable Apakah kunci dapat diekspor (diperlukan untuk backup)
      */
-    static async deriveKey(password: string, salt: Uint8Array, extractable = false): Promise<CryptoKey> {
+    static async deriveKey(password: string, salt: Uint8Array, extractable = false): Promise<Hasil<CryptoKey>> {
         const passwordBuffer = new TextEncoder().encode(password);
         let hash: Uint8Array | null = null;
 
         try {
-            // Argon2id parameters (OWASP recommended: 19MB RAM, 2 iterations, 1 parallelism)
             hash = argon2id(passwordBuffer, salt, {
                 t: 2,
-                m: 19 * 1024, // 19MB in KB
-                dkLen: 32, // 256-bit
-                p: 1, // parallelism
+                m: 19 * 1024,
+                dkLen: 32,
+                p: 1,
             });
 
-            return crypto.subtle.importKey(
+            const key = await crypto.subtle.importKey(
                 'raw',
                 hash as BufferSource,
                 { name: ALGO_ENC, length: 256 },
                 extractable,
                 ['encrypt', 'decrypt']
             );
+            return { data: key, error: null };
         } catch (error) {
-            console.error('[BRANKAS] Kunci gagal diturunkan (ERR_DRV_001)');
-            throw error;
+            console.error('[BRANKAS] Gagal menurunkan kunci (ERR_DRV_001)');
+            return { data: null, error: error instanceof Error ? error : new Error(String(error)) };
         } finally {
-            // Sanitize password from memory immediately after use
             passwordBuffer.fill(0);
             if (hash) {
                 hash.fill(0);
@@ -60,32 +64,47 @@ export class Brankas {
     /**
      * Generates a random 256-bit AES-GCM master key.
      */
-    static async generateMasterKey(): Promise<CryptoKey> {
-        return crypto.subtle.generateKey(
-            { name: ALGO_ENC, length: 256 },
-            true, // extractable so it can be wrapped
-            ['encrypt', 'decrypt']
-        );
+    static async generateMasterKey(): Promise<Hasil<CryptoKey>> {
+        try {
+            const key = await crypto.subtle.generateKey(
+                { name: ALGO_ENC, length: 256 },
+                true,
+                ['encrypt', 'decrypt']
+            );
+            return { data: key, error: null };
+        } catch (e) {
+            return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
+        }
     }
 
     /**
      * Imports a key from raw bytes.
      */
-    static async importRawKey(keyBuffer: ArrayBuffer, extractable = true): Promise<CryptoKey> {
-        return crypto.subtle.importKey(
-            'raw',
-            keyBuffer,
-            { name: ALGO_ENC, length: 256 },
-            extractable,
-            ['encrypt', 'decrypt']
-        );
+    static async importRawKey(keyBuffer: ArrayBuffer, extractable = true): Promise<Hasil<CryptoKey>> {
+        try {
+            const key = await crypto.subtle.importKey(
+                'raw',
+                keyBuffer,
+                { name: ALGO_ENC, length: 256 },
+                extractable,
+                ['encrypt', 'decrypt']
+            );
+            return { data: key, error: null };
+        } catch (e) {
+            return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
+        }
     }
 
     /**
      * Exports a key to raw bytes.
      */
-    static async exportRawKey(key: CryptoKey): Promise<ArrayBuffer> {
-        return crypto.subtle.exportKey('raw', key);
+    static async exportRawKey(key: CryptoKey): Promise<Hasil<ArrayBuffer>> {
+        try {
+            const buffer = await crypto.subtle.exportKey('raw', key);
+            return { data: buffer, error: null };
+        } catch (e) {
+            return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
+        }
     }
 
     static setActiveKey(key: CryptoKey) {
@@ -107,46 +126,57 @@ export class Brankas {
     }
 
     /**
-     * Encrypts a string of text
+     * Mengenkripsi teks string
      */
-    static async encrypt(text: string, customKey?: CryptoKey): Promise<{ data: ArrayBuffer; iv: Uint8Array }> {
+    static async encrypt(text: string, customKey?: CryptoKey): Promise<Hasil<{ data: ArrayBuffer; iv: Uint8Array }>> {
         const key = customKey || this.key;
-        if (!key) throw new Error('Vault Locked: No active key');
+        if (!key) return { data: null, error: new Error('Brankas Terkunci: Kunci tidak aktif') };
 
-        const iv = crypto.getRandomValues(new Uint8Array(12));
-        const encoder = new TextEncoder();
+        try {
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const encoder = new TextEncoder();
 
-        const data = await crypto.subtle.encrypt(
-            { name: ALGO_ENC, iv },
-            key,
-            encoder.encode(text)
-        );
+            const data = await crypto.subtle.encrypt(
+                { name: ALGO_ENC, iv },
+                key,
+                encoder.encode(text)
+            );
 
-        return { data, iv };
+            return { data: { data, iv }, error: null };
+        } catch (e) {
+            return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
+        }
     }
 
     /**
-     * Decrypts an ArrayBuffer back to string
+     * Mendekripsi ArrayBuffer kembali ke string
      */
-    static async decrypt(encryptedData: ArrayBuffer, iv: Uint8Array, customKey?: CryptoKey): Promise<string> {
+    static async decrypt(encryptedData: ArrayBuffer, iv: Uint8Array, customKey?: CryptoKey): Promise<Hasil<string>> {
         const key = customKey || this.key;
-        if (!key) throw new Error('Vault Locked: No active key');
+        if (!key) return { data: null, error: new Error('Brankas Terkunci: Kunci tidak aktif') };
 
-        const decrypted = await crypto.subtle.decrypt(
-            { name: ALGO_ENC, iv: iv as BufferSource },
-            key,
-            encryptedData
-        );
+        try {
+            const decrypted = await crypto.subtle.decrypt(
+                { name: ALGO_ENC, iv: iv as BufferSource },
+                key,
+                encryptedData
+            );
 
-        const decoder = new TextDecoder();
-        return decoder.decode(decrypted);
+            const decoder = new TextDecoder();
+            return { data: decoder.decode(decrypted), error: null };
+        } catch (e) {
+            return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
+        }
     }
 
-    static async encryptPacked(text: string, customKey?: CryptoKey): Promise<string> {
-        const { data, iv } = await this.encrypt(text, customKey);
+    static async encryptPacked(text: string, customKey?: CryptoKey): Promise<Hasil<string>> {
+        const result = await this.encrypt(text, customKey);
+        if (result.error) return { data: null, error: result.error };
+
+        const { data, iv } = result.data;
         const ivHex = Array.from(iv).map(b => b.toString(16).padStart(2, '0')).join('');
         const base64 = btoa(String.fromCharCode(...new Uint8Array(data)));
-        return `${ivHex}|${base64}`;
+        return { data: `${ivHex}|${base64}`, error: null };
     }
 
     /**
@@ -160,138 +190,133 @@ export class Brankas {
         return bytes;
     }
 
-    static async decryptPacked(packed: string, customKey?: CryptoKey): Promise<string> {
-        if (!packed || !packed.includes('|')) return packed;
+    static async decryptPacked(packed: string, customKey?: CryptoKey): Promise<Hasil<string>> {
+        if (!packed || !packed.includes('|')) return { data: packed, error: null };
 
         if (!customKey && this.decryptionCache.has(packed)) {
-            const result = this.decryptionCache.get(packed)!;
+            const cachedResult = this.decryptionCache.get(packed)!;
             this.decryptionCache.delete(packed);
-            this.decryptionCache.set(packed, result);
-            return result;
+            this.decryptionCache.set(packed, cachedResult);
+            return { data: cachedResult, error: null };
         }
 
-        const [ivHex, base64] = packed.split('|');
-        const iv = this.hexToBytes(ivHex);
+        try {
+            const [ivHex, base64] = packed.split('|');
+            const iv = this.hexToBytes(ivHex);
 
-        const binaryString = atob(base64);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
-        }
-
-        const result = await this.decrypt(bytes.buffer, iv, customKey);
-
-        if (!customKey) {
-            if (this.decryptionCache.size >= MAX_CACHE_ITEMS) {
-                const firstKey = this.decryptionCache.keys().next().value;
-                if (firstKey !== undefined) {
-                    this.decryptionCache.delete(firstKey);
-                }
+            const binaryString = atob(base64);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
             }
-            this.decryptionCache.set(packed, result);
-        }
 
-        return result;
+            const result = await this.decrypt(bytes.buffer, iv, customKey);
+            if (result.error) return result;
+
+            if (!customKey) {
+                if (this.decryptionCache.size >= MAX_CACHE_ITEMS) {
+                    const firstKey = this.decryptionCache.keys().next().value;
+                    if (firstKey !== undefined) {
+                        this.decryptionCache.delete(firstKey);
+                    }
+                }
+                this.decryptionCache.set(packed, result.data);
+            }
+
+            return result;
+        } catch (e) {
+            return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
+        }
     }
 
     /**
      * Enkripsi Portabel (Quantum-Resistant Symmetric Structure)
      * Format: [Magic:4][Ver:1][Salt:32][IV:12][Ciphertext:N]
-     * Salt ditingkatkan ke 32 bytes (256-bit) untuk menahan pre-computation attack masa depan.
      */
-    static async encryptPortable(data: string, password: string): Promise<Uint8Array> {
-        // 1. Generate Salt 32-byte (256-bit)
-        const salt = crypto.getRandomValues(new Uint8Array(32));
-        const iv = crypto.getRandomValues(new Uint8Array(12));
+    static async encryptPortable(data: string, password: string): Promise<Hasil<Uint8Array>> {
+        try {
+            const salt = crypto.getRandomValues(new Uint8Array(32));
+            const iv = crypto.getRandomValues(new Uint8Array(12));
 
-        // 2. Derive Ephemeral Key (High Cost for Future Proofing)
-        // Kita gunakan parameter custom yang lebih berat untuk export file
-        // 4 Iterations, 64MB RAM Cost
-        const hash = argon2id(password, salt, {
-            t: 4,
-            m: 64 * 1024,
-            dkLen: 32,
-            p: 1
-        });
+            const hash = argon2id(password, salt, {
+                t: 4,
+                m: 64 * 1024,
+                dkLen: 32,
+                p: 1
+            });
 
-        const key = await crypto.subtle.importKey(
-            'raw',
-            hash as BufferSource,
-            { name: ALGO_ENC, length: 256 },
-            false,
-            ['encrypt']
-        );
+            const key = await crypto.subtle.importKey(
+                'raw',
+                hash as BufferSource,
+                { name: ALGO_ENC, length: 256 },
+                false,
+                ['encrypt']
+            );
 
-        const encoder = new TextEncoder();
-        const encryptedBuffer = await crypto.subtle.encrypt(
-            { name: 'AES-GCM', iv },
-            key,
-            encoder.encode(data)
-        );
+            const encoder = new TextEncoder();
+            const encryptedBuffer = await crypto.subtle.encrypt(
+                { name: 'AES-GCM', iv },
+                key,
+                encoder.encode(data)
+            );
 
-        // 3. Construct Binary Format
-        // Magic: LMBR (0x4C 0x4D 0x42 0x52)
-        const magic = new Uint8Array([0x4C, 0x4D, 0x42, 0x52]);
-        const version = new Uint8Array([0x01]); // Version 1
+            const magic = new Uint8Array([0x4C, 0x4D, 0x42, 0x52]);
+            const version = new Uint8Array([0x01]);
 
-        // Structure: [Magic 4][Ver 1][Salt 32][IV 12][Ciphertext N]
-        const result = new Uint8Array(
-            magic.length + version.length + salt.length + iv.length + encryptedBuffer.byteLength
-        );
+            const result = new Uint8Array(
+                magic.length + version.length + salt.length + iv.length + encryptedBuffer.byteLength
+            );
 
-        let offset = 0;
-        result.set(magic, offset); offset += magic.length;
-        result.set(version, offset); offset += version.length;
-        result.set(salt, offset); offset += salt.length;
-        result.set(iv, offset); offset += iv.length;
-        result.set(new Uint8Array(encryptedBuffer), offset);
+            let offset = 0;
+            result.set(magic, offset); offset += magic.length;
+            result.set(version, offset); offset += version.length;
+            result.set(salt, offset); offset += salt.length;
+            result.set(iv, offset); offset += iv.length;
+            result.set(new Uint8Array(encryptedBuffer), offset);
 
-        return result;
+            return { data: result, error: null };
+        } catch (e) {
+            return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
+        }
     }
 
-    static async decryptPortable(buffer: Uint8Array, password: string): Promise<string> {
-        // Header Parsing
-        if (buffer.length < 50) throw new Error('File terlalu kecil atau rusak.');
-
-        // Check Magic
-        const magic = new TextDecoder().decode(buffer.slice(0, 4));
-        if (magic !== 'LMBR') throw new Error('Bukan file .lembaran yang valid (Magic Mismatch).');
-
-        // Check Version
-        const version = buffer[4];
-        if (version !== 1) throw new Error(`Versi file tidak didukung: v${version}`);
-
-        // Extract params based on Version 1 Layout
-        const salt = buffer.slice(5, 37); // 32 bytes (5 + 32 = 37)
-        const iv = buffer.slice(37, 49);  // 12 bytes (37 + 12 = 49)
-        const ciphertext = buffer.slice(49);
-
-        // Re-derive Key
-        const hash = argon2id(password, salt, {
-            t: 4,
-            m: 64 * 1024,
-            dkLen: 32,
-            p: 1
-        });
-
-        const key = await crypto.subtle.importKey(
-            'raw',
-            hash as BufferSource,
-            { name: ALGO_ENC, length: 256 },
-            false,
-            ['decrypt']
-        );
-
+    static async decryptPortable(buffer: Uint8Array, password: string): Promise<Hasil<string>> {
         try {
+            if (buffer.length < 50) return { data: null, error: new Error('Berkas terlalu kecil atau rusak') };
+
+            const magic = new TextDecoder().decode(buffer.slice(0, 4));
+            if (magic !== 'LMBR') return { data: null, error: new Error('Format berkas tidak valid (Magic mismatch)') };
+
+            const version = buffer[4];
+            if (version !== 1) return { data: null, error: new Error(`Versi berkas v${version} tidak didukung`) };
+
+            const salt = buffer.slice(5, 37);
+            const iv = buffer.slice(37, 49);
+            const ciphertext = buffer.slice(49);
+
+            const hash = argon2id(password, salt, {
+                t: 4,
+                m: 64 * 1024,
+                dkLen: 32,
+                p: 1
+            });
+
+            const key = await crypto.subtle.importKey(
+                'raw',
+                hash as BufferSource,
+                { name: ALGO_ENC, length: 256 },
+                false,
+                ['decrypt']
+            );
+
             const decrypted = await crypto.subtle.decrypt(
                 { name: 'AES-GCM', iv },
                 key,
                 ciphertext
             );
-            return new TextDecoder().decode(decrypted);
+            return { data: new TextDecoder().decode(decrypted), error: null };
         } catch (e) {
-            // Usually AES-GCM throws if tag mismatch (auth fail) or key wrong
-            throw new Error('Gagal membuka berkas: Password salah atau integritas data rusak.', { cause: e });
+            return { data: null, error: new Error('Gagal membuka berkas: Password salah atau data rusak.', { cause: e }) };
         }
     }
 }

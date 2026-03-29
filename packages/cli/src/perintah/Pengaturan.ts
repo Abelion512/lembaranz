@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { Laras } from '@lembaran/core';
+import { Laras } from '@abelionorg/core';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { siapkanKonteks } from '../utils.js';
@@ -66,8 +66,12 @@ exit 0
       await siapkanKonteks(program.opts());
 
       if (katalog && nilai !== undefined) {
-        await Laras.simpanEnv(katalog, nilai);
-        console.log(`✅ Berhasil menyimpan: ${katalog}=${nilai}`);
+        const hasil = await Laras.simpanEnv(katalog, nilai);
+        if (hasil.error) {
+          console.error(`❌ Gagal menyimpan: ${hasil.error.message}`);
+        } else {
+          console.log(`✅ Berhasil menyimpan: ${katalog}=${nilai}`);
+        }
       } else if (katalog) {
         const env = await Laras.bacaEnv();
         console.log(`${katalog}=${env[katalog] || '(tidak disetel)'}`);

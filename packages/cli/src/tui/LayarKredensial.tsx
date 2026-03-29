@@ -17,7 +17,7 @@ export const LayarKredensial: React.FC<LayarKredensialProps> = ({ onKembali }) =
         else if (step === 'password') {
             setStep('saving');
             try {
-                const { Arsip, Brankas } = await import('@lembaran/core');
+                const { Arsip, Brankas } = await import('@abelionorg/core');
 
                 // Cek apakah vault sudah dibuka
                 if (Brankas.isLocked()) {

@@ -22,8 +22,8 @@ export const LayarUkir: React.FC<LayarUkirProps> = ({ onKembali }) => {
         setStep('saving');
 
         try {
-            const { Arsip } = await import('@lembaran/core');
-            await Arsip.saveNote({
+            const { Arsip } = await import('@abelionorg/core');
+            const hasil = await Arsip.saveNote({
                 id: '',
                 title: title.trim(),
                 content: content.trim(),
@@ -33,9 +33,15 @@ export const LayarUkir: React.FC<LayarUkirProps> = ({ onKembali }) => {
                 tags: [],
                 createdAt: new Date().toISOString()
             });
-            onKembali();
+
+            if (hasil.error) {
+                setErrorMessage(hasil.error.message || 'Gagal menyimpan catatan');
+                setStep('error');
+            } else {
+                onKembali();
+            }
         } catch (e: any) {
-            setErrorMessage(e.message || 'Gagal menyimpan catatan');
+            setErrorMessage(e.message || 'Terjadi kesalahan sistem saat menyimpan');
             setStep('error');
         }
     };

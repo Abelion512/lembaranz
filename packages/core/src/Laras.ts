@@ -1,3 +1,4 @@
+import { Hasil } from './Brankas';
 
 export type KonteksLaras = 'saku' | 'pelataran';
 
@@ -17,32 +18,37 @@ export class Laras {
     static async temukanJalur(konteks: KonteksLaras): Promise<string> {
         if (typeof window !== 'undefined') return '';
 
-        // Dynamic imports for ESM/Node compatibility
-        const path = await import('path');
-        const os = await import('os');
-        const fs = await import('fs');
+        try {
+            // Dynamic imports for ESM/Node compatibility
+            const path = await import('path');
+            const os = await import('os');
+            const fs = await import('fs');
 
-        const SAKU_DIR = path.join(os.homedir(), '.lembaran');
+            const SAKU_DIR = path.join(os.homedir(), '.lembaran');
 
-        let jalur: string;
-        if (konteks === 'saku') {
-            if (!fs.existsSync(SAKU_DIR)) {
-                fs.mkdirSync(SAKU_DIR, { recursive: true });
+            let jalur: string;
+            if (konteks === 'saku') {
+                if (!fs.existsSync(SAKU_DIR)) {
+                    fs.mkdirSync(SAKU_DIR, { recursive: true });
+                }
+                jalur = path.join(SAKU_DIR, this.SAKU_FILE);
+            } else {
+                const root = (await this.temukanAkarProyek()) || process.cwd();
+                const localDir = path.join(root, this.PELATARAN_DIR);
+                if (!fs.existsSync(localDir)) {
+                    fs.mkdirSync(localDir, { recursive: true });
+                }
+                jalur = path.join(localDir, this.PELATARAN_FILE);
             }
-            jalur = path.join(SAKU_DIR, this.SAKU_FILE);
-        } else {
-            const root = await this.temukanAkarProyek() || process.cwd();
-            const localDir = path.join(root, this.PELATARAN_DIR);
-            if (!fs.existsSync(localDir)) {
-                fs.mkdirSync(localDir, { recursive: true });
-            }
-            jalur = path.join(localDir, this.PELATARAN_FILE);
-        }
 
-        if (process.env.DEBUG === 'true') {
-            console.log(`[LARAS] Jalur ${konteks}: ${jalur}`);
+            if (process.env.DEBUG === 'true') {
+                console.log(`[LARAS] Jalur ${konteks}: ${jalur}`);
+            }
+            return jalur;
+        } catch (err) {
+            console.error('[LARAS] Gagal menemukan jalur:', err);
+            return '';
         }
-        return jalur;
     }
 
     /**
@@ -51,18 +57,22 @@ export class Laras {
     private static async temukanAkarProyek(dir: string = (typeof process !== 'undefined' ? process.cwd() : '')): Promise<string | null> {
         if (typeof window !== 'undefined') return null;
 
-        const path = await import('path');
-        const fs = await import('fs');
+        try {
+            const path = await import('path');
+            const fs = await import('fs');
 
-        const check = (curr: string): string | null => {
-            if (fs.existsSync(path.join(curr, '.git')) || fs.existsSync(path.join(curr, 'package.json'))) {
-                return curr;
-            }
-            const parent = path.dirname(curr);
-            if (parent === curr) return null;
-            return check(parent);
-        };
-        return check(dir);
+            const check = (curr: string): string | null => {
+                if (fs.existsSync(path.join(curr, '.git')) || fs.existsSync(path.join(curr, 'package.json'))) {
+                    return curr;
+                }
+                const parent = path.dirname(curr);
+                if (parent === curr) return null;
+                return check(parent);
+            };
+            return check(dir);
+        } catch {
+            return null;
+        }
     }
 
     /**
@@ -71,12 +81,16 @@ export class Laras {
     static async deteksiKonteksOtomatis(): Promise<KonteksLaras> {
         if (typeof window !== 'undefined') return 'saku';
 
-        const path = await import('path');
-        const fs = await import('fs');
+        try {
+            const path = await import('path');
+            const fs = await import('fs');
 
-        const root = await this.temukanAkarProyek();
-        if (root && fs.existsSync(path.join(root, this.PELATARAN_DIR, this.PELATARAN_FILE))) {
-            return 'pelataran';
+            const root = await this.temukanAkarProyek();
+            if (root && fs.existsSync(path.join(root, this.PELATARAN_DIR, this.PELATARAN_FILE))) {
+                return 'pelataran';
+            }
+        } catch {
+            // Default to saku on error
         }
         return 'saku';
     }
@@ -87,70 +101,79 @@ export class Laras {
     static async bacaEnv(): Promise<Record<string, string>> {
         if (typeof window !== 'undefined') return {};
 
-        const path = await import('path');
-        const fs = await import('fs');
+        try {
+            const path = await import('path');
+            const fs = await import('fs');
 
-        const root = await this.temukanAkarProyek();
-        if (!root) return {};
-        const envPath = path.join(root, '.env');
-        if (!fs.existsSync(envPath)) return {};
+            const root = await this.temukanAkarProyek();
+            if (!root) return {};
+            const envPath = path.join(root, '.env');
+            if (!fs.existsSync(envPath)) return {};
 
-        const content = fs.readFileSync(envPath, 'utf8');
-        const lines = content.split('\n');
-        const env: Record<string, string> = {};
+            const content = fs.readFileSync(envPath, 'utf8');
+            const lines = content.split('\n');
+            const env: Record<string, string> = {};
 
-        for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed || trimmed.startsWith('#')) continue;
-            const match = trimmed.match(/^([^=]+)=(.*)$/);
-            if (match) {
-                const key = match[1].trim();
-                let val = match[2].trim();
-                if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
-                    val = val.substring(1, val.length - 1);
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed || trimmed.startsWith('#')) continue;
+                const match = trimmed.match(/^([^=]+)=(.*)$/);
+                if (match) {
+                    const key = match[1].trim();
+                    let val = match[2].trim();
+                    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+                        val = val.substring(1, val.length - 1);
+                    }
+                    env[key] = val;
                 }
-                env[key] = val;
             }
+            return env;
+        } catch {
+            return {};
         }
-        return env;
     }
 
     /**
      * Writes or updates a local .env variable. Node.js only.
      */
-    static async simpanEnv(key: string, value: string): Promise<void> {
-        if (typeof window !== 'undefined') return;
+    static async simpanEnv(key: string, value: string): Promise<Hasil<boolean>> {
+        if (typeof window !== 'undefined') return { data: null, error: new Error('Bukan lingkungan Node.js') };
 
-        const path = await import('path');
-        const fs = await import('fs');
+        try {
+            const path = await import('path');
+            const fs = await import('fs');
 
-        const root = await this.temukanAkarProyek();
-        if (!root) throw new Error('Akar proyek tidak ditemukan.');
-        const envPath = path.join(root, '.env');
+            const root = await this.temukanAkarProyek();
+            if (!root) return { data: null, error: new Error('Akar proyek tidak ditemukan.') };
+            const envPath = path.join(root, '.env');
 
-        let content = '';
-        if (fs.existsSync(envPath)) {
-            content = fs.readFileSync(envPath, 'utf8');
-        }
-
-        const lines = content.split('\n');
-        let found = false;
-        const newLines = lines.map(line => {
-            const trimmed = line.trim();
-            if (trimmed.startsWith(`${key}=`)) {
-                found = true;
-                return `${key}=${value}`;
+            let content = '';
+            if (fs.existsSync(envPath)) {
+                content = fs.readFileSync(envPath, 'utf8');
             }
-            return line;
-        });
 
-        if (!found) {
-            if (content.length > 0 && !content.endsWith('\n')) {
-                newLines.push('');
+            const lines = content.split('\n');
+            let found = false;
+            const newLines = lines.map(line => {
+                const trimmed = line.trim();
+                if (trimmed.startsWith(`${key}=`)) {
+                    found = true;
+                    return `${key}=${value}`;
+                }
+                return line;
+            });
+
+            if (!found) {
+                if (content.length > 0 && !content.endsWith('\n')) {
+                    newLines.push('');
+                }
+                newLines.push(`${key}=${value}`);
             }
-            newLines.push(`${key}=${value}`);
-        }
 
-        fs.writeFileSync(envPath, newLines.join('\n'), 'utf8');
+            fs.writeFileSync(envPath, newLines.join('\n'), 'utf8');
+            return { data: true, error: null };
+        } catch (err) {
+            return { data: null, error: err instanceof Error ? err : new Error(String(err)) };
+        }
     }
 }

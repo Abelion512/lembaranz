@@ -21,16 +21,16 @@ export const PendaratanKaki = () => {
                 </div>
 
                 <div className="flex flex-wrap justify-center items-center gap-x-10 gap-y-6 uppercase tracking-[0.2em] text-[10px] font-black text-(--text-muted)/60">
-                    <Link href="/id/privasi" className="flex items-center gap-2 hover:text-blue-500 transition-colors">
+                    <Link href="/privasi" className="flex items-center gap-2 hover:text-blue-500 transition-colors text-(--text-muted) hover:text-(--text-primary)">
                         <Shield size={12} /> Privacy
                     </Link>
-                    <Link href="/id/ketentuan" className="flex items-center gap-2 hover:text-blue-500 transition-colors">
+                    <Link href="/ketentuan" className="flex items-center gap-2 hover:text-blue-500 transition-colors text-(--text-muted) hover:text-(--text-primary)">
                         <FileText size={12} /> Terms
                     </Link>
-                    <Link href="/id/bantuan" className="flex items-center gap-2 hover:text-blue-500 transition-colors">
+                    <Link href="/bantuan" className="flex items-center gap-2 hover:text-blue-500 transition-colors text-(--text-muted) hover:text-(--text-primary)">
                         <Book size={12} /> Docs
                     </Link>
-                    <Link href="/id/tentang" className="flex items-center gap-2 hover:text-blue-500 transition-colors">
+                    <Link href="/tentang" className="flex items-center gap-2 hover:text-blue-500 transition-colors text-(--text-muted) hover:text-(--text-primary)">
                         <MessageCircle size={12} /> Support
                     </Link>
                     <a href="https://github.com/Abelion512/lembaran" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-blue-500 transition-colors">

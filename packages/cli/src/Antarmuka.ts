@@ -1,4 +1,4 @@
-import { Arsip, Laras, Pujangga, KonteksLaras, Brankas } from '@lembaran/core';
+import { Arsip, Laras, Pujangga, KonteksLaras, Brankas } from '@abelionorg/core';
 import pc from 'picocolors';
 import prompts from 'prompts';
 import fs from 'node:fs/promises';
@@ -124,7 +124,7 @@ export class Antarmuka {
     }
 
     private static async inisialisasiBrankas() {
-        console.log(pc.yellow('ΓÜá∩╕Å Brankas belum terinisialisasi.'));
+        console.log(pc.yellow('⚠ Brankas belum terinisialisasi.'));
         console.log(pc.dim('Brankas diperlukan untuk menyimpan catatan Anda secara terenkripsi.'));
 
         const res = await prompts({
@@ -134,7 +134,7 @@ export class Antarmuka {
         });
 
         if (res.pw === undefined) {
-            console.log(pc.dim('\nΓ£¿ Sampai jumpa di lain waktu.'));
+            console.log(pc.dim('\n✨ Sampai jumpa di lain waktu.'));
             process.exit(0);
         }
 
@@ -144,28 +144,43 @@ export class Antarmuka {
             return;
         }
 
-        try {
-            console.log(pc.dim('Sedang menyiapkan brankas (membangun kunci Argon2id)...'));
-            await Arsip.setupVault(res.pw);
-            console.log(pc.green('✅ Brankas berhasil dibuat dan dibuka!'));
-            console.log(pc.dim('Mengalihkan ke menu utama...'));
-            await new Promise(r => setTimeout(r, 2000));
-        } catch (err) {
-            console.log(pc.red(`Γ¥î Gagal menyiapkan brankas: ${(err as Error).message}`));
+        console.log(pc.dim('Sedang menyiapkan brankas (membangun kunci Argon2id)...'));
+        const setupRes = await Arsip.setupVault(res.pw);
+        
+        if (setupRes.error) {
+            console.log(pc.red(`❌ Gagal menyiapkan brankas: ${setupRes.error.message}`));
             await new Promise(r => setTimeout(r, 3000));
+            return;
         }
+
+        console.log(pc.green('✅ Brankas berhasil dibuat dan dibuka!'));
+        console.log(pc.dim('Mengalihkan ke menu utama...'));
+        await new Promise(r => setTimeout(r, 2000));
     }
 
-    private static async unlock() {
+    private static async unlock(): Promise<boolean> {
         if (!Brankas.isLocked()) return true;
         const res = await prompts({
             type: 'password',
             name: 'pw',
             message: 'Masukkan kata sandi brankas:'
         });
-        if (res.pw === undefined) return false;
-        if (!res.pw) return false;
-        return await Arsip.unlockVault(res.pw);
+        if (res.pw === undefined || !res.pw) return false;
+        
+        const unlockRes = await Arsip.unlockVault(res.pw);
+        if (unlockRes.error) {
+            console.log(pc.red(`❌ Gagal membuka brankas: ${unlockRes.error.message}`));
+            await new Promise(r => setTimeout(r, 2000));
+            return false;
+        }
+
+        if (!unlockRes.data) {
+            console.log(pc.red('❌ Kata sandi salah.'));
+            await new Promise(r => setTimeout(r, 1500));
+            return false;
+        }
+
+        return true;
     }
 
     private static async menuUtama() {
@@ -253,7 +268,13 @@ export class Antarmuka {
             q = queryRes.q;
         }
 
-        let notes = await Arsip.getAllNotes();
+        const notesRes = await Arsip.getAllNotes();
+        if (notesRes.error) {
+            console.log(pc.red(`❌ Gagal memuat catatan: ${notesRes.error.message}`));
+            return;
+        }
+
+        let notes = notesRes.data!;
         if (q) {
             notes = notes.filter(n =>
                 n.title.toLowerCase().includes(q!.toLowerCase()) ||
@@ -271,7 +292,12 @@ export class Antarmuka {
                 choices: notes.map(n => ({ title: n.title, value: n.id }))
             });
             if (select.noteId) {
-                const n = await Arsip.getNoteById(select.noteId);
+                const nRes = await Arsip.getNoteById(select.noteId);
+                if (nRes.error) {
+                    console.log(pc.red(`❌ Gagal membuka catatan: ${nRes.error.message}`));
+                    return;
+                }
+                const n = nRes.data;
                 console.log(pc.cyan(`\n📂 === ${n?.title} ===`));
                 console.log(pc.dim(`Dibuat: ${n?.createdAt}`));
                 console.log(pc.dim('---'));
@@ -285,12 +311,17 @@ export class Antarmuka {
         if (!(await this.unlock())) return;
 
         if (id) {
-            const note = await Arsip.getNoteById(id);
-            if (!note) {
-                console.log(pc.red('Γ¥î Catatan tidak ditemukan.'));
+            const nRes = await Arsip.getNoteById(id);
+            if (nRes.error) {
+                console.log(pc.red(`❌ Gagal mengambil catatan: ${nRes.error.message}`));
                 return;
             }
-            console.log(pc.blue(`\n≡ƒô¥ Mengedit: ${pc.bold(note.title)}`));
+            const note = nRes.data;
+            if (!note) {
+                console.log(pc.red('❌ Catatan tidak ditemukan.'));
+                return;
+            }
+            console.log(pc.blue(`\n📝 Mengedit: ${pc.bold(note.title)}`));
             const res = await prompts({
                 type: 'text',
                 name: 'konten',
@@ -299,8 +330,12 @@ export class Antarmuka {
                 multiline: true
             });
             if (res.konten !== undefined) {
-                await Arsip.saveNote({ ...note, content: res.konten });
-                console.log(pc.green('Γ£à Catatan berhasil diperbarui.'));
+                const saveRes = await Arsip.saveNote({ ...note, content: res.konten });
+                if (saveRes.error) {
+                    console.log(pc.red(`❌ Gagal memperbarui catatan: ${saveRes.error.message}`));
+                } else {
+                    console.log(pc.green('✅ Catatan berhasil diperbarui.'));
+                }
             }
         } else {
             console.log(pc.blue('\n📝 Mengukir Catatan Baru'));
@@ -314,7 +349,7 @@ export class Antarmuka {
                 }
             ]);
             if (res.konten !== undefined) {
-                await Arsip.saveNote({
+                const saveRes = await Arsip.saveNote({
                     id: '',
                     title: res.judul || 'Tanpa Judul',
                     content: res.konten,
@@ -324,19 +359,23 @@ export class Antarmuka {
                     tags: [],
                     createdAt: new Date().toISOString()
                 });
-                console.log(pc.green('Γ£à Aksara berhasil diabadikan.'));
+                if (saveRes.error) {
+                    console.log(pc.red(`❌ Gagal menyimpan aksara: ${saveRes.error.message}`));
+                } else {
+                    console.log(pc.green('✅ Aksara berhasil diabadikan.'));
+                }
             }
         }
     }
 
     static async aksiTanam() {
-        console.log(pc.yellow('\n≡ƒî▒ Fitur Tanam (Import)'));
+        console.log(pc.yellow('\n🌱 Fitur Tanam (Import)'));
         try {
             const files = await fs.readdir('.');
             const mdFiles = files.filter(f => f.endsWith('.md'));
 
             if (mdFiles.length === 0) {
-                console.log(pc.red('Γ¥î Tidak ditemukan file .md.'));
+                console.log(pc.red('❌ Tidak ditemukan file .md.'));
                 return;
             }
 
@@ -351,7 +390,7 @@ export class Antarmuka {
                 if (!(await this.unlock())) return;
                 for (const file of select.targets) {
                     const content = await fs.readFile(file, 'utf8');
-                    await Arsip.saveNote({
+                    const saveRes = await Arsip.saveNote({
                         id: '',
                         title: file,
                         content,
@@ -361,23 +400,38 @@ export class Antarmuka {
                         tags: ['impor'],
                         createdAt: new Date().toISOString()
                     });
-                    console.log(pc.green(`Γ£à ${file} berhasil ditanam.`));
+                    if (saveRes.error) {
+                        console.log(pc.red(`❌ Gagal menanam ${file}: ${saveRes.error.message}`));
+                    } else {
+                        console.log(pc.green(`✅ ${file} berhasil ditanam.`));
+                    }
                 }
             }
         } catch (_err) {
-            console.log(pc.red('Γ¥î Gagal membaca direktori.'));
+            console.log(pc.red('❌ Gagal membaca direktori.'));
         }
     }
 
     static async aksiPetik() {
         if (!(await this.unlock())) return;
         console.log(pc.magenta('\n📦 Memetik Brankas (Export)'));
-        const notes = await Arsip.getAllNotes();
-        const data = JSON.stringify(notes);
-        const encrypted = await Brankas.encryptPacked(data);
+        
+        const notesRes = await Arsip.getAllNotes();
+        if (notesRes.error) {
+            console.log(pc.red(`❌ Gagal mengambil data: ${notesRes.error.message}`));
+            return;
+        }
+
+        const data = JSON.stringify(notesRes.data);
+        const encRes = await Brankas.encryptPacked(data);
+        if (encRes.error) {
+            console.log(pc.red(`❌ Gagal melakukan enkripsi ekspor: ${encRes.error.message}`));
+            return;
+        }
+
         const filename = `lembaran-petikan-${new Date().toISOString().split('T')[0]}.lembaran`;
-        await fs.writeFile(filename, encrypted);
-        console.log(pc.green(`Γ£à Berhasil dipetik ke: ${pc.bold(filename)}`));
+        await fs.writeFile(filename, encRes.data);
+        console.log(pc.green(`✅ Berhasil dipetik ke: ${pc.bold(filename)}`));
     }
 
     static async aksiKredensial() {
@@ -392,7 +446,7 @@ export class Antarmuka {
         ]);
 
         if (res.password) {
-            await Arsip.saveNote({
+            const saveRes = await Arsip.saveNote({
                 id: '',
                 title: `🛡️ ${res.label}`,
                 content: `Kredensial untuk ${res.label}`,
@@ -408,7 +462,11 @@ export class Antarmuka {
                 tags: ['Kredensial'],
                 createdAt: new Date().toISOString()
             });
-            console.log(pc.green('Γ£à Berhasil disimpan.'));
+            if (saveRes.error) {
+                console.log(pc.red(`❌ Gagal menyimpan kredensial: ${saveRes.error.message}`));
+            } else {
+                console.log(pc.green('✅ Berhasil disimpan.'));
+            }
         }
     }
 
@@ -422,7 +480,7 @@ export class Antarmuka {
     static async aksiAuditPrivasi() {
         console.log(pc.bold(pc.green('\n🛡️ LAPORAN PRIVASI & AUDIT TRANSPARANSI')));
         console.log(pc.dim('Melihat aktivitas pemrosesan data oleh Sentinel...\n'));
-        const { AuditLog } = await import('@lembaran/core');
+        const { AuditLog } = await import('@abelionorg/core');
         const log = await AuditLog.bacaLog();
         console.log(log);
         console.log(pc.dim('\nKetik apa saja untuk kembali...'));
@@ -463,12 +521,12 @@ export class Antarmuka {
     static async aksiTanamEnv() {
         if (!(await this.unlock())) return;
 
-        console.log(pc.yellow('\n≡ƒî▒ Mengimpor Kredensial dari .env'));
+        console.log(pc.yellow('\n🌱 Mengimpor Kredensial dari .env'));
         const env = await Laras.bacaEnv();
         const keys = Object.keys(env);
 
         if (keys.length === 0) {
-            console.log(pc.red('Γ¥î Tidak menemukan file .env atau file kosong.'));
+            console.log(pc.red('❌ Tidak menemukan file .env atau file kosong.'));
             return;
         }
 
@@ -482,7 +540,7 @@ export class Antarmuka {
         if (sel.target && sel.target.length > 0) {
             console.log(pc.dim('Sedang menanam kredensial...'));
             for (const key of sel.target) {
-                await Arsip.saveNote({
+                const saveRes = await Arsip.saveNote({
                     id: '',
                     title: `🛡️ ENV: ${key}`,
                     content: `Variabel lingkungan otomatis dari .env`,
@@ -498,7 +556,11 @@ export class Antarmuka {
                     tags: ['ENV', 'Impor'],
                     createdAt: new Date().toISOString()
                 });
-                console.log(pc.green(`  ├── ✅ ${key}`));
+                if (saveRes.error) {
+                    console.log(pc.red(`  ├── ❌ ${key}: ${saveRes.error.message}`));
+                } else {
+                    console.log(pc.green(`  ├── ✅ ${key}`));
+                }
             }
             console.log(pc.green('✨ Selesai! Kredensial Anda kini tersimpan aman di Lembaran.'));
         }

@@ -1,18 +1,20 @@
 {
-  "name": "@lembaran/web",
-  "version": "3.4.0",
+  "name": "@abelionorg/web",
+  "version": "3.5.0",
   "private": true,
   "scripts": {
     "sinkron-aset": "bun run scripts/sinkron-aset.ts",
-    "predev": "bun run scripts/bersihkan-port.ts",
-    "dev": "NODE_OPTIONS='--max-old-space-size=4096' next dev --webpack -p 1400",
+    "clean:port": "bun run scripts/bersihkan-port.ts",
+    "bersih": "rm -rf .next",
+    "dev": "NODE_OPTIONS='--max-old-space-size=4096' next dev -p 1400",
+    "dev:turbo": "NODE_OPTIONS='--max-old-space-size=4096' next dev --turbo -p 1400",
     "build": "bun run sinkron-aset && next build --webpack",
     "start": "next start -p 1400",
     "lint": "eslint ."
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
-    "@lembaran/core": "workspace:*",
+    "@abelionorg/core": "workspace:*",
     "@mlc-ai/web-llm": "^0.2.80",
     "@supabase/supabase-js": "^2.95.3",
     "@tailwindcss/typography": "^0.5.19",
