@@ -21,7 +21,7 @@
     },
     "packages/cli": {
       "name": "@lembaranz/cli",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "bin": {
         "lembaran": "./src/main.ts",
       },
@@ -43,7 +43,7 @@
     },
     "packages/core": {
       "name": "@lembaranz/core",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "dependencies": {
         "@google/generative-ai": "^0.24.1",
         "@noble/ciphers": "^2.1.1",
@@ -63,7 +63,7 @@
       "version": "1.0.0",
       "dependencies": {
         "@google/generative-ai": "^0.24.1",
-        "@lembaranz/core": "workspace:*",
+        "@lembaranz/core": "^1.0.1",
         "@mlc-ai/web-llm": "^0.2.80",
         "@supabase/supabase-js": "^2.95.3",
         "@tailwindcss/typography": "^0.5.19",
@@ -84,7 +84,7 @@
         "jspdf": "^4.1.0",
         "jszip": "^3.10.1",
         "lowlight": "^3.3.0",
-        "lucide-react": "^0.563.0",
+        "lucide-react": "^1.7.0",
         "marked": "^17.0.1",
         "next": "16.1.6",
         "next-intl": "^4.8.3",
@@ -1123,7 +1123,7 @@
 
     "lru-cache": ["lru-cache@5.1.1", "", { "dependencies": { "yallist": "^3.0.2" } }, "sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w=="],
 
-    "lucide-react": ["lucide-react@0.563.0", "", { "peerDependencies": { "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-8dXPB2GI4dI8jV4MgUDGBeLdGk8ekfqVZ0BdLcrRzocGgG75ltNEmWS+gE7uokKF/0oSUuczNDT+g9hFJ23FkA=="],
+    "lucide-react": ["lucide-react@1.7.0", "", { "peerDependencies": { "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-yI7BeItCLZJTXikmK4KNUGCKoGzSvbKlfCvw44bU4fXAL6v3gYS4uHD1jzsLkfwODYwI6Drw5Tu9Z5ulDe0TSg=="],
 
     "magic-string": ["magic-string@0.30.21", "", { "dependencies": { "@jridgewell/sourcemap-codec": "^1.5.5" } }, "sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ=="],
 
