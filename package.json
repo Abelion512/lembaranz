@@ -1,6 +1,6 @@
 {
   "name": "lembaran",
-  "version": "3.5.0",
+  "version": "1.0.0",
   "description": "Lembaran - Brankas Aksara Personal yang Berdikari",
   "author": "Abelion Lavv <agen.salva@gmail.com>",
   "license": "MIT",
@@ -38,19 +38,19 @@
     "lembaran": "./packages/cli/src/main.ts"
   },
   "scripts": {
-    "dev": "bun --filter @abelionorg/web dev",
-    "build": "bun --filter @abelionorg/web build",
-    "start": "bun --filter @abelionorg/web start",
-    "cli": "bun --filter @abelionorg/cli start",
+    "dev": "bun --filter @lembaranz/web dev",
+    "build": "bun --filter @lembaranz/web build",
+    "start": "bun --filter @lembaranz/web start",
+    "cli": "bun --filter @lembaranz/cli start",
     "lint": "bun --filter \"*\" lint",
     "test:perf": "bun packages/core/src/scripts/inject-perf-data.ts",
-    "sinkron-aset": "bun --filter @abelionorg/web sinkron-aset",
+    "sinkron-aset": "bun --filter @lembaranz/web sinkron-aset",
     "version-packages": "changeset version",
     "ci:release": "changeset publish",
-    "bersih": "bun --filter @abelionorg/web bersih"
+    "bersih": "bun --filter @lembaranz/web bersih"
   },
   "dependencies": {
-    "@abelionorg/tagger-public": "^1.1.0",
+    "@lembaranz/tagger-public": "^1.1.0",
     "commander": "^14.0.3",
     "picocolors": "^1.1.1",
     "prompts": "^2.4.2"

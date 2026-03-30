@@ -23,10 +23,10 @@
 curl -sS https://lembaran.id/install.sh | bash
 
 # Atau via Bun
-bun install -g @abelionorg/cli
+bun install -g @lembaranz/cli
 
 # Atau via npm
-npm install -g @abelionorg/cli
+npm install -g @lembaranz/cli
 ```
 
 ### Penggunaan Pertama
@@ -155,7 +155,7 @@ Lembaran adalah proyek open source buatan pengembang Indonesia untuk mendukung k
 Proyek ini menggunakan **Changesets** dan **GitHub Actions** untuk manajemen versi otomatis.
 1. Setiap Pull Request atau Push ke `main` akan divalidasi oleh `CI` (Lint & Build).
 2. Jika terdapat file `.changeset/*.md`, GitHub Action akan otomatis membuka Pull Request baru berjudul **"Version Packages"**.
-3. Setelah PR tersebut di-merge, sistem akan mempublikasikan paket secara otomatis ke NPM `@abelionorg`.
+3. Setelah PR tersebut di-merge, sistem akan mempublikasikan paket secara otomatis ke NPM `@lembaranz`.
 
 **PENTING**: Anda harus menambahkan `NPM_TOKEN` (tipe Automation) ke **GitHub Repo > Settings > Secrets and variables > Actions** agar sistem publikasi dapat berjalan.
 

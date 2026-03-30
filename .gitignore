@@ -49,7 +49,8 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # Bun
-bun.lockb.lock
+bun.lockb
+!bun.lock
 
 # ═══════════════════════════════════════════════════════════
 # 🧪 TESTING & DEBUGGING

@@ -34,10 +34,12 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          # Ekspektasi skrip 'version-packages' dan 'ci:release' di root package.json
+          # Pastikan skrip 'version-packages' dan 'ci:release' di root package.json
           version: bun run version-packages
           publish: bun run ci:release
+          title: "🚀 Rilis Lembaranz v${{ github.ref_name }}"
+          commit: "chore: rilis versi baru [skip ci]"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+

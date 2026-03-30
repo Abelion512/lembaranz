@@ -106,7 +106,7 @@ export default function LandingPage() {
                                 <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
                                 <div className="relative px-8 py-4 bg-black/80 border border-white/10 rounded-2xl font-mono text-sm text-green-400 flex items-center gap-4 shadow-2xl backdrop-blur-xl">
                                     <span className="text-gray-600 select-none">❯</span>
-                                    <span>npm install -g @abelionorg/cli</span>
+                                    <span>npm install -g @lembaranz/cli</span>
                                 </div>
                             </div>
                             <Link href="/bantuan/MULAI_CEPAT" className="px-8 py-4 bg-white/5 border border-white/10 rounded-2xl font-bold flex items-center gap-3 hover:bg-white/10 transition-all active:scale-95 shadow-lg shadow-white/5">

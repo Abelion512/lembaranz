@@ -76,7 +76,7 @@ Semua halaman bantuan di `/bantuan` kini menggunakan `DocRenderer.tsx`.
 - [NEW] Locale routing doubling (/en/id/ fix)
 
 ### Added
-- [NEW] Support @abelionorg scope untuk seluruh monorepo
+- [NEW] Support @lembaranz scope untuk seluruh monorepo
 - [NEW] install.sh universal CLI Installer (Bash/CURL)
 - [NEW] proxy.ts convention untuk Next.js 16 (menggantikan middleware.ts)
 - Terjemahan lengkap untuk navigasi bantuan

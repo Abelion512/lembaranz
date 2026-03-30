@@ -1,6 +1,6 @@
 {
-  "name": "@abelionorg/web",
-  "version": "3.5.0",
+  "name": "@lembaranz/web",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "sinkron-aset": "bun run scripts/sinkron-aset.ts",
@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
-    "@abelionorg/core": "workspace:*",
+    "@lembaranz/core": "workspace:*",
     "@mlc-ai/web-llm": "^0.2.80",
     "@supabase/supabase-js": "^2.95.3",
     "@tailwindcss/typography": "^0.5.19",

@@ -1,6 +1,6 @@
 'use server';
 
-import { Linguis } from '@abelionorg/core';
+import { Linguis } from '@lembaranz/core';
 
 // Simple in-memory cache for UI strings to avoid excessive API calls
 const cacheUI: Record<string, string> = {};

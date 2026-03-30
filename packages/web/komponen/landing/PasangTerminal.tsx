@@ -5,9 +5,9 @@ import { Terminal, Copy, Check } from 'lucide-react';
 
 const COMMANDS = {
     curl: 'curl -sS https://lembaran.id/install.sh | bash',
-    bun: 'bun install -g @abelionorg/cli',
-    npm: 'npm install -g @abelionorg/cli',
-    yarn: 'yarn global add @abelionorg/cli',
+    bun: 'bun install -g @lembaranz/cli',
+    npm: 'npm install -g @lembaranz/cli',
+    yarn: 'yarn global add @lembaranz/cli',
 };
 
 export const PasangTerminal = () => {

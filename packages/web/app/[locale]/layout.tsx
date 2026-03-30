@@ -16,8 +16,6 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'Metadata' });
-
   const isId = locale === 'id';
 
   // ── Konten SEO/GEO/AEO yang kaya konteks ─────────────────────────────────
@@ -106,8 +104,8 @@ export async function generateMetadata({
     // ── Twitter Card ───────────────────────────────────────────────────────
     twitter: {
       card: 'summary_large_image',
-      site: '@abelionorg',
-      creator: '@abelionorg',
+      site: '@lembaranz',
+      creator: '@lembaranz',
       title,
       description,
       images: [`${BASE_URL}/og-image.png`],
@@ -199,8 +197,8 @@ export default async function LocaleLayout({
           name: 'Abelion Lavv',
           url: 'https://github.com/Abelion512',
         },
-        softwareVersion: '3.5.0',
-        downloadUrl: 'https://www.npmjs.com/package/@abelionorg/cli',
+        softwareVersion: '1.0.0',
+        downloadUrl: 'https://www.npmjs.com/package/@lembaranz/cli',
         codeRepository: 'https://github.com/Abelion512/lembaran',
         license: 'https://opensource.org/licenses/MIT',
       },
