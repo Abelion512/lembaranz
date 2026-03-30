@@ -105,5 +105,8 @@
     "Umum": {
         "tidak_ditemukan": "Page not found",
         "kembali": "Go back"
+    },
+    "Metadata": {
+        "description": "A personal notes vault that prioritizes absolute privacy, instant performance, and on-device AI — no server, no cloud."
     }
 }

@@ -166,6 +166,11 @@ packages/cli/*.bin
 *.tgz
 *.tar.gz
 
+# NPM Cache lokal (jangan commit)
+.npm-cache/
+.npm-update-notifier*
+.npm_update*
+
 # ═══════════════════════════════════════════════════════════
 # ✅ YANG HARUS DI-COMMIT (PUBLIK)
 # ═══════════════════════════════════════════════════════════

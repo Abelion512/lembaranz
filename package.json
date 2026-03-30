@@ -50,7 +50,7 @@
     "bersih": "bun --filter @abelionorg/web bersih"
   },
   "dependencies": {
-    "@abelion/tagger-public": "^1.1.0",
+    "@abelionorg/tagger-public": "^1.1.0",
     "commander": "^14.0.3",
     "picocolors": "^1.1.1",
     "prompts": "^2.4.2"
