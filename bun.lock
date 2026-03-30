@@ -5,7 +5,7 @@
     "": {
       "name": "lembaran",
       "dependencies": {
-        "@abelion/tagger-public": "^1.1.0",
+        "@abelionorg/tagger-public": "^1.0.2",
         "commander": "^14.0.3",
         "picocolors": "^1.1.1",
         "prompts": "^2.4.2",
@@ -20,13 +20,13 @@
       },
     },
     "packages/cli": {
-      "name": "@abelionorg/cli",
-      "version": "3.5.0",
+      "name": "@lembaranz/cli",
+      "version": "1.0.0",
       "bin": {
         "lembaran": "./src/main.ts",
       },
       "dependencies": {
-        "@abelionorg/core": "workspace:*",
+        "@lembaranz/core": "workspace:*",
         "commander": "^14.0.3",
         "ink": "^6.8.0",
         "ink-select-input": "^6.2.0",
@@ -42,8 +42,8 @@
       },
     },
     "packages/core": {
-      "name": "@abelionorg/core",
-      "version": "3.5.0",
+      "name": "@lembaranz/core",
+      "version": "1.0.0",
       "dependencies": {
         "@google/generative-ai": "^0.24.1",
         "@noble/ciphers": "^2.1.1",
@@ -59,11 +59,11 @@
       },
     },
     "packages/web": {
-      "name": "@abelionorg/web",
-      "version": "3.5.0",
+      "name": "@lembaranz/web",
+      "version": "1.0.0",
       "dependencies": {
-        "@abelionorg/core": "workspace:*",
         "@google/generative-ai": "^0.24.1",
+        "@lembaranz/core": "workspace:*",
         "@mlc-ai/web-llm": "^0.2.80",
         "@supabase/supabase-js": "^2.95.3",
         "@tailwindcss/typography": "^0.5.19",
@@ -111,13 +111,7 @@
     },
   },
   "packages": {
-    "@abelion/tagger-public": ["@abelion/tagger-public@1.1.2", "", { "dependencies": { "chalk": "^4.1.2", "commander": "^12.0.0", "crypto-js": "^4.2.0" }, "bin": { "abelion-tagger": "dist/cli.js" } }, "sha512-Ob0ZnbQEgD6+UO7kYY23ZlZ+MV/E7bpfIKV1blHatDVf3Z2M68DJ6pcieWfE+/6fU7Ie8qqYcEym/jeOmxMJkw=="],
-
-    "@abelionorg/cli": ["@abelionorg/cli@workspace:packages/cli"],
-
-    "@abelionorg/core": ["@abelionorg/core@workspace:packages/core"],
-
-    "@abelionorg/web": ["@abelionorg/web@workspace:packages/web"],
+    "@abelionorg/tagger-public": ["@abelionorg/tagger-public@1.0.2", "", { "dependencies": { "chalk": "^4.1.2", "commander": "^12.0.0", "crypto-js": "^4.2.0" }, "bin": { "abelion-tagger": "dist/cli.js" } }, "sha512-qR1+7r5TlMo0AoiEigRQbvUldQ1F7FDFx0XW1EBNCb5mfKh5+MAOS5zfdTo46Wx6ldd2MFrR+PbxBAXTjOuIYg=="],
 
     "@alcalzone/ansi-tokenize": ["@alcalzone/ansi-tokenize@0.2.5", "", { "dependencies": { "ansi-styles": "^6.2.1", "is-fullwidth-code-point": "^5.0.0" } }, "sha512-3NX/MpTdroi0aKz134A6RC2Gb2iXVECN4QaAXnvCIxxIm3C3AVB1mkUe8NaaiyvOpDfsrqWhYtj+Q6a62RrTsw=="],
 
@@ -304,6 +298,12 @@
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.5", "", {}, "sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og=="],
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
+
+    "@lembaranz/cli": ["@lembaranz/cli@workspace:packages/cli"],
+
+    "@lembaranz/core": ["@lembaranz/core@workspace:packages/core"],
+
+    "@lembaranz/web": ["@lembaranz/web@workspace:packages/web"],
 
     "@manypkg/find-root": ["@manypkg/find-root@1.1.0", "", { "dependencies": { "@babel/runtime": "^7.5.5", "@types/node": "^12.7.1", "find-up": "^4.1.0", "fs-extra": "^8.1.0" } }, "sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA=="],
 
@@ -1529,7 +1529,7 @@
 
     "zustand": ["zustand@5.0.12", "", { "peerDependencies": { "@types/react": ">=18.0.0", "immer": ">=9.0.6", "react": ">=18.0.0", "use-sync-external-store": ">=1.2.0" }, "optionalPeers": ["@types/react", "immer", "react", "use-sync-external-store"] }, "sha512-i77ae3aZq4dhMlRhJVCYgMLKuSiZAaUPAct2AksxQ+gOtimhGMdXljRT21P5BNpeT4kXlLIckvkPM029OljD7g=="],
 
-    "@abelion/tagger-public/commander": ["commander@12.1.0", "", {}, "sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA=="],
+    "@abelionorg/tagger-public/commander": ["commander@12.1.0", "", {}, "sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA=="],
 
     "@babel/core/json5": ["json5@2.2.3", "", { "bin": { "json5": "lib/cli.js" } }, "sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg=="],
 

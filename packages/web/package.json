@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
-    "@lembaranz/core": "workspace:*",
+    "@lembaranz/core": "^1.0.1",
     "@mlc-ai/web-llm": "^0.2.80",
     "@supabase/supabase-js": "^2.95.3",
     "@tailwindcss/typography": "^0.5.19",

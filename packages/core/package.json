@@ -1,9 +1,33 @@
 {
   "name": "@lembaranz/core",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "description": "Core encryption engine for Lembaran — AES-GCM 256 + Argon2id, local-first, zero-knowledge note vault.",
+  "author": "Abelion Lavv <agen.salva@gmail.com>",
+  "license": "MIT",
   "private": false,
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
+  },
+  "keywords": [
+    "lembaran",
+    "encryption",
+    "aes-gcm",
+    "argon2id",
+    "vault",
+    "local-first",
+    "zero-knowledge",
+    "notes",
+    "privacy",
+    "indonesia"
+  ],
+  "homepage": "https://github.com/Abelion512/lembaran#readme",
+  "bugs": {
+    "url": "https://github.com/Abelion512/lembaran/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Abelion512/lembaran.git"
   },
   "type": "module",
   "exports": {
