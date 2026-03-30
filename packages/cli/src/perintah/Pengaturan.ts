@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { Laras } from '@abelionorg/core';
+import { Laras } from '@lembaranz/core';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { siapkanKonteks } from '../utils.js';

@@ -3,7 +3,7 @@ import { Box, Text, useInput } from 'ink';
 import TextInput from 'ink-text-input';
 import Spinner from 'ink-spinner';
 import { PilihanModern } from './komponen/PilihanModern.js';
-import { Note } from '@abelionorg/core';
+import { Note } from '@lembaranz/core';
 
 interface LayarArsipProps {
     onKembali: () => void;
@@ -45,7 +45,7 @@ export const LayarArsip: React.FC<LayarArsipProps> = ({ onKembali, pencarianAwal
     useEffect(() => {
         const load = async () => {
             try {
-                const { Arsip } = await import('@abelionorg/core');
+                const { Arsip } = await import('@lembaranz/core');
                 const hasil = await Arsip.getAllNotes();
                 if (hasil.error) {
                     // Tampilkan galat jika diperlukan, atau biarkan kosong

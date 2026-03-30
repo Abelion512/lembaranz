@@ -1,4 +1,4 @@
-import { Arsip, Laras, Pujangga, KonteksLaras, Brankas } from '@abelionorg/core';
+import { Arsip, Laras, Pujangga, KonteksLaras, Brankas } from '@lembaranz/core';
 import pc from 'picocolors';
 import prompts from 'prompts';
 import fs from 'node:fs/promises';
@@ -480,7 +480,7 @@ export class Antarmuka {
     static async aksiAuditPrivasi() {
         console.log(pc.bold(pc.green('\n🛡️ LAPORAN PRIVASI & AUDIT TRANSPARANSI')));
         console.log(pc.dim('Melihat aktivitas pemrosesan data oleh Sentinel...\n'));
-        const { AuditLog } = await import('@abelionorg/core');
+        const { AuditLog } = await import('@lembaranz/core');
         const log = await AuditLog.bacaLog();
         console.log(log);
         console.log(pc.dim('\nKetik apa saja untuk kembali...'));

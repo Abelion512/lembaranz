@@ -1,4 +1,4 @@
-# @abelionorg/cli
+# @lembaranz/cli
 
 **Lembaran CLI - Brankas Aksara Personal yang Berdikari** 🇮🇩
 
@@ -8,10 +8,10 @@ Antarmuka baris perintah (CLI) and TUI resmi untuk Lembaran. Amankan catatan, id
 
 ```bash
 # Via Bun (Disarankan)
-bun install -g @abelionorg/cli
+bun install -g @lembaranz/cli
 
 # Via NPM
-npm install -g @abelionorg/cli
+npm install -g @lembaranz/cli
 ```
 
 ## 🛠️ Penggunaan

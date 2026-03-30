@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { Arsip } from '@abelionorg/core';
+import { Arsip } from '@lembaranz/core';
 import fs from 'node:fs/promises';
 import prompts from 'prompts';
 import { siapkanKonteks, bukaBrankasCLI } from '../utils.js';

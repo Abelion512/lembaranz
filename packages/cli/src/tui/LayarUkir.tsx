@@ -22,7 +22,7 @@ export const LayarUkir: React.FC<LayarUkirProps> = ({ onKembali }) => {
         setStep('saving');
 
         try {
-            const { Arsip } = await import('@abelionorg/core');
+            const { Arsip } = await import('@lembaranz/core');
             const hasil = await Arsip.saveNote({
                 id: '',
                 title: title.trim(),

@@ -17,7 +17,7 @@ export const LayarBukaBrankas: React.FC<LayarBukaBrankasProps> = ({ onBerhasil }
 
     useEffect(() => {
         const check = async () => {
-            const { Arsip } = await import('@abelionorg/core');
+            const { Arsip } = await import('@lembaranz/core');
             const hasil = await Arsip.isVaultInitialized();
             if (hasil.error) {
                 setError('Gagal memeriksa status brankas.');
@@ -40,7 +40,7 @@ export const LayarBukaBrankas: React.FC<LayarBukaBrankasProps> = ({ onBerhasil }
         setError(null);
 
         try {
-            const { Arsip } = await import('@abelionorg/core');
+            const { Arsip } = await import('@lembaranz/core');
             if (mode === 'setup') {
                 const hasil = await Arsip.setupVault(password);
                 if (hasil.error) {
@@ -67,7 +67,7 @@ export const LayarBukaBrankas: React.FC<LayarBukaBrankasProps> = ({ onBerhasil }
         setIsLoading(true);
         setError(null);
         try {
-            const { Arsip } = await import('@abelionorg/core');
+            const { Arsip } = await import('@lembaranz/core');
             const hasil = await Arsip.recoverVault(mnemonic);
             if (!hasil.error && hasil.data) {
                 // Force user to set new password after recovery

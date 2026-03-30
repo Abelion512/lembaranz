@@ -1,4 +1,4 @@
-import { Laras, Gudang, Pujangga, KonteksLaras, Arsip } from '@abelionorg/core';
+import { Laras, Gudang, Pujangga, KonteksLaras, Arsip } from '@lembaranz/core';
 import prompts from 'prompts';
 
 export interface OpsiGlobal {

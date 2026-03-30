@@ -24,8 +24,8 @@ export const LayarPantau: React.FC<LayarPantauProps> = ({ konteks, onKembali }) 
         const muat = async () => {
             try {
                 // Lazy import to avoid Bun crash with node:fs modules during Ink render
-                const { Arsip, Laras } = await import('@abelionorg/core');
-                const { Brankas } = await import('@abelionorg/core');
+                const { Arsip, Laras } = await import('@lembaranz/core');
+                const { Brankas } = await import('@lembaranz/core');
 
                 const init = await Arsip.isVaultInitialized();
                 setIsInit(init);

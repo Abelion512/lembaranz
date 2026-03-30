@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { Arsip } from '@abelionorg/core';
+import { Arsip } from '@lembaranz/core';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { spawn } from 'node:child_process';

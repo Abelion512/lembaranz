@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { KonteksLaras } from '@abelionorg/core';
+import { KonteksLaras } from '@lembaranz/core';
 import React from 'react';
 import { render } from 'ink';
 import { siapkanKonteks, masukLayarTUI, keluarLayarTUI } from '../utils.js';
