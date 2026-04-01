@@ -2,18 +2,21 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { Search, X } from 'lucide-react';
+import { Search, X, Menu, ChevronRight, Home, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { SelasarBantuan } from './SelasarBantuan';
+import { usePathname } from '@/i18n/navigation';
 
 interface LembaranDokProps {
     title?: string;
     description?: string;
+    slug?: string;
     children: React.ReactNode;
 }
 
-export const LembaranDok = ({ title: _title, description: _description, children }: LembaranDokProps) => {
+export const LembaranDok = ({ title: _title, description: _description, slug, children }: LembaranDokProps) => {
     const t = useTranslations();
+    const pathname = usePathname();
     const [searchQuery, setSearchQuery] = useState('');
     const [sidebarTerbuka, setSidebarTerbuka] = useState(false);
 
@@ -30,105 +33,121 @@ export const LembaranDok = ({ title: _title, description: _description, children
         });
     }, [children]);
 
+    const breadcrumbs = slug ? slug.split('/') : [];
+
     return (
-        <div className="flex-1 flex flex-col min-h-0 overflow-y-auto no-scrollbar scroll-smooth bg-[var(--background)]">
+        <div className="flex w-full h-screen overflow-hidden bg-[var(--background)]">
+            {/* Desktop Sidebar (Persistent) */}
+            <div className="hidden lg:block">
+                <SelasarBantuan />
+            </div>
+
             {/* Mobile Sidebar Overlay */}
             {sidebarTerbuka && (
                 <div
                     className="fixed inset-0 z-50 lg:hidden"
                     onClick={tutupSidebar}
                 >
-                    {/* Backdrop */}
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-
-                    {/* Panel Sidebar */}
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity" />
                     <div
-                        className="absolute left-0 top-0 bottom-0 w-80 bg-[var(--background)] shadow-2xl overflow-y-auto"
+                        className="absolute left-0 top-0 bottom-0 w-80 bg-[var(--background)] shadow-2xl overflow-y-auto transform transition-transform duration-300 translate-x-0"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <button
                             onClick={tutupSidebar}
-                            className="absolute top-4 right-4 p-2 rounded-full hover:bg-[var(--surface)] transition-colors"
+                            className="absolute top-6 right-6 p-2.5 rounded-2xl hover:bg-[var(--surface)] transition-all bg-[var(--surface)]/50 border border-[var(--separator)]/10"
                             aria-label="Tutup sidebar"
                         >
-                            <X size={20} />
+                            <X size={18} />
                         </button>
                         <SelasarBantuan />
                     </div>
                 </div>
             )}
 
-            <header className="sticky top-0 z-30 flex flex-col backdrop-blur-xl bg-[var(--background)]/60 border-b border-[var(--separator)]/5 transition-colors duration-500">
-                {/* Main Header */}
-                <div className="px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-6">
-                        <Link href="/" className="flex items-center gap-2.5 group">
-                            <div className="w-9 h-9 rounded-xl bg-blue-500 flex items-center justify-center text-white font-black text-sm group-hover:scale-105 transition-transform shadow-lg shadow-blue-500/20">
-                                L
-                            </div>
-                            <span className="font-bold tracking-tighter text-xl decoration-blue-500/30">Lembaran</span>
-                        </Link>
+            {/* Main Scrollable Content */}
+            <div className="flex-1 flex flex-col min-w-0 h-full overflow-y-auto no-scrollbar scroll-smooth">
+                {/* Minimalist Top Nav for Mobile & Search */}
+                <header className="sticky top-0 z-30 flex flex-col backdrop-blur-2xl bg-[var(--background)]/85 border-b border-[var(--separator)]/5 transition-all duration-300">
+                    <div className="px-6 lg:px-12 py-3.5 flex items-center justify-between gap-6">
+                        <div className="flex items-center gap-4">
+                            <button
+                                onClick={() => setSidebarTerbuka(true)}
+                                className="lg:hidden p-2.5 rounded-xl hover:bg-[var(--surface)] transition-all bg-[var(--surface)]/50 border border-[var(--separator)]/10"
+                            >
+                                <Menu size={18} />
+                            </button>
+                            
+                            {/* Breadcrumbs (GitBook Style) */}
+                            <nav className="hidden md:flex items-center gap-3 text-[11px] font-bold tracking-tight text-[var(--text-muted)] lg:ml-0">
+                                <Link href="/bantuan" className="hover:text-blue-500 flex items-center gap-1.5 transition-colors group">
+                                    <Home size={13} className="opacity-50 group-hover:opacity-100" />
+                                    <span>Bantuan</span>
+                                </Link>
+                                {breadcrumbs.map((crumb, idx) => (
+                                    <React.Fragment key={crumb}>
+                                        <ChevronRight size={12} className="opacity-30" />
+                                        <span className={`capitalize ${idx === breadcrumbs.length - 1 ? 'text-[var(--text-primary)]' : 'hover:text-blue-500 cursor-pointer transition-colors'}`}>
+                                            {crumb.replace(/-/g, ' ').replace(/\d{2}-/g, '')}
+                                        </span>
+                                    </React.Fragment>
+                                ))}
+                            </nav>
+                        </div>
 
-                        <div className="hidden lg:flex items-center gap-6 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] ml-8">
-                            <Link href="/" className="hover:text-blue-500 transition-colors">{t('Selasar.Produk')}</Link>
-                            <Link href="/bantuan" className="hover:text-blue-500 transition-colors">{t('Selasar.Bantuan')}</Link>
-                            <a href="https://github.com/Abelion512/lembaran" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transition-colors">GitHub</a>
+                        <div className="flex-1 max-w-sm relative group">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-blue-500 transition-colors" size={14} />
+                            <input
+                                type="text"
+                                placeholder={t('Selasar.Cari')}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-[var(--surface)]/50 border border-[var(--separator)]/10 rounded-2xl py-2 pl-11 pr-4 text-[12px] font-medium outline-none focus:border-blue-500/30 focus:bg-[var(--surface)] transition-all placeholder:text-[var(--text-muted)]/50"
+                            />
+                        </div>
+
+                        <div className="hidden sm:flex items-center gap-4">
+                            <a href="https://github.com/Abelion512/lembaran" target="_blank" rel="noopener noreferrer" className="p-2 rounded-xl hover:bg-[var(--surface)] transition-all border border-[var(--separator)]/5 text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                                <Search size={18} className="rotate-90 hidden" /> {/* Placeholder icon */}
+                                <div className="w-5 h-5 rounded-md bg-[var(--text-primary)]/10 flex items-center justify-center font-black text-[8px] text-[var(--text-primary)]">v1</div>
+                            </a>
                         </div>
                     </div>
+                </header>
 
-                    <div className="flex-1 max-w-md mx-4 relative hidden md:block">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={14} />
-                        <input
-                            type="text"
-                            placeholder={t('Selasar.Cari')}
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-[var(--surface)]/50 border border-[var(--separator)]/5 rounded-full py-2.5 pl-11 pr-4 text-xs font-medium outline-none focus:border-blue-500/30 focus:bg-[var(--surface)] transition-all placeholder:text-[var(--text-muted)]/50"
-                        />
+                <main className="flex-1 w-full max-w-4xl mx-auto px-6 lg:px-20 py-12 lg:py-20 flex flex-col">
+                    <div className="flex-1 space-y-16">
+                        <section className="prose prose-invert max-w-none prose-headings:tracking-tighter prose-h1:text-4xl prose-h1:font-black prose-p:text-[var(--text-secondary)] prose-p:leading-relaxed prose-p:text-[15px] prose-a:text-blue-500 prose-a:no-underline hover:prose-a:underline prose-strong:text-[var(--text-primary)] prose-code:text-blue-400 prose-pre:bg-[var(--surface)] prose-pre:border prose-pre:border-[var(--separator)]/10 prose-pre:rounded-3xl">
+                            {children}
+                        </section>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <a href="https://www.npmjs.com/org/abelion512" target="_blank" rel="noopener noreferrer" className="hidden sm:flex px-6 py-2.5 bg-[#cb3837] text-white rounded-full font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-red-500/10 active:scale-95 transition-all hover:bg-red-600">
-                            NPM Registry
-                        </a>
-                    </div>
-                </div>
-
-                {/* Sub-Header Navigation (GitBook Style) */}
-                <nav className="px-8 border-t border-[var(--separator)]/5 flex items-center gap-8 overflow-x-auto no-scrollbar scroll-smooth">
-                    {[
-                        { label: t('Selasar.Dokumentasi'), href: '/bantuan' },
-                        { label: 'Platform', href: '/bantuan/struktur' },
-                        { label: 'Quick Start', href: '/bantuan/MULAI_CEPAT' },
-                        { label: t('Selasar.Changelog'), href: '/versi' },
-                        { label: t('Selasar.Keamanan'), href: '/bantuan/keamanan' },
-                    ].map((link) => (
-                        <Link
-                            key={link.label}
-                            href={link.href}
-                            className="py-3.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)] hover:text-blue-500 border-b-2 border-transparent hover:border-blue-500 transition-all whitespace-nowrap active:opacity-50"
-                        >
-                            {link.label}
+                    {/* Pagination Bottom (GitBook Style) */}
+                    <div className="mt-32 pt-10 border-t border-[var(--separator)]/10 flex flex-col sm:flex-row items-center justify-between gap-8">
+                        <Link href="/bantuan" className="flex items-center gap-4 group p-4 rounded-2xl hover:bg-[var(--surface)] transition-all border border-transparent hover:border-[var(--separator)]/10">
+                            <div className="w-10 h-10 rounded-full border border-[var(--separator)]/10 flex items-center justify-center text-[var(--text-muted)] group-hover:text-blue-500 group-hover:border-blue-500/30 transition-all">
+                                <ArrowLeft size={16} />
+                            </div>
+                            <div className="flex flex-col text-left">
+                                <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest opacity-60">Kembali</span>
+                                <span className="text-sm font-bold text-[var(--text-primary)]">Halaman Bantuan</span>
+                            </div>
                         </Link>
-                    ))}
-                </nav>
-            </header>
 
-            <main className="max-w-4xl w-full px-4 py-8 sm:py-12 lg:px-12 mx-auto">
-                <div className="space-y-20">
-                    {children}
-                </div>
-
-                <footer className="mt-40 pt-12 pb-12 border-t border-[var(--separator)]/5 flex flex-col sm:flex-row items-center justify-between gap-6">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[var(--text-muted)]/40">
-                        {t('Kemudi.HakCipta')}
-                    </p>
-                    <div className="flex items-center gap-6 text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]/60">
-                         <Link href="/privasi" className="hover:text-blue-500 transition-colors">{t('Kemudi.Privasi')}</Link>
-                         <Link href="/ketentuan" className="hover:text-blue-500 transition-colors">{t('Kemudi.Ketentuan')}</Link>
+                        <div className="text-center sm:text-right">
+                             <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[var(--text-muted)]/40 mb-2">
+                                {t('Kemudi.HakCipta')}
+                            </p>
+                            <div className="flex items-center justify-center sm:justify-end gap-6 text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)]/60">
+                                <Link href="/privasi" className="hover:text-blue-500 transition-colors uppercase tracking-[0.2em]">{t('Kemudi.Privasi')}</Link>
+                                <span className="w-1 h-1 rounded-full bg-[var(--separator)]/20" />
+                                <Link href="/ketentuan" className="hover:text-blue-500 transition-colors uppercase tracking-[0.2em]">{t('Kemudi.Ketentuan')}</Link>
+                            </div>
+                        </div>
                     </div>
-                </footer>
-            </main>
+                </main>
+            </div>
         </div>
     );
 };
+

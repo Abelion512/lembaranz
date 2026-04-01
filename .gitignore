@@ -224,3 +224,5 @@ packages/cli/*.bin
 # 🇮🇩 DIBUAT DENGAN BANGGA DI INDONESIA
 # ═══════════════════════════════════════════════════════════
 .npmrc
+.vercel
+.env*.local

@@ -6,8 +6,8 @@ import {
     Book, Shield, Zap, Rocket,
     Database, Github,
     Command, Download,
-    ExternalLink,
-    ChevronLeft
+    ExternalLink, Globe,
+    ChevronLeft, Layers
 } from 'lucide-react';
 import { haptic } from '@lembaranz/core/Indera';
 import { usePathname } from '@/i18n/navigation';
@@ -19,93 +19,99 @@ export const SelasarBantuan = () => {
 
     const SECTIONS = [
         {
-            title: t('Selasar.Pengenalan') || 'Pengenalan',
+            title: 'Mulai',
             items: [
-                { id: '', label: t('Selasar.Ringkasan') || 'Ringkasan', icon: Book },
-                { id: 'publik', label: t('Selasar.Berdikari') || 'Mulai Berdikari', icon: Rocket },
-                { id: 'keamanan', label: t('Selasar.Keamanan') || 'Keamanan', icon: Shield },
-                { id: 'performa', label: t('Selasar.Performa') || 'Performa', icon: Zap },
+                { id: '01-mulai/berdikari', label: 'Mulai Berdikari', icon: Globe },
+                { id: '01-mulai/cepat', label: 'Cepat Saji', icon: Rocket },
+                { id: '01-mulai/pasang', label: 'Instalasi CLI', icon: Download },
             ]
         },
         {
-            title: t('Selasar.Instalasi') || 'Instalasi',
+            title: 'Fitur',
             items: [
-                { id: 'cli', label: t('Selasar.PasangCLI') || 'Pasang CLI', icon: Download },
+                { id: '02-fitur/cli', label: 'Antarmuka TUI', icon: Command },
+                { id: '02-fitur/keamanan', label: 'Keamanan Absolut', icon: Shield },
+                { id: '02-fitur/performa', label: 'Optimasi Performa', icon: Zap },
             ]
         },
         {
-            title: t('Selasar.Referensi') || 'Referensi',
+            title: 'Referensi',
             items: [
-                { id: 'perintah', label: t('Selasar.DaftarPerintah') || 'Daftar Perintah', icon: Command },
-                { id: 'struktur', label: t('Selasar.StrukturData') || 'Struktur Data', icon: Database },
+                { id: '03-referensi/perintah', label: 'Daftar Perintah', icon: Book },
+                { id: '03-referensi/arsitektur', label: 'Arsitektur Data', icon: Database },
             ]
         },
     ];
 
     const isActive = (id: string) => {
-        const fullPath = id === '' ? '/bantuan' : `/bantuan/${id}`;
-        return pathname === fullPath;
+        return pathname === `/bantuan/${id}`;
     };
 
     return (
-        <aside className="hidden lg:flex flex-col w-72 h-screen sticky top-0 bg-[var(--background)] border-r border-[var(--separator)]/10 p-6 overflow-y-auto no-scrollbar z-40">
-            <div className="flex flex-col gap-8">
-                <Link href="/" onClick={() => haptic.light()} className="flex items-center gap-2 text-[var(--text-muted)] font-black text-[10px] uppercase tracking-[0.2em] hover:text-blue-500 transition-colors">
-                    <ChevronLeft size={14} /> Beranda
+        <aside className="hidden lg:flex flex-col w-72 h-screen sticky top-0 bg-[var(--background)] border-r border-[var(--separator)]/10 p-8 overflow-y-auto no-scrollbar z-40">
+            <div className="flex flex-col gap-10">
+                <Link href="/" onClick={() => haptic.light()} className="flex items-center gap-2 text-[var(--text-muted)] font-bold text-[9px] uppercase tracking-[0.3em] hover:text-blue-500 transition-all duration-300">
+                    <ChevronLeft size={12} strokeWidth={3} /> Beranda
                 </Link>
 
-                <div className="flex items-center gap-3 px-2">
-                    <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold">
-                        <Book size={16} />
+                <div className="flex items-center gap-4 px-2">
+                    <div className="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 shadow-sm border border-blue-500/20">
+                        <Book size={18} />
                     </div>
                     <div className="flex flex-col">
-                        <span className="font-black text-[10px] uppercase tracking-widest leading-none">Dokumentasi</span>
+                        <h2 className="font-black text-[12px] uppercase tracking-[0.2em] leading-tight text-[var(--text-primary)]">Lembaran</h2>
+                        <span className="text-[9px] font-medium text-[var(--text-muted)] uppercase tracking-widest mt-1 opacity-70">Dokumentasi</span>
                     </div>
                 </div>
             </div>
 
-            <div className="mt-10 space-y-8">
+            <nav className="mt-12 space-y-10">
                 {SECTIONS.map((section) => (
-                    <div key={section.title}>
-                        <h3 className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] mb-5 ml-4">
+                    <div key={section.title} className="space-y-4">
+                        <h3 className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-[0.25em] ml-4 opacity-50">
                             {section.title}
                         </h3>
                         <div className="space-y-1">
                             {section.items.map((item) => (
                                 <Link
                                     key={item.id}
-                                    href={item.id === '' ? '/bantuan' : `/bantuan/${item.id}`}
+                                    href={`/bantuan/${item.id}`}
                                     onClick={() => haptic.light()}
-                                    className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl transition-all text-left group ${isActive(item.id)
-                                        ? 'bg-blue-500/5 text-blue-500 font-bold'
-                                        : 'text-[var(--text-secondary)] hover:bg-[var(--surface)]'
+                                    className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all duration-300 text-left group ${isActive(item.id)
+                                        ? 'bg-blue-500/[0.08] text-blue-500 font-bold border border-blue-500/10'
+                                        : 'text-[var(--text-secondary)] hover:bg-[var(--surface)] hover:text-[var(--text-primary)]'
                                         }`}
                                 >
-                                    <div className="flex items-center gap-3">
-                                        <item.icon size={16} className={isActive(item.id) ? 'text-blue-500' : 'text-[var(--text-muted)] group-hover:text-blue-500 transition-colors'} />
-                                        <span className="text-xs tracking-tight">{item.label}</span>
+                                    <div className="flex items-center gap-4">
+                                        <item.icon size={16} strokeWidth={ isActive(item.id) ? 2.5 : 2 } className={isActive(item.id) ? 'text-blue-500' : 'text-[var(--text-muted)] group-hover:text-blue-500 transition-colors'} />
+                                        <span className="text-[13px] tracking-tight">{item.label}</span>
                                     </div>
-                                    {isActive(item.id) && <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />}
+                                    {isActive(item.id) && (
+                                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
+                                    )}
                                 </Link>
                             ))}
                         </div>
                     </div>
                 ))}
-            </div>
+            </nav>
 
-            <div className="mt-auto pt-12 space-y-3">
+            <div className="mt-auto pt-16">
                 <a
                     href="https://github.com/Abelion512/lembaran"
                     target="_blank" rel="noopener noreferrer"
-                    className="flex items-center justify-between px-5 py-4 rounded-2xl bg-black text-white dark:bg-white dark:text-black text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    className="flex items-center justify-between px-5 py-4 rounded-3xl bg-[var(--surface)] border border-[var(--separator)]/10 text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-all group shadow-sm hover:shadow-md"
                 >
-                    <div className="flex items-center gap-3">
-                        <Github size={16} />
-                        <span>GitHub</span>
+                    <div className="flex items-center gap-4">
+                        <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white ring-4 ring-black/5">
+                            <Github size={16} />
+                        </div>
+                        <span className="text-[var(--text-primary)] tracking-tight">GitHub Repo</span>
                     </div>
-                    <ExternalLink size={14} />
+                    <ExternalLink size={14} className="text-[var(--text-muted)] group-hover:text-blue-500 transition-colors" />
                 </a>
             </div>
         </aside>
     );
 };
+

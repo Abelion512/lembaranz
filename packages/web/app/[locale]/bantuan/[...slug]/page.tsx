@@ -31,6 +31,7 @@ export default function DynamicDocPage() {
         <LembaranDok
             title={metadata?.title || slug}
             description={metadata?.desc || "..."}
+            slug={slug}
         >
             <div className="flex justify-end mb-8">
                 <SaklarBahasa />

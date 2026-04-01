@@ -2,6 +2,15 @@
 
 Semua perubahan penting pada proyek ini akan didokumentasikan di file ini.
 
+## [1.0.0] - 2026-03-30
+
+### Added
+- **Scope Migration**: Migrasi total ke organisasi `@lembaranz`.
+- **Package Reset**: Reset seluruh paket ke rilis stabil `1.0.0`.
+- **Textual Lockfile**: Transisi ke `bun.lock` (teks) untuk auditabilitas yang lebih baik.
+- **AEO/GEO Optimization**: Optimasi metadata SEO tingkat lanjut dengan JSON-LD dan rich context regional.
+- **Unified CLI**: Integrasi penuh perintah `lembaran` untuk ekosistem monorepo.
+
 ## [3.4.0] - 2026-03-28
 
 ### Added (28 Maret 2026)

@@ -3,54 +3,27 @@
 import { bacaBerkas } from '@/lib/bacaBerkas';
 
 /**
- * Mapping eksplisit slug bantuan untuk keamanan dan konsistensi.
- */
-const PETA_SLUG: Record<string, string> = {
-    'MULAI_CEPAT': 'panduan/MULAI_CEPAT',
-    'GETTING_STARTED': 'GETTING_STARTED',
-    'cli': 'panduan/cli',
-    'keamanan': 'keamanan/keamanan',
-    'perintah': 'panduan/perintah',
-    'performa': 'arsip/performa',
-    'struktur': 'panduan/struktur',
-    'publik': 'panduan/publik',
-    'sentinel-sovereign': 'keamanan/sentinel-sovereign',
-    'sentinel-guard': 'keamanan/sentinel-guard'
-};
-
-export interface ButirMetadata {
-    title: string;
-    desc: string;
-    icon: string;
-    color: string;
-}
-
-export interface IndeksMetadata {
-    id: Record<string, ButirMetadata>;
-    en: Record<string, ButirMetadata>;
-}
-
-// Cache metadata sederhana di level server
-let cacheMetadata: IndeksMetadata | null = null;
-
-/**
- * Server Action untuk mengambil konten dokumentasi berdasarkan slug dan bahasa.
+ * Server Action untuk mengambil konten dokumentasi secara dinamis.
+ * Mendukung pencarian subfolder (Bab) berdasarkan slug.
  */
 export async function ambilKontenDok(slug: string, lang: 'id' | 'en' = 'id') {
     if (!slug || typeof slug !== 'string') return null;
 
-    const slugDibersihkan = slug.trim().replace(/[^a-zA-Z0-9_/-]/g, '');
+    // Bersihkan slug: hanya izinkan karakter alfanumerik, dash, underscore, dan slash
+    const slugDibersihkan = slug.trim().replace(/[^a-zA-Z0-9_\-/]/g, '');
 
-    if (!slugDibersihkan || (slug.length > 4 && slugDibersihkan.length < slug.length / 2)) {
+    // Pertahanan Path Traversal: Jangan izinkan '..' atau mulai dengan '/'
+    if (slugDibersihkan.includes('..') || slugDibersihkan.startsWith('/')) {
+        console.warn(`[ambilKontenDok] Percobaan akses mencurigakan: ${slug}`);
         return null;
     }
 
-    const slugFinal = PETA_SLUG[slugDibersihkan] || slugDibersihkan;
+    // Cari langsung di folder docs/[lang]/[slug].md
+    let content = bacaBerkas(`docs/${lang}/${slugDibersihkan}.md`);
 
-    let content = bacaBerkas(`docs/${lang}/${slugFinal}.md`);
-
+    // Fallback ke Bahasa Indonesia jika di Bahasa Inggris tidak ada
     if (!content && lang === 'en') {
-        content = bacaBerkas(`docs/id/${slugFinal}.md`);
+        content = bacaBerkas(`docs/id/${slugDibersihkan}.md`);
     }
 
     return content;

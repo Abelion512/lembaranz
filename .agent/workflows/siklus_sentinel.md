@@ -1,3 +1,7 @@
+---
+description: 
+---
+
 # ⚔️ Workflow: Aktivasi Sentinel Sovereign
 
 Gunakan workflow ini untuk memulai misi otonom dengan aman:
