@@ -2,6 +2,26 @@
 
 import { bacaBerkas } from '@/lib/bacaBerkas';
 
+export interface ButirMetadata {
+    id: string;
+    title: string;
+    desc: string;
+    icon: string;
+    color?: string;
+}
+
+export interface BabDokumentasi {
+    title: string;
+    items: ButirMetadata[];
+}
+
+export interface IndeksDokumentasi {
+    id: { chapters: BabDokumentasi[] };
+    en: { chapters: BabDokumentasi[] };
+}
+
+let cacheMetadata: IndeksDokumentasi | null = null;
+
 /**
  * Server Action untuk mengambil konten dokumentasi secara dinamis.
  * Mendukung pencarian subfolder (Bab) berdasarkan slug.

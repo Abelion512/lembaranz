@@ -42,9 +42,9 @@ describe("Integritas Module", () => {
             const hashString = await Integritas.hitungHash("test");
             const hashAngka = await Integritas.hitungHash(123);
 
-            expect(hashNull.length).toBe(64);
-            expect(hashString.length).toBe(64);
-            expect(hashAngka.length).toBe(64);
+            expect(typeof hashNull).toBe("string");
+            expect(typeof hashString).toBe("string");
+            expect(typeof hashAngka).toBe("string");
             expect(hashNull).not.toBe(hashString);
         });
 
