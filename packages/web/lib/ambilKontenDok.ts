@@ -9,12 +9,14 @@ export interface ButirMetadata {
     color?: string;
 }
 
+export interface BabDokumentasi {
+    title: string;
+    items: ButirMetadata[];
+}
+
 export interface IndeksBantuan {
     [lang: string]: {
-        chapters: {
-            title: string;
-            items: ButirMetadata[];
-        }[];
+        chapters: BabDokumentasi[];
     };
 }
 
