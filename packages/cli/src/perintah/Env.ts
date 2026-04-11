@@ -229,7 +229,7 @@ export function registrasiPerintahEnv(program: Command) {
 
       const child = spawn(cmd, args, {
         stdio: 'inherit',
-        shell: true,
+        shell: false,
         env: { ...process.env, ...parsedEnv }
       }) as unknown as { on: (event: string, cb: (...args: any[]) => void) => void };
 

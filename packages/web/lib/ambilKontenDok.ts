@@ -9,6 +9,7 @@ export interface ButirMetadata {
     color?: string;
 }
 
+let cacheMetadata: Record<string, any> | null = null;
 export interface BabDokumentasi {
     title: string;
     items: ButirMetadata[];
