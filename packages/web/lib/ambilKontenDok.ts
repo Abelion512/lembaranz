@@ -10,6 +10,18 @@ export interface ButirMetadata {
 }
 
 let cacheMetadata: Record<string, any> | null = null;
+export interface BabDokumentasi {
+    title: string;
+    items: ButirMetadata[];
+}
+
+export interface IndeksMetadata {
+    [lang: string]: {
+        chapters: BabDokumentasi[];
+    };
+}
+
+let cacheMetadata: IndeksMetadata | null = null;
 
 /**
  * Server Action untuk mengambil konten dokumentasi secara dinamis.
@@ -27,7 +39,7 @@ export async function ambilKontenDok(slug: string, lang: 'id' | 'en' = 'id') {
         return null;
     }
 
-    // Cari langsung di folder docs/[lang]/[slug].md
+    // Cari langsung di folder docs/${lang}/${slugDibersihkan}.md
     let content = bacaBerkas(`docs/${lang}/${slugDibersihkan}.md`);
 
     // Fallback ke Bahasa Indonesia jika di Bahasa Inggris tidak ada
@@ -42,6 +54,17 @@ export async function ambilKontenDok(slug: string, lang: 'id' | 'en' = 'id') {
  * Mengambil metadata untuk halaman bantuan dari docs/indeks.json.
  * Menggunakan cache in-memory untuk meningkatkan performa pembacaan.
  */
+export interface ButirMetadata {
+    id: string;
+    slug: string;
+    judul: string;
+    deskripsi?: string;
+    ikon?: string;
+    anak?: ButirMetadata[];
+}
+
+let cacheMetadata: Record<string, ButirMetadata[]> | null = null;
+
 export async function ambilMetadataBantuan(lang: 'id' | 'en' = 'id') {
     if (!cacheMetadata) {
         const raw = bacaBerkas('docs/indeks.json');
