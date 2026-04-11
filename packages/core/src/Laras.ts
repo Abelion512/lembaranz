@@ -12,6 +12,19 @@ export class Laras {
     private static readonly PELATARAN_FILE = 'pelataran.json';
 
     /**
+     * Helper to check if a file or directory exists asynchronously.
+     */
+    private static async berkasAda(p: string): Promise<boolean> {
+        try {
+            const fs = await import('node:fs/promises');
+            await fs.access(p);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    /**
      * Resolves the absolute path for the given context.
      * Works only in Node.js environment.
      */
@@ -22,21 +35,21 @@ export class Laras {
             // Dynamic imports for ESM/Node compatibility
             const path = await import('path');
             const os = await import('os');
-            const fs = await import('fs');
+            const fs = await import('node:fs/promises');
 
             const SAKU_DIR = path.join(os.homedir(), '.lembaran');
 
             let jalur: string;
             if (konteks === 'saku') {
-                if (!fs.existsSync(SAKU_DIR)) {
-                    fs.mkdirSync(SAKU_DIR, { recursive: true });
+                if (!(await this.berkasAda(SAKU_DIR))) {
+                    await fs.mkdir(SAKU_DIR, { recursive: true });
                 }
                 jalur = path.join(SAKU_DIR, this.SAKU_FILE);
             } else {
                 const root = (await this.temukanAkarProyek()) || process.cwd();
                 const localDir = path.join(root, this.PELATARAN_DIR);
-                if (!fs.existsSync(localDir)) {
-                    fs.mkdirSync(localDir, { recursive: true });
+                if (!(await this.berkasAda(localDir))) {
+                    await fs.mkdir(localDir, { recursive: true });
                 }
                 jalur = path.join(localDir, this.PELATARAN_FILE);
             }
@@ -59,17 +72,16 @@ export class Laras {
 
         try {
             const path = await import('path');
-            const fs = await import('fs');
 
-            const check = (curr: string): string | null => {
-                if (fs.existsSync(path.join(curr, '.git')) || fs.existsSync(path.join(curr, 'package.json'))) {
+            const check = async (curr: string): Promise<string | null> => {
+                if ((await this.berkasAda(path.join(curr, '.git'))) || (await this.berkasAda(path.join(curr, 'package.json')))) {
                     return curr;
                 }
                 const parent = path.dirname(curr);
                 if (parent === curr) return null;
-                return check(parent);
+                return await check(parent);
             };
-            return check(dir);
+            return await check(dir);
         } catch {
             return null;
         }
@@ -83,10 +95,9 @@ export class Laras {
 
         try {
             const path = await import('path');
-            const fs = await import('fs');
 
             const root = await this.temukanAkarProyek();
-            if (root && fs.existsSync(path.join(root, this.PELATARAN_DIR, this.PELATARAN_FILE))) {
+            if (root && (await this.berkasAda(path.join(root, this.PELATARAN_DIR, this.PELATARAN_FILE)))) {
                 return 'pelataran';
             }
         } catch {
@@ -103,14 +114,14 @@ export class Laras {
 
         try {
             const path = await import('path');
-            const fs = await import('fs');
+            const fs = await import('node:fs/promises');
 
             const root = await this.temukanAkarProyek();
             if (!root) return {};
             const envPath = path.join(root, '.env');
-            if (!fs.existsSync(envPath)) return {};
+            if (!(await this.berkasAda(envPath))) return {};
 
-            const content = fs.readFileSync(envPath, 'utf8');
+            const content = await fs.readFile(envPath, 'utf8');
             const lines = content.split('\n');
             const env: Record<string, string> = {};
 
@@ -141,15 +152,15 @@ export class Laras {
 
         try {
             const path = await import('path');
-            const fs = await import('fs');
+            const fs = await import('node:fs/promises');
 
             const root = await this.temukanAkarProyek();
             if (!root) return { data: null, error: new Error('Akar proyek tidak ditemukan.') };
             const envPath = path.join(root, '.env');
 
             let content = '';
-            if (fs.existsSync(envPath)) {
-                content = fs.readFileSync(envPath, 'utf8');
+            if (await this.berkasAda(envPath)) {
+                content = await fs.readFile(envPath, 'utf8');
             }
 
             const lines = content.split('\n');
@@ -170,7 +181,7 @@ export class Laras {
                 newLines.push(`${key}=${value}`);
             }
 
-            fs.writeFileSync(envPath, newLines.join('\n'), 'utf8');
+            await fs.writeFile(envPath, newLines.join('\n'), 'utf8');
             return { data: true, error: null };
         } catch (err) {
             return { data: null, error: err instanceof Error ? err : new Error(String(err)) };

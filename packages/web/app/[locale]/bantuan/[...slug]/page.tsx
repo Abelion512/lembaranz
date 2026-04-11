@@ -18,11 +18,17 @@ export default function DynamicDocPage() {
     useEffect(() => {
         async function loadMetadata() {
             const data = await ambilMetadataBantuan(lang);
-            if (data && data[slug]) {
-                setMetadata(data[slug]);
-            } else {
-                setMetadata({ title: slug, desc: "Documentation page." });
+            // Mencari item yang sesuai dengan slug dalam chapters
+            if (data && data.chapters) {
+                for (const chapter of data.chapters) {
+                    const item = chapter.items.find((i: any) => i.id === slug);
+                    if (item) {
+                        setMetadata(item);
+                        return;
+                    }
+                }
             }
+            setMetadata({ title: slug, desc: "Documentation page." });
         }
         loadMetadata();
     }, [slug, lang]);

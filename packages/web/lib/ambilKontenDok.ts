@@ -15,13 +15,13 @@ export interface BabDokumentasi {
     items: ButirMetadata[];
 }
 
-export interface IndeksMetadata {
+export interface IndeksBantuan {
     [lang: string]: {
         chapters: BabDokumentasi[];
     };
 }
 
-let cacheMetadata: IndeksMetadata | null = null;
+let cacheMetadata: IndeksBantuan | null = null;
 
 /**
  * Server Action untuk mengambil konten dokumentasi secara dinamis.

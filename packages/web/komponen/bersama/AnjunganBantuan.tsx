@@ -40,13 +40,19 @@ export default function AnjunganBantuan() {
             try {
                 setError(null);
                 const metadata = await ambilMetadataBantuan(lang);
-                if (metadata) {
-                    const mappedCards = Object.entries(metadata).map(([id, data]: [string, ButirMetadata]): KartuBantuan => ({
-                        id,
-                        ...data,
-                        icon: IKON_MAP[data.icon] || BookOpen
-                    }));
-                    setCards(mappedCards);
+                if (metadata && metadata.chapters) {
+                    // Flatten all items from all chapters for the main view
+                    const allItems: KartuBantuan[] = [];
+                    metadata.chapters.forEach(chapter => {
+                        chapter.items.forEach((item: any) => {
+                            allItems.push({
+                                id: item.id,
+                                ...item,
+                                icon: IKON_MAP[item.icon] || BookOpen
+                            });
+                        });
+                    });
+                    setCards(allItems);
                 } else {
                     setError("Gagal memuat metadata dokumentasi.");
                 }
