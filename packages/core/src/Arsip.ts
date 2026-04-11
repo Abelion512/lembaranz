@@ -483,15 +483,18 @@ export const Arsip = {
             let restored = 0;
             let skipped = 0;
 
-            for (const note of notes) {
+            // Fetch all existing notes for fast lookup
+            const existingNotes = await Gudang.getAll('notes') as Note[];
+            const existingNotesMap = new Map(existingNotes.map(n => [n.id, n]));
+
+            const restorePromises = notes.map(async (note) => {
                 // Cek apakah note sudah ada dan lebih baru? (Simple collision detection)
-                const existing = await Gudang.get('notes', note.id);
+                const existing = existingNotesMap.get(note.id);
                 if (existing) {
                     const existingDate = new Date(existing.updatedAt).getTime();
                     const newDate = new Date(note.updatedAt).getTime();
                     if (existingDate >= newDate) {
-                        skipped++;
-                        continue;
+                        return { status: 'skipped', id: note.id };
                     }
                 }
 
@@ -499,8 +502,18 @@ export const Arsip = {
                 const resSave = await this.saveNote(note);
                 if (resSave.error) {
                     console.error(`[ARSIP] Gagal memulihkan note ${note.id}:`, resSave.error.message);
-                    skipped++;
+                    return { status: 'error', id: note.id };
                 } else {
+                    return { status: 'restored', id: note.id };
+                }
+            });
+
+            const results = await Promise.all(restorePromises);
+
+            for (const res of results) {
+                if (res.status === 'skipped' || res.status === 'error') {
+                    skipped++;
+                } else if (res.status === 'restored') {
                     restored++;
                 }
             }
