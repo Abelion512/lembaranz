@@ -9,12 +9,14 @@ export interface ButirMetadata {
     color?: string;
 }
 
-interface IndeksMetadata {
+export interface BabDokumentasi {
+    title: string;
+    items: ButirMetadata[];
+}
+
+export interface IndeksMetadata {
     [lang: string]: {
-        chapters: {
-            title: string;
-            items: ButirMetadata[];
-        }[];
+        chapters: BabDokumentasi[];
     };
 }
 
@@ -36,7 +38,7 @@ export async function ambilKontenDok(slug: string, lang: 'id' | 'en' = 'id') {
         return null;
     }
 
-    // Cari langsung di folder docs/[lang]/[slug].md
+    // Cari langsung di folder docs/${lang}/${slugDibersihkan}.md
     let content = bacaBerkas(`docs/${lang}/${slugDibersihkan}.md`);
 
     // Fallback ke Bahasa Indonesia jika di Bahasa Inggris tidak ada
