@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { Search, X, Menu, ChevronRight, Home, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Search, X, Menu, ChevronRight, Home, ArrowLeft } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { SelasarBantuan } from './SelasarBantuan';
 import { usePathname } from '@/i18n/navigation';

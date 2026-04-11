@@ -22,6 +22,9 @@ const IKON_MAP: Record<string, LucideIcon> = {
 interface KartuBantuan extends Omit<ButirMetadata, 'icon'> {
     id: string;
     icon: LucideIcon;
+    color?: string;
+    title?: string;
+    desc?: string;
 }
 
 export default function AnjunganBantuan() {

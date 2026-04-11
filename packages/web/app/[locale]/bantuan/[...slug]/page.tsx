@@ -6,7 +6,7 @@ import { useLocale } from 'next-intl';
 import { LembaranDok } from '@/komponen/bersama/LembaranDok';
 import { PenerjemahAksara } from '@/komponen/bersama/PenerjemahAksara';
 import { SaklarBahasa } from '@/komponen/bersama/SaklarBahasa';
-import { ambilMetadataBantuan, BabDokumentasi } from '@/lib/ambilKontenDok';
+import { ambilMetadataBantuan } from '@/lib/ambilKontenDok';
 
 export default function DynamicDocPage() {
     const params = useParams();
