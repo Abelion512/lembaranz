@@ -6,7 +6,7 @@ import { LucideIcon, Shield, Terminal, BookOpen, Rocket, Zap, Layers, Globe } fr
 import { Link } from '@/i18n/navigation';
 import { LembaranDok } from '@/komponen/bersama/LembaranDok';
 import { SaklarBahasa } from '@/komponen/bersama/SaklarBahasa';
-import { ambilMetadataBantuan, ButirMetadata, BabDokumentasi } from '@/lib/ambilKontenDok';
+import { ambilMetadataBantuan, ButirMetadata } from '@/lib/ambilKontenDok';
 
 const IKON_MAP: Record<string, LucideIcon> = {
     Shield,
@@ -41,16 +41,11 @@ export default function AnjunganBantuan() {
                 setError(null);
                 const metadata = await ambilMetadataBantuan(lang);
                 if (metadata) {
-                    const mappedCards = Object.entries(metadata).map(([id, data]: [string, any]): KartuBantuan => ({
+                    const mappedCards = Object.entries(metadata).map(([id, data]: [string, ButirMetadata]): KartuBantuan => ({
                         id,
-                        judul: data.judul,
-                        slug: data.slug,
-                        deskripsi: data.deskripsi,
-                        icon: IKON_MAP[data.icon] || BookOpen,
-                        title: data.judul,
-                        desc: data.deskripsi,
-                        color: data.color || "bg-blue-500/10 text-blue-500"
-                    }) as KartuBantuan);
+                        ...data,
+                        icon: IKON_MAP[data.icon] || BookOpen
+                    }));
                     setCards(mappedCards);
                 } else {
                     setError("Gagal memuat metadata dokumentasi.");
@@ -101,7 +96,7 @@ export default function AnjunganBantuan() {
                         href={`/bantuan/${card.id}`}
                         className="p-10 rounded-[2rem] bg-[var(--surface)] border border-[var(--separator)]/10 hover:border-blue-500/30 hover:shadow-xl hover:shadow-blue-500/5 transition-all group"
                     >
-                        <div className={`w-14 h-14 rounded-2xl ${card.color || 'bg-blue-500/10 text-blue-500'} flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm`}>
+                        <div className={`w-14 h-14 rounded-2xl ${card.color} flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm`}>
                             <card.icon size={28} />
                         </div>
                         <h3 className="text-2xl font-bold tracking-tight mb-4">{card.title}</h3>

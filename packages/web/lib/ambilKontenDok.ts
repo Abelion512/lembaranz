@@ -3,7 +3,6 @@
 import { bacaBerkas } from '@/lib/bacaBerkas';
 
 export interface ButirMetadata {
-    id: string;
     title: string;
     desc: string;
     icon: string;
@@ -15,12 +14,13 @@ export interface BabDokumentasi {
     items: ButirMetadata[];
 }
 
-export interface IndeksDokumentasi {
-    id: { chapters: BabDokumentasi[] };
-    en: { chapters: BabDokumentasi[] };
+export interface IndeksMetadata {
+    [lang: string]: {
+        chapters: BabDokumentasi[];
+    };
 }
 
-let cacheMetadata: IndeksDokumentasi | null = null;
+let cacheMetadata: IndeksMetadata | null = null;
 
 /**
  * Server Action untuk mengambil konten dokumentasi secara dinamis.
@@ -38,7 +38,7 @@ export async function ambilKontenDok(slug: string, lang: 'id' | 'en' = 'id') {
         return null;
     }
 
-    // Cari langsung di folder docs/[lang]/[slug].md
+    // Cari langsung di folder docs/${lang}/${slugDibersihkan}.md
     let content = bacaBerkas(`docs/${lang}/${slugDibersihkan}.md`);
 
     // Fallback ke Bahasa Indonesia jika di Bahasa Inggris tidak ada
