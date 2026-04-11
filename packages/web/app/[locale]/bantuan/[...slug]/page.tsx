@@ -18,8 +18,8 @@ export default function DynamicDocPage() {
     useEffect(() => {
         async function loadMetadata() {
             const data = await ambilMetadataBantuan(lang);
-            if (data && data[slug]) {
-                setMetadata(data[slug]);
+            if (data && (data as any)[slug]) {
+                setMetadata((data as any)[slug]);
             } else {
                 setMetadata({ title: slug, desc: "Documentation page." });
             }

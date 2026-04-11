@@ -33,6 +33,17 @@ export async function ambilKontenDok(slug: string, lang: 'id' | 'en' = 'id') {
  * Mengambil metadata untuk halaman bantuan dari docs/indeks.json.
  * Menggunakan cache in-memory untuk meningkatkan performa pembacaan.
  */
+export interface ButirMetadata {
+    id: string;
+    slug: string;
+    judul: string;
+    deskripsi?: string;
+    ikon?: string;
+    anak?: ButirMetadata[];
+}
+
+let cacheMetadata: Record<string, ButirMetadata[]> | null = null;
+
 export async function ambilMetadataBantuan(lang: 'id' | 'en' = 'id') {
     if (!cacheMetadata) {
         const raw = bacaBerkas('docs/indeks.json');

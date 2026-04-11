@@ -22,6 +22,9 @@ const IKON_MAP: Record<string, LucideIcon> = {
 interface KartuBantuan extends Omit<ButirMetadata, 'icon'> {
     id: string;
     icon: LucideIcon;
+    color?: string;
+    title?: string;
+    desc?: string;
 }
 
 export default function AnjunganBantuan() {
@@ -38,11 +41,16 @@ export default function AnjunganBantuan() {
                 setError(null);
                 const metadata = await ambilMetadataBantuan(lang);
                 if (metadata) {
-                    const mappedCards = Object.entries(metadata).map(([id, data]: [string, ButirMetadata]): KartuBantuan => ({
+                    const mappedCards = Object.entries(metadata).map(([id, data]: [string, any]): KartuBantuan => ({
                         id,
-                        ...data,
-                        icon: IKON_MAP[data.icon] || BookOpen
-                    }));
+                        judul: data.judul,
+                        slug: data.slug,
+                        deskripsi: data.deskripsi,
+                        icon: IKON_MAP[data.icon] || BookOpen,
+                        title: data.judul,
+                        desc: data.deskripsi,
+                        color: data.color || "bg-blue-500/10 text-blue-500"
+                    }) as KartuBantuan);
                     setCards(mappedCards);
                 } else {
                     setError("Gagal memuat metadata dokumentasi.");
