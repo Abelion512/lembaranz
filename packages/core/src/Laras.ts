@@ -159,10 +159,8 @@ export class Laras {
             const envPath = path.join(root, '.env');
 
             let content = '';
-            try {
+            if (await this.berkasAda(envPath)) {
                 content = await fs.readFile(envPath, 'utf8');
-            } catch (err) {
-                if ((err as any).code !== 'ENOENT') throw err;
             }
 
             const lines = content.split('\n');
