@@ -2,6 +2,15 @@
 
 import { bacaBerkas } from '@/lib/bacaBerkas';
 
+export interface ButirMetadata {
+    title: string;
+    desc: string;
+    icon: string;
+    color?: string;
+}
+
+let cacheMetadata: Record<string, any> | null = null;
+
 /**
  * Server Action untuk mengambil konten dokumentasi secara dinamis.
  * Mendukung pencarian subfolder (Bab) berdasarkan slug.
