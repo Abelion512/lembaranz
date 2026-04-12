@@ -9,7 +9,8 @@ export interface ButirMetadata {
     color?: string;
 }
 
-let cacheMetadata: Record<string, any> | null = null;
+// Reserved for future content caching
+const _cacheKontenDok: Record<string, string | null> | null = null;
 export interface BabDokumentasi {
     title: string;
     items: ButirMetadata[];
@@ -21,7 +22,8 @@ export interface IndeksBantuan {
     };
 }
 
-let cacheMetadata: IndeksBantuan | null = null;
+// Reserved for future index caching
+const _cacheIndeksBantuan: IndeksBantuan | null = null;
 
 /**
  * Server Action untuk mengambil konten dokumentasi secara dinamis.
@@ -63,22 +65,22 @@ export interface ButirMetadata {
     anak?: ButirMetadata[];
 }
 
-let cacheMetadata: Record<string, ButirMetadata[]> | null = null;
+let cacheMetadataBantuan: IndeksBantuan | null = null;
 
 export async function ambilMetadataBantuan(lang: 'id' | 'en' = 'id') {
-    if (!cacheMetadata) {
+    if (!cacheMetadataBantuan) {
         const raw = bacaBerkas('docs/indeks.json');
         if (!raw) {
             console.error('[ambilMetadataBantuan] Gagal membaca docs/indeks.json');
             return null;
         }
         try {
-            cacheMetadata = JSON.parse(raw);
+            cacheMetadataBantuan = JSON.parse(raw);
         } catch (e) {
             console.error('[ambilMetadataBantuan] Error parsing metadata:', e);
             return null;
         }
     }
 
-    return cacheMetadata![lang] || cacheMetadata!['id'];
+    return cacheMetadataBantuan![lang] || cacheMetadataBantuan!['id'];
 }

@@ -16,30 +16,30 @@ export class CrashReporter {
                 const message = `[FATAL BROWSER CRASH] ${event.message}`;
                 const stack = event.error?.stack || 'Tanpa stack trace';
 
-                await AuditLog.catat('KESALAHAN', `${message}\nTrace:\n${stack}`);
+                await AuditLog.log('KESALAHAN', `${message}\nTrace:\n${stack}`);
             });
 
             window.addEventListener('unhandledrejection', async (event) => {
                 const reason = event.reason instanceof Error ? event.reason.stack : String(event.reason);
-                await AuditLog.catat('KESALAHAN', `[UNHANDLED PROMISE REJECTION]\nAlasan:\n${reason}`);
+                await AuditLog.log('KESALAHAN', `[UNHANDLED PROMISE REJECTION]\nAlasan:\n${reason}`);
             });
         }
 
         // Lingkungan Node (CLI/Server RSC)
         if (typeof process !== 'undefined') {
             process.on('uncaughtException', (error) => {
-                AuditLog.catat('KESALAHAN', `[FATAL NODE CRASH] Uncaught Exception\nTrace:\n${error.stack}`).catch(console.error);
+                AuditLog.log('KESALAHAN', `[FATAL NODE CRASH] Uncaught Exception\nTrace:\n${error.stack}`).catch(console.error);
             });
 
             process.on('unhandledRejection', (reason) => {
                 const r = reason instanceof Error ? reason.stack : String(reason);
-                AuditLog.catat('KESALAHAN', `[FATAL NODE CRASH] Unhandled Rejection\nAlasan:\n${r}`).catch(console.error);
+                AuditLog.log('KESALAHAN', `[FATAL NODE CRASH] Unhandled Rejection\nAlasan:\n${r}`).catch(console.error);
             });
         }
 
         this.terpasang = true;
 
         // Initial initialization log
-        AuditLog.catat('INFO', 'Crash Reporter Lembaran diaktifkan.').catch(() => {});
+        AuditLog.log('INFO', 'Crash Reporter Lembaran diaktifkan.').catch(() => {});
     }
 }

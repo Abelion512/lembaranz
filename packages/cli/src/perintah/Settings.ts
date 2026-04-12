@@ -7,7 +7,6 @@ import { prepareContext } from '../utils.js';
 export function registerSettingsCommand(program: Command) {
   program
     .command('settings')
-    .alias('config')
     .description('Manage local environment variables (.env) or repository settings')
     .option('--install-hook', 'Install Git Pre-commit hook to prevent secret leaks')
     .argument('[key]', 'Variable name (key)')

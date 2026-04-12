@@ -23,8 +23,6 @@ interface KartuBantuan extends Omit<ButirMetadata, 'icon'> {
     id: string;
     icon: LucideIcon;
     color?: string;
-    title?: string;
-    desc?: string;
 }
 
 export default function AnjunganBantuan() {
@@ -44,10 +42,10 @@ export default function AnjunganBantuan() {
                     // Flatten all items from all chapters for the main view
                     const allItems: KartuBantuan[] = [];
                     metadata.chapters.forEach(chapter => {
-                        chapter.items.forEach((item: any) => {
+                        chapter.items.forEach((item) => {
                             allItems.push({
-                                id: item.id,
                                 ...item,
+                                id: item.id,
                                 icon: IKON_MAP[item.icon] || BookOpen
                             });
                         });

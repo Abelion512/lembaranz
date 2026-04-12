@@ -116,7 +116,7 @@ Respond with JSON only:`;
             }
 
             return {
-                keputusan: parsed.keputusan,
+                decision: parsed.keputusan,
                 reason: parsed.alasan,
                 system_command: parsed.perintah_sistem ?? null,
                 internal_note: parsed.catatan_internal ?? '',

@@ -21,7 +21,7 @@ export default function DynamicDocPage() {
             // Mencari item yang sesuai dengan slug dalam chapters
             if (data && data.chapters) {
                 for (const chapter of data.chapters) {
-                    const item = chapter.items.find((i: any) => i.id === slug);
+                    const item = chapter.items.find((i) => i.id === slug);
                     if (item) {
                         setMetadata(item);
                         return;

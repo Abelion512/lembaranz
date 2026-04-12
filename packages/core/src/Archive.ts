@@ -274,7 +274,7 @@ export const Archive = {
             const suggestedTags = await Poet.suggestTags(note.content);
             const tags = Array.from(new Set([...(note.tags || []), ...suggestedTags]));
 
-            const noteWithId: StoredNote = {
+            const noteWithId = {
                 ...note,
                 id: note.id || uuidv4(),
                 title,
@@ -413,7 +413,7 @@ export const Archive = {
     async getNoteById(id: EntityId): Promise<Result<Note | undefined>> {
         if (Vault.isLocked()) return { data: null, error: new Error('Vault locked') };
         try {
-            const note = await Storage.get('notes', id) as Note;
+            const note = await Storage.get('notes', id) as StoredNote | undefined;
             if (!note) return { data: undefined, error: null };
             return this.decryptNote(note);
         } catch (e) {
@@ -454,7 +454,7 @@ export const Archive = {
         if (Vault.isLocked()) return { data: null, error: new Error('Vault locked') };
 
         try {
-            const rawNotes = await Storage.getAll('notes') as Note[];
+            const rawNotes = await Storage.getAll('notes') as StoredNote[];
 
             const plainNotes: Note[] = [];
             for (const n of rawNotes) {
@@ -519,7 +519,20 @@ export const Archive = {
                     }
                 }
 
-                const resSave = await this.saveNote(note);
+                // Convert StoredNote to NoteInput for saveNote
+                const noteInput: NoteInput = {
+                    id: note.id,
+                    title: note.title,
+                    content: note.content,
+                    folderId: note.folderId,
+                    isPinned: note.isPinned,
+                    isFavorite: note.isFavorite,
+                    tags: note.tags,
+                    createdAt: note.createdAt,
+                    kredensial: note.kredensial ? JSON.parse(note.kredensial) : undefined,
+                };
+
+                const resSave = await this.saveNote(noteInput);
                 if (resSave.error) {
                     console.error(`[ARCHIVE] Failed to restore note ${note.id}:`, resSave.error.message);
                     return { status: 'error' as const, id: note.id };
