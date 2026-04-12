@@ -32,6 +32,11 @@
   "bin": {
     "lembaran": "./src/main.ts"
   },
+  "files": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "README.md"
+  ],
   "engines": {
     "bun": ">=1.3.0",
     "node": ">=20.0.0"

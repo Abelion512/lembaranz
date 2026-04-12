@@ -30,9 +30,15 @@
     "url": "git+https://github.com/Abelion512/lembaran.git"
   },
   "type": "module",
+  "files": [
+    "src/**/*.ts",
+    "README.md"
+  ],
   "exports": {
-    ".": "./src/index.ts",
-    "./*": "./src/*.ts"
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
+    }
   },
   "browser": {
     "./src/storage/FileAdapter.ts": "./src/storage/FileAdapter.shim.ts"
