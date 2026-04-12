@@ -1,10 +1,11 @@
 export type EntityId = string;
 
-export interface Note {
+/** Note as stored in storage (all sensitive fields encrypted as strings) */
+export interface StoredNote {
     id: EntityId;
-    title: string;
-    content: string; // Encrypted blob (iv|data)
-    preview?: string; // Plain-text snippet for list view
+    title: string; // Encrypted: iv|base64
+    content: string; // Encrypted: iv|base64
+    preview?: string; // Encrypted: iv|base64
     folderId: EntityId | null;
     isPinned: boolean;
     isFavorite: boolean;
@@ -12,15 +13,32 @@ export interface Note {
     createdAt: string;
     updatedAt: string;
     isCredentials?: boolean;
-    kredensial?: string | {
-        username?: string;
-        password?: string;
-        url?: string;
-    };
+    /** Encrypted credentials blob */
+    kredensial?: string;
     _hash?: string;
     _timestamp?: string;
     syncStatus?: "synced" | "pending" | "error";
 }
+
+/** Credentials object (only available after decryption) */
+export interface CredentialsData {
+    username?: string;
+    password?: string;
+    url?: string;
+}
+
+/** Note after decryption (credentials are parsed) */
+export interface DecryptedNote extends Omit<StoredNote, 'kredensial'> {
+    /** Decrypted credentials object or undefined */
+    kredensial?: CredentialsData | string;
+    /** Plaintext title after decryption */
+    title: string;
+    /** Plaintext content after decryption */
+    content: string;
+}
+
+/** Unified Note type for backward compatibility - use StoredNote or DecryptedNote for clarity */
+export type Note = StoredNote | DecryptedNote;
 
 export interface Folder {
     id: EntityId;

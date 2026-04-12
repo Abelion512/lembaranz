@@ -6,18 +6,41 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org)
 [![Bun](https://img.shields.io/badge/bun-%3E%3D1.3-fbefdb)](https://bun.sh)
+[![Tests](https://github.com/Abelion512/lembaran/actions/workflows/ci.yml/badge.svg)](https://github.com/Abelion512/lembaran/actions/workflows/ci.yml)
 
 ![TUI Interface](docs/images/tui-mockup.png)
 
-> **Data Sovereignty for Everyone.** Zero-knowledge encryption, premium CLI/TUI focus, no gimmicks. Own your words, secure your thoughts.
+> **Your data belongs to you.** Zero-knowledge encryption, terminal-first design, no compromises.
 
-![Web Interface](docs/images/web-mockup.png)
+---
+
+## Overview
+
+Lembaran is a **zero-knowledge encrypted note vault** that gives you complete control over your data. Built for developers who value privacy, it encrypts everything locally using industry-standard AES-GCM 256-bit encryption with Argon2id key derivation — meaning **nobody can read your notes, not even the developers**.
+
+### Key Principles
+
+- **Local-First**: All data stays on your device. No cloud sync, no telemetry, no tracking.
+- **Zero-Knowledge**: Encryption happens before data touches storage. We never see your data.
+- **Terminal-First**: Premium CLI/TUI experience for power users who live in the terminal.
+- **Open Source**: MIT licensed, auditable, and extensible.
+
+### Why Lembaran?
+
+| Feature | Lembaran | Typical Note Apps |
+|---------|----------|-------------------|
+| Encryption | AES-GCM 256 + Argon2id | Proprietary or none |
+| Data Location | Your device only | Cloud servers |
+| Knowledge Model | Zero-knowledge | Full access |
+| Terminal Support | ✅ Native TUI | ❌ Rarely |
+| Open Source | ✅ MIT | ❌ Usually closed |
+| Offline | ✅ Fully functional | ❌ Often limited |
 
 ---
 
 ## 🚀 Quick Start
 
-### Installation (1 Line)
+### Installation
 
 ```bash
 # Fastest method (recommended)
@@ -39,7 +62,7 @@ lembaran launch
 # Create your first note
 lembaran write
 
-# Manage project environments
+# Manage project environments (.env files)
 lembaran config
 ```
 
@@ -47,52 +70,78 @@ lembaran config
 
 ## ✨ Features
 
-### 🔐 Vault (Security)
-- **AES-GCM 256-bit encryption** (industry standard)
-- **Argon2id key derivation** (anti-GPU cracking)
-- **Auto-lock** after 1 minute of inactivity
-- **Panic key** for emergency data wipe
+### 🔐 Military-Grade Security
+- **AES-GCM 256-bit encryption** — Industry standard, hardware-accelerated
+- **Argon2id key derivation** — Memory-hard, GPU/ASIC resistant
+- **Auto-lock** — Locks after 60 seconds of inactivity
+- **Panic key** — Emergency wipe with a special password
+- **Integrity hashing** — Tamper detection on every note
+- **Recovery mnemonic** — 12-word BIP39-style backup phrase
 
 ### 📝 CLI Commands
 ```bash
-lembaran launch    # Interactive TUI
-lembaran write     # Create/edit notes
-lembaran config    # Manage .env projects
-lembaran import    # Import directories
-lembaran search    # Search encrypted notes
-lembaran export    # Export notes
+lembaran launch    # Interactive TUI dashboard
+lembaran write     # Create or edit notes
+lembaran config    # Manage .env project profiles
+lembaran import    # Import markdown files or restore backups
+lembaran search    # Search through encrypted notes
+lembaran export    # Export encrypted backup
+lembaran browse    # Browse notes by tags
+lembaran monitor   # Monitor vault status
+lembaran security  # Security settings
+lembaran settings  # Application settings
 ```
 
-### 🌐 Web (Landing & Docs)
-- Informative landing page (lembaran.id)
-- Comprehensive documentation (multi-language)
-- Up-to-date changelog (Sync via CI/CD)
-- **Focus: Showcase & Documentation** (Vault is purely CLI/TUI)
+### 🌐 Web Interface
+- Landing page with documentation (lembaran.id)
+- Full note management with rich text editor
+- Multi-language support (English, Indonesian)
+- **Note: Web is for documentation & showcase. Vault operations run in CLI/TUI.**
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Component | Technology |
-|-----------|------------|
-| Runtime | Bun 1.3+ |
+| Layer | Technology |
+|-------|------------|
+| Runtime | Bun 1.3+ / Node.js 20+ |
 | Language | TypeScript 5.x |
-| Encryption | @noble/ciphers (AES-GCM) |
+| Encryption | @noble/ciphers (AES-GCM) + @noble/hashes (Argon2id) |
 | CLI Framework | Ink (React for Terminal) |
-| Web | Next.js 16, React 19, Tailwind CSS v4 |
+| Web Framework | Next.js 16, React 19, Tailwind CSS v4 |
+| State | Zustand |
+| Rich Text | TipTap |
+| On-device AI | WebLLM (optional) |
 
 ---
 
-## 📦 Monorepo Structure
+## 📦 Architecture
 
 ```
-lembaran/
-├── packages/core    # Encryption logic & storage
-├── packages/cli     # CLI commands & TUI
-├── packages/web     # Landing page & documentation
-├── docs/            # Full documentation
-└── scripts/         # Helper scripts
+lembaran/ (Monorepo)
+├── packages/
+│   ├── core/          # @lembaranz/core — Encryption engine & storage
+│   ├── cli/           # @lembaranz/cli — Terminal interface (TUI)
+│   └── web/           # Landing page & documentation (private)
+├── docs/              # Technical documentation
+└── .github/workflows/ # CI/CD (lint, build, release, security scans)
 ```
+
+### Security Architecture
+
+```
+User Password ──┐
+                ├── Argon2id ──► Password Key ──┐
+                                                 ▼
+              Random ──► Master Key (AES-256) ──► Wrap ──► Storage
+                                                 ▲
+              Note Content ──────────────────────┘ (encrypt with Master Key)
+```
+
+- **Master Key**: Randomly generated, never stored in plaintext
+- **Wrapped Key**: Master Key encrypted with Password Key, stored for unlock
+- **Recovery**: Separate mnemonic path with its own wrapped key
+- **Per-field Encryption**: Each note field encrypted independently
 
 ---
 
@@ -101,59 +150,53 @@ lembaran/
 We welcome contributions from developers worldwide!
 
 ### Getting Started
-1. Fork this repository
-2. Clone your fork: `git clone https://github.com/YOUR_USERNAME/lembaran.git`
-3. Install dependencies: `bun install`
-4. Create a feature branch: `git checkout -b feature/amazing-feature`
-5. Commit changes: `git commit -m "feat: add amazing feature"`
-6. Push to branch: `git push origin feature/amazing-feature`
-7. Open a Pull Request
+
+```bash
+# 1. Fork and clone
+git clone https://github.com/YOUR_USERNAME/lembaran.git
+cd lembaran
+
+# 2. Install dependencies
+bun install
+
+# 3. Run tests
+bun test
+
+# 4. Lint & build
+bun run lint && bun run build
+```
 
 ### Guidelines
 - Use **English** for code comments and documentation
-- Follow conventional commits: `feat:`, `fix:`, `docs:`, `chore:`
-- Ensure all tests pass: `bun run lint && bun run test`
-- Update documentation when adding new features
-
-📖 **Full Documentation:** [docs/](docs/)
+- Follow [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `chore:`
+- Ensure tests pass: `bun test && bun run lint`
+- Update documentation for new features
+- Use Changesets for version management
 
 ---
 
 ## 📄 License
 
-Distributed under the [MIT License](LICENSE) — free to use, modify, and distribute.
+Distributed under the [MIT License](LICENSE).
 
 ---
 
-## 👨‍💻 Development Team
+## 📞 Contact
 
-**Lead Developer:**
-Abelion Lavv ([@Abelion512](https://github.com/Abelion512))
-
-**Contributors:**
-Thank you to all open-source contributors! 🙏
+- **Issues**: [Report bugs or request features](https://github.com/Abelion512/lembaran/issues)
+- **Discussions**: [Q&A and general discussion](https://github.com/Abelion512/lembaran/discussions)
+- **Email**: agen.salva@gmail.com
 
 ---
 
-## 📞 Contact & Support
+## 🔒 Security
 
-- **GitHub Issues:** [Report bugs or request features](https://github.com/Abelion512/lembaran/issues)
-- **Discussions:** [Q&A and general discussion](https://github.com/Abelion512/lembaran/discussions)
-- **Email:** agen.salva@gmail.com
+Found a security vulnerability? Please **do not** open a public issue. Email us directly at [agen.salva@gmail.com](mailto:agen.salva@gmail.com) with details.
 
----
-
-### 🚀 Automated Releases (CI/CD)
-
-This project uses **Changesets** and **GitHub Actions** for automated version management.
-1. Every Pull Request or Push to `main` is validated by `CI` (Lint & Build).
-2. If `.changeset/*.md` files exist, GitHub Actions will automatically open a **"Version Packages"** Pull Request.
-3. Once merged, the system automatically publishes packages to NPM under `@lembaranz`.
-
-**Important**: You must add `NPM_TOKEN` (Automation type) to **GitHub Repo > Settings > Secrets and variables > Actions** for the publishing system to work.
+See [SECURITY.md](SECURITY.md) for our security policy.
 
 ---
 
-**Version:** 3.5.0 | **Status:** Production Ready | **Focus:** CLI/TUI First
+**Version:** 3.5.0 | **Status:** Production Ready
 
 Made with ❤️ for data sovereignty

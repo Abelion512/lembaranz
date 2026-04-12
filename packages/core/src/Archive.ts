@@ -1,9 +1,22 @@
 import { Storage } from './Storage';
 import { Vault, Result } from './Vault';
-import { Note, EntityId } from './Formula';
+import { StoredNote, DecryptedNote, Note, EntityId } from './Formula';
 import { v4 as uuidv4 } from 'uuid';
 import { Integrity } from './Integrity';
 import { Poet } from './Poet';
+
+/** Input for creating or updating a note (before encryption) */
+export interface NoteInput {
+    id?: EntityId;
+    title: string;
+    content: string;
+    folderId: EntityId | null;
+    isPinned: boolean;
+    isFavorite: boolean;
+    tags?: string[];
+    createdAt?: string;
+    kredensial?: Record<string, unknown>;
+}
 
 /**
  * Archive: Modul utama manajemen brankas dan catatan Lembaran.
@@ -244,33 +257,35 @@ export const Archive = {
     },
 
     /**
-     * Menyimpan catatan baru atau memperbarui catatan lama.
+     * Saves a new note or updates an existing one.
+     * Encrypts all sensitive fields before storage.
      */
-    async saveNote(note: Omit<Note, 'updatedAt'>): Promise<Result<Note>> {
+    async saveNote(note: NoteInput): Promise<Result<StoredNote>> {
         if (Vault.isLocked()) {
             return { data: null, error: new Error('Vault locked. Cannot save data.') };
         }
 
         try {
             let title = note.title;
-            if (!title || title === 'Tanpa Judul') {
+            if (!title || title === 'Untitled') {
                 title = await Poet.suggestTitle(note.content);
             }
 
             const suggestedTags = await Poet.suggestTags(note.content);
             const tags = Array.from(new Set([...(note.tags || []), ...suggestedTags]));
 
-            const noteWithId = {
+            const noteWithId: StoredNote = {
                 ...note,
+                id: note.id || uuidv4(),
                 title,
                 tags,
-                id: note.id || uuidv4(),
                 createdAt: note.createdAt || new Date().toISOString(),
-            } as Note;
+                updatedAt: new Date().toISOString(),
+            };
 
             const checkHash = await Integrity.computeHash(noteWithId);
 
-            const existing = await Storage.get("notes", noteWithId.id);
+            const existing = await Storage.get("notes", noteWithId.id) as StoredNote | undefined;
             if (existing && existing._hash === checkHash) {
                 return { data: existing, error: null };
             }
@@ -283,24 +298,24 @@ export const Archive = {
                 Vault.encryptPacked(preview)
             ]);
 
-            if (resTitle.error) return resTitle as Result<Note>;
-            if (resContent.error) return resContent as Result<Note>;
-            if (resPreview.error) return resPreview as Result<Note>;
+            if (resTitle.error) return resTitle as Result<StoredNote>;
+            if (resContent.error) return resContent as Result<StoredNote>;
+            if (resPreview.error) return resPreview as Result<StoredNote>;
 
             let secureKredensial: string | undefined = undefined;
             if (note.kredensial) {
                 const credsStr = typeof note.kredensial === 'string' ? note.kredensial : JSON.stringify(note.kredensial);
                 const resCreds = await Vault.encryptPacked(credsStr);
-                if (resCreds.error) return resCreds as Result<Note>;
+                if (resCreds.error) return resCreds as Result<StoredNote>;
                 secureKredensial = resCreds.data;
             }
 
-            const finalNote: Note = {
+            const finalNote: StoredNote = {
                 ...noteWithId,
                 title: resTitle.data,
                 content: resContent.data,
                 preview: resPreview.data,
-                kredensial: secureKredensial as any,
+                kredensial: secureKredensial,
                 updatedAt: new Date().toISOString(),
                 _hash: checkHash,
             };
@@ -313,13 +328,14 @@ export const Archive = {
     },
 
     /**
-     * Mengambil seluruh catatan yang sudah didekripsi minimal.
+     * Retrieves all notes with decrypted titles and previews.
+     * Content remains encrypted for security.
      */
-    async getAllNotes(): Promise<Result<Note[]>> {
+    async getAllNotes(): Promise<Result<DecryptedNote[]>> {
         if (Vault.isLocked()) return { data: null, error: new Error('Vault locked') };
 
         try {
-            const rawNotes = await Storage.getAll('notes') as Note[];
+            const rawNotes = await Storage.getAll('notes') as StoredNote[];
             rawNotes.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 
             const decrypted = await Promise.all(rawNotes.map(async n => {
@@ -328,11 +344,11 @@ export const Archive = {
 
                 return {
                     ...n,
-                    title: resTitle.error ? '⚠️ [DATA RUSAK]' : resTitle.data,
-                    preview: resPreview.error ? '⚠️ [DATA RUSAK]' : resPreview.data,
-                    content: '🔒 Terkunci',
+                    title: resTitle.error ? '⚠️ [CORRUPTED]' : resTitle.data,
+                    preview: resPreview.error ? '⚠️ [CORRUPTED]' : resPreview.data,
+                    content: '🔒 Locked',
                     kredensial: undefined
-                };
+                } as DecryptedNote;
             }));
 
             return { data: decrypted, error: null };
@@ -342,17 +358,17 @@ export const Archive = {
     },
 
     /**
-     * Mendekripsi catatan secara penuh.
+     * Fully decrypts a single note including content and credentials.
      */
-    async decryptNote(note: Note): Promise<Result<Note>> {
+    async decryptNote(note: StoredNote): Promise<Result<DecryptedNote>> {
         try {
             const resTitle = await Vault.decryptPacked(note.title);
-            if (resTitle.error) return resTitle as Result<Note>;
+            if (resTitle.error) return resTitle as Result<DecryptedNote>;
 
             const resContent = await Vault.decryptPacked(note.content);
-            if (resContent.error) return resContent as Result<Note>;
+            if (resContent.error) return resContent as Result<DecryptedNote>;
 
-            let decodedCreds = note.kredensial;
+            let decodedCreds: DecryptedNote['kredensial'] = undefined;
             if (typeof note.kredensial === 'string') {
                 const resCreds = await Vault.decryptPacked(note.kredensial);
                 if (!resCreds.error) {
@@ -364,7 +380,7 @@ export const Archive = {
                 }
             }
 
-            const decryptedNote = {
+            const decryptedNote: DecryptedNote = {
                 ...note,
                 title: resTitle.data,
                 content: resContent.data,
@@ -374,7 +390,7 @@ export const Archive = {
             if (note._hash) {
                 const actualHash = await Integrity.computeHash(decryptedNote);
                 if (actualHash !== note._hash) {
-                    decryptedNote.content = `⚠️ PERINGATAN: Segel digital rusak!\n\n` + decryptedNote.content;
+                    decryptedNote.content = `⚠️ WARNING: Digital seal broken!\n\n` + decryptedNote.content;
                 }
             }
 
@@ -463,48 +479,52 @@ export const Archive = {
     },
 
     /**
-     * Memulihkan brankas dari file cadangan portabel.
-     * @param buffer Data biner dari file .lembaran
-     * @param passwordBackup Password yang digunakan untuk mengenkripsi cadangan
+     * Restores the vault from a portable backup file.
+     * @param buffer Binary data from .lembaran backup file
+     * @param passwordBackup Password used to encrypt the backup
      */
-    async pulihkan(buffer: Uint8Array, passwordBackup: string): Promise<Result<{ restored: number, skipped: number }>> {
+    async restoreBackup(buffer: Uint8Array, passwordBackup: string): Promise<Result<{ restored: number, skipped: number }>> {
         if (Vault.isLocked()) return { data: null, error: new Error('Vault locked: Unlock vault before restoring data.') };
 
         try {
             const resDec = await Vault.decryptPortable(buffer, passwordBackup);
-            if (resDec.error) return { data: null, error: new Error('Gagal membuka file cadangan. Password salah atau file rusak.', { cause: resDec.error }) };
+            if (resDec.error) return { data: null, error: new Error('Failed to open backup file. Wrong password or corrupted file.', { cause: resDec.error }) };
 
-            const backup = JSON.parse(resDec.data);
-            if (!backup.notes || !Array.isArray(backup.notes)) {
-                return { data: null, error: new Error('Format cadangan tidak valid: Data notes tidak ditemukan.') };
+            let backup: { version?: string; notes?: StoredNote[] };
+            try {
+                backup = JSON.parse(resDec.data);
+            } catch {
+                return { data: null, error: new Error('Invalid backup format: Failed to parse backup data.') };
             }
 
-            const notes = backup.notes as Note[];
+            if (!backup.notes || !Array.isArray(backup.notes)) {
+                return { data: null, error: new Error('Invalid backup format: No notes data found.') };
+            }
+
+            const notes = backup.notes as StoredNote[];
             let restored = 0;
             let skipped = 0;
 
             // Fetch all existing notes for fast lookup
-            const existingNotes = await Storage.getAll('notes') as Note[];
-            const existingNotesMap = new Map(existingNotes.map(n => [n.id, n]));
+            const existingNotes = await Storage.getAll('notes') as StoredNote[];
+            const existingNotesMap = new Map<string, StoredNote>(existingNotes.map(n => [n.id, n]));
 
             const restorePromises = notes.map(async (note) => {
-                // Cek apakah note sudah ada dan lebih baru? (Simple collision detection)
                 const existing = existingNotesMap.get(note.id);
                 if (existing) {
                     const existingDate = new Date(existing.updatedAt).getTime();
                     const newDate = new Date(note.updatedAt).getTime();
                     if (existingDate >= newDate) {
-                        return { status: 'skipped', id: note.id };
+                        return { status: 'skipped' as const, id: note.id };
                     }
                 }
 
-                // Enkripsi ulang menggunakan saveNote (otomatis pakai Master Key aktif)
                 const resSave = await this.saveNote(note);
                 if (resSave.error) {
-                    console.error(`[ARCHIVE] Gagal memulihkan note ${note.id}:`, resSave.error.message);
-                    return { status: 'error', id: note.id };
+                    console.error(`[ARCHIVE] Failed to restore note ${note.id}:`, resSave.error.message);
+                    return { status: 'error' as const, id: note.id };
                 } else {
-                    return { status: 'restored', id: note.id };
+                    return { status: 'restored' as const, id: note.id };
                 }
             });
 

@@ -10,7 +10,8 @@
     "dev:turbo": "NODE_OPTIONS='--max-old-space-size=4096' next dev --turbo -p 1400",
     "build": "bun run sinkron-aset && next build --webpack",
     "start": "next start -p 1400",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "bun test"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

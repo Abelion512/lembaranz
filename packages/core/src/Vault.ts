@@ -51,7 +51,7 @@ export class Vault {
             );
             return { data: key, error: null };
         } catch (error) {
-            console.error('[VAULT] Gagal menurunkan kunci (ERR_DRV_001)');
+            console.error('[VAULT] Failed to derive key (ERR_DRV_001)');
             return { data: null, error: error instanceof Error ? error : new Error(String(error)) };
         } finally {
             passwordBuffer.fill(0);
@@ -282,13 +282,13 @@ export class Vault {
 
     static async decryptPortable(buffer: Uint8Array, password: string): Promise<Result<string>> {
         try {
-            if (buffer.length < 50) return { data: null, error: new Error('Berkas terlalu kecil atau rusak') };
+            if (buffer.length < 50) return { data: null, error: new Error('Buffer too small or corrupted') };
 
             const magic = new TextDecoder().decode(buffer.slice(0, 4));
-            if (magic !== 'LMBR') return { data: null, error: new Error('Format berkas tidak valid (Magic mismatch)') };
+            if (magic !== 'LMBR') return { data: null, error: new Error('Invalid file format (Magic mismatch)') };
 
             const version = buffer[4];
-            if (version !== 1) return { data: null, error: new Error(`Versi berkas v${version} tidak didukung`) };
+            if (version !== 1) return { data: null, error: new Error(`Unsupported file version v${version}`) };
 
             const salt = buffer.slice(5, 37);
             const iv = buffer.slice(37, 49);
@@ -316,7 +316,7 @@ export class Vault {
             );
             return { data: new TextDecoder().decode(decrypted), error: null };
         } catch (e) {
-            return { data: null, error: new Error('Gagal membuka berkas: Password salah atau data rusak.', { cause: e }) };
+            return { data: null, error: new Error('Failed to open file: Wrong password or data corrupted.', { cause: e }) };
         }
     }
 }
