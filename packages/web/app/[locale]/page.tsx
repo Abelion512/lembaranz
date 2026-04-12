@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    ArrowRight, Download,
+    ArrowRight, Download as _Download,
     Sparkles
 } from 'lucide-react';
 import { PasangTerminal } from '@/komponen/landing/PasangTerminal';

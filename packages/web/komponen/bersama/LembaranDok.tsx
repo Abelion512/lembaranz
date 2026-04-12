@@ -16,7 +16,7 @@ interface LembaranDokProps {
 
 export const LembaranDok = ({ title: _title, description: _description, slug, children }: LembaranDokProps) => {
     const t = useTranslations();
-    const pathname = usePathname();
+    const _pathname = usePathname();
     const [searchQuery, setSearchQuery] = useState('');
     const [sidebarTerbuka, setSidebarTerbuka] = useState(false);
 
@@ -77,7 +77,7 @@ export const LembaranDok = ({ title: _title, description: _description, slug, ch
                             >
                                 <Menu size={18} />
                             </button>
-                            
+
                             {/* Breadcrumbs (GitBook Style) */}
                             <nav className="hidden md:flex items-center gap-3 text-[11px] font-bold tracking-tight text-[var(--text-muted)] lg:ml-0">
                                 <Link href="/docs" className="hover:text-blue-500 flex items-center gap-1.5 transition-colors group">
@@ -150,4 +150,3 @@ export const LembaranDok = ({ title: _title, description: _description, slug, ch
         </div>
     );
 };
-

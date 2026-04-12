@@ -1,7 +1,7 @@
 import { Inter } from 'next/font/google';
 import '@/gaya/Utama.css';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, getTranslations } from 'next-intl/server';
+import { getMessages, getTranslations as _getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import type { Metadata, Viewport } from 'next';

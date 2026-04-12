@@ -1,4 +1,4 @@
-import { Archive, Context, VaultContext, Vault, Result } from '@lembaranz/core';
+import { Archive, Context, VaultContext, Vault } from '@lembaranz/core';
 import pc from 'picocolors';
 import prompts from 'prompts';
 import fs from 'node:fs/promises';
@@ -328,7 +328,20 @@ export class Antarmuka {
                 multiline: true
             });
             if (res.konten !== undefined) {
-                const saveRes = await Archive.saveNote({ ...note, content: res.konten });
+                const saveRes = await Archive.saveNote({
+                    id: note.id,
+                    title: note.title,
+                    content: res.konten,
+                    folderId: note.folderId,
+                    isPinned: note.isPinned,
+                    isFavorite: note.isFavorite,
+                    tags: note.tags,
+                    createdAt: note.createdAt,
+                    isCredentials: note.isCredentials,
+                    kredensial: typeof note.kredensial === 'string'
+                        ? note.kredensial
+                        : note.kredensial ? JSON.stringify(note.kredensial) : undefined,
+                });
                 if (saveRes.error) {
                     console.log(pc.red(`❌ Gagal memperbarui catatan: ${saveRes.error.message}`));
                 } else {

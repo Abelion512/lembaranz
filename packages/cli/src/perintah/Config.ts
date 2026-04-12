@@ -46,7 +46,20 @@ export function registerConfigCommand(program: Command) {
           fullNote.content = content;
           fullNote.updatedAt = new Date().toISOString();
 
-          const hasilSave = await Archive.saveNote(fullNote);
+          const hasilSave = await Archive.saveNote({
+            id: fullNote.id,
+            title: fullNote.title,
+            content: fullNote.content,
+            folderId: fullNote.folderId,
+            isPinned: fullNote.isPinned,
+            isFavorite: fullNote.isFavorite,
+            tags: fullNote.tags,
+            createdAt: fullNote.createdAt,
+            isCredentials: fullNote.isCredentials,
+            kredensial: typeof fullNote.kredensial === 'string'
+              ? fullNote.kredensial
+              : fullNote.kredensial ? JSON.stringify(fullNote.kredensial) : undefined,
+          });
           if (hasilSave.error) {
             console.error('Failed to update .env profile:', hasilSave.error.message);
             return;
@@ -243,7 +256,7 @@ export function registerConfigCommand(program: Command) {
         stdio: 'inherit',
         shell: false,
         env: { ...process.env, ...safeEnv }
-      }) as unknown as { on: (event: string, cb: (err: Error | null, code: number | null, signal: NodeJS.Signals | null) => void) => void };
+      });
 
       child.on('error', (err: Error) => {
         console.error(`Failed to execute process: ${err.message}`);

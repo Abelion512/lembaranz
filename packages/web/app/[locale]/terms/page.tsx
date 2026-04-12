@@ -21,7 +21,7 @@ export default async function TermsPage() {
                     <span className='text-[12px] font-bold uppercase tracking-widest'>Beranda</span>
                 </Link>
                 <span className='text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)]/40'>Ketentuan Layanan</span>
-                <Link href='/bantuan' className='text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] hover:text-blue-500 transition-colors'>
+                <Link href='/docs' className='text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] hover:text-blue-500 transition-colors'>
                     Bantuan
                 </Link>
             </header>
@@ -44,7 +44,7 @@ export default async function TermsPage() {
                     <span>© {new Date().getFullYear()} Lembaran</span>
                     <div className='flex items-center gap-8'>
                         <Link href='/privasi' className='hover:text-blue-500 transition-colors'>Privasi</Link>
-                        <Link href='/bantuan' className='hover:text-blue-500 transition-colors'>Bantuan</Link>
+                        <Link href='/docs' className='hover:text-blue-500 transition-colors'>Bantuan</Link>
                         <a href='https://github.com/Abelion512/lembaran' target='_blank' rel='noopener noreferrer' className='hover:text-blue-500 transition-colors flex items-center gap-1'>
                             <Github size={12} /> GitHub
                         </a>

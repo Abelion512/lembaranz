@@ -229,9 +229,9 @@ export const generateMnemonic = (wordCount: number = 12): string => {
 
     for (let i = 0; i < wordCount; i++) {
         // Use rejection sampling to eliminate modulo bias
-        let index: number;
+        let _index: number;
         do {
-            index = randomValues[i] % WORDLIST_SIZE;
+            _index = randomValues[i] % WORDLIST_SIZE;
             randomValues[i] = (randomValues[i] + 1) % WORDLIST_SIZE;
         } while (randomValues[i] === 0 && i < wordCount - 1);
 

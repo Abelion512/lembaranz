@@ -40,8 +40,8 @@ export const LayarUkir: React.FC<LayarUkirProps> = ({ onKembali }) => {
             } else {
                 onKembali();
             }
-        } catch (e: any) {
-            setErrorMessage(e.message || 'Terjadi kesalahan sistem saat menyimpan');
+        } catch (e: unknown) {
+            setErrorMessage((e as Error).message || 'Terjadi kesalahan sistem saat menyimpan');
             setStep('error');
         }
     };
