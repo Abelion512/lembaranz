@@ -29,8 +29,16 @@ export default function LandingPage() {
 
     return (
         <div className="flex flex-col min-h-screen bg-(--background) text-(--text-primary) transition-colors duration-500 overflow-x-hidden">
+            {/* ⚠️ LOCAL TESTING ONLY WARNING */}
+            <div className="fixed top-0 left-0 right-0 z-[100] bg-red-600 text-white text-center py-3 px-4 text-sm font-bold shadow-2xl">
+                ⚠️ FOR LOCAL TESTING ONLY — DO NOT DEPLOY PUBLICLY ⚠️
+                <span className="block text-xs font-normal mt-1 opacity-90">
+                  Web interface handles credentials in browser. Self-host only (like n8n).
+                </span>
+            </div>
+
             {/* Header / Nav */}
-            <header className="fixed top-0 left-0 right-0 z-50 p-6 flex items-center justify-between backdrop-blur-xl bg-(--background)/60 border-b border-(--separator)/5 transition-all duration-500">
+            <header className="fixed top-16 left-0 right-0 z-50 p-6 flex items-center justify-between backdrop-blur-xl bg-(--background)/60 border-b border-(--separator)/5 transition-all duration-500">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-blue-500/20 group hover:scale-105 transition-transform cursor-pointer">
                         <Image src="/image.png" alt="Lembaran Logo" width={40} height={40} className="object-cover" />

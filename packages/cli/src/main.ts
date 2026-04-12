@@ -8,6 +8,7 @@ import { registerMonitorCommand } from './commands/Monitor.js';
 import { registerSecurityCommand } from './commands/Security.js';
 import { registerBrowseCommand } from './commands/Browse.js';
 import { registerLaunchCommand, runTUI } from './commands/Launch.js';
+import { registerSetupCommand } from './commands/Setup.js';
 import { prepareContext } from './utils.js';
 import pkg from '../package.json' assert { type: 'json' };
 
@@ -29,6 +30,7 @@ program
   .option('--pelataran', 'Use project vault context (local)');
 
 // Register all commands
+registerSetupCommand(program);
 registerConfigCommand(program);
 registerImportCommand(program);
 registerExportCommand(program);

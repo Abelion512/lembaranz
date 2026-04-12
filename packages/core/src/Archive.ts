@@ -34,6 +34,18 @@ export const Archive = {
     },
 
     /**
+     * Memeriksa apakah brankas sudah disetup.
+     */
+    async isVaultSetup(): Promise<boolean> {
+        try {
+            const saltHex = await Storage.get('meta', 'auth_salt') as string;
+            return !!saltHex;
+        } catch {
+            return false;
+        }
+    },
+
+    /**
      * Menyiapkan brankas baru dengan kata sandi dan kunci pemulihan (mnemonic).
      * @param password Kata sandi utama
      * @param mnemonic 12 kata kunci pemulihan (opsional)

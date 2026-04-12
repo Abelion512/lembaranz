@@ -20,12 +20,12 @@ export async function generateMetadata({
 
   // ── Konten SEO/GEO/AEO yang kaya context ─────────────────────────────────
   const title = isId
-    ? 'Lembaran — Aplikasi Catatan Terenkripsi, Lokal-First, AI On-Device'
-    : 'Lembaran — Encrypted Note-Taking App, Local-First & AI On-Device';
+    ? 'Lembaran — Self-Hosted Credential Manager (LOCAL ONLY)'
+    : 'Lembaran — Self-Hosted Credential Manager (LOCAL ONLY)';
 
   const description = isId
-    ? 'Lembaran adalah aplikasi catatan digital terenkripsi AES-GCM 256-bit yang berjalan sepenuhnya di perangkat Anda tanpa server. Privasi absolut, kecerdasan buatan lokal, dan performa instan untuk kedaulatan data pribadi.'
-    : 'Lembaran is an AES-GCM 256-bit encrypted note-taking app running fully on your device without any server. Absolute privacy, local on-device AI, and instant performance for true data sovereignty.';
+    ? '⚠️ JANGAN DEPLOY PUBLIK! Lembaran adalah manajer kredensial self-hosted yang berjalan lokal. Seperti n8n, hanya untuk pengujian internal.'
+    : '⚠️ DO NOT DEPLOY PUBLICLY! Lembaran is a self-hosted credential manager running locally. Like n8n, for internal testing only.';
 
   const keywords = isId
     ? [

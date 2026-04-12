@@ -1,6 +1,6 @@
 # Lembaran
 
-**Personal Digital Archive Vault** 🔐
+**Self-Hosted Credential Manager** 🔐
 
 [![Version](https://img.shields.io/npm/v/lembaran.svg)](https://www.npmjs.com/package/lembaran)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -10,13 +10,15 @@
 
 ![TUI Interface](docs/images/tui-mockup.png)
 
-> **Your data belongs to you.** Zero-knowledge encryption, terminal-first design, no compromises.
+> **Your credentials belong to you.** Zero-knowledge encryption, self-hosted, no cloud dependencies.
 
 ---
 
 ## Overview
 
-Lembaran is a **zero-knowledge encrypted note vault** that gives you complete control over your data. Built for developers who value privacy, it encrypts everything locally using industry-standard AES-GCM 256-bit encryption with Argon2id key derivation — meaning **nobody can read your notes, not even the developers**.
+Lembaran is a **self-hosted, zero-knowledge credential manager** that gives you complete control over your secrets. Built for developers who value privacy, it encrypts everything locally using industry-standard AES-GCM 256-bit encryption with Argon2id key derivation — meaning **nobody can read your credentials, not even the developers**.
+
+> ⚠️ **WARNING**: The web interface is for **LOCAL TESTING ONLY**. Do NOT deploy publicly as it handles unencrypted credentials in the browser.
 
 ### Key Principles
 
@@ -27,14 +29,23 @@ Lembaran is a **zero-knowledge encrypted note vault** that gives you complete co
 
 ### Why Lembaran?
 
-| Feature | Lembaran | Typical Note Apps |
-|---------|----------|-------------------|
+| Feature | Lembaran | Typical Credential Managers |
+|---------|----------|---------------------------|
 | Encryption | AES-GCM 256 + Argon2id | Proprietary or none |
 | Data Location | Your device only | Cloud servers |
 | Knowledge Model | Zero-knowledge | Full access |
 | Terminal Support | ✅ Native TUI | ❌ Rarely |
 | Open Source | ✅ MIT | ❌ Usually closed |
 | Offline | ✅ Fully functional | ❌ Often limited |
+| Self-Hosted | ✅ Like n8n | ⚠️ Some require cloud |
+
+### What Can You Store?
+
+- 🔑 **API Keys** (OpenAI, Stripe, AWS, etc.)
+- 🔐 **Passwords** (database, admin panels, etc.)
+- 🌐 **Environment Variables** (.env files per project)
+- 🎫 **Tokens** (JWT, OAuth, session tokens)
+- 📝 **Secret Notes** (recovery codes, seed phrases, etc.)
 
 ---
 
@@ -56,15 +67,23 @@ npm install -g @lembaranz/cli
 ### First Use
 
 ```bash
+#  NEW USER? Start here (interactive wizard):
+lembaran setup
+
 # Launch interactive TUI
 lembaran launch
 
-# Create your first note
-lembaran write
+# Store your first credential
+lembaran config save myproject
 
-# Manage project environments (.env files)
-lembaran config
+# Load credentials to current project
+lembaran config load myproject
+
+# List stored credentials
+lembaran config list
 ```
+
+> 💡 **Prefer GUI?** Run `lembaran setup` for a step-by-step wizard, or see `docs/BEGINNERS_GUIDE.md` for a visual guide.
 
 ---
 
@@ -75,28 +94,28 @@ lembaran config
 - **Argon2id key derivation** — Memory-hard, GPU/ASIC resistant
 - **Auto-lock** — Locks after 60 seconds of inactivity
 - **Panic key** — Emergency wipe with a special password
-- **Integrity hashing** — Tamper detection on every note
-- **Recovery mnemonic** — 12-word BIP39-style backup phrase
+- **Integrity hashing** — Tamper detection on every credential
+- **12-word recovery mnemonic** — BIP39-style backup phrase (like crypto wallets)
 
 ### 📝 CLI Commands
 ```bash
-lembaran launch    # Interactive TUI dashboard
-lembaran write     # Create or edit notes
-lembaran config    # Manage .env project profiles
-lembaran import    # Import markdown files or restore backups
-lembaran search    # Search through encrypted notes
-lembaran export    # Export encrypted backup
-lembaran browse    # Browse notes by tags
-lembaran monitor   # Monitor vault status
-lembaran security  # Security settings
-lembaran settings  # Application settings
+lembaran launch           # Interactive TUI dashboard
+lembaran config save      # Store .env/credentials to vault
+lembaran config load      # Load credentials to project
+lembaran config list      # List stored credential profiles
+lembaran run              # Run command with injected credentials
+lembaran settings         # Manage individual env vars locally
+lembaran security         # Security dashboard
+lembaran browse           # Search credentials by tags
 ```
 
-### 🌐 Web Interface
-- Landing page with documentation (lembaran.id)
-- Full note management with rich text editor
+### 🌐 Web Interface (LOCAL ONLY)
+> ⚠️ **WARNING**: Do NOT deploy the web interface publicly. It's for local testing only.
+
+- Landing page with documentation
+- Basic credential management (like n8n self-hosted)
 - Multi-language support (English, Indonesian)
-- **Note: Web is for documentation & showcase. Vault operations run in CLI/TUI.**
+- **Runs on localhost only** - no public deployment
 
 ---
 
