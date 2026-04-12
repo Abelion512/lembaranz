@@ -1,7 +1,7 @@
 import { argon2id } from '@noble/hashes/argon2.js';
 
 /**
- * Brankas Engine: Web Crypto API & Argon2id implementation
+ * Vault Engine: Web Crypto API & Argon2id implementation
  * Standards: AES-GCM 256-bit, Argon2id (Pure JS)
  *
  * Version 3.4.0 Updates:
@@ -10,15 +10,15 @@ import { argon2id } from '@noble/hashes/argon2.js';
  */
 
 /**
- * Hasil: Standar pengembalian data untuk operasi Brankas.
- * Mencegah manipulasi error yang tidak terduga (crash).
+ * Result: Standard data return type for Vault operations.
+ * Prevents unexpected error manipulation (crash).
  */
-export type Hasil<T> = { data: T; error: null } | { data: null; error: Error };
+export type Result<T> = { data: T; error: null } | { data: null; error: Error };
 
 const ALGO_ENC = 'AES-GCM';
 const MAX_CACHE_ITEMS = 100;
 
-export class Brankas {
+export class Vault {
     private static key: CryptoKey | null = null;
 
     /**
@@ -28,9 +28,9 @@ export class Brankas {
     private static decryptionCache = new Map<string, string>();
 
     /**
-     * @param extractable Apakah kunci dapat diekspor (diperlukan untuk backup)
+     * @param extractable Whether the key can be exported (required for backup)
      */
-    static async deriveKey(password: string, salt: Uint8Array, extractable = false): Promise<Hasil<CryptoKey>> {
+    static async deriveKey(password: string, salt: Uint8Array, extractable = false): Promise<Result<CryptoKey>> {
         const passwordBuffer = new TextEncoder().encode(password);
         let hash: Uint8Array | null = null;
 
@@ -51,7 +51,7 @@ export class Brankas {
             );
             return { data: key, error: null };
         } catch (error) {
-            console.error('[BRANKAS] Gagal menurunkan kunci (ERR_DRV_001)');
+            console.error('[VAULT] Gagal menurunkan kunci (ERR_DRV_001)');
             return { data: null, error: error instanceof Error ? error : new Error(String(error)) };
         } finally {
             passwordBuffer.fill(0);
@@ -64,7 +64,7 @@ export class Brankas {
     /**
      * Generates a random 256-bit AES-GCM master key.
      */
-    static async generateMasterKey(): Promise<Hasil<CryptoKey>> {
+    static async generateMasterKey(): Promise<Result<CryptoKey>> {
         try {
             const key = await crypto.subtle.generateKey(
                 { name: ALGO_ENC, length: 256 },
@@ -80,7 +80,7 @@ export class Brankas {
     /**
      * Imports a key from raw bytes.
      */
-    static async importRawKey(keyBuffer: ArrayBuffer, extractable = true): Promise<Hasil<CryptoKey>> {
+    static async importRawKey(keyBuffer: ArrayBuffer, extractable = true): Promise<Result<CryptoKey>> {
         try {
             const key = await crypto.subtle.importKey(
                 'raw',
@@ -98,7 +98,7 @@ export class Brankas {
     /**
      * Exports a key to raw bytes.
      */
-    static async exportRawKey(key: CryptoKey): Promise<Hasil<ArrayBuffer>> {
+    static async exportRawKey(key: CryptoKey): Promise<Result<ArrayBuffer>> {
         try {
             const buffer = await crypto.subtle.exportKey('raw', key);
             return { data: buffer, error: null };
@@ -128,9 +128,9 @@ export class Brankas {
     /**
      * Mengenkripsi teks string
      */
-    static async encrypt(text: string, customKey?: CryptoKey): Promise<Hasil<{ data: ArrayBuffer; iv: Uint8Array }>> {
+    static async encrypt(text: string, customKey?: CryptoKey): Promise<Result<{ data: ArrayBuffer; iv: Uint8Array }>> {
         const key = customKey || this.key;
-        if (!key) return { data: null, error: new Error('Brankas Terkunci: Kunci tidak aktif') };
+        if (!key) return { data: null, error: new Error('Vault Locked: Key not active') };
 
         try {
             const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -151,9 +151,9 @@ export class Brankas {
     /**
      * Mendekripsi ArrayBuffer kembali ke string
      */
-    static async decrypt(encryptedData: ArrayBuffer, iv: Uint8Array, customKey?: CryptoKey): Promise<Hasil<string>> {
+    static async decrypt(encryptedData: ArrayBuffer, iv: Uint8Array, customKey?: CryptoKey): Promise<Result<string>> {
         const key = customKey || this.key;
-        if (!key) return { data: null, error: new Error('Brankas Terkunci: Kunci tidak aktif') };
+        if (!key) return { data: null, error: new Error('Vault Locked: Key not active') };
 
         try {
             const decrypted = await crypto.subtle.decrypt(
@@ -169,7 +169,7 @@ export class Brankas {
         }
     }
 
-    static async encryptPacked(text: string, customKey?: CryptoKey): Promise<Hasil<string>> {
+    static async encryptPacked(text: string, customKey?: CryptoKey): Promise<Result<string>> {
         const result = await this.encrypt(text, customKey);
         if (result.error) return { data: null, error: result.error };
 
@@ -190,7 +190,7 @@ export class Brankas {
         return bytes;
     }
 
-    static async decryptPacked(packed: string, customKey?: CryptoKey): Promise<Hasil<string>> {
+    static async decryptPacked(packed: string, customKey?: CryptoKey): Promise<Result<string>> {
         if (!packed || !packed.includes('|')) return { data: packed, error: null };
 
         if (!customKey && this.decryptionCache.has(packed)) {
@@ -233,7 +233,7 @@ export class Brankas {
      * Enkripsi Portabel (Quantum-Resistant Symmetric Structure)
      * Format: [Magic:4][Ver:1][Salt:32][IV:12][Ciphertext:N]
      */
-    static async encryptPortable(data: string, password: string): Promise<Hasil<Uint8Array>> {
+    static async encryptPortable(data: string, password: string): Promise<Result<Uint8Array>> {
         try {
             const salt = crypto.getRandomValues(new Uint8Array(32));
             const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -280,7 +280,7 @@ export class Brankas {
         }
     }
 
-    static async decryptPortable(buffer: Uint8Array, password: string): Promise<Hasil<string>> {
+    static async decryptPortable(buffer: Uint8Array, password: string): Promise<Result<string>> {
         try {
             if (buffer.length < 50) return { data: null, error: new Error('Berkas terlalu kecil atau rusak') };
 

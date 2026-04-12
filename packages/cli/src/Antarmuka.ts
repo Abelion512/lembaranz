@@ -1,4 +1,4 @@
-import { Arsip, Laras, Pujangga, KonteksLaras, Brankas } from '@lembaranz/core';
+import { Archive, Context, VaultContext, Vault } from '@lembaranz/core';
 import pc from 'picocolors';
 import prompts from 'prompts';
 import fs from 'node:fs/promises';
@@ -21,9 +21,9 @@ export class Antarmuka {
         process.on('SIGTERM', () => { cleanup(); process.exit(0); });
     }
 
-    static async jalankan(konteksAwal?: KonteksLaras) {
+    static async jalankan(konteksAwal?: VaultContext) {
         this.enterTUI();
-        const konteks: KonteksLaras = konteksAwal || await Laras.deteksiKonteksOtomatis();
+        const konteks: VaultContext = konteksAwal || await Context.detectContextAuto();
 
         while (true) {
             try {
@@ -33,9 +33,9 @@ export class Antarmuka {
                 console.log(pc.dim('Brankas Aksara Personal yang Berdikari'));
                 console.log(pc.dim('Ketik "bantuan" untuk daftar perintah atau "keluar" untuk berhenti.\n'));
 
-                const isInit = await Arsip.isVaultInitialized();
+                const isInit = await Archive.isVaultInitialized();
                 if (!isInit) {
-                    await this.inisialisasiBrankas();
+                    await this.initializeVault();
                     continue;
                 }
 
@@ -123,7 +123,7 @@ export class Antarmuka {
         console.log(`  ${pc.blue('keluar')}    - Keluar dari aplikasi\n`);
     }
 
-    private static async inisialisasiBrankas() {
+    private static async initializeVault() {
         console.log(pc.yellow('⚠ Brankas belum terinisialisasi.'));
         console.log(pc.dim('Brankas diperlukan untuk menyimpan catatan Anda secara terenkripsi.'));
 
@@ -145,8 +145,8 @@ export class Antarmuka {
         }
 
         console.log(pc.dim('Sedang menyiapkan brankas (membangun kunci Argon2id)...'));
-        const setupRes = await Arsip.setupVault(res.pw);
-        
+        const setupRes = await Archive.setupVault(res.pw);
+
         if (setupRes.error) {
             console.log(pc.red(`❌ Gagal menyiapkan brankas: ${setupRes.error.message}`));
             await new Promise(r => setTimeout(r, 3000));
@@ -159,15 +159,15 @@ export class Antarmuka {
     }
 
     private static async unlock(): Promise<boolean> {
-        if (!Brankas.isLocked()) return true;
+        if (!Vault.isLocked()) return true;
         const res = await prompts({
             type: 'password',
             name: 'pw',
             message: 'Masukkan kata sandi brankas:'
         });
         if (res.pw === undefined || !res.pw) return false;
-        
-        const unlockRes = await Arsip.unlockVault(res.pw);
+
+        const unlockRes = await Archive.unlockVault(res.pw);
         if (unlockRes.error) {
             console.log(pc.red(`❌ Gagal membuka brankas: ${unlockRes.error.message}`));
             await new Promise(r => setTimeout(r, 2000));
@@ -237,18 +237,18 @@ export class Antarmuka {
         }
     }
 
-    static async aksiPantau(konteksAwal?: KonteksLaras) {
-        const konteks: KonteksLaras = konteksAwal || await Laras.deteksiKonteksOtomatis();
+    static async aksiPantau(konteksAwal?: VaultContext) {
+        const konteks: VaultContext = konteksAwal || await Context.detectContextAuto();
         console.log(pc.bold(`\n📊 STATUS SISTEM [${konteks.toUpperCase()}]:`));
-        if (Brankas.isLocked()) {
+        if (Vault.isLocked()) {
             console.log(pc.yellow('🔒 Brankas Terkunci. Buka untuk melihat statistik lengkap.'));
         }
-        const stats = await Arsip.getStats();
+        const stats = await Archive.getStats();
         console.log(pc.green('✅ Database: Aktif'));
         console.log(pc.blue(`📂 Total Catatan: ${stats.notes}`));
         console.log(pc.magenta(`📁 Total Folder: ${stats.folders}`));
 
-        const env = Laras.bacaEnv();
+        const env = Context.readEnv();
         const envKeys = Object.keys(env);
         if (envKeys.length > 0) {
             console.log(pc.cyan(`\n🌱 Pelataran (.env) terdeteksi (${envKeys.length} entri):`));
@@ -268,7 +268,7 @@ export class Antarmuka {
             q = queryRes.q;
         }
 
-        const notesRes = await Arsip.getAllNotes();
+        const notesRes = await Archive.getAllNotes();
         if (notesRes.error) {
             console.log(pc.red(`❌ Gagal memuat catatan: ${notesRes.error.message}`));
             return;
@@ -292,7 +292,7 @@ export class Antarmuka {
                 choices: notes.map(n => ({ title: n.title, value: n.id }))
             });
             if (select.noteId) {
-                const nRes = await Arsip.getNoteById(select.noteId);
+                const nRes = await Archive.getNoteById(select.noteId);
                 if (nRes.error) {
                     console.log(pc.red(`❌ Gagal membuka catatan: ${nRes.error.message}`));
                     return;
@@ -311,7 +311,7 @@ export class Antarmuka {
         if (!(await this.unlock())) return;
 
         if (id) {
-            const nRes = await Arsip.getNoteById(id);
+            const nRes = await Archive.getNoteById(id);
             if (nRes.error) {
                 console.log(pc.red(`❌ Gagal mengambil catatan: ${nRes.error.message}`));
                 return;
@@ -330,7 +330,7 @@ export class Antarmuka {
                 multiline: true
             });
             if (res.konten !== undefined) {
-                const saveRes = await Arsip.saveNote({ ...note, content: res.konten });
+                const saveRes = await Archive.saveNote({ ...note, content: res.konten });
                 if (saveRes.error) {
                     console.log(pc.red(`❌ Gagal memperbarui catatan: ${saveRes.error.message}`));
                 } else {
@@ -349,7 +349,7 @@ export class Antarmuka {
                 }
             ]);
             if (res.konten !== undefined) {
-                const saveRes = await Arsip.saveNote({
+                const saveRes = await Archive.saveNote({
                     id: '',
                     title: res.judul || 'Tanpa Judul',
                     content: res.konten,
@@ -390,7 +390,7 @@ export class Antarmuka {
                 if (!(await this.unlock())) return;
                 for (const file of select.targets) {
                     const content = await fs.readFile(file, 'utf8');
-                    const saveRes = await Arsip.saveNote({
+                    const saveRes = await Archive.saveNote({
                         id: '',
                         title: file,
                         content,
@@ -415,15 +415,15 @@ export class Antarmuka {
     static async aksiPetik() {
         if (!(await this.unlock())) return;
         console.log(pc.magenta('\n📦 Memetik Brankas (Export)'));
-        
-        const notesRes = await Arsip.getAllNotes();
+
+        const notesRes = await Archive.getAllNotes();
         if (notesRes.error) {
             console.log(pc.red(`❌ Gagal mengambil data: ${notesRes.error.message}`));
             return;
         }
 
         const data = JSON.stringify(notesRes.data);
-        const encRes = await Brankas.encryptPacked(data);
+        const encRes = await Vault.encryptPacked(data);
         if (encRes.error) {
             console.log(pc.red(`❌ Gagal melakukan enkripsi ekspor: ${encRes.error.message}`));
             return;
@@ -446,7 +446,7 @@ export class Antarmuka {
         ]);
 
         if (res.password) {
-            const saveRes = await Arsip.saveNote({
+            const saveRes = await Archive.saveNote({
                 id: '',
                 title: `🛡️ ${res.label}`,
                 content: `Kredensial untuk ${res.label}`,
@@ -481,7 +481,7 @@ export class Antarmuka {
         console.log(pc.bold(pc.green('\n🛡️ LAPORAN PRIVASI & AUDIT TRANSPARANSI')));
         console.log(pc.dim('Melihat aktivitas pemrosesan data oleh Sentinel...\n'));
         const { AuditLog } = await import('@lembaranz/core');
-        const log = await AuditLog.bacaLog();
+        const log = await AuditLog.readLog();
         console.log(log);
         console.log(pc.dim('\nKetik apa saja untuk kembali...'));
         await prompts({ type: 'text', name: 'any', message: '' });
@@ -501,7 +501,7 @@ export class Antarmuka {
         });
 
         if (aiSel.provider) {
-            Pujangga.setProvider(aiSel.provider);
+            Poet.setProvider(aiSel.provider);
         }
 
         const res = await prompts({
@@ -522,7 +522,7 @@ export class Antarmuka {
         if (!(await this.unlock())) return;
 
         console.log(pc.yellow('\n🌱 Mengimpor Kredensial dari .env'));
-        const env = await Laras.bacaEnv();
+        const env = await Context.readEnv();
         const keys = Object.keys(env);
 
         if (keys.length === 0) {
@@ -540,7 +540,7 @@ export class Antarmuka {
         if (sel.target && sel.target.length > 0) {
             console.log(pc.dim('Sedang menanam kredensial...'));
             for (const key of sel.target) {
-                const saveRes = await Arsip.saveNote({
+                const saveRes = await Archive.saveNote({
                     id: '',
                     title: `🛡️ ENV: ${key}`,
                     content: `Variabel lingkungan otomatis dari .env`,

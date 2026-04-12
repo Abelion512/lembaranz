@@ -20,10 +20,10 @@ const getAdapter = async (): Promise<StorageAdapter> => {
 // Re-export Schema for other consumers
 export type { LembaranSchema };
 
-export const Gudang = {
-    async inisialisasi(customPath?: string) {
+export const Storage = {
+    async initialize(customPath?: string) {
         if (process.env.DEBUG === 'true') {
-            if (process.env.DEBUG === 'true') console.log(`[GUDANG] Inisialisasi: ${customPath || 'default'}`);
+            console.log(`[STORAGE] Initialize: ${customPath || 'default'}`);
         }
         if (typeof window === 'undefined') {
             const { FileAdapter } = await import('./storage/FileAdapter');

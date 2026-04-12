@@ -1,6 +1,6 @@
 'use server';
 
-import { Linguis } from '@lembaranz/core';
+import { Linguist } from '@lembaranz/core';
 
 // Simple in-memory cache for UI strings to avoid excessive API calls
 const cacheUI: Record<string, string> = {};
@@ -12,15 +12,15 @@ export async function ambilTerjemahan(teks: string, targetLang: 'id' | 'en'): Pr
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
-        if (process.env.NODE_ENV === 'development') console.warn('[Linguis] API Key tidak ditemukan (ERR_LNG_001)');
+        if (process.env.NODE_ENV === 'development') console.warn('[Linguist] API Key not found (ERR_LNG_001)');
         return teks;
     }
 
     const cacheKey = `${targetLang}:${teks}`;
     if (cacheUI[cacheKey]) return cacheUI[cacheKey];
 
-    const engine = new Linguis(apiKey);
-    const result = await engine.terjemahkanTeks(teks, targetLang);
+    const engine = new Linguist(apiKey);
+    const result = await engine.translateText(teks, targetLang);
 
     cacheUI[cacheKey] = result;
     return result;
@@ -34,6 +34,6 @@ export async function ambilTerjemahanDokumen(markdown: string, targetLang: 'id' 
 
     if (!apiKey) return markdown;
 
-    const engine = new Linguis(apiKey);
-    return await engine.terjemahkanDokumen(markdown, targetLang);
+    const engine = new Linguist(apiKey);
+    return await engine.translateDocument(markdown, targetLang);
 }

@@ -1,4 +1,4 @@
-import { Note, Folder, AppSettings, UserProfile } from '../Rumus';
+import { Note, Folder, AppSettings, UserProfile } from '../Formula';
 import { DBSchema } from 'idb';
 
 export interface LembaranSchema extends DBSchema {

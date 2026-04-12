@@ -1,17 +1,17 @@
 /**
- * Integritas Module: Handles data hashing for integrity checks.
+ * Integrity Module: Handles data hashing for integrity checks.
  * Follows Data Integrity Policy: Excludes metadata (_hash, _timestamp) during calculation.
  */
 
 const encoder = new TextEncoder();
 
-export const Integritas = {
+export const Integrity = {
     /**
      * Calculates a SHA-256 hash of an object for integrity verification.
      * Metadata fields are stripped before calculation using a replacer function.
      * This is more efficient than cloning and deleting keys.
      */
-    async hitungHash(data: unknown): Promise<string> {
+    async computeHash(data: unknown): Promise<string> {
         // Exclude transient metadata per policy using JSON.stringify replacer
         const text = JSON.stringify(data, (key, value) => {
             if (key === '_hash' || key === '_timestamp' || key === 'updatedAt') {

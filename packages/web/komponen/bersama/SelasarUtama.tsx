@@ -7,7 +7,7 @@ import {
     Home, Search, User, Settings,
     ShieldCheck, LayoutGrid, FileText, CheckSquare
 } from 'lucide-react';
-import { haptic } from '@lembaranz/core/Indera';
+import { haptic } from '@lembaranz/core/Senses';
 
 export const SelasarUtama = () => {
     const pathname = usePathname();

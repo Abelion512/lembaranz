@@ -1,7 +1,7 @@
 {
   "name": "@lembaranz/cli",
   "version": "1.0.1",
-  "description": "Lembaran CLI - Brankas Aksara Personal yang Berdikari",
+  "description": "Lembaran CLI - Personal encrypted note vault with terminal interface",
   "author": "Abelion Lavv <agen.salva@gmail.com>",
   "license": "MIT",
   "private": false,
@@ -17,7 +17,9 @@
     "cli",
     "privacy",
     "local-first",
-    "indonesia"
+    "zero-knowledge",
+    "terminal",
+    "tui"
   ],
   "homepage": "https://github.com/Abelion512/lembaran#readme",
   "bugs": {

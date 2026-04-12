@@ -1,6 +1,6 @@
 /**
- * Kalender.ts
- * Utilitas untuk memproses tanggal puitis dan cerdas.
+ * Calendar.ts
+ * Utilities for processing poetic and smart dates.
  */
 
 export const parseSmartDate = (text: string): Date | null => {
@@ -50,7 +50,7 @@ export const parseSmartDate = (text: string): Date | null => {
     return null;
 };
 
-export const formatArsipDate = (date: Date): string => {
+export const formatArchiveDate = (date: Date): string => {
     return date.toLocaleDateString('id-ID', {
         day: 'numeric',
         month: 'long',

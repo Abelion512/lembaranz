@@ -1,11 +1,11 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { PujanggaProvider, PujanggaPlan } from './types';
+import { PoetProvider, PoetPlan } from './types';
 
-export class GeminiProvider implements PujanggaProvider {
+export class GeminiProvider implements PoetProvider {
     id = 'gemini';
     name = 'Google Gemini';
 
-    async berpikir(konteks: string, instruksi: string): Promise<PujanggaPlan> {
+    async think(context: string, instruction: string): Promise<PoetPlan> {
         const apiKey = process.env.GEMINI_API_KEY;
         if (!apiKey) throw new Error('GEMINI_API_KEY tidak ditemukan.');
 
@@ -14,10 +14,10 @@ export class GeminiProvider implements PujanggaProvider {
 
         const prompt = `
 KONTEKS:
-${konteks}
+${context}
 
 INSTRUKSI:
-${instruksi}
+${instruction}
 
 Kembalikan ONLY JSON valid:
 {

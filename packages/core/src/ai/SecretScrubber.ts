@@ -1,8 +1,8 @@
 /**
- * PenyaringRahasia (Secret Scrubber)
- * Membersihkan data sensitif (API Keys, Passwords, Tokens) sebelum dikirim ke AI.
+ * SecretScrubber
+ * Cleans sensitive data (API Keys, Passwords, Tokens) before sending to AI.
  */
-export class PenyaringRahasia {
+export class SecretScrubber {
     private static readonly REGEX_PATTERNS = [
         /(?:api_key|secret|password|token|pwd|kunci|sandi|rahasia)\s*[:=]\s*["']?([^"'\s,|}]+)["']?/gi,
         /(?:AI[a-zA-Z0-9_-]{32,})/g,
@@ -13,19 +13,19 @@ export class PenyaringRahasia {
     ];
 
     /**
-     * Menyaring teks dari rahasia yang terdeteksi.
+     * Scrubs text of detected secrets.
      */
-    static saring(konten: string): string {
-        if (!konten) return konten;
-        let hasil = konten;
+    static scrub(content: string): string {
+        if (!content) return content;
+        let result = content;
         for (const pattern of this.REGEX_PATTERNS) {
-            hasil = hasil.replace(pattern, (match, p1) => {
+            result = result.replace(pattern, (match, p1) => {
                 if (p1) {
-                    return match.replace(p1, '[RAHASIA_TERLINDUNGI]');
+                    return match.replace(p1, '[SECRET_PROTECTED]');
                 }
-                return '[RAHASIA_TERLINDUNGI]';
+                return '[SECRET_PROTECTED]';
             });
         }
-        return hasil;
+        return result;
     }
 }

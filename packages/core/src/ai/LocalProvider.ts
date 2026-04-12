@@ -1,42 +1,42 @@
-import { PujanggaProvider, PujanggaPlan } from './types';
+import { PoetProvider, PoetPlan } from './types';
 
 /**
  * LocalProvider (Hardened)
- * Menjalankan logika otonom dasar secara OFFLINE tanpa bantuan AI eksternal.
- * Menjamin 100% kedaulatan data.
+ * Runs basic offline logic autonomously WITHOUT external AI assistance.
+ * Guarantees 100% data sovereignty.
  */
-export class LocalProvider implements PujanggaProvider {
+export class LocalProvider implements PoetProvider {
     id = 'local';
-    name = 'Logika Lokal (Berdikari)';
+    name = 'Local Logic (Sovereign)';
 
-    async berpikir(konteks: string, instruksi: string): Promise<PujanggaPlan> {
-        const cleanKonteks = konteks.toLowerCase();
-        const cleanInstruksi = instruksi.toLowerCase();
+    async think(context: string, instruction: string): Promise<PoetPlan> {
+        const cleanContext = context.toLowerCase();
+        const cleanInstruction = instruction.toLowerCase();
 
-        // Aturan Heuristik untuk Tugas Umum
-        if (cleanKonteks.includes('audit') || cleanInstruksi.includes('keamanan') || cleanInstruksi.includes('periksa')) {
+        // Heuristic rules for common tasks
+        if (cleanContext.includes('audit') || cleanInstruction.includes('keamanan') || cleanInstruction.includes('periksa')) {
             return {
-                keputusan: 'Melakukan pemindaian integritas dan keamanan lokal.',
-                alasan: 'Mode Berdikari aktif. Menjalankan skrip audit keamanan internal.',
-                perintah_sistem: null, // Bisa diisi dengan skrip audit jika tersedia
-                catatan_internal: 'Sentinel mengamankan pelataran dari kebocoran rahasia secara offline.'
+                decision: 'Running integrity and security scan.',
+                reason: 'Sovereign mode active. Running internal security audit script.',
+                system_command: null,
+                internal_note: 'Sentinel secures the courtyard from secret leaks offline.'
             };
         }
 
-        if (cleanInstruksi.includes('statistik') || cleanInstruksi.includes('lapor')) {
+        if (cleanInstruction.includes('statistik') || cleanInstruction.includes('lapor')) {
             return {
-                keputusan: 'Menyusun laporan statistik brankas.',
-                alasan: 'Analisis metadata lokal.',
-                perintah_sistem: 'lembaran pantau',
-                catatan_internal: 'Menampilkan ringkasan kesehatan sistem kepada pengguna.'
+                decision: 'Compiling vault statistics report.',
+                reason: 'Local metadata analysis.',
+                system_command: 'lembaran monitor',
+                internal_note: 'Displaying system health summary to user.'
             };
         }
 
         return {
-            keputusan: 'Tugas tertunda atau diproses secara manual.',
-            alasan: 'Mode Berdikari membatasi eksekusi otonom demi keamanan maksimal.',
-            perintah_sistem: null,
-            catatan_internal: 'Gunakan mode Gemini jika memerlukan analisis kecerdasan buatan yang mendalam.'
+            decision: 'Task pending or processed manually.',
+            reason: 'Sovereign mode limits autonomous execution for maximum security.',
+            system_command: null,
+            internal_note: 'Use Gemini mode if you need deeper AI analysis.'
         };
     }
 }

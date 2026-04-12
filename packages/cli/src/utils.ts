@@ -1,4 +1,4 @@
-import { Laras, Gudang, Pujangga, KonteksLaras, Arsip } from '@lembaranz/core';
+import { Context, Storage, Poet, VaultContext, Archive } from '@lembaranz/core';
 import prompts from 'prompts';
 
 export interface OpsiGlobal {
@@ -7,43 +7,55 @@ export interface OpsiGlobal {
   ai?: string;
 }
 
-export const siapkanKonteks = async (opts: OpsiGlobal): Promise<KonteksLaras> => {
-  let konteks: KonteksLaras;
+export const prepareContext = async (opts: OpsiGlobal): Promise<VaultContext> => {
+  let context: VaultContext;
 
-  if (opts.saku) konteks = 'saku';
-  else if (opts.pelataran) konteks = 'pelataran';
-  else konteks = await Laras.deteksiKonteksOtomatis();
+  if (opts.saku) context = 'saku';
+  else if (opts.pelataran) context = 'pelataran';
+  else context = await Context.detectContextAuto();
 
   if (opts.ai && opts.ai !== 'none') {
-    Pujangga.setProvider(opts.ai as 'gemini' | 'none');
+    Poet.setProvider(opts.ai as 'gemini' | 'none');
   }
 
-  const jalur = await Laras.temukanJalur(konteks);
-  await Gudang.inisialisasi(jalur);
-  return konteks;
+  const path = await Context.resolvePath(context);
+  await Storage.initialize(path);
+  return context;
 };
 
-export const bukaBrankasCLI = async (): Promise<boolean> => {
+// Aliases for backward compatibility
+export const siapkanKonteks = prepareContext;
+
+export const openVaultCLI = async (): Promise<boolean> => {
   const res = await prompts({
     type: 'password',
     name: 'pw',
-    message: 'Masukkan kata sandi brankas:'
+    message: 'Enter vault password:'
   });
   if (!res.pw) return false;
-  
-  const hasil = await Arsip.unlockVault(res.pw);
+
+  const hasil = await Archive.unlockVault(res.pw);
   if (hasil.error) {
-    console.log(`❌ Gagal membuka brankas: ${hasil.error.message}`);
+    console.log(`Failed to open vault: ${hasil.error.message}`);
     return false;
   }
   return !!hasil.data;
 };
 
-export const masukLayarTUI = () => {
+// Alias for backward compatibility
+export const bukaBrankasCLI = openVaultCLI;
+
+export const enterTUIScreen = () => {
   process.stdout.write('\x1b[?1049h');
   process.stdout.write('\x1b[2J\x1b[H');
 };
 
-export const keluarLayarTUI = () => {
+// Aliases for backward compatibility
+export const masukLayarTUI = enterTUIScreen;
+
+export const exitTUIScreen = () => {
   process.stdout.write('\x1b[?1049l');
 };
+
+// Alias for backward compatibility
+export const keluarLayarTUI = exitTUIScreen;

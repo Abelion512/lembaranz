@@ -1,12 +1,12 @@
-import { Hasil } from './Brankas';
+import { Result } from './Vault';
 
-export type KonteksLaras = 'saku' | 'pelataran';
+export type VaultContext = 'saku' | 'pelataran';
 
 /**
- * Laras: Context and Path Resolver.
+ * Context: Context and Path Resolver.
  * Decoupled from Node.js top-level imports to support browser bundles.
  */
-export class Laras {
+export class Context {
     private static readonly SAKU_FILE = 'saku.json';
     private static readonly PELATARAN_DIR = '.lembaran';
     private static readonly PELATARAN_FILE = 'pelataran.json';
@@ -28,7 +28,7 @@ export class Laras {
      * Resolves the absolute path for the given context.
      * Works only in Node.js environment.
      */
-    static async temukanJalur(konteks: KonteksLaras): Promise<string> {
+    static async resolvePath(context: VaultContext): Promise<string> {
         if (typeof window !== 'undefined') return '';
 
         try {
@@ -40,13 +40,13 @@ export class Laras {
             const SAKU_DIR = path.join(os.homedir(), '.lembaran');
 
             let jalur: string;
-            if (konteks === 'saku') {
+            if (context === 'saku') {
                 if (!(await this.berkasAda(SAKU_DIR))) {
                     await fs.mkdir(SAKU_DIR, { recursive: true });
                 }
                 jalur = path.join(SAKU_DIR, this.SAKU_FILE);
             } else {
-                const root = (await this.temukanAkarProyek()) || process.cwd();
+                const root = (await this.findProjectRoot()) || process.cwd();
                 const localDir = path.join(root, this.PELATARAN_DIR);
                 if (!(await this.berkasAda(localDir))) {
                     await fs.mkdir(localDir, { recursive: true });
@@ -55,11 +55,11 @@ export class Laras {
             }
 
             if (process.env.DEBUG === 'true') {
-                console.log(`[LARAS] Jalur ${konteks}: ${jalur}`);
+                console.log(`[CONTEXT] Path ${context}: ${jalur}`);
             }
             return jalur;
         } catch (err) {
-            console.error('[LARAS] Gagal menemukan jalur:', err);
+            console.error('[CONTEXT] Gagal menemukan jalur:', err);
             return '';
         }
     }
@@ -67,7 +67,7 @@ export class Laras {
     /**
      * Detects the project root. Node.js only.
      */
-    private static async temukanAkarProyek(dir: string = (typeof process !== 'undefined' ? process.cwd() : '')): Promise<string | null> {
+    private static async findProjectRoot(dir: string = (typeof process !== 'undefined' ? process.cwd() : '')): Promise<string | null> {
         if (typeof window !== 'undefined') return null;
 
         try {
@@ -90,13 +90,13 @@ export class Laras {
     /**
      * Smart context detection. Node.js only.
      */
-    static async deteksiKonteksOtomatis(): Promise<KonteksLaras> {
+    static async detectContextAuto(): Promise<VaultContext> {
         if (typeof window !== 'undefined') return 'saku';
 
         try {
             const path = await import('path');
 
-            const root = await this.temukanAkarProyek();
+            const root = await this.findProjectRoot();
             if (root && (await this.berkasAda(path.join(root, this.PELATARAN_DIR, this.PELATARAN_FILE)))) {
                 return 'pelataran';
             }
@@ -109,14 +109,14 @@ export class Laras {
     /**
      * Reads local .env. Node.js only.
      */
-    static async bacaEnv(): Promise<Record<string, string>> {
+    static async readEnv(): Promise<Record<string, string>> {
         if (typeof window !== 'undefined') return {};
 
         try {
             const path = await import('path');
             const fs = await import('node:fs/promises');
 
-            const root = await this.temukanAkarProyek();
+            const root = await this.findProjectRoot();
             if (!root) return {};
             const envPath = path.join(root, '.env');
             if (!(await this.berkasAda(envPath))) return {};
@@ -147,14 +147,14 @@ export class Laras {
     /**
      * Writes or updates a local .env variable. Node.js only.
      */
-    static async simpanEnv(key: string, value: string): Promise<Hasil<boolean>> {
+    static async writeEnv(key: string, value: string): Promise<Result<boolean>> {
         if (typeof window !== 'undefined') return { data: null, error: new Error('Bukan lingkungan Node.js') };
 
         try {
             const path = await import('path');
             const fs = await import('node:fs/promises');
 
-            const root = await this.temukanAkarProyek();
+            const root = await this.findProjectRoot();
             if (!root) return { data: null, error: new Error('Akar proyek tidak ditemukan.') };
             const envPath = path.join(root, '.env');
 

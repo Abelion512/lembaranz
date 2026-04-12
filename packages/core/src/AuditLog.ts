@@ -1,14 +1,14 @@
-import { Laras } from './Laras';
+import { Context } from './Context';
 
 /**
- * AuditLog (Laporan Privasi)
- * Mencatat semua aktivitas Sentinel dan pemrosesan AI untuk transparansi pengguna.
+ * AuditLog (Privacy Report)
+ * Records all Sentinel activity and AI processing for user transparency.
  * Decoupled from Node.js top-level imports to support browser builds.
  */
 export class AuditLog {
     private static readonly LOG_FILE = 'audit-privasi.log';
 
-    static async catat(aksi: string, data: unknown) {
+    static async log(action: string, data: unknown) {
         if (typeof window !== 'undefined') return;
 
         try {
@@ -18,25 +18,25 @@ export class AuditLog {
                 import('path')
             ]);
 
-            const sakuDir = (await Laras.temukanJalur('saku')).replace('saku.json', '');
+            const sakuDir = (await Context.resolvePath('saku')).replace('saku.json', '');
             const logPath = path.join(sakuDir, this.LOG_FILE);
 
-            const entri = {
-                waktu: new Date().toISOString(),
-                aksi,
-                sumber: 'Sentinel Sovereign',
-                data_terproses: data,
-                status_privasi: 'TERARING (SCRUBBED)'
+            const entry = {
+                timestamp: new Date().toISOString(),
+                action,
+                source: 'Sentinel Sovereign',
+                processedData: data,
+                privacyStatus: 'SCRUBBED'
             };
 
-            await fs.appendFile(logPath, JSON.stringify(entri) + '\n');
+            await fs.appendFile(logPath, JSON.stringify(entry) + '\n');
         } catch (err) {
-            console.error('Gagal mencatat log audit:', err);
+            console.error('Failed to write audit log:', err);
         }
     }
 
-    static async bacaLog(): Promise<string> {
-        if (typeof window !== 'undefined') return 'Log audit hanya tersedia di aplikasi Desktop.';
+    static async readLog(): Promise<string> {
+        if (typeof window !== 'undefined') return 'Audit log is only available in the Desktop app.';
 
         try {
             const [fs, path] = await Promise.all([
@@ -44,12 +44,12 @@ export class AuditLog {
                 import('path')
             ]);
 
-            const sakuDir = (await Laras.temukanJalur('saku')).replace('saku.json', '');
+            const sakuDir = (await Context.resolvePath('saku')).replace('saku.json', '');
             const logPath = path.join(sakuDir, this.LOG_FILE);
 
             return await fs.readFile(logPath, 'utf-8');
         } catch {
-            return 'Belum ada catatan aktivitas privasi.';
+            return 'No privacy activity recorded yet.';
         }
     }
 }

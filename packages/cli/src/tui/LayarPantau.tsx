@@ -11,7 +11,7 @@ export const LayarPantau: React.FC<LayarPantauProps> = ({ konteks, onKembali }) 
     const [memuat, setMemuat] = useState(true);
     const [stats, setStats] = useState<{ notes: number; folders: number } | null>(null);
     const [isInit, setIsInit] = useState(false);
-    const [brankasLocked, setBrankasLocked] = useState(true);
+    const [vaultLocked, setVaultLocked] = useState(true);
     const [envKeys, setEnvKeys] = useState<string[]>([]);
 
     useInput((input, key) => {
@@ -24,17 +24,17 @@ export const LayarPantau: React.FC<LayarPantauProps> = ({ konteks, onKembali }) 
         const muat = async () => {
             try {
                 // Lazy import to avoid Bun crash with node:fs modules during Ink render
-                const { Arsip, Laras } = await import('@lembaranz/core');
-                const { Brankas } = await import('@lembaranz/core');
+                const { Archive, Context } = await import('@lembaranz/core');
+                const { Vault } = await import('@lembaranz/core');
 
-                const init = await Arsip.isVaultInitialized();
+                const init = await Archive.isVaultInitialized();
                 setIsInit(init);
-                setBrankasLocked(Brankas.isLocked());
+                setVaultLocked(Vault.isLocked());
 
-                const s = await Arsip.getStats();
+                const s = await Archive.getStats();
                 setStats(s);
 
-                const env = Laras.bacaEnv();
+                const env = Context.readEnv();
                 setEnvKeys(Object.keys(env));
             } catch {
                 // Ignore errors
@@ -61,14 +61,14 @@ export const LayarPantau: React.FC<LayarPantauProps> = ({ konteks, onKembali }) 
             </Box>
 
             <Box flexDirection="column" paddingX={1} gap={0} key="status-container">
-                {/* Brankas Status */}
+                {/* Vault Status */}
                 <Box key="brankas-status" borderStyle="round" borderColor={isInit ? 'green' : 'yellow'} paddingX={1} flexDirection="column" marginBottom={1}>
-                    <Text bold>🔐 Brankas</Text>
+                    <Text bold>🔐 Vault</Text>
                     <Text color={isInit ? 'green' : 'yellow'}>
                         {isInit ? '✅ Terinisialisasi' : '⚠️ Belum Disiapkan'}
                     </Text>
-                    <Text color={brankasLocked ? 'yellow' : 'green'}>
-                        {brankasLocked ? '🔒 Terkunci' : '🔓 Terbuka'}
+                    <Text color={vaultLocked ? 'yellow' : 'green'}>
+                        {vaultLocked ? '🔒 Terkunci' : '🔓 Terbuka'}
                     </Text>
                 </Box>
 

@@ -1,15 +1,15 @@
-import { Arsip } from '../Arsip';
+import { Archive } from '../Archive';
 
 async function run() {
     const password = 'bolt-speed-test';
-    const isInitialized = await Arsip.isVaultInitialized();
+    const isInitialized = await Archive.isVaultInitialized();
 
     if (!isInitialized) {
         console.log('Initializing vault...');
-        await Arsip.setupVault(password);
+        await Archive.setupVault(password);
     } else {
         console.log('Unlocking vault...');
-        const success = await Arsip.unlockVault(password);
+        const success = await Archive.unlockVault(password);
         if (!success) {
             console.error('Failed to unlock vault. Please clear .lembaran-db.json if you forgot the password.');
             process.exit(1);
@@ -21,11 +21,11 @@ async function run() {
 
     // Use for loop for sequential injection to avoid potential race conditions in simple FileAdapter
     for (let i = 1; i <= 1000; i++) {
-        await Arsip.saveNote({
+        await Archive.saveNote({
             title: `Note Performance Test #${i}`,
             content: `Ini adalah catatan ke-${i} untuk pengujian performa Bolt ⚡.
                      Catatan ini berisi teks yang cukup panjang untuk mensimulasikan beban kerja nyata.
-                     Pujangga akan membantu membuatkan ringkasan cerdas dari konten ini.
+                     Poet will membantu membuatkan ringkasan cerdas dari konten ini.
                      Kita akan mencari kata kunci "BOLT_SPECIAL_TOKEN" di beberapa catatan.` +
                 (i === 500 || i === 999 ? ' BOLT_SPECIAL_TOKEN' : ''),
             folderId: null,

@@ -1,6 +1,6 @@
 const formatter = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short" });
 
-export const formatWaktuRelatif = (isoString: string): string => {
+export const formatRelativeTime = (isoString: string): string => {
     const date = new Date(isoString);
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);

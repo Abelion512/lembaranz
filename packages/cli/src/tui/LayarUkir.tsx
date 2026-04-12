@@ -22,8 +22,8 @@ export const LayarUkir: React.FC<LayarUkirProps> = ({ onKembali }) => {
         setStep('saving');
 
         try {
-            const { Arsip } = await import('@lembaranz/core');
-            const hasil = await Arsip.saveNote({
+            const { Archive } = await import('@lembaranz/core');
+            const hasil = await Archive.saveNote({
                 id: '',
                 title: title.trim(),
                 content: content.trim(),

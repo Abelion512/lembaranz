@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect } from 'react';
-import { usePundi } from './Pundi';
-import { Brankas } from './Brankas';
+import { useStore } from './Store';
+import { Vault } from './Vault';
 
-export const usePenyelaras = () => {
-    const isVaultLocked = usePundi(s => s.isVaultLocked);
-    const setVaultLocked = usePundi(s => s.setVaultLocked);
+export const useHarmonizer = () => {
+    const isVaultLocked = useStore(s => s.isVaultLocked);
+    const setVaultLocked = useStore(s => s.setVaultLocked);
 
     useEffect(() => {
         const channel = new BroadcastChannel('lembaran-vault-sync');
@@ -16,7 +16,7 @@ export const usePenyelaras = () => {
                 const newStatus = event.data.locked;
                 if (newStatus !== isVaultLocked) {
                     if (newStatus) {
-                        Brankas.clearKey();
+                        Vault.clearKey();
                     }
                     setVaultLocked(newStatus);
                 }

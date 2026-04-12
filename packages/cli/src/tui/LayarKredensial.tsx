@@ -17,16 +17,16 @@ export const LayarKredensial: React.FC<LayarKredensialProps> = ({ onKembali }) =
         else if (step === 'password') {
             setStep('saving');
             try {
-                const { Arsip, Brankas } = await import('@lembaranz/core');
+                const { Archive, Vault } = await import('@lembaranz/core');
 
                 // Cek apakah vault sudah dibuka
-                if (Brankas.isLocked()) {
-                    console.error('\n❌ Brankas terkunci! Silakan buka brankas terlebih dahulu dengan perintah: lembaran mulai');
+                if (Vault.isLocked()) {
+                    console.error('\n❌ Vault locked! Silakan buka brankas terlebih dahulu dengan perintah: lembaran mulai');
                     onKembali();
                     return;
                 }
 
-                await Arsip.saveNote({
+                await Archive.saveNote({
                     id: '',
                     title: `🛡️ ${data.label}`,
                     content: `Kredensial untuk ${data.label}`,

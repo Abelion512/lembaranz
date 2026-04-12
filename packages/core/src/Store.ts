@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { AppSettings, UserProfile } from './Rumus';
+import { AppSettings, UserProfile } from './Formula';
 
 export interface LembaranState {
     settings: AppSettings;
@@ -30,14 +30,14 @@ const DEFAULT_SETTINGS: AppSettings = {
 };
 
 const DEFAULT_PROFILE: UserProfile = {
-    name: 'Arsiparis',
-    bio: 'Menyusun fragmen memori dalam harmoni.',
+    name: 'Archivist',
+    bio: 'Organizing fragments of memory in harmony.',
     avatarUrl: '',
     level: 1,
     xp: 0,
 };
 
-export const usePundi = create<LembaranState>()(
+export const useStore = create<LembaranState>()(
     persist(
         (set) => ({
             settings: DEFAULT_SETTINGS,
@@ -62,7 +62,7 @@ export const usePundi = create<LembaranState>()(
                 })),
         }),
         {
-            name: 'lembaran:pundi',
+            name: 'lembaran:store',
             partialize: (state) => ({ settings: state.settings, profile: state.profile }),
         }
     )

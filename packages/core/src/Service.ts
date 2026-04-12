@@ -1,18 +1,18 @@
 /**
- * Layanan Layer: The gateway for future Backend/API communications.
+ * Service Layer: The gateway for future Backend/API communications.
  * Handles synchronization, authentication, and remote backup logic.
  * Currently stubbed for local-only operation.
  */
 
-import { Note, UserProfile } from './Rumus';
+import { Note, UserProfile } from './Formula';
 
-export const Layanan = {
+export const Service = {
     /**
      * Push a note to the remote server
      */
     async syncNote(note: Note): Promise<boolean> {
         // TODO: Implement API call to backend
-        console.log('[Layanan] Syncing note to remote...', note.id);
+        console.log('[Service] Syncing note to remote...', note.id);
         return true;
     },
 

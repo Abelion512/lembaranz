@@ -45,8 +45,8 @@ export const LayarArsip: React.FC<LayarArsipProps> = ({ onKembali, pencarianAwal
     useEffect(() => {
         const load = async () => {
             try {
-                const { Arsip } = await import('@lembaranz/core');
-                const hasil = await Arsip.getAllNotes();
+                const { Archive } = await import('@lembaranz/core');
+                const hasil = await Archive.getAllNotes();
                 if (hasil.error) {
                     // Tampilkan galat jika diperlukan, atau biarkan kosong
                     setNotes([]);

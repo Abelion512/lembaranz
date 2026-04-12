@@ -1,26 +1,26 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { usePundi } from './Pundi';
-import { Brankas } from './Brankas';
-import { audio, haptic } from './Indera';
+import { useStore } from './Store';
+import { Vault } from './Vault';
+import { audio, haptic } from './Senses';
 
 /**
- * usePenjaga: Hook untuk memantau keamanan sesi.
- * Menangani penguncian otomatis berdasarkan waktu idle (sessionTimeout)
- * dan perpindahan tab (visibilitychange).
+ * useGuardian: Hook for monitoring session security.
+ * Handles automatic locking based on idle time (sessionTimeout)
+ * and tab switching (visibilitychange).
  */
-export const usePenjaga = () => {
-    const isVaultLocked = usePundi(s => s.isVaultLocked);
-    const setVaultLocked = usePundi(s => s.setVaultLocked);
-    const settings = usePundi(s => s.settings);
-    
+export const useGuardian = () => {
+    const isVaultLocked = useStore(s => s.isVaultLocked);
+    const setVaultLocked = useStore(s => s.setVaultLocked);
+    const settings = useStore(s => s.settings);
+
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const gembokBrankas = () => {
+    const lockVault = () => {
         if (!isVaultLocked) {
-            Brankas.clearKey();
+            Vault.clearKey();
             setVaultLocked(true);
             audio.lock();
             haptic.medium();
@@ -32,10 +32,10 @@ export const usePenjaga = () => {
         if (!isVaultLocked && settings.sessionTimeout) {
             // Bersihkan timeout lama jika ada
             if (timeoutRef.current) clearTimeout(timeoutRef.current);
-            
+
             // Set timeout baru sesuai pengaturan (menit -> ms)
             timeoutRef.current = setTimeout(() => {
-                gembokBrankas();
+                lockVault();
             }, settings.sessionTimeout * 60 * 1000);
         }
 
@@ -50,8 +50,8 @@ export const usePenjaga = () => {
             if (document.visibilityState === 'hidden' && !isVaultLocked) {
                 // Beri toleransi 1 menit sebelum mengunci saat tab disembunyikan
                 hideTimeoutRef.current = setTimeout(() => {
-                    gembokBrankas();
-                }, 60000); 
+                    lockVault();
+                }, 60000);
             } else if (document.visibilityState === 'visible') {
                 // Batalkan penguncian jika user kembali sebelum 1 menit
                 if (hideTimeoutRef.current) {

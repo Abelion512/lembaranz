@@ -1,12 +1,12 @@
-export interface PujanggaPlan {
-    keputusan: string;
-    alasan: string;
-    perintah_sistem: string | null;
-    catatan_internal: string;
+export interface PoetPlan {
+    decision: string;
+    reason: string;
+    system_command: string | null;
+    internal_note: string;
 }
 
-export interface PujanggaProvider {
+export interface PoetProvider {
     id: string;
     name: string;
-    berpikir(konteks: string, instruksi: string): Promise<PujanggaPlan>;
+    think(context: string, instruction: string): Promise<PoetPlan>;
 }

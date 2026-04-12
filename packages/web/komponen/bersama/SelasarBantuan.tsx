@@ -9,7 +9,7 @@ import {
     ExternalLink, Globe,
     ChevronLeft, Layers
 } from 'lucide-react';
-import { haptic } from '@lembaranz/core/Indera';
+import { haptic } from '@lembaranz/core/Senses';
 import { usePathname } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 

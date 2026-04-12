@@ -1,7 +1,7 @@
 {
   "name": "lembaran",
   "version": "1.0.0",
-  "description": "Lembaran - Brankas Aksara Personal yang Berdikari",
+  "description": "Lembaran - Personal Digital Archive Vault with zero-knowledge encryption",
   "author": "Abelion Lavv <agen.salva@gmail.com>",
   "license": "MIT",
   "private": false,
@@ -24,8 +24,14 @@
     "encrypted",
     "privacy",
     "local-first",
-    "indonesia",
-    "zero-knowledge"
+    "zero-knowledge",
+    "encryption",
+    "aes-gcm",
+    "argon2id",
+    "cli",
+    "tui",
+    "secure",
+    "archive"
   ],
   "engines": {
     "bun": ">=1.3.0",

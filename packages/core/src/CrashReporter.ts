@@ -39,7 +39,7 @@ export class CrashReporter {
 
         this.terpasang = true;
 
-        // Log inisialisasi awal
+        // Initial initialization log
         AuditLog.catat('INFO', 'Crash Reporter Lembaran diaktifkan.').catch(() => {});
     }
 }

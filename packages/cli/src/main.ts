@@ -1,48 +1,48 @@
 #!/usr/bin/env bun
 import { program } from 'commander';
-import { registrasiPerintahEnv } from './perintah/Env.js';
-import { registrasiPerintahTanam } from './perintah/Tanam.js';
-import { registrasiPerintahPetik } from './perintah/Petik.js';
-import { registrasiPerintahPengaturan } from './perintah/Pengaturan.js';
-import { registrasiPerintahPantau } from './perintah/Pantau.js';
-import { registrasiPerintahKeamanan } from './perintah/Keamanan.js';
-import { registrasiPerintahJelajah } from './perintah/Jelajah.js';
-import { registrasiPerintahMulai, jalankanTUI } from './perintah/Mulai.js';
-import { siapkanKonteks } from './utils.js';
+import { registerConfigCommand } from './perintah/Config.js';
+import { registerImportCommand } from './perintah/Import.js';
+import { registerExportCommand } from './perintah/Export.js';
+import { registerSettingsCommand } from './perintah/Settings.js';
+import { registerMonitorCommand } from './perintah/Monitor.js';
+import { registerSecurityCommand } from './perintah/Security.js';
+import { registerBrowseCommand } from './perintah/Browse.js';
+import { registerLaunchCommand, runTUI } from './perintah/Launch.js';
+import { prepareContext } from './utils.js';
 import pkg from '../package.json' assert { type: 'json' };
 
 // Global error handling
 process.on('unhandledRejection', (reason) => {
-  console.error('\n❌ Terjadi kesalahan fatal (Rejection):', reason);
+  console.error('\nFatal error (Rejection):', reason);
 });
 process.on('uncaughtException', (error) => {
-  console.error('\n❌ Terjadi kesalahan fatal (Exception):', error);
+  console.error('\nFatal error (Exception):', error);
 });
 
 const VERSI = pkg.version;
 
 program
   .name('lembaran')
-  .description('Lembaran — CLI Pengelolaan Aksara Personal')
+  .description('Lembaran -- Personal Script Management CLI')
   .version(VERSI)
-  .option('--saku', 'Gunakan konteks brankas personal (global)')
-  .option('--pelataran', 'Gunakan konteks brankas proyek (lokal)')
-  .option('--ai <provider>', 'Pilih model AI (gemini, none)', 'none');
+  .option('--saku', 'Use personal vault context (global)')
+  .option('--pelataran', 'Use project vault context (local)')
+  .option('--ai <provider>', 'Select AI model (gemini, none)', 'none');
 
 // Register all commands
-registrasiPerintahEnv(program);
-registrasiPerintahTanam(program);
-registrasiPerintahPetik(program);
-registrasiPerintahPengaturan(program);
-registrasiPerintahPantau(program, VERSI);
-registrasiPerintahKeamanan(program);
-registrasiPerintahJelajah(program, VERSI);
-registrasiPerintahMulai(program, VERSI);
+registerConfigCommand(program);
+registerImportCommand(program);
+registerExportCommand(program);
+registerSettingsCommand(program);
+registerMonitorCommand(program, VERSI);
+registerSecurityCommand(program);
+registerBrowseCommand(program, VERSI);
+registerLaunchCommand(program, VERSI);
 
-// Default: TUI interaktif penuh
+// Default: full interactive TUI
 program.action(async () => {
-  const konteks = await siapkanKonteks(program.opts());
-  await jalankanTUI(konteks, VERSI);
+  const konteks = await prepareContext(program.opts());
+  await runTUI(konteks, VERSI);
 });
 
 program.parse(process.argv);

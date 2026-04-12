@@ -1,79 +1,80 @@
-# Lembaran Pro
+# Lembaran
 
-**Brankas Arsip Digital Personal Buatan Indonesia** 🇮🇩
+**Personal Digital Archive Vault** 🔐
 
 [![Version](https://img.shields.io/npm/v/lembaran.svg)](https://www.npmjs.com/package/lembaran)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Made in Indonesia](https://img.shields.io/badge/Made%20with%20%E2%9D%A4%EF%B8%8F-Indonesia-red)](https://github.com/Abelion512/lembaran)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org)
+[![Bun](https://img.shields.io/badge/bun-%3E%3D1.3-fbefdb)](https://bun.sh)
 
-![Mockup TUI Lembaran](docs/images/tui-mockup.png)
+![TUI Interface](docs/images/tui-mockup.png)
 
-> **Kedaulatan Data untuk Semua.** Enkripsi zero-knowledge, fokus CLI/TUI premium, tanpa gimmick. Abadikan aksara, amankan jiwa.
+> **Data Sovereignty for Everyone.** Zero-knowledge encryption, premium CLI/TUI focus, no gimmicks. Own your words, secure your thoughts.
 
-![Mockup Web Lembaran](docs/images/web-mockup.png)
+![Web Interface](docs/images/web-mockup.png)
 
 ---
 
-## 🚀 Mulai Cepat
+## 🚀 Quick Start
 
-### Instalasi (1 Baris)
+### Installation (1 Line)
 
 ```bash
-# Cara tercepat (recommended)
+# Fastest method (recommended)
 curl -sS https://lembaran.id/install.sh | bash
 
-# Atau via Bun
+# Via Bun
 bun install -g @lembaranz/cli
 
-# Atau via npm
+# Via npm
 npm install -g @lembaranz/cli
 ```
 
-### Penggunaan Pertama
+### First Use
 
 ```bash
-# Jalankan TUI interaktif
-lembaran mulai
+# Launch interactive TUI
+lembaran launch
 
-# Buat catatan pertama
-lembaran ukir
+# Create your first note
+lembaran write
 
-# Kelola environment (.env)
-lembaran laras
+# Manage project environments
+lembaran config
 ```
 
 ---
 
-## ✨ Fitur Utama
+## ✨ Features
 
-### 🔐 Brankas (Security)
-- Enkripsi AES-GCM 256-bit (standar industri)
-- Key derivation Argon2id (anti-GPU cracking)
-- Auto-lock setelah 1 menit idle
-- Panic key untuk emergency wipe
+### 🔐 Vault (Security)
+- **AES-GCM 256-bit encryption** (industry standard)
+- **Argon2id key derivation** (anti-GPU cracking)
+- **Auto-lock** after 1 minute of inactivity
+- **Panic key** for emergency data wipe
 
 ### 📝 CLI Commands
 ```bash
-lembaran mulai    # TUI interaktif
-lembaran ukir     # Buat/edit catatan
-lembaran laras    # Kelola .env projects
-lembaran tanam    # Import direktori
-lembaran cari     # Search encrypted notes
-lembaran petik    # Export catatan
+lembaran launch    # Interactive TUI
+lembaran write     # Create/edit notes
+lembaran config    # Manage .env projects
+lembaran import    # Import directories
+lembaran search    # Search encrypted notes
+lembaran export    # Export notes
 ```
 
 ### 🌐 Web (Landing & Docs)
-- Landing page informatif (lembaran.id)
-- Dokumentasi lengkap (Bahasa Indonesia)
-- Changelog terupdate (Sync via CI/CD)
-- **Fokus: Etalase & Dokumentasi** (Vault murni di CLI/TUI)
+- Informative landing page (lembaran.id)
+- Comprehensive documentation (multi-language)
+- Up-to-date changelog (Sync via CI/CD)
+- **Focus: Showcase & Documentation** (Vault is purely CLI/TUI)
 
 ---
 
-## 🛠️ Teknologi
+## 🛠️ Tech Stack
 
-| Komponen | Teknologi |
-|----------|-----------|
+| Component | Technology |
+|-----------|------------|
 | Runtime | Bun 1.3+ |
 | Language | TypeScript 5.x |
 | Encryption | @noble/ciphers (AES-GCM) |
@@ -82,85 +83,77 @@ lembaran petik    # Export catatan
 
 ---
 
-## 📦 Struktur Monorepo
+## 📦 Monorepo Structure
 
 ```
 lembaran/
-├── packages/core    # Logika enkripsi & storage
+├── packages/core    # Encryption logic & storage
 ├── packages/cli     # CLI commands & TUI
-├── packages/web     # Landing page & dokumentasi
-├── docs/            # Dokumentasi lengkap
+├── packages/web     # Landing page & documentation
+├── docs/            # Full documentation
 └── scripts/         # Helper scripts
 ```
 
 ---
 
-## 🤝 Kontribusi
+## 🤝 Contributing
 
-Kami terbuka untuk kontribusi dari developer Indonesia!
+We welcome contributions from developers worldwide!
 
-### Cara Mulai
-1. Fork repository ini
-2. Clone fork Anda: `git clone https://github.com/USERNAME_ANDA/lembaran.git`
+### Getting Started
+1. Fork this repository
+2. Clone your fork: `git clone https://github.com/YOUR_USERNAME/lembaran.git`
 3. Install dependencies: `bun install`
-4. Buat branch fitur: `git checkout -b fitur/fitur-keren`
-5. Commit perubahan: `git commit -m "feat: tambah fitur keren"`
-6. Push ke branch: `git push origin fitur/fitur-keren`
-7. Buat Pull Request
+4. Create a feature branch: `git checkout -b feature/amazing-feature`
+5. Commit changes: `git commit -m "feat: add amazing feature"`
+6. Push to branch: `git push origin feature/amazing-feature`
+7. Open a Pull Request
 
-### Panduan
-- Gunakan **Bahasa Indonesia baku** untuk komentar kode dan dokumentasi
-- Ikuti konvensi commit: `feat:`, `fix:`, `docs:`, `chore:`
-- Pastikan semua test pass: `bun run lint && bun run test`
-- Update dokumentasi jika menambah fitur baru
+### Guidelines
+- Use **English** for code comments and documentation
+- Follow conventional commits: `feat:`, `fix:`, `docs:`, `chore:`
+- Ensure all tests pass: `bun run lint && bun run test`
+- Update documentation when adding new features
 
-📖 **Dokumentasi Lengkap:** [docs/](docs/)
-
----
-
-## 📄 Lisensi
-
-Dibagikan di bawah lisensi [MIT](LICENSE) — bebas digunakan, dimodifikasi, dan didistribusikan.
+📖 **Full Documentation:** [docs/](docs/)
 
 ---
 
-## 👨‍💻 Tim Pengembang
+## 📄 License
 
-**Lead Developer:**  
+Distributed under the [MIT License](LICENSE) — free to use, modify, and distribute.
+
+---
+
+## 👨‍💻 Development Team
+
+**Lead Developer:**
 Abelion Lavv ([@Abelion512](https://github.com/Abelion512))
 
-**Kontributor:**  
-Terima kasih untuk semua kontributor open source! 🙏
+**Contributors:**
+Thank you to all open-source contributors! 🙏
 
 ---
 
-## 🇮🇩 Dibuat dengan Bangga di Indonesia
+## 📞 Contact & Support
 
-Lembaran adalah proyek open source buatan pengembang Indonesia untuk mendukung kedaulatan data lokal.
-
-> **"Data Anda adalah hak Anda. Jangan percayakan pada cloud korporat."**
-
----
-
-## 📞 Kontak & Dukungan
-
-- **GitHub Issues:** [Laporkan bug atau request fitur](https://github.com/Abelion512/lembaran/issues)
-- **Diskusi:** [Tanya jawab & diskusi umum](https://github.com/Abelion512/lembaran/discussions)
+- **GitHub Issues:** [Report bugs or request features](https://github.com/Abelion512/lembaran/issues)
+- **Discussions:** [Q&A and general discussion](https://github.com/Abelion512/lembaran/discussions)
 - **Email:** agen.salva@gmail.com
 
 ---
 
-### 🚀 Automasi Rilis (CI/CD)
+### 🚀 Automated Releases (CI/CD)
 
-Proyek ini menggunakan **Changesets** dan **GitHub Actions** untuk manajemen versi otomatis.
-1. Setiap Pull Request atau Push ke `main` akan divalidasi oleh `CI` (Lint & Build).
-2. Jika terdapat file `.changeset/*.md`, GitHub Action akan otomatis membuka Pull Request baru berjudul **"Version Packages"**.
-3. Setelah PR tersebut di-merge, sistem akan mempublikasikan paket secara otomatis ke NPM `@lembaranz`.
+This project uses **Changesets** and **GitHub Actions** for automated version management.
+1. Every Pull Request or Push to `main` is validated by `CI` (Lint & Build).
+2. If `.changeset/*.md` files exist, GitHub Actions will automatically open a **"Version Packages"** Pull Request.
+3. Once merged, the system automatically publishes packages to NPM under `@lembaranz`.
 
-**PENTING**: Anda harus menambahkan `NPM_TOKEN` (tipe Automation) ke **GitHub Repo > Settings > Secrets and variables > Actions** agar sistem publikasi dapat berjalan.
+**Important**: You must add `NPM_TOKEN` (Automation type) to **GitHub Repo > Settings > Secrets and variables > Actions** for the publishing system to work.
 
 ---
 
-**Versi:** 3.5.0 | **Status:** Production Ready | **Fokus:** CLI/TUI First
+**Version:** 3.5.0 | **Status:** Production Ready | **Focus:** CLI/TUI First
 
-Made with ❤️ in Indonesia 🇮🇩
+Made with ❤️ for data sovereignty
