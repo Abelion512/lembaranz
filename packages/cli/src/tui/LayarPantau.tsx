@@ -27,14 +27,14 @@ export const LayarPantau: React.FC<LayarPantauProps> = ({ konteks, onKembali }) 
                 const { Archive, Context } = await import('@lembaranz/core');
                 const { Vault } = await import('@lembaranz/core');
 
-                const init = await Archive.isVaultInitialized();
-                setIsInit(init);
+                const initRes = await Archive.isVaultInitialized();
+                setIsInit(!initRes.error && !!initRes.data);
                 setVaultLocked(Vault.isLocked());
 
                 const s = await Archive.getStats();
                 setStats(s);
 
-                const env = Context.readEnv();
+                const env = await Context.readEnv();
                 setEnvKeys(Object.keys(env));
             } catch {
                 // Ignore errors

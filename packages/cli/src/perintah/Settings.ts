@@ -66,17 +66,17 @@ exit 0
       await prepareContext(program.opts());
 
       if (key && value !== undefined) {
-        const hasil = await Context.simpanEnv(key, value);
+        const hasil = await Context.writeEnv(key, value);
         if (hasil.error) {
           console.error(`Failed to save: ${hasil.error.message}`);
         } else {
           console.log(`Successfully saved: ${key}=${value}`);
         }
       } else if (key) {
-        const env = await Context.bacaEnv();
+        const env = await Context.readEnv();
         console.log(`${key}=${env[key] || '(not set)'}`);
       } else {
-        const env = await Context.bacaEnv();
+        const env = await Context.readEnv();
         console.log('Local Configuration (.env):');
         Object.entries(env).forEach(([k, v]) => {
           console.log(`  ${k}=${v}`);

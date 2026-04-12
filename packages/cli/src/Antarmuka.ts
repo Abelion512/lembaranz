@@ -1,4 +1,4 @@
-import { Archive, Context, VaultContext, Vault } from '@lembaranz/core';
+import { Archive, Context, VaultContext, Vault, Poet, Result } from '@lembaranz/core';
 import pc from 'picocolors';
 import prompts from 'prompts';
 import fs from 'node:fs/promises';
@@ -33,8 +33,8 @@ export class Antarmuka {
                 console.log(pc.dim('Brankas Aksara Personal yang Berdikari'));
                 console.log(pc.dim('Ketik "bantuan" untuk daftar perintah atau "keluar" untuk berhenti.\n'));
 
-                const isInit = await Archive.isVaultInitialized();
-                if (!isInit) {
+                const isInitRes = await Archive.isVaultInitialized();
+                if (isInitRes.error || !isInitRes.data) {
                     await this.initializeVault();
                     continue;
                 }
@@ -248,7 +248,7 @@ export class Antarmuka {
         console.log(pc.blue(`📂 Total Catatan: ${stats.notes}`));
         console.log(pc.magenta(`📁 Total Folder: ${stats.folders}`));
 
-        const env = Context.readEnv();
+        const env = await Context.readEnv();
         const envKeys = Object.keys(env);
         if (envKeys.length > 0) {
             console.log(pc.cyan(`\n🌱 Pelataran (.env) terdeteksi (${envKeys.length} entri):`));
