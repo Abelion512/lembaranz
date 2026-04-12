@@ -1,44 +1,43 @@
 # syntax=docker/dockerfile:1
-FROM oven/bun:latest AS base
+FROM oven/bun:1 AS base
 
 # Install dependencies only when needed
 FROM base AS deps
 WORKDIR /app
 COPY package.json bun.lock ./
+COPY packages/web/package.json packages/web/package.json
+COPY packages/core/package.json packages/core/package.json
 RUN bun install --frozen-lockfile
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-RUN bun run build
+COPY packages/core/src ./packages/core/src
+COPY packages/core/package.json ./packages/core/package.json
+COPY packages/web ./packages/web
+RUN cd packages/web && bun run build
 
-# Production image, copy all the files and run next
+# Production image
 FROM base AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Create non-root user (Debian-based, not Alpine)
+RUN groupadd -r nodejs && useradd -r -g nodejs -u 1001 nextjs
 
-COPY --from=builder /app/packages/web/public ./public
+COPY --from=builder /app/packages/web/public ./packages/web/public
+COPY --from=builder /app/packages/web/.next/standalone ./
+COPY --from=builder /app/packages/web/.next/static ./packages/web/.next/static
 
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
-
-# Automatically leverage output traces to reduce image size
-COPY --from=builder --chown=nextjs:nodejs /app/packages/web/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/packages/web/.next/static ./.next/static
+RUN chown -R nextjs:nodejs /app
 
 USER nextjs
 
 EXPOSE 1400
+ENV PORT=1400
+ENV HOSTNAME="0.0.0.0"
 
-ENV PORT 1400
-ENV HOSTNAME "0.0.0.0"
-
-CMD ["bun", "run", "server.js"]
+CMD ["bun", "run", "packages/web/server.js"]

@@ -7,12 +7,11 @@ import { prepareContext, enterTUIScreen, exitTUIScreen } from '../utils.js';
 export const runTUI = async (context: VaultContext, versi: string, initialScreen?: string, initialFilter?: string) => {
     enterTUIScreen();
 
-    // Dynamic import
-    const { Aplikasi } = await import('../tui/Aplikasi.js');
+    const { App } = await import('../tui/App.js');
 
     const { waitUntilExit } = render(
-        React.createElement(Aplikasi, { context, versi, initialScreen: initialScreen as any, initialFilter: initialFilter }),
-        { exitOnCtrlC: false } // Handle in Aplikasi.tsx
+        React.createElement(App, { context, versi, initialScreen, initialFilter }),
+        { exitOnCtrlC: false }
     );
 
     try {

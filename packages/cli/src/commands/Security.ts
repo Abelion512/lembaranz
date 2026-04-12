@@ -11,13 +11,13 @@ export function registerSecurityCommand(program: Command) {
       await prepareContext(program.opts());
       enterTUIScreen();
 
-      const { LayarKeamanan } = await import('../tui/LayarKeamanan.js');
+      const { SecurityScreen } = await import('../tui/SecurityScreen.js');
       const { useApp, Box } = await import('ink');
 
       const QuickScreen = () => {
         const app = useApp();
         return React.createElement(Box, { flexDirection: 'column', key: 'security-root' },
-          React.createElement(LayarKeamanan, { onBack: () => app.exit(), key: 'security-content' })
+          React.createElement(SecurityScreen, { onBack: () => app.exit(), key: 'security-content' })
         );
       };
 

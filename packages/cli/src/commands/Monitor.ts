@@ -11,17 +11,17 @@ export function registerMonitorCommand(program: Command, versi: string) {
       const context = await prepareContext(program.opts());
       enterTUIScreen();
 
-      const { LayarPantau } = await import('../tui/LayarPantau.js');
-      const { BarStatus } = await import('../tui/BarStatus.js');
+      const { MonitorScreen } = await import('../tui/MonitorScreen.js');
+      const { StatusBar } = await import('../tui/StatusBar.js');
       const { useApp, Box } = await import('ink');
 
       const QuickScreen = () => {
         const app = useApp();
         return React.createElement(Box, { flexDirection: 'column', key: 'monitor-root' },
           React.createElement(Box, { flexDirection: 'column', marginBottom: 1, key: 'monitor-content' },
-            React.createElement(LayarPantau, { context, onBack: () => app.exit() })
+            React.createElement(MonitorScreen, { context, onBack: () => app.exit() })
           ),
-          React.createElement(BarStatus, { context, versi, screen: 'Monitor', key: 'monitor-bar' })
+          React.createElement(StatusBar, { context, versi, screen: 'Monitor', key: 'monitor-bar' })
         );
       };
 
