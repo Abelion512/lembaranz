@@ -69,7 +69,6 @@ export class TerminalUI {
             try {
                 switch (command) {
                     case 'help':
-                    case 'help':
                     case '?':
                         this.showHelp();
                         break;

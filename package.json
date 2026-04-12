@@ -44,7 +44,7 @@
     "lembaran": "./packages/cli/src/main.ts"
   },
   "scripts": {
-    "dev": "bun --filter @lembaranz/web dev",
+    "dev": "cd packages/web && bun dev",
     "build": "bun --filter @lembaranz/web build",
     "start": "bun --filter @lembaranz/web start",
     "cli": "bun --filter @lembaranz/cli start",
