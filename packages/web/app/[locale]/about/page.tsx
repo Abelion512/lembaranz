@@ -7,7 +7,7 @@ import { haptic } from '@lembaranz/core/Senses';
 
 export default function TentangPage() {
     return (
-        <div className='flex-1 flex flex-col min-h-0 bg-[var(--background)] px-5 pt-14 pb-10 overflow-y-auto no-scrollbar'>
+        <div className='flex-1 flex flex-col min-h-0 bg-(--background) px-5 pt-14 pb-10 overflow-y-auto no-scrollbar'>
             <Link
                 href='/laras'
                 onClick={() => haptic.light()}
@@ -22,7 +22,7 @@ export default function TentangPage() {
                     <Heart size={40} className='text-white fill-white' />
                 </div>
                 <h1 className='text-2xl font-bold tracking-tight'>Lembaran</h1>
-                <p className='text-[var(--text-secondary)] text-sm'>Versi {packageJson.version}</p>
+                <p className='text-(--text-secondary) text-sm'>Versi {packageJson.version}</p>
             </div>
 
             <div className='ios-list-group mb-8'>
@@ -33,7 +33,7 @@ export default function TentangPage() {
                         </div>
                         <span className='font-medium text-[16px]'>Riwayat Perubahan (Changelog)</span>
                     </div>
-                    <ChevronLeft size={16} className='text-[var(--text-muted)] rotate-180' />
+                    <ChevronLeft size={16} className='text-(--text-muted) rotate-180' />
                 </Link>
                 <div className='ios-separator'></div>
                 <Link href='/ketentuan' className='ios-list-item flex items-center justify-between p-4 active:bg-black/5 dark:active:bg-white/5 transition-colors'>
@@ -43,7 +43,7 @@ export default function TentangPage() {
                         </div>
                         <span className='font-medium text-[16px]'>Syarat & Ketentuan</span>
                     </div>
-                    <ChevronLeft size={16} className='text-[var(--text-muted)] rotate-180' />
+                    <ChevronLeft size={16} className='text-(--text-muted) rotate-180' />
                 </Link>
                 <div className='ios-separator'></div>
                 <Link href='/privasi' className='ios-list-item flex items-center justify-between p-4 active:bg-black/5 dark:active:bg-white/5 transition-colors'>
@@ -53,7 +53,7 @@ export default function TentangPage() {
                         </div>
                         <span className='font-medium text-[16px]'>Kebijakan Privasi</span>
                     </div>
-                    <ChevronLeft size={16} className='text-[var(--text-muted)] rotate-180' />
+                    <ChevronLeft size={16} className='text-(--text-muted) rotate-180' />
                 </Link>
             </div>
 
@@ -65,14 +65,14 @@ export default function TentangPage() {
                         </div>
                         <span className='font-medium text-[16px]'>Source Code</span>
                     </div>
-                    <div className='flex items-center gap-1 text-[var(--text-muted)] text-sm'>
+                    <div className='flex items-center gap-1 text-(--text-muted) text-sm'>
                         <span>GitHub</span>
                         <ChevronLeft size={16} className='rotate-180' />
                     </div>
                 </Link>
             </div>
 
-            <div className='mt-10 text-center text-xs text-[var(--text-muted)] leading-relaxed px-10 opacity-70'>
+            <div className='mt-10 text-center text-xs text-(--text-muted) leading-relaxed px-10 opacity-70'>
                 Dibuat dengan ❤️ dan dedikasi untuk Kedaulatan Data.
                 <br />
                 © 2026 Lembaran National Archives.

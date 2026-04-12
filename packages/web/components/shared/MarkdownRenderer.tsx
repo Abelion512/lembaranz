@@ -158,14 +158,14 @@ export function MarkdownRenderer({ slug }: MarkdownRendererProps) {
 
     if (!htmlContent) {
         return (
-            <div className="flex flex-col items-center justify-center text-center py-24 px-6 rounded-[3rem] bg-[var(--surface)]/30 border border-[var(--separator)]/5 backdrop-blur-sm shadow-sm animate-in fade-in zoom-in duration-500">
+            <div className="flex flex-col items-center justify-center text-center py-24 px-6 rounded-[3rem] bg-(--surface)/30 border border-(--separator)/5 backdrop-blur-sm shadow-sm animate-in fade-in zoom-in duration-500">
                 <div className="w-20 h-20 rounded-3xl bg-red-500/10 flex items-center justify-center text-red-500 mb-8 border border-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.1)]">
                     <Book size={32} strokeWidth={1.5} className="opacity-80" />
                 </div>
-                <h2 className="text-2xl font-black mb-4 tracking-tighter text-[var(--text-primary)]">
+                <h2 className="text-2xl font-black mb-4 tracking-tighter text-(--text-primary)">
                     {t('dok_tidak_ditemukan') || 'Lembaran Hilang'}
                 </h2>
-                <p className="text-sm font-medium text-[var(--text-muted)] max-w-sm leading-relaxed mb-10 opacity-70">
+                <p className="text-sm font-medium text-(--text-muted) max-w-sm leading-relaxed mb-10 opacity-70">
                     Maaf, catatan yang Anda cari tidak ada di brankas kami atau telah dipindahkan ke folder lain.
                 </p>
                 <Link
@@ -182,17 +182,17 @@ export function MarkdownRenderer({ slug }: MarkdownRendererProps) {
     return (
         <div className={`relative transition-all duration-500 ${loading ? 'opacity-30 scale-[0.98] blur-sm' : 'opacity-100 scale-100 blur-0'}`}>
             <div ref={contentRef} className="prose dark:prose-invert prose-blue max-w-none
-                prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-[var(--text-primary)]
+                prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-(--text-primary)
                 prose-h1:text-4xl prose-h1:mb-12 prose-h1:leading-tight
-                prose-h2:text-2xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:pb-4 prose-h2:border-b prose-h2:border-[var(--separator)]/5
+                prose-h2:text-2xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:pb-4 prose-h2:border-b prose-h2:border-(--separator)/5
                 prose-h3:text-xl prose-h3:mt-10 prose-h3:mb-4
-                prose-p:text-[16px] prose-p:font-normal prose-p:leading-[1.8] prose-p:tracking-normal prose-p:text-[var(--text-secondary)]
-                prose-li:text-[var(--text-secondary)] prose-li:leading-relaxed prose-li:mb-2
-                prose-code:text-blue-500 prose-code:bg-blue-500/[0.06] prose-code:px-2 prose-code:py-0.5 prose-code:rounded-lg prose-code:border prose-code:border-blue-500/10 prose-code:font-medium prose-code:before:content-[''] prose-code:after:content-['']
-                prose-pre:bg-[var(--surface)] prose-pre:backdrop-blur-xl prose-pre:border prose-pre:border-[var(--separator)]/10 prose-pre:rounded-[2.5rem] prose-pre:p-8 prose-pre:shadow-sm
-                prose-strong:text-[var(--text-primary)] prose-strong:font-bold
-                prose-img:rounded-[2rem] prose-img:border prose-img:border-[var(--separator)]/10
-                prose-blockquote:border-l-4 prose-blockquote:border-blue-500/30 prose-blockquote:bg-blue-500/[0.03] prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:rounded-r-2xl prose-blockquote:italic select-none">
+                prose-p:text-[16px] prose-p:font-normal prose-p:leading-[1.8] prose-p:tracking-normal prose-p:text-(--text-secondary)
+                prose-li:text-(--text-secondary) prose-li:leading-relaxed prose-li:mb-2
+                prose-code:text-blue-500 prose-code:bg-blue-500/6 prose-code:px-2 prose-code:py-0.5 prose-code:rounded-lg prose-code:border prose-code:border-blue-500/10 prose-code:font-medium prose-code:before:content-[''] prose-code:after:content-['']
+                prose-pre:bg-(--surface) prose-pre:backdrop-blur-xl prose-pre:border prose-pre:border-(--separator)/10 prose-pre:rounded-[2.5rem] prose-pre:p-8 prose-pre:shadow-sm
+                prose-strong:text-(--text-primary) prose-strong:font-bold
+                prose-img:rounded-4xl prose-img:border prose-img:border-(--separator)/10
+                prose-blockquote:border-l-4 prose-blockquote:border-blue-500/30 prose-blockquote:bg-blue-500/3 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:rounded-r-2xl prose-blockquote:italic select-none">
                 <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
             </div>
         </div>

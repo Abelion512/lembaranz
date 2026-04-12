@@ -21,16 +21,16 @@ export const LandingFooter = () => {
                 </div>
 
                 <div className="flex flex-wrap justify-center items-center gap-x-10 gap-y-6 uppercase tracking-[0.2em] text-[10px] font-black text-(--text-muted)/60">
-                    <Link href="/privacy" className="flex items-center gap-2 hover:text-blue-500 transition-colors text-(--text-muted) hover:text-(--text-primary)">
+                    <Link href="/privacy" className="flex items-center gap-2 hover:text-(--text-primary) transition-colors text-(--text-muted)">
                         <Shield size={12} /> Privacy
                     </Link>
-                    <Link href="/terms" className="flex items-center gap-2 hover:text-blue-500 transition-colors text-(--text-muted) hover:text-(--text-primary)">
+                    <Link href="/terms" className="flex items-center gap-2 hover:text-(--text-primary) transition-colors text-(--text-muted)">
                         <FileText size={12} /> Terms
                     </Link>
-                    <Link href="/docs" className="flex items-center gap-2 hover:text-blue-500 transition-colors text-(--text-muted) hover:text-(--text-primary)">
+                    <Link href="/docs" className="flex items-center gap-2 hover:text-(--text-primary) transition-colors text-(--text-muted)">
                         <Book size={12} /> Docs
                     </Link>
-                    <Link href="/about" className="flex items-center gap-2 hover:text-blue-500 transition-colors text-(--text-muted) hover:text-(--text-primary)">
+                    <Link href="/about" className="flex items-center gap-2 hover:text-(--text-primary) transition-colors text-(--text-muted)">
                         <MessageCircle size={12} /> Support
                     </Link>
                     <a href="https://github.com/Abelion512/lembaran" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-blue-500 transition-colors">

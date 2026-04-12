@@ -41,7 +41,7 @@ export default function LandingPage() {
                     <nav className="hidden md:flex items-center gap-8 text-[10px] font-black uppercase tracking-[0.2em] text-(--text-muted) mr-4">
                         <Link href="/version" className="hover:text-blue-500 transition-colors">{t('Selasar.Changelog')}</Link>
                         <a href="https://github.com/Abelion512/lembaran" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transition-colors">GitHub</a>
-                        <Link href="/docs" className="hover:text-blue-500 transition-colors">{t('Selasar.Dokumentasi')}</Link>
+                        <Link href="/bantuan" className="hover:text-blue-500 transition-colors">{t('Selasar.Dokumentasi')}</Link>
                     </nav>
                     <div className="w-px h-6 bg-(--separator)/10 mx-2 hidden md:block"></div>
 
@@ -103,13 +103,13 @@ export default function LandingPage() {
                         </p>
                         <div className="flex flex-wrap items-center justify-center gap-6 mb-24">
                             <div className="group relative">
-                                <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                                <div className="absolute -inset-0.5 bg-linear-to-r from-blue-500 to-cyan-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
                                 <div className="relative px-8 py-4 bg-black/80 border border-white/10 rounded-2xl font-mono text-sm text-green-400 flex items-center gap-4 shadow-2xl backdrop-blur-xl">
                                     <span className="text-gray-600 select-none">❯</span>
                                     <span>npm install -g @lembaranz/cli</span>
                                 </div>
                             </div>
-                            <Link href="/docs/MULAI_CEPAT" className="px-8 py-4 bg-white/5 border border-white/10 rounded-2xl font-bold flex items-center gap-3 hover:bg-white/10 transition-all active:scale-95 shadow-lg shadow-white/5">
+                            <Link href="/bantuan/01-mulai/berdikari" className="px-8 py-4 bg-white/5 border border-white/10 rounded-2xl font-bold flex items-center gap-3 hover:bg-white/10 transition-all active:scale-95 shadow-lg shadow-white/5">
                                 {t('Selasar.Dokumentasi')} <ArrowRight size={16} className="text-blue-500" />
                             </Link>
                         </div>

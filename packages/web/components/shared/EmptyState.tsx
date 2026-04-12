@@ -19,14 +19,14 @@ export const EmptyState = ({ message = "Belum ada data" }: { message?: string })
                 <motion.div
                     animate={{ y: [0, -10, 0] }}
                     transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-                    className="absolute -top-2 -right-2 bg-[var(--surface)] p-2 rounded-xl shadow-lg border border-[var(--separator)]/10"
+                    className="absolute -top-2 -right-2 bg-(--surface) p-2 rounded-xl shadow-lg border border-(--separator)/10"
                 >
                     <Ghost size={20} className="text-indigo-400" />
                 </motion.div>
             </motion.div>
 
-            <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1 opacity-80">{message}</h3>
-            <p className="text-xs font-medium text-[var(--text-secondary)] opacity-40 uppercase tracking-[0.2em]">Lembaran</p>
+            <h3 className="text-lg font-bold text-(--text-primary) mb-1 opacity-80">{message}</h3>
+            <p className="text-xs font-medium text-(--text-secondary) opacity-40 uppercase tracking-[0.2em]">Lembaran</p>
         </div>
     );
 };

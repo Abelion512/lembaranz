@@ -99,13 +99,13 @@ export default function HelpLobby() {
                     <Link
                         key={card.id}
                         href={`/docs/${card.id}`}
-                        className="p-10 rounded-[2rem] bg-[var(--surface)] border border-[var(--separator)]/10 hover:border-blue-500/30 hover:shadow-xl hover:shadow-blue-500/5 transition-all group"
+                        className="p-10 rounded-4xl bg-(--surface) border border-(--separator)/10 hover:border-blue-500/30 hover:shadow-xl hover:shadow-blue-500/5 transition-all group"
                     >
                         <div className={`w-14 h-14 rounded-2xl ${card.color} flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-sm`}>
                             <card.icon size={28} />
                         </div>
                         <h3 className="text-2xl font-bold tracking-tight mb-4">{card.title}</h3>
-                        <p className="text-sm text-[var(--text-secondary)] font-medium leading-relaxed opacity-80">{card.desc}</p>
+                        <p className="text-sm text-(--text-secondary) font-medium leading-relaxed opacity-80">{card.desc}</p>
                     </Link>
                 ))}
             </div>

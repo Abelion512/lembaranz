@@ -7,7 +7,7 @@ export const NoteSkeleton = () => {
                 <React.Fragment key={i}>
                     <div className="p-4 flex items-center justify-between relative">
                         {/* Shimmer effect */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/5 to-transparent -translate-x-full animate-shimmer" />
+                        <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 dark:via-white/5 to-transparent -translate-x-full animate-shimmer" />
 
                         <div className="flex-1">
                             <div className="h-5 bg-slate-200 dark:bg-slate-800 rounded-lg w-2/5 mb-2.5"></div>

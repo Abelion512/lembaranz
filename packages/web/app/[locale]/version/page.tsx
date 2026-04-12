@@ -8,7 +8,7 @@ export default async function ChangelogPage() {
     const htmlContent = content ? await marked.parse(content) : '<p>Changelog tidak ditemukan.</p>';
 
     return (
-        <div className='flex-1 flex flex-col min-h-0 bg-[var(--background)] px-5 pt-14 pb-20 overflow-y-auto no-scrollbar'>
+        <div className='flex-1 flex flex-col min-h-0 bg-(--background) px-5 pt-14 pb-20 overflow-y-auto no-scrollbar'>
             <Link href='/tentang' className='flex items-center gap-1 text-[var(--primary)] mb-6 active:opacity-40 w-fit'>
                 <ChevronLeft size={24} />
                 <span className='text-[17px]'>Tentang</span>

@@ -18,7 +18,7 @@ export function LanguageSwitcher() {
     return (
         <button
             onClick={switchLocale}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--surface)] border border-[var(--separator)]/10 hover:border-blue-500/30 transition-all text-xs font-bold uppercase tracking-widest shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-(--surface) border border-(--separator)/10 hover:border-blue-500/30 transition-all text-xs font-bold uppercase tracking-widest shadow-sm"
             aria-label="Ganti bahasa"
         >
             <Languages size={14} />
