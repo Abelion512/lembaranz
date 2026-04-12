@@ -60,13 +60,16 @@ async function launchGUISetup() {
   console.log(pc.cyan('\n🌐 Launching GUI Setup...'));
   console.log(pc.dim('Building and starting production server (more stable than dev mode)...\n'));
 
-  // Check if web package exists
-  const webDir = path.join(process.cwd(), 'packages', 'web');
+  // Check if lembaran-web exists (landing page is now separate)
+  const webDir = path.join(process.cwd(), '..', 'lembaran-web');
   try {
     await fs.access(webDir);
   } catch {
-    console.log(pc.red('\n✗ Web package not found!'));
-    console.log(pc.yellow('Please make sure you are in the Lembaran monorepo root directory.\n'));
+    console.log(pc.red('\n✗ lembaran-web not found!'));
+    console.log(pc.yellow('Please make sure you are in the lembaran/ directory inside the monorepo.\n'));
+    console.log(pc.dim('Expected structure:'));
+    console.log(pc.dim('  lembaran/'));
+    console.log(pc.dim('  lembaran-web/ ← landing page (separate)\n'));
     return;
   }
 
@@ -82,7 +85,7 @@ async function launchGUISetup() {
   }
 
   if (needsBuild) {
-    console.log(pc.cyan('🔨 Building web package...'));
+    console.log(pc.cyan('🔨 Building lembaran-web...'));
     const buildProcess = spawn('bun', ['run', 'build'], {
       cwd: webDir,
       stdio: 'inherit',
