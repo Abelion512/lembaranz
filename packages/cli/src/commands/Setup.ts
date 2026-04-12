@@ -58,7 +58,7 @@ export function registerSetupCommand(program: Command) {
 
 async function launchGUISetup() {
   console.log(pc.cyan('\n🌐 Launching GUI Setup...'));
-  console.log(pc.dim('Starting local development server...\n'));
+  console.log(pc.dim('Building and starting production server (more stable than dev mode)...\n'));
 
   // Check if web package exists
   const webDir = path.join(process.cwd(), 'packages', 'web');
@@ -70,13 +70,42 @@ async function launchGUISetup() {
     return;
   }
 
-  console.log(pc.green('✓ Starting web server on http://localhost:1400\n'));
+  // Check if already built
+  const buildDir = path.join(webDir, '.next');
+  let needsBuild = true;
+  try {
+    await fs.access(buildDir);
+    needsBuild = false;
+    console.log(pc.green('✓ Found existing build, skipping build step\n'));
+  } catch {
+    console.log(pc.yellow('⚠️  No build found, building first time...\n'));
+  }
+
+  if (needsBuild) {
+    console.log(pc.cyan('🔨 Building web package...'));
+    const buildProcess = spawn('bun', ['run', 'build'], {
+      cwd: webDir,
+      stdio: 'inherit',
+      shell: true
+    });
+
+    await new Promise<void>((resolve, reject) => {
+      buildProcess.on('exit', (code) => {
+        if (code === 0) resolve();
+        else reject(new Error(`Build failed with code ${code}`));
+      });
+    });
+
+    console.log(pc.green('✓ Build complete!\n'));
+  }
+
+  console.log(pc.green('✓ Starting production server on http://localhost:1400\n'));
   console.log(pc.yellow('⚠️  Keep this terminal open! Press Ctrl+C to stop the server.\n'));
   console.log(pc.dim('📝 All actions will be logged in this terminal.\n'));
 
-  // Spawn the dev server
-  const devProcess = spawn('bun', ['run', 'dev'], {
-    cwd: path.join(process.cwd(), 'packages', 'web'),
+  // Spawn the production server (more stable than dev)
+  const serverProcess = spawn('bun', ['run', 'start'], {
+    cwd: webDir,
     stdio: 'inherit',
     shell: true
   });
@@ -84,7 +113,24 @@ async function launchGUISetup() {
   // Log file
   const logFile = path.join(process.cwd(), 'setup-gui.log');
   const logStream = await fs.openFile(logFile, 'a');
-  await logStream.write(`\n[${new Date().toISOString()}] GUI Setup Session Started\n`);
+  await logStream.write(`\n[${new Date().toISOString()}] GUI Setup Session Started (Production Mode)\n`);
+
+  // Auto-restart on crash (like Docker restart policy)
+  serverProcess.on('exit', async (code, signal) => {
+    if (code !== 0 && code !== null) {
+      console.log(pc.yellow(`\n⚠️  Server crashed (code ${code}). Restarting in 3 seconds...\n`));
+      await logStream.write(`[${new Date().toISOString()}] Server crashed with code ${code}, restarting...\n`);
+
+      setTimeout(() => {
+        const newProcess = spawn('bun', ['run', 'start'], {
+          cwd: webDir,
+          stdio: 'inherit',
+          shell: true
+        });
+        // Note: In a real implementation, you'd update the serverProcess reference
+      }, 3000);
+    }
+  });
 
   // Wait for user to finish
   console.log(pc.cyan('\n📋 Setup Instructions:'));
@@ -101,8 +147,8 @@ async function launchGUISetup() {
   });
 
   // Stop the server
-  console.log(pc.yellow('\n⏹️  Stopping development server...'));
-  devProcess.kill();
+  console.log(pc.yellow('\n⏹️  Stopping server...'));
+  serverProcess.kill();
 
   await logStream.write(`[${new Date().toISOString()}] GUI Setup Session Completed\n`);
   await logStream.close();

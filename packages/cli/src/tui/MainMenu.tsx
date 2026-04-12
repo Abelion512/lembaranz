@@ -8,16 +8,16 @@ interface MainMenuProps {
 }
 
 const MENU_ITEMS = [
-    { label: '📊  Pantau Status Sistem', value: 'monitor' },
-    { label: '📂  Jelajah Arsip Catatan', value: 'browse' },
-    { label: '📝  Ukir Catatan Baru', value: 'carve' },
+    { label: '📊  Monitor System Status', value: 'monitor' },
+    { label: '📂  Browse Note Archives', value: 'browse' },
+    { label: '📝  Create New Note', value: 'carve' },
     { label: '🔐  Save Credentials', value: 'credentials' },
-    { label: '⚙️   Pengaturan (.env)', value: 'settings' },
-    { label: '🛡️   Audit Keamanan', value: 'audit_keamanan' },
-    { label: '⚔️   Mode Berdaulat (Otonom)', value: 'sovereign' },
-    { label: '🌱  Tanam (Impor .md)', value: 'import' },
-    { label: '📦  Petik (Ekspor .lembaran)', value: 'export' },
-    { label: '✨  Keluar', value: 'exit' },
+    { label: '⚙️   Settings (.env)', value: 'settings' },
+    { label: '🛡️   Security Audit', value: 'audit_keamanan' },
+    { label: '⚔️   Sovereign Mode (Autonomous)', value: 'sovereign' },
+    { label: '🌱  Plant (Import .md)', value: 'import' },
+    { label: '📦  Harvest (Export .lembaran)', value: 'export' },
+    { label: '✨  Exit', value: 'exit' },
 ];
 
 const LOGO = `
@@ -37,11 +37,11 @@ export const MainMenu: React.FC<MainMenuProps> = ({ onSelect, initialAction }) =
             {/* Logo ASCII Permanen Lembaran */}
             <Box flexDirection="column" alignItems="center" marginBottom={2}>
                 <Text color="cyan">{LOGO}</Text>
-                <Text color="gray" dimColor>Brankas Aksara Personal yang Berdikari</Text>
+                <Text color="gray" dimColor>Self-Hosted Personal Credential Vault</Text>
             </Box>
 
             <Box borderStyle="round" borderColor="blue" paddingX={1} marginBottom={1}>
-                <Text color="blue" bold>📜 Menu Utama</Text>
+                <Text color="blue" bold>📜 Main Menu</Text>
             </Box>
 
             <Box paddingX={1}>

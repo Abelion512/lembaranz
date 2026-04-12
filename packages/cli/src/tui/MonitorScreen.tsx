@@ -49,7 +49,7 @@ export const MonitorScreen: React.FC<MonitorScreenProps> = ({ context, onBack })
         return (
             <Box padding={1}>
                 <Text color="cyan"><Spinner type="dots" /></Text>
-                <Text color="gray"> Memuat status sistem...</Text>
+                <Text color="gray"> Loading system status...</Text>
             </Box>
         );
     }
@@ -57,7 +57,7 @@ export const MonitorScreen: React.FC<MonitorScreenProps> = ({ context, onBack })
     return (
         <Box flexDirection="column" padding={1}>
             <Box borderStyle="round" borderColor="blue" paddingX={1} marginBottom={1}>
-                <Text color="blue" bold>📊 Status Sistem [{context.toUpperCase()}]</Text>
+                <Text color="blue" bold>📊 System Status [{context.toUpperCase()}]</Text>
             </Box>
 
             <Box flexDirection="column" paddingX={1} gap={0} key="status-container">
@@ -65,16 +65,16 @@ export const MonitorScreen: React.FC<MonitorScreenProps> = ({ context, onBack })
                 <Box key="brankas-status" borderStyle="round" borderColor={isInit ? 'green' : 'yellow'} paddingX={1} flexDirection="column" marginBottom={1}>
                     <Text bold>🔐 Vault</Text>
                     <Text color={isInit ? 'green' : 'yellow'}>
-                        {isInit ? '✅ Terinisialisasi' : '⚠️ Belum Disiapkan'}
+                        {isInit ? '✅ Initialized' : '⚠️ Not Setup Yet'}
                     </Text>
                     <Text color={vaultLocked ? 'yellow' : 'green'}>
-                        {vaultLocked ? '🔒 Terkunci' : '🔓 Terbuka'}
+                        {vaultLocked ? '🔒 Locked' : '🔓 Unlocked'}
                     </Text>
                 </Box>
 
                 {/* Security */}
                 <Box key="security-status" borderStyle="round" borderColor="green" paddingX={1} flexDirection="column" marginBottom={1}>
-                    <Text bold>🛡️ Keamanan</Text>
+                    <Text bold>🛡️ Security</Text>
                     <Text color="green">✅ AES-GCM 256-bit</Text>
                     <Text color="green">✅ Argon2id (OWASP)</Text>
                     <Text color="green">✅ SHA-256 Integrity</Text>
@@ -84,27 +84,27 @@ export const MonitorScreen: React.FC<MonitorScreenProps> = ({ context, onBack })
                 {/* Stats */}
                 {stats && (
                     <Box key="stats-section" borderStyle="round" borderColor="cyan" paddingX={1} flexDirection="column" marginBottom={1}>
-                        <Text bold>📂 Statistik</Text>
-                        <Text color="cyan">Catatan: <Text bold key="stats-notes">{stats.notes}</Text></Text>
-                        <Text color="magenta">Folder: <Text bold key="stats-folders">{stats.folders}</Text></Text>
+                        <Text bold>📂 Statistics</Text>
+                        <Text color="cyan">Notes: <Text bold key="stats-notes">{stats.notes}</Text></Text>
+                        <Text color="magenta">Folders: <Text bold key="stats-folders">{stats.folders}</Text></Text>
                     </Box>
                 )}
 
                 {/* Environment */}
                 {envKeys.length > 0 && (
                     <Box key="env-section" borderStyle="round" borderColor="gray" paddingX={1} flexDirection="column">
-                        <Text bold>🌱 Pelataran (.env)</Text>
-                        <Text color="gray">{envKeys.length} variabel terdeteksi</Text>
+                        <Text bold>🌱 Environment (.env)</Text>
+                        <Text color="gray">{envKeys.length} variables detected</Text>
                         {envKeys.slice(0, 5).map((k, idx) => (
                             <Text key={`env-${k}-${idx}`} color="gray"> ├ {k}</Text>
                         ))}
-                        {envKeys.length > 5 && <Text key="env-more" color="gray"> └ ...dan {envKeys.length - 5} lainnya</Text>}
+                        {envKeys.length > 5 && <Text key="env-more" color="gray"> └ ...and {envKeys.length - 5} more</Text>}
                     </Box>
                 )}
             </Box>
 
             <Box marginTop={1} paddingX={1}>
-                <Text color="gray" dimColor italic>Tekan [q] atau [Esc] untuk kembali</Text>
+                <Text color="gray" dimColor italic>Press [q] or [Esc] to go back</Text>
             </Box>
         </Box>
     );
