@@ -9,11 +9,11 @@ import {
     ArrowRight, Download as _Download,
     Sparkles
 } from 'lucide-react';
-import { PasangTerminal } from '@/komponen/landing/PasangTerminal';
-import { TabelPerbandingan } from '@/komponen/landing/TabelPerbandingan';
-import { EtalaseLokal } from '@/komponen/landing/EtalaseLokal';
-import { PratinjauLaras } from '@/komponen/landing/PratinjauLaras';
-import { PendaratanKaki } from '@/komponen/landing/PendaratanKaki';
+import { TerminalInstall } from '@/components/landing/TerminalInstall';
+import { ComparisonTable } from '@/components/landing/ComparisonTable';
+import { NativeShowcase } from '@/components/landing/NativeShowcase';
+import { CustomizationPreview } from '@/components/landing/CustomizationPreview';
+import { LandingFooter } from '@/components/landing/LandingFooter';
 
 export default function LandingPage() {
     const t = useTranslations();
@@ -119,23 +119,23 @@ export default function LandingPage() {
                     {/* CLI Mockup */}
                     <div className="relative z-10">
                         <div className="absolute inset-0 bg-blue-500/5 blur-[100px] -z-10" />
-                        <PasangTerminal />
+                        <TerminalInstall />
                     </div>
                 </section>
 
                 {/* Comparison Table */}
-                <TabelPerbandingan />
+                <ComparisonTable />
 
                 {/* Customization Preview */}
-                <PratinjauLaras />
+                <CustomizationPreview />
 
                 {/* Native Showcase */}
                 <section id="native">
-                    <EtalaseLokal />
+                    <NativeShowcase />
                 </section>
             </main>
 
-            <PendaratanKaki />
+            <LandingFooter />
         </div>
     );
 }

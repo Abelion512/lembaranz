@@ -1,13 +1,13 @@
 #!/usr/bin/env bun
 import { program } from 'commander';
-import { registerConfigCommand } from './perintah/Config.js';
-import { registerImportCommand } from './perintah/Import.js';
-import { registerExportCommand } from './perintah/Export.js';
-import { registerSettingsCommand } from './perintah/Settings.js';
-import { registerMonitorCommand } from './perintah/Monitor.js';
-import { registerSecurityCommand } from './perintah/Security.js';
-import { registerBrowseCommand } from './perintah/Browse.js';
-import { registerLaunchCommand, runTUI } from './perintah/Launch.js';
+import { registerConfigCommand } from './command/Config.js';
+import { registerImportCommand } from './command/Import.js';
+import { registerExportCommand } from './command/Export.js';
+import { registerSettingsCommand } from './command/Settings.js';
+import { registerMonitorCommand } from './command/Monitor.js';
+import { registerSecurityCommand } from './command/Security.js';
+import { registerBrowseCommand } from './command/Browse.js';
+import { registerLaunchCommand, runTUI } from './command/Launch.js';
 import { prepareContext } from './utils.js';
 import pkg from '../package.json' assert { type: 'json' };
 
@@ -40,8 +40,8 @@ registerLaunchCommand(program, VERSI);
 
 // Default: full interactive TUI
 program.action(async () => {
-  const konteks = await prepareContext(program.opts());
-  await runTUI(konteks, VERSI);
+  const context = await prepareContext(program.opts());
+  await runTUI(context, VERSI);
 });
 
 program.parse(process.argv);

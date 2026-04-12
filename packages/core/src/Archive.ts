@@ -16,7 +16,7 @@ export interface NoteInput {
     tags?: string[];
     createdAt?: string;
     /** Accepts both raw credentials object (pre-encryption) or already-encrypted string */
-    kredensial?: Record<string, unknown> | string;
+    credentials?: Record<string, unknown> | string;
 }
 
 /**
@@ -303,8 +303,8 @@ export const Archive = {
             if (resPreview.error) return resPreview as Result<StoredNote>;
 
             let secureKredensial: string | undefined = undefined;
-            if (note.kredensial) {
-                const credsStr = typeof note.kredensial === 'string' ? note.kredensial : JSON.stringify(note.kredensial);
+            if (note.credentials) {
+                const credsStr = typeof note.credentials === 'string' ? note.credentials : JSON.stringify(note.credentials);
                 const resCreds = await Vault.encryptPacked(credsStr);
                 if (resCreds.error) return resCreds as Result<StoredNote>;
                 secureKredensial = resCreds.data;
@@ -315,7 +315,7 @@ export const Archive = {
                 title: resTitle.data,
                 content: resContent.data,
                 preview: resPreview.data,
-                kredensial: secureKredensial,
+                credentials: secureKredensial,
                 isCredentials: note.isCredentials,
                 updatedAt: new Date().toISOString(),
                 _hash: checkHash,
@@ -348,7 +348,7 @@ export const Archive = {
                     title: resTitle.error ? '⚠️ [CORRUPTED]' : resTitle.data,
                     preview: resPreview.error ? '⚠️ [CORRUPTED]' : resPreview.data,
                     content: '🔒 Locked',
-                    kredensial: undefined
+                    credentials: undefined
                 } as DecryptedNote;
             }));
 
@@ -369,9 +369,9 @@ export const Archive = {
             const resContent = await Vault.decryptPacked(note.content);
             if (resContent.error) return resContent as Result<DecryptedNote>;
 
-            let decodedCreds: DecryptedNote['kredensial'] = undefined;
-            if (typeof note.kredensial === 'string') {
-                const resCreds = await Vault.decryptPacked(note.kredensial);
+            let decodedCreds: DecryptedNote['credentials'] = undefined;
+            if (typeof note.credentials === 'string') {
+                const resCreds = await Vault.decryptPacked(note.credentials);
                 if (!resCreds.error) {
                     try {
                         decodedCreds = JSON.parse(resCreds.data);
@@ -385,7 +385,7 @@ export const Archive = {
                 ...note,
                 title: resTitle.data,
                 content: resContent.data,
-                kredensial: decodedCreds
+                credentials: decodedCreds
             };
 
             if (note._hash) {
@@ -451,7 +451,7 @@ export const Archive = {
      * lalu mengenkripsinya dengan struktur portabel dan password backup.
      * Ini memungkinkan file dibuka di mesin lain.
      */
-    async cadangkan(passwordBackup: string): Promise<Result<Uint8Array>> {
+    async createBackup(passwordBackup: string): Promise<Result<Uint8Array>> {
         if (Vault.isLocked()) return { data: null, error: new Error('Vault locked') };
 
         try {
@@ -534,7 +534,7 @@ export const Archive = {
                     isFavorite: note.isFavorite,
                     tags: note.tags,
                     createdAt: note.createdAt,
-                    kredensial: note.kredensial ? JSON.parse(note.kredensial, (_k, v) => {
+                    credentials: note.credentials ? JSON.parse(note.credentials, (_k, v) => {
                         if (_k === '__proto__' || _k === 'constructor' || _k === 'prototype') return undefined;
                         return v;
                     }) : undefined,

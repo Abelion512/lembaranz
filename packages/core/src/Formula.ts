@@ -14,7 +14,7 @@ export interface StoredNote {
     updatedAt: string;
     isCredentials?: boolean;
     /** Encrypted credentials blob */
-    kredensial?: string;
+    credentials?: string;
     _hash?: string;
     _timestamp?: string;
     syncStatus?: "synced" | "pending" | "error";
@@ -28,9 +28,9 @@ export interface CredentialsData {
 }
 
 /** Note after decryption (credentials are parsed) */
-export interface DecryptedNote extends Omit<StoredNote, 'kredensial'> {
+export interface DecryptedNote extends Omit<StoredNote, 'credentials'> {
     /** Decrypted credentials object or undefined */
-    kredensial?: CredentialsData | string;
+    credentials?: CredentialsData | string;
     /** Plaintext title after decryption */
     title: string;
     /** Plaintext content after decryption */

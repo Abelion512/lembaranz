@@ -1,7 +1,7 @@
 import { marked } from 'marked';
 import { Link } from '@/i18n/navigation';
 import { ChevronLeft, Github } from 'lucide-react';
-import { bacaBerkas } from '@/lib/bacaBerkas';
+import { readFile } from '@/lib/readFile';
 
 export const metadata = {
     title: 'Ketentuan Layanan — Lembaran',
@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 export default async function TermsPage() {
-    const content = bacaBerkas('TERMS.md');
+    const content = readFile('TERMS.md');
     const htmlContent = content ? await marked.parse(content) : '<p>Dokumen tidak ditemukan.</p>';
 
     return (

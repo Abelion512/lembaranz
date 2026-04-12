@@ -14,7 +14,7 @@ export class Context {
     /**
      * Helper to check if a file or directory exists asynchronously.
      */
-    private static async berkasAda(p: string): Promise<boolean> {
+    private static async fileExists(p: string): Promise<boolean> {
         try {
             const fs = await import('node:fs/promises');
             await fs.access(p);
@@ -41,14 +41,14 @@ export class Context {
 
             let jalur: string;
             if (context === 'saku') {
-                if (!(await this.berkasAda(SAKU_DIR))) {
+                if (!(await this.fileExists(SAKU_DIR))) {
                     await fs.mkdir(SAKU_DIR, { recursive: true });
                 }
                 jalur = path.join(SAKU_DIR, this.SAKU_FILE);
             } else {
                 const root = (await this.findProjectRoot()) || process.cwd();
                 const localDir = path.join(root, this.PELATARAN_DIR);
-                if (!(await this.berkasAda(localDir))) {
+                if (!(await this.fileExists(localDir))) {
                     await fs.mkdir(localDir, { recursive: true });
                 }
                 jalur = path.join(localDir, this.PELATARAN_FILE);
@@ -74,7 +74,7 @@ export class Context {
             const path = await import('path');
 
             const check = async (curr: string): Promise<string | null> => {
-                if ((await this.berkasAda(path.join(curr, '.git'))) || (await this.berkasAda(path.join(curr, 'package.json')))) {
+                if ((await this.fileExists(path.join(curr, '.git'))) || (await this.fileExists(path.join(curr, 'package.json')))) {
                     return curr;
                 }
                 const parent = path.dirname(curr);
@@ -97,7 +97,7 @@ export class Context {
             const path = await import('path');
 
             const root = await this.findProjectRoot();
-            if (root && (await this.berkasAda(path.join(root, this.PELATARAN_DIR, this.PELATARAN_FILE)))) {
+            if (root && (await this.fileExists(path.join(root, this.PELATARAN_DIR, this.PELATARAN_FILE)))) {
                 return 'pelataran';
             }
         } catch {
@@ -119,7 +119,7 @@ export class Context {
             const root = await this.findProjectRoot();
             if (!root) return {};
             const envPath = path.join(root, '.env');
-            if (!(await this.berkasAda(envPath))) return {};
+            if (!(await this.fileExists(envPath))) return {};
 
             const content = await fs.readFile(envPath, 'utf8');
             const lines = content.split('\n');
@@ -159,7 +159,7 @@ export class Context {
             const envPath = path.join(root, '.env');
 
             let content = '';
-            if (await this.berkasAda(envPath)) {
+            if (await this.fileExists(envPath)) {
                 content = await fs.readFile(envPath, 'utf8');
             }
 

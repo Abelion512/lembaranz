@@ -126,7 +126,7 @@ export class Vault {
     }
 
     /**
-     * Mengenkripsi teks string
+     * Mengenkripsi text string
      */
     static async encrypt(text: string, customKey?: CryptoKey): Promise<Result<{ data: ArrayBuffer; iv: Uint8Array }>> {
         const key = customKey || this.key;

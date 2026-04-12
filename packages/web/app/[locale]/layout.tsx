@@ -18,7 +18,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const isId = locale === 'id';
 
-  // ── Konten SEO/GEO/AEO yang kaya konteks ─────────────────────────────────
+  // ── Konten SEO/GEO/AEO yang kaya context ─────────────────────────────────
   const title = isId
     ? 'Lembaran — Aplikasi Catatan Terenkripsi, Lokal-First, AI On-Device'
     : 'Lembaran — Encrypted Note-Taking App, Local-First & AI On-Device';
@@ -171,7 +171,7 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  // Ambil pesan terjemahan
+  // Ambil message terjemahan
   const messages = await getMessages();
 
   // ── JSON-LD structured data (AEO — FAQ & SoftwareApplication) ────────────
@@ -212,7 +212,7 @@ export default async function LocaleLayout({
           '@type': 'SearchAction',
           target: {
             '@type': 'EntryPoint',
-            urlTemplate: `${BASE_URL}/${locale}/bantuan?q={search_term_string}`,
+            urlTemplate: `${BASE_URL}/${locale}/help?q={search_term_string}`,
           },
           'query-input': 'required name=search_term_string',
         },

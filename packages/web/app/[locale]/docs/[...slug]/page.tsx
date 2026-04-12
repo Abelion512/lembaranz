@@ -3,22 +3,22 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
-import { LembaranDok } from '@/komponen/bersama/LembaranDok';
-import { PenerjemahAksara } from '@/komponen/bersama/PenerjemahAksara';
-import { SaklarBahasa } from '@/komponen/bersama/SaklarBahasa';
-import { ambilMetadataBantuan } from '@/lib/ambilKontenDok';
+import { DocLayout } from '@/components/shared/DocLayout';
+import { MarkdownRenderer } from '@/components/shared/MarkdownRenderer';
+import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
+import { getHelpMetadata, type MetadataItemDetail } from '@/lib/getDocContent';
 
 export default function DynamicDocPage() {
     const params = useParams();
     const slugArray = params.slug as string | string[];
     const slug = Array.isArray(slugArray) ? slugArray.join('/') : slugArray;
     const lang = useLocale() as 'id' | 'en';
-    const [metadata, setMetadata] = useState<{ title: string; desc: string } | null>(null);
+    const [metadata, setMetadata] = useState<MetadataItemDetail | null>(null);
 
     useEffect(() => {
         async function loadMetadata() {
-            const data = await ambilMetadataBantuan(lang);
-            // Mencari item yang sesuai dengan slug dalam chapters
+            const data = await getHelpMetadata(lang);
+            // Find item matching slug in chapters
             if (data && data.chapters) {
                 for (const chapter of data.chapters) {
                     const item = chapter.items.find((i) => i.id === slug);
@@ -28,22 +28,22 @@ export default function DynamicDocPage() {
                     }
                 }
             }
-            setMetadata({ title: slug, desc: "Documentation page." });
+            setMetadata({ id: slug, slug, title: slug, description: "Documentation page." });
         }
         loadMetadata();
     }, [slug, lang]);
 
     return (
-        <LembaranDok
+        <DocLayout
             title={metadata?.title || slug}
-            description={metadata?.desc || "..."}
+            description={metadata?.description || "..."}
             slug={slug}
         >
             <div className="flex justify-end mb-8">
-                <SaklarBahasa />
+                <LanguageSwitcher />
             </div>
 
-            <PenerjemahAksara slug={slug} />
-        </LembaranDok>
+            <MarkdownRenderer slug={slug} />
+        </DocLayout>
     );
 }

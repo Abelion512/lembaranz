@@ -33,7 +33,7 @@ export const useGuardian = () => {
             // Bersihkan timeout lama jika ada
             if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
-            // Set timeout baru sesuai pengaturan (menit -> ms)
+            // Set timeout baru sesuai settings (menit -> ms)
             timeoutRef.current = setTimeout(() => {
                 lockVault();
             }, settings.sessionTimeout * 60 * 1000);

@@ -1,12 +1,12 @@
 import { Context, Storage, VaultContext, Archive, Sentinel } from '@lembaranz/core';
 import prompts from 'prompts';
 
-export interface OpsiGlobal {
+export interface GlobalOptions {
   saku?: boolean;
   pelataran?: boolean;
 }
 
-export const prepareContext = async (opts: OpsiGlobal): Promise<VaultContext> => {
+export const prepareContext = async (opts: GlobalOptions): Promise<VaultContext> => {
   let context: VaultContext;
 
   if (opts.saku) context = 'saku';
@@ -19,7 +19,7 @@ export const prepareContext = async (opts: OpsiGlobal): Promise<VaultContext> =>
 };
 
 // Aliases for backward compatibility
-export const siapkanKonteks = prepareContext;
+export const prepareContext = prepareContext;
 
 export const openVaultCLI = async (): Promise<boolean> => {
   const res = await prompts({
@@ -38,20 +38,20 @@ export const openVaultCLI = async (): Promise<boolean> => {
     return false;
   }
 
-  const hasil = await Archive.unlockVault(res.pw);
-  if (hasil.error) {
+  const result = await Archive.unlockVault(res.pw);
+  if (result.error) {
     const remaining = rateCheck.remaining !== undefined ? `${rateCheck.remaining} attempt(s) left` : 'locked';
-    console.log(`Failed to open vault: ${hasil.error.message} [${remaining}]`);
+    console.log(`Failed to open vault: ${result.error.message} [${remaining}]`);
     return false;
   }
 
   // Reset rate limit on successful unlock
   Sentinel.resetRateLimit('vault-unlock');
-  return !!hasil.data;
+  return !!result.data;
 };
 
 // Alias for backward compatibility
-export const bukaBrankasCLI = openVaultCLI;
+export const openVaultCLI = openVaultCLI;
 
 export const enterTUIScreen = () => {
   process.stdout.write('\x1b[?1049h');
@@ -59,11 +59,11 @@ export const enterTUIScreen = () => {
 };
 
 // Aliases for backward compatibility
-export const masukLayarTUI = enterTUIScreen;
+export const enterTUIScreen = enterTUIScreen;
 
 export const exitTUIScreen = () => {
   process.stdout.write('\x1b[?1049l');
 };
 
 // Alias for backward compatibility
-export const keluarLayarTUI = exitTUIScreen;
+export const exitTUIScreen = exitTUIScreen;

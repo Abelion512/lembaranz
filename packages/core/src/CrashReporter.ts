@@ -1,14 +1,14 @@
 import { AuditLog } from './AuditLog';
 
 export class CrashReporter {
-    private static terpasang = false;
+    private static installed = false;
 
     /**
      * Memasang pendengar (listener) global untuk menangkap crash aplikasi.
      * Sangat disarankan untuk dipanggil sekali di root aplikasi (misalnya Layout Next.js atau Main CLI).
      */
     static pasang() {
-        if (this.terpasang) return;
+        if (this.installed) return;
 
         // Lingkungan Browser
         if (typeof window !== 'undefined') {
@@ -37,7 +37,7 @@ export class CrashReporter {
             });
         }
 
-        this.terpasang = true;
+        this.installed = true;
 
         // Initial initialization log
         AuditLog.log('INFO', 'Crash Reporter Lembaran diaktifkan.').catch(() => {});

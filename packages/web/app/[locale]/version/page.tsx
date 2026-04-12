@@ -1,10 +1,10 @@
 import { marked } from 'marked';
 import { Link } from '@/i18n/navigation';
 import { ChevronLeft } from 'lucide-react';
-import { bacaBerkas } from '@/lib/bacaBerkas';
+import { readFile } from '@/lib/readFile';
 
 export default async function ChangelogPage() {
-    const content = bacaBerkas('CHANGELOG.md');
+    const content = readFile('CHANGELOG.md');
     const htmlContent = content ? await marked.parse(content) : '<p>Changelog tidak ditemukan.</p>';
 
     return (

@@ -24,8 +24,8 @@ async function run() {
         await Archive.saveNote({
             title: `Note Performance Test #${i}`,
             content: `Ini adalah catatan ke-${i} untuk pengujian performa Bolt ⚡.
-                     Catatan ini berisi teks yang cukup panjang untuk mensimulasikan beban kerja nyata.
-                     Poet will membantu membuatkan ringkasan cerdas dari konten ini.
+                     Catatan ini berisi text yang cukup panjang untuk mensimulasikan beban kerja nyata.
+                     Poet will membantu membuatkan ringkasan cerdas dari content ini.
                      Kita akan mencari kata kunci "BOLT_SPECIAL_TOKEN" di beberapa catatan.` +
                 (i === 500 || i === 999 ? ' BOLT_SPECIAL_TOKEN' : ''),
             folderId: null,

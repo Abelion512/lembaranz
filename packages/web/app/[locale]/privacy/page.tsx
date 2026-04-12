@@ -1,7 +1,7 @@
 import { marked } from 'marked';
 import { Link } from '@/i18n/navigation';
 import { ChevronLeft, Github } from 'lucide-react';
-import { bacaBerkas } from '@/lib/bacaBerkas';
+import { readFile } from '@/lib/readFile';
 
 export const metadata = {
     title: 'Kebijakan Privasi — Lembaran',
@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 export default async function PrivacyPage() {
-    const content = bacaBerkas('PRIVACY.md');
+    const content = readFile('PRIVACY.md');
     const htmlContent = content ? await marked.parse(content) : '<p>Dokumen tidak ditemukan.</p>';
 
     return (

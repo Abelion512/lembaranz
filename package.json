@@ -53,10 +53,10 @@
     "test:core": "bun --filter @lembaranz/core test",
     "test:web": "bun --filter @lembaranz/web test",
     "test:perf": "bun packages/core/src/scripts/inject-perf-data.ts",
-    "sinkron-aset": "bun --filter @lembaranz/web sinkron-aset",
+    "sync-assets": "bun --filter @lembaranz/web sync-assets",
     "version-packages": "changeset version",
     "ci:release": "changeset publish",
-    "bersih": "bun --filter @lembaranz/web bersih"
+    "clean": "bun --filter @lembaranz/web clean"
   },
   "dependencies": {
     "@abelionorg/tagger-public": "^1.0.2",

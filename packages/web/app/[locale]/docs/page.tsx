@@ -1,6 +1,6 @@
 import React from 'react';
-import AnjunganBantuan from '@/komponen/bersama/AnjunganBantuan';
+import HelpLobby from '@/components/shared/HelpLobby';
 
 export default function BantuanPage() {
-    return <AnjunganBantuan />;
+    return <HelpLobby />;
 }
