@@ -75,7 +75,7 @@ export const SelasarBantuan = () => {
                             {section.items.map((item) => (
                                 <Link
                                     key={item.id}
-                                    href={`/bantuan/${item.id}`}
+                                    href={`/docs/${item.id}`}
                                     onClick={() => haptic.light()}
                                     className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all duration-300 text-left group ${isActive(item.id)
                                         ? 'bg-blue-500/8 text-blue-500 font-bold border border-blue-500/10'

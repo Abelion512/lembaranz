@@ -43,7 +43,7 @@ export function registerImportCommand(program: Command) {
 
         try {
             console.log('Restoring and re-encrypting data...');
-            const hasil = await Archive.pulihkan(buffer, res.pw);
+            const hasil = await Archive.restoreBackup(buffer, res.pw);
             if (hasil.error) {
                 console.error('Failed to restore:', hasil.error.message);
                 return;

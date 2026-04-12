@@ -80,7 +80,7 @@ export const LembaranDok = ({ title: _title, description: _description, slug, ch
                             
                             {/* Breadcrumbs (GitBook Style) */}
                             <nav className="hidden md:flex items-center gap-3 text-[11px] font-bold tracking-tight text-[var(--text-muted)] lg:ml-0">
-                                <Link href="/bantuan" className="hover:text-blue-500 flex items-center gap-1.5 transition-colors group">
+                                <Link href="/docs" className="hover:text-blue-500 flex items-center gap-1.5 transition-colors group">
                                     <Home size={13} className="opacity-50 group-hover:opacity-100" />
                                     <span>Bantuan</span>
                                 </Link>
@@ -124,7 +124,7 @@ export const LembaranDok = ({ title: _title, description: _description, slug, ch
 
                     {/* Pagination Bottom (GitBook Style) */}
                     <div className="mt-32 pt-10 border-t border-[var(--separator)]/10 flex flex-col sm:flex-row items-center justify-between gap-8">
-                        <Link href="/bantuan" className="flex items-center gap-4 group p-4 rounded-2xl hover:bg-[var(--surface)] transition-all border border-transparent hover:border-[var(--separator)]/10">
+                        <Link href="/docs" className="flex items-center gap-4 group p-4 rounded-2xl hover:bg-[var(--surface)] transition-all border border-transparent hover:border-[var(--separator)]/10">
                             <div className="w-10 h-10 rounded-full border border-[var(--separator)]/10 flex items-center justify-center text-[var(--text-muted)] group-hover:text-blue-500 group-hover:border-blue-500/30 transition-all">
                                 <ArrowLeft size={16} />
                             </div>
@@ -139,9 +139,9 @@ export const LembaranDok = ({ title: _title, description: _description, slug, ch
                                 {t('Kemudi.HakCipta')}
                             </p>
                             <div className="flex items-center justify-center sm:justify-end gap-6 text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)]/60">
-                                <Link href="/privasi" className="hover:text-blue-500 transition-colors uppercase tracking-[0.2em]">{t('Kemudi.Privasi')}</Link>
+                                <Link href="/privacy" className="hover:text-blue-500 transition-colors uppercase tracking-[0.2em]">{t('Kemudi.Privasi')}</Link>
                                 <span className="w-1 h-1 rounded-full bg-[var(--separator)]/20" />
-                                <Link href="/ketentuan" className="hover:text-blue-500 transition-colors uppercase tracking-[0.2em]">{t('Kemudi.Ketentuan')}</Link>
+                                <Link href="/terms" className="hover:text-blue-500 transition-colors uppercase tracking-[0.2em]">{t('Kemudi.Ketentuan')}</Link>
                             </div>
                         </div>
                     </div>

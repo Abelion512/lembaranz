@@ -26,8 +26,7 @@ program
   .description('Lembaran -- Personal Script Management CLI')
   .version(VERSI)
   .option('--saku', 'Use personal vault context (global)')
-  .option('--pelataran', 'Use project vault context (local)')
-  .option('--ai <provider>', 'Select AI model (gemini, none)', 'none');
+  .option('--pelataran', 'Use project vault context (local)');
 
 // Register all commands
 registerConfigCommand(program);

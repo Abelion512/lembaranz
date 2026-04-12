@@ -39,12 +39,12 @@ export default function LandingPage() {
                 </div>
                 <div className="flex items-center gap-4">
                     <nav className="hidden md:flex items-center gap-8 text-[10px] font-black uppercase tracking-[0.2em] text-(--text-muted) mr-4">
-                        <Link href="/versi" className="hover:text-blue-500 transition-colors">{t('Selasar.Changelog')}</Link>
+                        <Link href="/version" className="hover:text-blue-500 transition-colors">{t('Selasar.Changelog')}</Link>
                         <a href="https://github.com/Abelion512/lembaran" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transition-colors">GitHub</a>
-                        <Link href="/bantuan" className="hover:text-blue-500 transition-colors">{t('Selasar.Dokumentasi')}</Link>
+                        <Link href="/docs" className="hover:text-blue-500 transition-colors">{t('Selasar.Dokumentasi')}</Link>
                     </nav>
                     <div className="w-px h-6 bg-(--separator)/10 mx-2 hidden md:block"></div>
-                    
+
                     <a href="https://www.npmjs.com/org/abelion512" target="_blank" rel="noopener noreferrer" className="px-6 py-2.5 bg-[#cb3837] text-white rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-red-600 transition-all shadow-lg shadow-red-500/20 active:scale-95" title="Buka NPM Registry">
                         NPM Registry
                     </a>
@@ -109,7 +109,7 @@ export default function LandingPage() {
                                     <span>npm install -g @lembaranz/cli</span>
                                 </div>
                             </div>
-                            <Link href="/bantuan/MULAI_CEPAT" className="px-8 py-4 bg-white/5 border border-white/10 rounded-2xl font-bold flex items-center gap-3 hover:bg-white/10 transition-all active:scale-95 shadow-lg shadow-white/5">
+                            <Link href="/docs/MULAI_CEPAT" className="px-8 py-4 bg-white/5 border border-white/10 rounded-2xl font-bold flex items-center gap-3 hover:bg-white/10 transition-all active:scale-95 shadow-lg shadow-white/5">
                                 {t('Selasar.Dokumentasi')} <ArrowRight size={16} className="text-blue-500" />
                             </Link>
                         </div>

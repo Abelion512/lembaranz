@@ -3,7 +3,6 @@ import { Vault, Result } from './Vault';
 import { StoredNote, DecryptedNote, Note, EntityId } from './Formula';
 import { v4 as uuidv4 } from 'uuid';
 import { Integrity } from './Integrity';
-import { Poet } from './Poet';
 
 /** Input for creating or updating a note (before encryption) */
 export interface NoteInput {
@@ -13,9 +12,11 @@ export interface NoteInput {
     folderId: EntityId | null;
     isPinned: boolean;
     isFavorite: boolean;
+    isCredentials?: boolean;
     tags?: string[];
     createdAt?: string;
-    kredensial?: Record<string, unknown>;
+    /** Accepts both raw credentials object (pre-encryption) or already-encrypted string */
+    kredensial?: Record<string, unknown> | string;
 }
 
 /**
@@ -268,11 +269,10 @@ export const Archive = {
         try {
             let title = note.title;
             if (!title || title === 'Untitled') {
-                title = await Poet.suggestTitle(note.content);
+                title = 'Note-' + new Date().toISOString().slice(0, 10);
             }
 
-            const suggestedTags = await Poet.suggestTags(note.content);
-            const tags = Array.from(new Set([...(note.tags || []), ...suggestedTags]));
+            const tags = Array.from(new Set(note.tags || []));
 
             const noteWithId = {
                 ...note,
@@ -290,7 +290,7 @@ export const Archive = {
                 return { data: existing, error: null };
             }
 
-            const preview = await Poet.smartSummary(noteWithId.content);
+            const preview = noteWithId.content.slice(0, 100) + (noteWithId.content.length > 100 ? '...' : '');
 
             const [resTitle, resContent, resPreview] = await Promise.all([
                 Vault.encryptPacked(noteWithId.title),
@@ -316,6 +316,7 @@ export const Archive = {
                 content: resContent.data,
                 preview: resPreview.data,
                 kredensial: secureKredensial,
+                isCredentials: note.isCredentials,
                 updatedAt: new Date().toISOString(),
                 _hash: checkHash,
             };

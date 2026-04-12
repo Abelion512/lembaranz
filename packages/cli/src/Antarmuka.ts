@@ -1,4 +1,4 @@
-import { Archive, Context, VaultContext, Vault, Poet, Result } from '@lembaranz/core';
+import { Archive, Context, VaultContext, Vault, Result } from '@lembaranz/core';
 import pc from 'picocolors';
 import prompts from 'prompts';
 import fs from 'node:fs/promises';
@@ -196,7 +196,6 @@ export class Antarmuka {
                 { title: '🌱 Tanam .env (Impor)', value: 'tanam_env' },
                 { title: '🛡️ Audit Keamanan', value: 'audit_keamanan' },
                 { title: '📡 Status Sentinel', value: 'sentinel' },
-                { title: '🤖 Mode Berdaulat (Otonom)', value: 'berdaulat' },
                 { title: '🛡️ Laporan Privasi', value: 'audit_privasi' },
                 { title: '🌱 Tanam (Impor)', value: 'tanam' },
                 { title: '📦 Petik (Ekspor)', value: 'petik' },
@@ -224,7 +223,6 @@ export class Antarmuka {
             case 'tanam_env': await this.aksiTanamEnv(); break;
             case 'audit_keamanan': await this.aksiAuditKeamanan(); break;
             case 'sentinel': await this.aksiPantau(); break;
-            case 'berdaulat': await this.aksiBerdaulat(); break;
             case 'audit_privasi': await this.aksiAuditPrivasi(); break;
             case 'tanam': await this.aksiTanam(); break;
             case 'petik': await this.aksiPetik(); break;
@@ -485,37 +483,6 @@ export class Antarmuka {
         console.log(log);
         console.log(pc.dim('\nKetik apa saja untuk kembali...'));
         await prompts({ type: 'text', name: 'any', message: '' });
-    }
-
-    static async aksiBerdaulat() {
-        console.log(pc.magenta('\n🤖 MEMASUKI MODE BERDAULAT (Autonomous Agent)'));
-
-        const aiSel = await prompts({
-            type: 'select',
-            name: 'provider',
-            message: 'Pilih Mesin AI (Tangan Kanan):',
-            choices: [
-                { title: '≡ƒ¢í∩╕Å  Lokal (Default - Aman)', value: 'none' },
-                { title: 'ΓÖè Gemini API (Paling Cerdas)', value: 'gemini' }
-            ]
-        });
-
-        if (aiSel.provider) {
-            Poet.setProvider(aiSel.provider);
-        }
-
-        const res = await prompts({
-            type: 'text',
-            name: 'tujuan',
-            message: 'Apa target/goal pengerjaan otonom kali ini?',
-            initial: 'lakukan pemeriksaan kesehatan sistem dan laporkan jika ada masalah.'
-        });
-
-        if (res.tujuan) {
-            // TODO: Implement autonomous mode in future version
-            console.log(pc.yellow('\n⚠️  Mode Berdaulat (Otonom) akan segera hadir di versi berikutnya.'));
-            console.log(pc.dim('Fitur ini akan menggunakan AI untuk melakukan pemeriksaan sistem secara otonom.'));
-        }
     }
 
     static async aksiTanamEnv() {

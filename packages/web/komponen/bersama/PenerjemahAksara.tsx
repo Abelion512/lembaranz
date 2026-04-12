@@ -167,7 +167,7 @@ export function PenerjemahAksara({ slug }: PenerjemahAksaraProps) {
                     Maaf, catatan yang Anda cari tidak ada di brankas kami atau telah dipindahkan ke folder lain.
                 </p>
                 <Link 
-                    href="/bantuan" 
+                    href="/docs" 
                     className="flex items-center gap-3 px-8 py-3.5 bg-blue-500 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-blue-500/20"
                 >
                     <ArrowLeft size={14} />
