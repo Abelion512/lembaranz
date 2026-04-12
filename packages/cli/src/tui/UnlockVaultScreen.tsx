@@ -7,7 +7,7 @@ interface UnlockVaultScreenProps {
     onSuccess: () => void;
 }
 
-export const LayarBukaBrankas: React.FC<UnlockVaultScreenProps> = ({ onSuccess }) => {
+export const UnlockVaultScreen: React.FC<UnlockVaultScreenProps> = ({ onSuccess }) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);

@@ -1,15 +1,15 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { Box, useApp, useInput } from 'ink';
-import { BarStatus } from './BarStatus.js';
-import { LayarSelamat } from './LayarSelamat.js';
-import { MenuUtama } from './MenuUtama.js';
-import { LayarPantau } from './LayarPantau.js';
-import { LayarKeamanan } from './LayarKeamanan.js';
-import { KotakPesan } from './KotakPesan.js';
+import { StatusBar } from './StatusBar.js';
+import { WelcomeScreen } from './WelcomeScreen.js';
+import { MainMenu } from './MainMenu.js';
+import { MonitorScreen } from './MonitorScreen.js';
+import { SecurityScreen } from './SecurityScreen.js';
+import { MessageBox } from './MessageBox.js';
 
-import { LayarArsip } from './LayarArsip.js';
-import { LayarUkir } from './LayarUkir.js';
-import { LayarKredensial } from './LayarKredensial.js';
+import { ArchiveScreen } from './ArchiveScreen.js';
+import { CarveScreen } from './CarveScreen.js';
+import { CredentialsScreen } from './CredentialsScreen.js';
 
 type Layar = 'selamat' | 'menu' | 'monitor' | 'security' | 'message' | 'browse' | 'carve' | 'credentials';
 
@@ -149,27 +149,27 @@ export const App: React.FC<AppProps> = ({ context, versi, initialScreen, initial
     const renderLayar = () => {
         switch (screen) {
             case 'selamat':
-                return <LayarSelamat context={context} versi={versi} onComplete={goToMenu} />;
+                return <WelcomeScreen context={context} versi={versi} onComplete={goToMenu} />;
             case 'menu':
-                return <MenuUtama onSelect={handleSelect} initialAction={lastAction} />;
+                return <MainMenu onSelect={handleSelect} initialAction={lastAction} />;
             case 'monitor':
-                return <LayarPantau context={context} onBack={goToMenu} />;
+                return <MonitorScreen context={context} onBack={goToMenu} />;
             case 'browse':
-                return <LayarArsip onBack={goToMenu} initialSearch={initialFilter} />;
+                return <ArchiveScreen onBack={goToMenu} initialSearch={initialFilter} />;
             case 'carve':
-                return <LayarUkir onBack={goToMenu} />;
+                return <CarveScreen onBack={goToMenu} />;
             case 'credentials':
-                return <LayarKredensial onBack={goToMenu} />;
+                return <CredentialsScreen onBack={goToMenu} />;
             case 'security':
-                return <LayarKeamanan onBack={goToMenu} />;
+                return <SecurityScreen onBack={goToMenu} />;
             case 'message':
                 return (
                     <Box flexDirection="column" padding={1}>
-                        {message && <KotakPesan type={message.type} title={message.title} isi="Tekan [Enter] atau [q] untuk kembali ke menu." />}
+                        {message && <MessageBox type={message.type} title={message.title} isi="Tekan [Enter] atau [q] untuk kembali ke menu." />}
                     </Box>
                 );
             default:
-                return <MenuUtama onSelect={handleSelect} initialAction={lastAction} />;
+                return <MainMenu onSelect={handleSelect} initialAction={lastAction} />;
         }
     };
 
@@ -189,7 +189,7 @@ export const App: React.FC<AppProps> = ({ context, versi, initialScreen, initial
             <Box flexDirection="column" marginBottom={1} key="aplikasi-content">
                 {renderLayar()}
             </Box>
-            <BarStatus context={context} versi={versi} screen={screenName} />
+            <StatusBar context={context} versi={versi} screen={screenName} />
         </Box>
     );
 };

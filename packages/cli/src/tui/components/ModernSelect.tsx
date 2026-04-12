@@ -36,7 +36,7 @@ const DefaultItem: FC<Item<any> & { isSelected: boolean }> = ({ label, isSelecte
     </Text>
 );
 
-export function PilihanModern<V>({
+export function ModernSelect<V>({
     items = [],
     isFocused = true,
     initialIndex = 0,

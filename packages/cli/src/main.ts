@@ -1,13 +1,13 @@
 #!/usr/bin/env bun
 import { program } from 'commander';
-import { registerConfigCommand } from './command/Config.js';
-import { registerImportCommand } from './command/Import.js';
-import { registerExportCommand } from './command/Export.js';
-import { registerSettingsCommand } from './command/Settings.js';
-import { registerMonitorCommand } from './command/Monitor.js';
-import { registerSecurityCommand } from './command/Security.js';
-import { registerBrowseCommand } from './command/Browse.js';
-import { registerLaunchCommand, runTUI } from './command/Launch.js';
+import { registerConfigCommand } from './commands/Config.js';
+import { registerImportCommand } from './commands/Import.js';
+import { registerExportCommand } from './commands/Export.js';
+import { registerSettingsCommand } from './commands/Settings.js';
+import { registerMonitorCommand } from './commands/Monitor.js';
+import { registerSecurityCommand } from './commands/Security.js';
+import { registerBrowseCommand } from './commands/Browse.js';
+import { registerLaunchCommand, runTUI } from './commands/Launch.js';
 import { prepareContext } from './utils.js';
 import pkg from '../package.json' assert { type: 'json' };
 

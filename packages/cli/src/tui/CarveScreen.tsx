@@ -7,7 +7,7 @@ interface CarveScreenProps {
     onBack: () => void;
 }
 
-export const LayarUkir: React.FC<CarveScreenProps> = ({ onBack }) => {
+export const CarveScreen: React.FC<CarveScreenProps> = ({ onBack }) => {
     const [step, setStep] = useState<'title' | 'content' | 'saving' | 'error'>('title');
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');

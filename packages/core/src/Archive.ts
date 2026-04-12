@@ -461,7 +461,7 @@ export const Archive = {
             for (const n of rawNotes) {
                 const res = await this.decryptNote(n);
                 if (res.error) {
-                    console.error(`[ARCHIVE] Gagal dekripsi catatan ${n.id} untuk cadangan.`);
+                    console.error(`[ARCHIVE] Failed to decrypt note ${n.id} for backup.`);
                     continue;
                 }
                 plainNotes.push(res.data);

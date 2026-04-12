@@ -140,7 +140,7 @@ export const DocLayout = ({ title: _title, description: _description, slug, chil
                             </p>
                             <div className="flex items-center justify-center sm:justify-end gap-6 text-[9px] font-black uppercase tracking-widest text-(--text-muted)/60">
                                 <Link href="/privacy" className="hover:text-blue-500 transition-colors uppercase tracking-[0.2em]">{t('Kemudi.Privasi')}</Link>
-                                <span className="w-1 h-1 rounded-full bg-[var(--separator)]/20" />
+                                <span className="w-1 h-1 rounded-full bg-(--separator)/20" />
                                 <Link href="/terms" className="hover:text-blue-500 transition-colors uppercase tracking-[0.2em]">{t('Kemudi.Ketentuan')}</Link>
                             </div>
                         </div>

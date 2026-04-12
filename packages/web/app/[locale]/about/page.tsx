@@ -11,7 +11,7 @@ export default function TentangPage() {
             <Link
                 href='/laras'
                 onClick={() => haptic.light()}
-                className='flex items-center gap-1 text-[var(--primary)] mb-6 active:opacity-40 w-fit'
+                className='flex items-center gap-1 text-(--primary) mb-6 active:opacity-40 w-fit'
             >
                 <ChevronLeft size={24} />
                 <span className='text-[17px]'>Kembali</span>
@@ -36,7 +36,7 @@ export default function TentangPage() {
                     <ChevronLeft size={16} className='text-(--text-muted) rotate-180' />
                 </Link>
                 <div className='ios-separator'></div>
-                <Link href='/ketentuan' className='ios-list-item flex items-center justify-between p-4 active:bg-black/5 dark:active:bg-white/5 transition-colors'>
+                <Link href='/terms' className='ios-list-item flex items-center justify-between p-4 active:bg-black/5 dark:active:bg-white/5 transition-colors'>
                     <div className='flex items-center gap-3'>
                         <div className='p-1.5 rounded-md bg-gray-500 text-white flex items-center justify-center'>
                             <ScrollText size={16} />
@@ -46,7 +46,7 @@ export default function TentangPage() {
                     <ChevronLeft size={16} className='text-(--text-muted) rotate-180' />
                 </Link>
                 <div className='ios-separator'></div>
-                <Link href='/privasi' className='ios-list-item flex items-center justify-between p-4 active:bg-black/5 dark:active:bg-white/5 transition-colors'>
+                <Link href='/privacy' className='ios-list-item flex items-center justify-between p-4 active:bg-black/5 dark:active:bg-white/5 transition-colors'>
                     <div className='flex items-center gap-3'>
                         <div className='p-1.5 rounded-md bg-blue-500 text-white flex items-center justify-center'>
                             <Shield size={16} />

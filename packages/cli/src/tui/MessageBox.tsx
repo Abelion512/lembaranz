@@ -23,7 +23,7 @@ const ICONS: Record<MessageType, string> = {
     info: 'ℹ️',
 };
 
-export const KotakPesan: React.FC<MessageBoxProps> = ({ type, title, isi }) => {
+export const MessageBox: React.FC<MessageBoxProps> = ({ type, title, isi }) => {
     const color = COLORS[type];
     const icon = ICONS[type];
 

@@ -43,7 +43,7 @@ export default async function PrivacyPage() {
                 <div className='max-w-3xl mx-auto flex flex-wrap items-center justify-between gap-4 text-[10px] font-bold uppercase tracking-widest text-(--text-muted)/50'>
                     <span>© {new Date().getFullYear()} Lembaran</span>
                     <div className='flex items-center gap-8'>
-                        <Link href='/ketentuan' className='hover:text-blue-500 transition-colors'>Ketentuan</Link>
+                        <Link href='/terms' className='hover:text-blue-500 transition-colors'>Ketentuan</Link>
                         <Link href='/docs' className='hover:text-blue-500 transition-colors'>Bantuan</Link>
                         <a href='https://github.com/Abelion512/lembaran' target='_blank' rel='noopener noreferrer' className='hover:text-blue-500 transition-colors flex items-center gap-1'>
                             <Github size={12} /> GitHub

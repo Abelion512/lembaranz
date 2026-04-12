@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import { PilihanModern } from './components/PilihanModern.js';
+import { ModernSelect } from './components/ModernSelect.js';
 
 interface MainMenuProps {
     onSelect: (aksi: string) => void;
@@ -11,7 +11,7 @@ const MENU_ITEMS = [
     { label: '📊  Pantau Status Sistem', value: 'monitor' },
     { label: '📂  Jelajah Arsip Catatan', value: 'browse' },
     { label: '📝  Ukir Catatan Baru', value: 'carve' },
-    { label: '🔐  Simpan Kredensial', value: 'credentials' },
+    { label: '🔐  Save Credentials', value: 'credentials' },
     { label: '⚙️   Pengaturan (.env)', value: 'settings' },
     { label: '🛡️   Audit Keamanan', value: 'audit_keamanan' },
     { label: '⚔️   Mode Berdaulat (Otonom)', value: 'sovereign' },
@@ -29,7 +29,7 @@ const LOGO = `
   ╚══════╝╚══════╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝ ╚═══╝
 `.trim();
 
-export const MenuUtama: React.FC<MainMenuProps> = ({ onSelect, initialAction }) => {
+export const MainMenu: React.FC<MainMenuProps> = ({ onSelect, initialAction }) => {
     const initialIndex = Math.max(0, MENU_ITEMS.findIndex(item => item.value === initialAction));
 
     return (
@@ -45,7 +45,7 @@ export const MenuUtama: React.FC<MainMenuProps> = ({ onSelect, initialAction }) 
             </Box>
 
             <Box paddingX={1}>
-                <PilihanModern
+                <ModernSelect
                     items={MENU_ITEMS}
                     limit={7}
                     isLooping={false}

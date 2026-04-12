@@ -7,7 +7,7 @@ interface StatusBarProps {
     screen?: string;
 }
 
-export const BarStatus: React.FC<StatusBarProps> = ({ context, versi, screen }) => {
+export const StatusBar: React.FC<StatusBarProps> = ({ context, versi, screen }) => {
     return (
         <Box borderStyle="single" borderColor="gray" paddingX={1} justifyContent="space-between" key={`bar-${context}-${screen}`}>
             <Text>

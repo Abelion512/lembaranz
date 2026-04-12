@@ -7,7 +7,7 @@ interface CredentialsScreenProps {
     onBack: () => void;
 }
 
-export const LayarKredensial: React.FC<CredentialsScreenProps> = ({ onBack }) => {
+export const CredentialsScreen: React.FC<CredentialsScreenProps> = ({ onBack }) => {
     const [step, setStep] = useState<'label' | 'username' | 'password' | 'saving'>('label');
     const [data, setData] = useState({ label: '', username: '', password: '' });
 

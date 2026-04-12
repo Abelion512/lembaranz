@@ -7,7 +7,7 @@ interface MonitorScreenProps {
     onBack: () => void;
 }
 
-export const LayarPantau: React.FC<MonitorScreenProps> = ({ context, onBack }) => {
+export const MonitorScreen: React.FC<MonitorScreenProps> = ({ context, onBack }) => {
     const [loading, setMemuat] = useState(true);
     const [stats, setStats] = useState<{ notes: number; folders: number } | null>(null);
     const [isInit, setIsInit] = useState(false);

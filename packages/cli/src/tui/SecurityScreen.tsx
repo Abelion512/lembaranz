@@ -32,7 +32,7 @@ const ITEMS = [
     },
 ];
 
-export const LayarKeamanan: React.FC<SecurityScreenProps> = ({ onBack }) => {
+export const SecurityScreen: React.FC<SecurityScreenProps> = ({ onBack }) => {
     useInput((input, key) => {
         if (input === 'q' || key.escape) {
             onBack();

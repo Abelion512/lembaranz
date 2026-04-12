@@ -69,7 +69,7 @@ export class FileAdapter implements StorageAdapter {
             await this.ensureDirectory();
             await fs.writeFile(this.filePath, JSON.stringify(this.data, null, 2));
         } catch (error) {
-            console.error(`[FILE_ADAPTER_ERROR] Gagal menyimpan ke ${this.filePath}:`, error);
+            console.error(`[FILE_ADAPTER_ERROR] Failed to save to ${this.filePath}:`, error);
             throw error;
         }
     }

@@ -18,9 +18,6 @@ export const prepareContext = async (opts: GlobalOptions): Promise<VaultContext>
   return context;
 };
 
-// Aliases for backward compatibility
-export const prepareContext = prepareContext;
-
 export const openVaultCLI = async (): Promise<boolean> => {
   const res = await prompts({
     type: 'password',
@@ -29,12 +26,11 @@ export const openVaultCLI = async (): Promise<boolean> => {
   });
   if (!res.pw) return false;
 
-  // Rate limit check: max 5 attempts, 5-minute lockout
   const rateCheck = Sentinel.checkRateLimit('vault-unlock');
   if (!rateCheck.allowed) {
     const remainingMs = (rateCheck.resetAt || 0) - Date.now();
     const minutes = Math.ceil(remainingMs / 60000);
-    console.log(`🔒 Too many failed attempts. Try again in ${minutes} minute(s).`);
+    console.log(`Too many failed attempts. Try again in ${minutes} minute(s).`);
     return false;
   }
 
@@ -45,25 +41,15 @@ export const openVaultCLI = async (): Promise<boolean> => {
     return false;
   }
 
-  // Reset rate limit on successful unlock
   Sentinel.resetRateLimit('vault-unlock');
   return !!result.data;
 };
-
-// Alias for backward compatibility
-export const openVaultCLI = openVaultCLI;
 
 export const enterTUIScreen = () => {
   process.stdout.write('\x1b[?1049h');
   process.stdout.write('\x1b[2J\x1b[H');
 };
 
-// Aliases for backward compatibility
-export const enterTUIScreen = enterTUIScreen;
-
 export const exitTUIScreen = () => {
   process.stdout.write('\x1b[?1049l');
 };
-
-// Alias for backward compatibility
-export const exitTUIScreen = exitTUIScreen;

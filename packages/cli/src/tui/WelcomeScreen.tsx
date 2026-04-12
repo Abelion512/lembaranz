@@ -16,7 +16,7 @@ const LOGO = `
   ╚══════╝╚══════╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝ ╚═══╝
 `.trim();
 
-export const LayarSelamat: React.FC<WelcomeScreenProps> = ({ context, versi, onComplete }) => {
+export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ context, versi, onComplete }) => {
     React.useEffect(() => {
         const timer = setTimeout(onComplete, 2000);
         return () => clearTimeout(timer);

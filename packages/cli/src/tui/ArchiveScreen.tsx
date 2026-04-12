@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Box, Text, useInput } from 'ink';
 import TextInput from 'ink-text-input';
 import Spinner from 'ink-spinner';
-import { PilihanModern } from './components/PilihanModern.js';
+import { ModernSelect } from './components/ModernSelect.js';
 import { Note } from '@lembaranz/core';
 
 interface ArchiveScreenProps {
@@ -36,7 +36,7 @@ const cleanTextForSearch = (text: string): string => {
         .trim();
 };
 
-export const LayarArsip: React.FC<ArchiveScreenProps> = ({ onBack, initialSearch }) => {
+export const ArchiveScreen: React.FC<ArchiveScreenProps> = ({ onBack, initialSearch }) => {
     const [notes, setNotes] = useState<Note[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [search, setSearch] = useState(initialSearch || '');
@@ -93,7 +93,7 @@ export const LayarArsip: React.FC<ArchiveScreenProps> = ({ onBack, initialSearch
         return (
             <Box flexDirection="column" padding={1} key="note-detail-container">
                 <Box borderStyle="round" borderColor="cyan" paddingX={1} marginBottom={1}>
-                    <Text bold color="cyan">📖 {selectedNote.title || 'Tanpa Judul'}</Text>
+                    <Text bold color="cyan">📖 {selectedNote.title || 'Untitled'}</Text>
                 </Box>
                 <Box flexDirection="column" paddingX={1}>
                     <Text color="gray" dimColor>Dibuat: {selectedNote.createdAt}</Text>
@@ -128,8 +128,8 @@ export const LayarArsip: React.FC<ArchiveScreenProps> = ({ onBack, initialSearch
                 {filteredNotes.length === 0 ? (
                     <Text color="yellow">⚠️ Tidak ada catatan yang ditemukan.</Text>
                 ) : (
-                    <PilihanModern
-                        items={filteredNotes.map(n => ({ label: n.title || 'Tanpa Judul', value: n.id }))}
+                    <ModernSelect
+                        items={filteredNotes.map(n => ({ label: n.title || 'Untitled', value: n.id }))}
                         limit={10}
                         onSelect={(item) => setSelectedNoteId(item.value)}
                     />

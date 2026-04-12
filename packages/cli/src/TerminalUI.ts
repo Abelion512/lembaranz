@@ -31,7 +31,7 @@ export class TerminalUI {
                 console.log(pc.blue(pc.bold('=== LEMBARAN ANTARMUKA v3.1.0 ===')));
                 console.log(`${pc.dim('Konteks Aktif:')} ${pc.bold(pc.yellow(context.toUpperCase()))}`);
                 console.log(pc.dim('Brankas Aksara Personal yang Berdikari'));
-                console.log(pc.dim('Ketik "help" untuk daftar command atau "exit" untuk berhenti.\n'));
+                console.log(pc.dim('Type "help" for commands or "exit" to quit.\n'));
 
                 const isInitResult = await Archive.isVaultInitialized();
                 if (isInitResult.error || !isInitResult.data) {
@@ -58,7 +58,7 @@ export class TerminalUI {
             });
 
             if (res.cmd === undefined || res.cmd === 'exit' || res.cmd === 'exit') {
-                console.log(pc.dim('\n✨ Sampai jumpa di lain waktu.'));
+                console.log(pc.dim('\n✨ See you next time.'));
                 process.exit(0);
             }
 
@@ -100,7 +100,7 @@ export class TerminalUI {
                     case 'menu':
                         return; // Return to run loop which clears and shows mainMenu
                     default:
-                        console.log(pc.red(`❌ Perintah "${command}" tidak dikenal. Ketik "help" untuk help.`));
+                        console.log(pc.red(`❌ Unknown command "${command}". Type "help" for help.`));
                 }
             } catch (_err: unknown) {
                 console.log(pc.red(`❌ Terjadi kesalahan: ${(_err as Error).message}`));
@@ -112,11 +112,11 @@ export class TerminalUI {
         console.log(pc.bold('\n📜 DAFTAR PERINTAH:'));
         console.log(`  ${pc.blue('menu')}      - Kembali ke Menu Utama`);
         console.log(`  ${pc.blue('monitor')}    - Memeriksa kesehatan sistem & statistik`);
-        console.log(`  ${pc.blue('browse')}   - Mencari catatan (Fuzzy Search)`);
-        console.log(`  ${pc.blue('carve')}      - Editor catatan (Mumpuni & Multi-line)`);
+        console.log(`  ${pc.blue('browse')}   - Search notes (Fuzzy Search)`);
+        console.log(`  ${pc.blue('carve')}      - Note editor (Multi-line)`);
         console.log(`  ${pc.blue('credentials')} - Menyimpan rahasia & akun secara aman`);
         console.log(`  ${pc.blue('import')}     - Mengimpor file Markdown (.md)`);
-        console.log(`  ${pc.blue('export')}     - Mengekspor brankas (.lembaran)`);
+        console.log(`  ${pc.blue('export')}     - Export vault (.lembaran)`);
         console.log(`  ${pc.blue('serve')}    - Menjalankan API Server lokal`);
         console.log(`  ${pc.blue('bersih')}    - Membersihkan screen`);
         console.log(`  ${pc.blue('exit')}    - Keluar dari aplikasi\n`);
@@ -124,35 +124,35 @@ export class TerminalUI {
 
     private static async initializeVault() {
         console.log(pc.yellow('⚠ Brankas belum terinisialisasi.'));
-        console.log(pc.dim('Brankas diperlukan untuk menyimpan catatan Anda secara terenkripsi.'));
+        console.log(pc.dim('Vault is required to store your notes securely.'));
 
         const res = await prompts({
             type: 'password',
             name: 'pw',
-            message: 'Buat kata sandi baru untuk brankas Anda:'
+            message: 'Create a new vault password:'
         });
 
         if (res.pw === undefined) {
-            console.log(pc.dim('\n✨ Sampai jumpa di lain waktu.'));
+            console.log(pc.dim('\n✨ See you next time.'));
             process.exit(0);
         }
 
         if (!res.pw) {
-            console.log(pc.red('❌ Kata sandi tidak boleh kosong.'));
+            console.log(pc.red('❌ Password cannot be empty.'));
             await new Promise(r => setTimeout(r, 1500));
             return;
         }
 
-        console.log(pc.dim('Sedang menyiapkan brankas (membangun kunci Argon2id)...'));
+        console.log(pc.dim('Setting up vault (deriving Argon2id key)...'));
         const setupResult = await Archive.setupVault(res.pw);
 
         if (setupResult.error) {
-            console.log(pc.red(`❌ Gagal menyiapkan brankas: ${setupResult.error.message}`));
+            console.log(pc.red(`❌ Failed to setup vault: ${setupResult.error.message}`));
             await new Promise(r => setTimeout(r, 3000));
             return;
         }
 
-        console.log(pc.green('✅ Brankas berhasil dibuat dan dibuka!'));
+        console.log(pc.green('✅ Vault created and unlocked!'));
         console.log(pc.dim('Mengalihkan ke menu utama...'));
         await new Promise(r => setTimeout(r, 2000));
     }
@@ -162,13 +162,13 @@ export class TerminalUI {
         const res = await prompts({
             type: 'password',
             name: 'pw',
-            message: 'Masukkan kata sandi brankas:'
+            message: 'Enter vault password:'
         });
         if (res.pw === undefined || !res.pw) return false;
 
         const unlockResult = await Archive.unlockVault(res.pw);
         if (unlockResult.error) {
-            console.log(pc.red(`❌ Gagal membuka brankas: ${unlockResult.error.message}`));
+            console.log(pc.red(`❌ Failed to unlock vault: ${unlockResult.error.message}`));
             await new Promise(r => setTimeout(r, 2000));
             return false;
         }
@@ -191,7 +191,7 @@ export class TerminalUI {
                 { title: '📊 Pantau Status', value: 'monitor' },
                 { title: '📂 Jelajah Arsip', value: 'browse' },
                 { title: '📝 Ukir Catatan', value: 'carve' },
-                { title: '🔑 Simpan Kredensial', value: 'credentials' },
+                { title: '🔑 Save Credentials', value: 'credentials' },
                 { title: '🌱 Tanam .env (Impor)', value: 'tanam_env' },
                 { title: '🛡️ Audit Keamanan', value: 'audit_keamanan' },
                 { title: '📡 Status Sentinel', value: 'sentinel' },
@@ -210,7 +210,7 @@ export class TerminalUI {
         }
 
         if (res.aksi === 'exit') {
-            console.log(pc.dim('\nΓ£¿ Sampai jumpa di lain waktu.'));
+            console.log(pc.dim('\nΓ£¿ See you next time.'));
             process.exit(0);
         }
 
@@ -260,14 +260,14 @@ export class TerminalUI {
 
         let q = query;
         if (!q) {
-            const queryRes = await prompts({ type: 'text', name: 'q', message: 'Cari catatan:' });
+            const queryRes = await prompts({ type: 'text', name: 'q', message: 'Search notes:' });
             if (queryRes.q === undefined) return;
             q = queryRes.q;
         }
 
         const notesRes = await Archive.getAllNotes();
         if (notesRes.error) {
-            console.log(pc.red(`❌ Gagal loading catatan: ${notesRes.error.message}`));
+            console.log(pc.red(`❌ Failed to load notes: ${notesRes.error.message}`));
             return;
         }
 
@@ -285,13 +285,13 @@ export class TerminalUI {
             const select = await prompts({
                 type: 'select',
                 name: 'noteId',
-                message: `Ditemukan ${notes.length} catatan. Pilih untuk melihat:`,
+                message: `Found ${notes.length} notes. Select to view:`,
                 choices: notes.map(n => ({ title: n.title, value: n.id }))
             });
             if (select.noteId) {
                 const noteResult = await Archive.getNoteById(select.noteId);
                 if (noteResult.error) {
-                    console.log(pc.red(`❌ Gagal membuka catatan: ${noteResult.error.message}`));
+                    console.log(pc.red(`❌ Failed to open note: ${noteResult.error.message}`));
                     return;
                 }
                 const n = noteResult.data;
@@ -310,19 +310,19 @@ export class TerminalUI {
         if (id) {
             const noteResult = await Archive.getNoteById(id);
             if (noteResult.error) {
-                console.log(pc.red(`❌ Gagal mengambil catatan: ${noteResult.error.message}`));
+                console.log(pc.red(`❌ Failed to fetch note: ${noteResult.error.message}`));
                 return;
             }
             const note = noteResult.data;
             if (!note) {
-                console.log(pc.red('❌ Catatan tidak ditemukan.'));
+                console.log(pc.red('❌ Note not found.'));
                 return;
             }
             console.log(pc.blue(`\n📝 Mengedit: ${pc.bold(note.title)}`));
             const res = await prompts({
                 type: 'text',
                 name: 'content',
-                message: 'Konten (Multiline):',
+                message: 'Content (Multiline):',
                 initial: note.content,
                 multiline: true
             });
@@ -342,26 +342,26 @@ export class TerminalUI {
                         : note.credentials ? JSON.stringify(note.credentials) : undefined,
                 });
                 if (saveResult.error) {
-                    console.log(pc.red(`❌ Gagal memperbarui catatan: ${saveResult.error.message}`));
+                    console.log(pc.red(`❌ Failed to update note: ${saveResult.error.message}`));
                 } else {
-                    console.log(pc.green('✅ Catatan berhasil diperbarui.'));
+                    console.log(pc.green('✅ Note updated successfully.'));
                 }
             }
         } else {
-            console.log(pc.blue('\n📝 Mengukir Catatan Baru'));
+            console.log(pc.blue('\n📝 Editing Note'));
             const res = await prompts([
-                { type: 'text', name: 'title', message: 'Judul Catatan:', initial: 'Tanpa Judul' },
+                { type: 'text', name: 'title', message: 'Note Title:', initial: 'Untitled' },
                 {
                     type: 'text',
                     name: 'content',
-                    message: 'Isi Aksara:',
+                    message: 'Content:',
                     multiline: true
                 }
             ]);
             if (res.content !== undefined) {
                 const saveResult = await Archive.saveNote({
                     id: '',
-                    title: res.title || 'Tanpa Judul',
+                    title: res.title || 'Untitled',
                     content: res.content,
                     folderId: null,
                     isPinned: false,
@@ -370,9 +370,9 @@ export class TerminalUI {
                     createdAt: new Date().toISOString()
                 });
                 if (saveResult.error) {
-                    console.log(pc.red(`❌ Gagal menyimpan aksara: ${saveResult.error.message}`));
+                    console.log(pc.red(`❌ Failed to save note: ${saveResult.error.message}`));
                 } else {
-                    console.log(pc.green('✅ Aksara berhasil diabadikan.'));
+                    console.log(pc.green('✅ Note saved successfully.'));
                 }
             }
         }
@@ -413,12 +413,12 @@ export class TerminalUI {
                     if (saveResult.error) {
                         console.log(pc.red(`❌ Gagal menanam ${file}: ${saveResult.error.message}`));
                     } else {
-                        console.log(pc.green(`✅ ${file} berhasil ditanam.`));
+                        console.log(pc.green(`✅ ${file} imported successfully.`));
                     }
                 }
             }
         } catch (_err) {
-            console.log(pc.red('❌ Gagal membaca direktori.'));
+            console.log(pc.red('❌ Failed to read directory.'));
         }
     }
 
@@ -500,7 +500,7 @@ export class TerminalUI {
     static async actionImportEnv() {
         if (!(await this.unlock())) return;
 
-        console.log(pc.yellow('\n🌱 Mengimpor Kredensial dari .env'));
+        console.log(pc.yellow('\n🌱 Importing credentials from .env'));
         const env = await Context.readEnv();
         const keys = Object.keys(env);
 
@@ -517,7 +517,7 @@ export class TerminalUI {
         });
 
         if (selection.target && selection.target.length > 0) {
-            console.log(pc.dim('Sedang menanam credentials...'));
+            console.log(pc.dim('Importing credentials...'));
             for (const key of selection.target) {
                 const saveResult = await Archive.saveNote({
                     id: '',
