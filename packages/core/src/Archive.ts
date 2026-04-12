@@ -493,7 +493,11 @@ export const Archive = {
 
             let backup: { version?: string; notes?: StoredNote[] };
             try {
-                backup = JSON.parse(resDec.data);
+                backup = JSON.parse(resDec.data, (_key, value) => {
+                    // Prevent prototype pollution
+                    if (_key === '__proto__' || _key === 'constructor' || _key === 'prototype') return undefined;
+                    return value;
+                });
             } catch {
                 return { data: null, error: new Error('Invalid backup format: Failed to parse backup data.') };
             }
@@ -530,7 +534,10 @@ export const Archive = {
                     isFavorite: note.isFavorite,
                     tags: note.tags,
                     createdAt: note.createdAt,
-                    kredensial: note.kredensial ? JSON.parse(note.kredensial) : undefined,
+                    kredensial: note.kredensial ? JSON.parse(note.kredensial, (_k, v) => {
+                        if (_k === '__proto__' || _k === 'constructor' || _k === 'prototype') return undefined;
+                        return v;
+                    }) : undefined,
                 };
 
                 const resSave = await this.saveNote(noteInput);

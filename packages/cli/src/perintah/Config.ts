@@ -217,6 +217,22 @@ export function registerConfigCommand(program: Command) {
         }
       }
 
+      // Filter dangerous environment variables that could enable library injection
+      const DANGEROUS_ENV_KEYS = new Set([
+        'LD_PRELOAD', 'LD_LIBRARY_PATH', 'DYLD_INSERT_LIBRARIES',
+        'DYLD_LIBRARY_PATH', 'NODE_OPTIONS', 'NODE_PATH',
+        'BASH_ENV', 'ENV', 'PROMPT_COMMAND'
+      ]);
+
+      const safeEnv: Record<string, string> = {};
+      for (const [key, val] of Object.entries(parsedEnv)) {
+        if (!DANGEROUS_ENV_KEYS.has(key.toUpperCase())) {
+          safeEnv[key] = val as string;
+        } else {
+          console.warn(`⚠️  Stripping dangerous env var: ${key}`);
+        }
+      }
+
       // Command string & args
       const cmd = actualCommand[0];
       const args = actualCommand.slice(1);
@@ -226,8 +242,8 @@ export function registerConfigCommand(program: Command) {
       const child = spawn(cmd, args, {
         stdio: 'inherit',
         shell: false,
-        env: { ...process.env, ...parsedEnv }
-      }) as unknown as { on: (event: string, cb: (...args: any[]) => void) => void };
+        env: { ...process.env, ...safeEnv }
+      }) as unknown as { on: (event: string, cb: (err: Error | null, code: number | null, signal: NodeJS.Signals | null) => void) => void };
 
       child.on('error', (err: Error) => {
         console.error(`Failed to execute process: ${err.message}`);
