@@ -65,7 +65,7 @@ export const CredentialsScreen: React.FC<CredentialsScreenProps> = ({ onBack }) 
                 {step === 'label' && (
                     <>
                         <Text color={UI_TOKENS.text}>Service Name:</Text>
-                        <Box marginTop={1} borderStyle="single" borderColor={UI_TOKENS.meta} paddingX={1}>
+                        <Box marginTop={1} borderStyle="single" borderColor={UI_TOKENS.brand} paddingX={1}>
                             <TextInput value={data.label} onChange={(v) => setData({ ...data, label: v })} onSubmit={handleSubmit} placeholder="Example: GitHub, Production Server..." />
                         </Box>
                     </>
@@ -73,7 +73,7 @@ export const CredentialsScreen: React.FC<CredentialsScreenProps> = ({ onBack }) 
                 {step === 'username' && (
                     <>
                         <Text color={UI_TOKENS.text}>Username / Email:</Text>
-                        <Box marginTop={1} borderStyle="single" borderColor={UI_TOKENS.meta} paddingX={1}>
+                        <Box marginTop={1} borderStyle="single" borderColor={UI_TOKENS.brand} paddingX={1}>
                             <TextInput value={data.username} onChange={(v) => setData({ ...data, username: v })} onSubmit={handleSubmit} placeholder="Username..." />
                         </Box>
                     </>
@@ -81,7 +81,7 @@ export const CredentialsScreen: React.FC<CredentialsScreenProps> = ({ onBack }) 
                 {step === 'password' && (
                     <>
                         <Text color={UI_TOKENS.text}>Password:</Text>
-                        <Box marginTop={1} borderStyle="single" borderColor={UI_TOKENS.meta} paddingX={1}>
+                        <Box marginTop={1} borderStyle="single" borderColor={UI_TOKENS.brand} paddingX={1}>
                             <TextInput value={data.password} onChange={(v) => setData({ ...data, password: v })} onSubmit={handleSubmit} mask="*" placeholder="Password..." />
                         </Box>
                     </>
