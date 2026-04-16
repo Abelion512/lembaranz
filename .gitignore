@@ -228,3 +228,14 @@ packages/cli/*.bin
 .npmrc
 .vercel
 .env*.local
+
+# --- Senior Developer Hardening ---
+.Jules/
+.agent/
+.codex/
+.changeset/
+*.log
+dev_log.txt
+landing_log.txt
+prompt.md
+core/core

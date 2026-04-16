@@ -1,24 +1,25 @@
-# Lembaranz
+# Lembaranzz
 > Self-Hosted Credential & Note Vault — v1.0.1
 
 ## About
-Lembaranz is a self-hosted, zero-knowledge credential manager. Data is encrypted locally with AES-GCM 256-bit + Argon2id before storage. No cloud, no tracking, no account required. Runs as a TUI (Terminal User Interface) via the `lembaranz` command.
+Lembaranzz is a self-hosted, zero-knowledge credential manager. Data is encrypted locally with AES-GCM 256-bit + Argon2id before storage. No cloud, no tracking, no account required. Runs as a TUI (Terminal User Interface) via the `lembaranzz` command.
 
 ## Project Structure (Standalone)
 
 ```
 /
-  core/   — @lembaranz/core — Encryption engine & storage adapters (Atomic Writes)
-  cli/    — @lembaranz/cli  — TUI (Ink/React) + CLI commands
+  packages/
+    core/ — @lembaranzz/core — Encryption engine & storage adapters (Atomic Writes)
+    cli/  — @lembaranzz/cli  — TUI (Ink/React) + CLI commands
 ```
 
 ### Build & Run
 - Root manifest: `package.json` (Consolidated dependencies)
-- Launch TUI (Dev): `bun cli/src/main.ts`
-- Binary name: `lembaranz`
+- Launch TUI (Dev): `bun packages/cli/src/main.ts`
+- Binary name: `lembaranzz`
 - Build verification: `tsc --noEmit` on both components.
 
-## Core Package Architecture (`core/src/`)
+## Core Package Architecture (`packages/core/src/`)
 
 | File | Purpose |
 |------|---------|
@@ -31,9 +32,9 @@ Lembaranz is a self-hosted, zero-knowledge credential manager. Data is encrypted
 ## Critical AI Rules
 
 ### ⚠️ Vault Contexts
-Lembaran uses two main contexts:
-1. `saku`: Global vault (`~/.lembaran/saku.json`)
-2. `pelataran`: Local project vault (`./.lembaran-db.json`)
+Lembaranz uses two main contexts:
+1. `saku`: Global vault (`~/.lembaranz/saku.json`)
+2. `pelataran`: Local project vault (`./.lembaranz-db.json`)
 
 ### Error Pattern
 All async functions return `Result<T>` — never throw:
@@ -50,18 +51,18 @@ type Result<T> = { data: T; error: null } | { data: null; error: Error };
 
 | Command | Description |
 |---------|-------------|
-| `lembaranz` | Launch TUI (default) |
-| `lembaranz setup` | Interactive setup wizard |
-| `lembaranz monitor` | System health & integrity |
-| `lembaranz security` | Security dashboard |
-| `lembaranz launch` | Enter TUI mode |
+| `lembaranzz` | Launch TUI (default) |
+| `lembaranzz setup` | Interactive setup wizard |
+| `lembaranzz monitor` | System health & integrity |
+| `lembaranzz security` | Security dashboard |
+| `lembaranzz launch` | Enter TUI mode |
 
 ## Dev Commands
 
 ```bash
-bun cli/src/main.ts          # Run CLI directly
-bunx tsc --noEmit --project cli/tsconfig.json # Type Check CLI
-bunx tsc --noEmit --project core/tsconfig.json # Type Check Core
+bun packages/cli/src/main.ts                  # Run CLI directly
+bunx tsc --noEmit --project packages/cli/tsconfig.json # Type Check CLI
+bunx tsc --noEmit --project packages/core/tsconfig.json # Type Check Core
 ```
 
 ---

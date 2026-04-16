@@ -33,6 +33,44 @@
         "typescript-eslint": "^8.58.2",
       },
     },
+    "packages/cli": {
+      "name": "@lembaranz/cli",
+      "version": "1.0.1",
+      "bin": {
+        "lembaran": "./src/main.ts",
+      },
+      "dependencies": {
+        "@lembaranz/core": "^1.0.1",
+        "commander": "^14.0.3",
+        "ink": "^6.8.0",
+        "ink-select-input": "^6.2.0",
+        "ink-spinner": "^5.0.0",
+        "ink-text-input": "^6.0.0",
+        "picocolors": "^1.1.1",
+        "prompts": "^2.4.2",
+        "react": "19.2.4",
+        "react-dom": "19.2.4",
+      },
+      "devDependencies": {
+        "@types/react": "^19.2.14",
+      },
+    },
+    "packages/core": {
+      "name": "@lembaranz/core",
+      "version": "1.0.1",
+      "dependencies": {
+        "@noble/ciphers": "^2.1.1",
+        "@noble/hashes": "^2.0.1",
+        "idb": "^8.0.3",
+        "react": "19.2.4",
+        "uuid": "^13.0.0",
+        "zustand": "^5.0.11",
+      },
+      "devDependencies": {
+        "@types/react": "^19",
+        "eslint": "^9",
+      },
+    },
   },
   "packages": {
     "@abelionorg/tagger-public": ["@abelionorg/tagger-public@1.0.2", "", { "dependencies": { "chalk": "^4.1.2", "commander": "^12.0.0", "crypto-js": "^4.2.0" }, "bin": { "abelion-tagger": "dist/cli.js" } }, "sha512-qR1+7r5TlMo0AoiEigRQbvUldQ1F7FDFx0XW1EBNCb5mfKh5+MAOS5zfdTo46Wx6ldd2MFrR+PbxBAXTjOuIYg=="],
@@ -154,6 +192,10 @@
     "@img/sharp-win32-x64": ["@img/sharp-win32-x64@0.34.5", "", { "os": "win32", "cpu": "x64" }, "sha512-+29YMsqY2/9eFEiW93eqWnuLcWcufowXewwSNIT6UwZdUUCrM3oFjMWH/Z6/TMmb4hlFenmfAVbpWeup2jryCw=="],
 
     "@inquirer/external-editor": ["@inquirer/external-editor@1.0.3", "", { "dependencies": { "chardet": "^2.1.1", "iconv-lite": "^0.7.0" }, "peerDependencies": { "@types/node": ">=18" }, "optionalPeers": ["@types/node"] }, "sha512-RWbSrDiYmO4LbejWY7ttpxczuwQyZLBUyygsA9Nsv95hpzUWwnNTVQmAq3xuh7vNwCp07UTmE5i11XAEExx4RA=="],
+
+    "@lembaranz/cli": ["@lembaranz/cli@workspace:packages/cli"],
+
+    "@lembaranz/core": ["@lembaranz/core@workspace:packages/core"],
 
     "@manypkg/find-root": ["@manypkg/find-root@1.1.0", "", { "dependencies": { "@babel/runtime": "^7.5.5", "@types/node": "^12.7.1", "find-up": "^4.1.0", "fs-extra": "^8.1.0" } }, "sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA=="],
 

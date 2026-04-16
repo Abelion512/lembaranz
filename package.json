@@ -2,6 +2,9 @@
   "name": "lembaranz",
   "version": "1.0.1",
   "description": "Lembaranz - Personal Digital Archive Vault with zero-knowledge encryption",
+  "workspaces": [
+    "packages/*"
+  ],
   "author": "Abelion Lavv <agen.salva@gmail.com>",
   "license": "MIT",
   "private": false,
@@ -60,17 +63,17 @@
   "scripts": {
     "dev": "bun --cwd web dev",
     "build": "bun --cwd web build",
-    "cli": "bun ./cli/src/main.ts",
+    "cli": "bun ./packages/cli/src/main.ts",
     "lint": "eslint .",
-    "test": "bun test ./core/src/__tests__/",
-    "test:core": "bun test ./core/src/__tests__/",
-    "test:perf": "bun ./core/src/scripts/inject-perf-data.ts",
+    "test": "bun test ./packages/core/src/__tests__/",
+    "test:core": "bun test ./packages/core/src/__tests__/",
+    "test:perf": "bun ./packages/core/src/scripts/inject-perf-data.ts",
     "version-packages": "changeset version",
     "ci:release": "changeset publish",
     "clean": "rm -rf node_modules .next"
   },
   "bin": {
-    "lembaranz": "./cli/src/main.ts"
+    "lembaranz": "./packages/cli/src/main.ts"
   },
   "dependencies": {
     "@abelionorg/tagger-public": "^1.0.2",

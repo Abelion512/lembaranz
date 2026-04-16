@@ -62,9 +62,9 @@ lembaranz security         # Security dashboard
 ## 📦 Architecture (Standalone)
 
 ```
-/
-├── core/              # @lembaranz/core — Encryption & Storage engine
-├── cli/               # @lembaranz/cli — Terminal interface & Commands
+├── packages/
+│   ├── core/          # @lembaranz/core — Encryption & Storage engine
+│   └── cli/           # @lembaranz/cli — Terminal interface & Commands
 ├── docs/              # Documentation (EN/ID)
 ├── README.md          # Project overview
 └── SECURITY.md        # Security policy
