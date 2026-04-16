@@ -1,10 +1,10 @@
-# Lembaran: AI Handoff Document 🚀
+# Lembaranz: AI Handoff Document 🚀
 
-Dokumen ini disiapkan untuk asisten AI berikutnya agar dapat melanjutkan pengembangan Lembaran (Migrasi/Redesign) tanpa kehilangan konteks.
+Dokumen ini disiapkan untuk asisten AI berikutnya agar dapat melanjutkan pengembangan Lembaranz (Migrasi/Redesign) tanpa kehilangan konteks.
 
 ## 🏗️ Core Architecture (FSD)
 Proyek menggunakan **Next.js 15 (App Router)** dengan struktur **Feature-Sliced Design (FSD)**:
-- `src/app`: Routing "Lembaran".
+- `src/app`: Routing "Lembaranz".
 - `src/components/features`: Logika UI spesifik (Editor, Vault, Profile).
 - `src/lib/storage`: Jantung data (IndexedDB + Web Crypto).
 - `src/lib/hooks`: Manajemen state (Zustand) dan logic hooks.

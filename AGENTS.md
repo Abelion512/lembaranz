@@ -1,4 +1,4 @@
-# Lembaran - Agent Guidelines
+# Lembaranz - Agent Guidelines
 
 > **Version**: 3.5.0 | **Updated**: 29 Maret 2026
 
@@ -15,7 +15,7 @@ Proyek ini mengikuti konvensi penamaan 'Indonesia Puitis' dalam struktur monorep
 > **Hierarki Pedoman (wajib dibaca berurutan):**
 >
 > 1. **`.Jules/SPEC.md`** — Pedoman utama: Identitas, aturan operasional, & kapabilitas agent.
-> 2. **`.agent/rules/proyek.md`** — Aturan spesifik proyek Lembaran untuk semua agent.
+> 2. **`.agent/rules/proyek.md`** — Aturan spesifik proyek Lembaranz untuk semua agent.
 > 3. **`.codex/CONTEXT.md`** — Konteks teknis: Arsitektur, setup, & konvensi kode.
 
 1. **Prioritas Konteks**: Setiap agent **WAJIB** membaca ketiga dokumen di atas (berurutan) sebelum memulai tugas apa pun.
@@ -76,7 +76,7 @@ Semua halaman bantuan di `/bantuan` kini menggunakan `DocRenderer.tsx`.
 - [NEW] Locale routing doubling (/en/id/ fix)
 
 ### Added
-- [NEW] Support @lembaranz scope untuk seluruh monorepo
+- [NEW] Support @lembaranzz scope untuk seluruh monorepo
 - [NEW] install.sh universal CLI Installer (Bash/CURL)
 - [NEW] proxy.ts convention untuk Next.js 16 (menggantikan middleware.ts)
 - Terjemahan lengkap untuk navigasi bantuan

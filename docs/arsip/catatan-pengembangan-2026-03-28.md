@@ -117,7 +117,7 @@
 2. **CLI Tests** — Run dan fix error
 3. **GitHub Workflows** — Fix semua workflow di `.github/workflows/`
 4. **Web Language** — Fix Bahasa Indonesia di changelog & documentation
-5. **TUI Logo** — Tambah logo Lembaran di TUI (seperti gemini/claude)
+5. **TUI Logo** — Tambah logo Lembaranz di TUI (seperti gemini/claude)
 
 ---
 

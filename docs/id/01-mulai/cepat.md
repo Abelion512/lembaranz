@@ -1,10 +1,10 @@
-# Panduan Mulai Cepat Lembaran
+# Panduan Mulai Cepat Lembaranz
 
-Selamat datang di **Lembaran**, platform brankas data personal yang aman dan terenkripsi. Panduan ini akan membantu Anda menyiapkan sistem dan mengelola data Anda secara mandiri.
+Selamat datang di **Lembaranz**, platform brankas data personal yang aman dan terenkripsi. Panduan ini akan membantu Anda menyiapkan sistem dan mengelola data Anda secara mandiri.
 
 ## ⚡ Prasyarat
 
-Sebelum menginstal Lembaran, pastikan alat-alat berikut sudah terpasang di sistem Anda:
+Sebelum menginstal Lembaranz, pastikan alat-alat berikut sudah terpasang di sistem Anda:
 
 1.  **Bun Runtime**: Runtime JavaScript tercepat.
     - [Unduh & Instal Bun](https://bun.sh)
@@ -16,7 +16,7 @@ Sebelum menginstal Lembaran, pastikan alat-alat berikut sudah terpasang di siste
 ### 1. Instalasi Satu Baris (Rekomendasi)
 Buka terminal Anda dan jalankan:
 ```bash
-curl -fsSL https://lembaran.vercel.app/install.sh | bash
+curl -fsSL https://lembaranz.vercel.app/install.sh | bash
 ```
 *Catatan: Bagi pengguna Windows, pastikan Anda menggunakan Git Bash untuk menjalankan perintah ini.*
 
@@ -24,8 +24,8 @@ curl -fsSL https://lembaran.vercel.app/install.sh | bash
 Jika Anda lebih suka menyiapkannya secara manual:
 ```bash
 # Clone repositori
-git clone https://github.com/Abelion512/lembaran.git
-cd lembaran
+git clone https://github.com/Abelion512/lembaranz.git
+cd lembaranz
 
 # Instal dependensi dan daftarkan CLI
 bun install
@@ -36,7 +36,7 @@ bun link
 
 Setelah terinstal, Anda bisa memulai antarmuka terminal interaktif (TUI) dengan mengetik:
 ```bash
-lembaran mulai
+lembaranz mulai
 ```
 
 ### Langkah Persiapan Awal:

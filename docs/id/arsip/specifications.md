@@ -1,6 +1,6 @@
-# Spesifikasi Teknis Lembaran (Source of Truth)
+# Spesifikasi Teknis Lembaranz (Source of Truth)
 
-Dokumen ini mendefinisikan standar baku untuk pembangunan ulang aplikasi Lembaran agar tetap kokoh, konsisten, dan aman.
+Dokumen ini mendefinisikan standar baku untuk pembangunan ulang aplikasi Lembaranz agar tetap kokoh, konsisten, dan aman.
 
 ## 1. Filosofi & Visi
 *   **Local-First**: Data disimpan di perangkat pengguna sebagai sumber kebenaran utama.
@@ -70,4 +70,4 @@ Standar visual yang harus dipatuhi berdasarkan referensi **Google Stitch**:
 *   **Naming Convention**:
     - Fungsi/Variabel: `camelCase`.
     - Komponen/Kelas: `PascalCase`.
-    - Variabel CSS: `var(--lembaran-name)`.
+    - Variabel CSS: `var(--lembaranz-name)`.

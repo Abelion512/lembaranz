@@ -3,6 +3,8 @@ import { Vault } from '../Vault';
 import { Sentinel } from '../Sentinel';
 
 describe('Vault', () => {
+    // NOTE: deriveKey tests need 15s timeout — Argon2id (m=64KB, t=3) is intentionally slow (~7s)
+    // This is the security cost of brute-force resistance. Do NOT lower the KDF params.
     describe('deriveKey', () => {
         test('should derive a CryptoKey from password and salt', async () => {
             const password = 'secure-password';
@@ -11,7 +13,7 @@ describe('Vault', () => {
             const result = await Vault.deriveKey(password, salt, true); // extractable for testing
             expect(result.error).toBeNull();
             expect(result.data).toBeInstanceOf(CryptoKey);
-        });
+        }, { timeout: 15000 });
 
         test('should produce different keys for different passwords', async () => {
             const salt = new Uint8Array(16).fill(42);
@@ -24,7 +26,7 @@ describe('Vault', () => {
             const bytes2 = await crypto.subtle.exportKey('raw', result2.data!);
 
             expect(new Uint8Array(bytes1)).not.toEqual(new Uint8Array(bytes2));
-        });
+        }, { timeout: 15000 });
 
         test('should produce different keys for different salts', async () => {
             const password = 'same-password';
@@ -38,7 +40,7 @@ describe('Vault', () => {
             const bytes2 = await crypto.subtle.exportKey('raw', result2.data!);
 
             expect(new Uint8Array(bytes1)).not.toEqual(new Uint8Array(bytes2));
-        });
+        }, { timeout: 15000 });
     });
 
     describe('generateMasterKey', () => {

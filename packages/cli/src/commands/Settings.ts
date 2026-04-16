@@ -23,7 +23,7 @@ export function registerSettingsCommand(program: Command) {
 
         const hookFile = path.join(gitHooksPath, 'pre-commit');
         const hookContent = `#!/bin/bash
-# Lembaran Pre-commit Secret Scanner
+# Lembaranz Pre-commit Secret Scanner
 
 echo "Scanning staged files for hardcoded secrets..."
 
@@ -48,10 +48,10 @@ done
 
 if [ $has_secrets -eq 1 ]; then
   echo ""
-  echo "Lembaran Security Warning!"
+  echo "Lembaranz Security Warning!"
   echo "Commit cancelled due to detected hardcoded secrets."
-  echo "Tip: Store environment variables in the vault with: lembaran config save [tag]"
-  echo "     and use Zonal Context Injection: lembaran run."
+  echo "Tip: Store environment variables in the vault with: lembaranz config save [tag]"
+  echo "     and use Zonal Context Injection: lembaranz run."
   echo ""
   exit 1
 fi
@@ -60,7 +60,7 @@ echo "Scan clean. Allowing commit."
 exit 0
 `;
         await fs.writeFile(hookFile, hookContent, { mode: 0o755 });
-        return console.log('Successfully installed Lembaran Pre-commit Secret Scanner in this directory.');
+        return console.log('Successfully installed Lembaranz Pre-commit Secret Scanner in this directory.');
       }
 
       await prepareContext(program.opts());

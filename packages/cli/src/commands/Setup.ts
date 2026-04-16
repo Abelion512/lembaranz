@@ -4,51 +4,38 @@ import { Archive } from '@lembaranz/core';
 import { generateMnemonic } from '@lembaranz/core';
 import { prepareContext } from '../utils.js';
 import pc from 'picocolors';
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 
-const PROGRESS_FILE = path.join(process.cwd(), '.lembaran', 'setup-progress.json');
 
 export function registerSetupCommand(program: Command) {
   program
     .command('setup')
     .alias('init')
-    .description('Interactive setup wizard for beginners (CLI or GUI)')
+    .description('Interactive setup wizard (CLI or GUI)')
     .action(async () => {
-      console.log(pc.bold('\n🚀 Lembaran Setup Wizard'));
-      console.log(pc.dim('Set up your secure credential vault in 3 easy steps.\n'));
+      console.log(pc.bold('\n🚀 Lembaranz Setup Wizard'));
+      console.log(pc.dim('Set up your secure credential vault.\n'));
 
       try {
         await prepareContext(program.opts());
 
-        // Ask user to choose interface
-        const { interfaceChoice } = await prompts({
+        const { mode } = await prompts({
           type: 'select',
-          name: 'interfaceChoice',
-          message: 'Choose your preferred setup method:',
+          name: 'mode',
+          message: 'Choose setup mode:',
           choices: [
-            {
-              title: '🖥️  CLI (Terminal)',
-              value: 'cli',
-              description: 'Interactive text-based wizard'
-            },
-            {
-              title: '🌐 GUI (Browser)',
-              value: 'gui',
-              description: 'Visual web interface (like n8n, local only)'
-            }
-          ]
+            { title: '⌨️   CLI — Terminal wizard', value: 'cli' },
+            { title: '🖥️  GUI — Web interface (localhost:1401)', value: 'gui' },
+          ],
         });
 
-        if (interfaceChoice === 'gui') {
-          await launchGUISetup();
-          return;
+        if (mode === 'gui') {
+          await launchGUI();
+        } else {
+          await runCLISetup(program);
         }
-
-        // CLI Setup
-        await runCLISetup(program);
-
       } catch (error) {
         console.log(pc.red('\n✗ Setup failed:'), error instanceof Error ? error.message : String(error));
         process.exit(1);
@@ -56,107 +43,45 @@ export function registerSetupCommand(program: Command) {
     });
 }
 
-async function launchGUISetup() {
-  console.log(pc.cyan('\n🌐 Launching GUI Setup...'));
-  console.log(pc.dim('Building and starting production server (more stable than dev mode)...\n'));
-
-  // Check if lembaran-web exists (landing page is now separate)
-  const webDir = path.join(process.cwd(), '..', 'lembaran-web');
-  try {
-    await fs.access(webDir);
-  } catch {
-    console.log(pc.red('\n✗ lembaran-web not found!'));
-    console.log(pc.yellow('Please make sure you are in the lembaran/ directory inside the monorepo.\n'));
-    console.log(pc.dim('Expected structure:'));
-    console.log(pc.dim('  lembaran/'));
-    console.log(pc.dim('  lembaran-web/ ← landing page (separate)\n'));
+async function launchGUI() {
+  const webDir = path.join(process.cwd(), 'packages', 'web');
+  try { await fs.access(webDir); } catch {
+    console.log(pc.red('\n✗ Web package not found. Run from monorepo root.\n'));
     return;
   }
 
-  // Check if already built
-  const buildDir = path.join(webDir, '.next');
-  let needsBuild = true;
+  // Kill zombie bun/next processes before starting GUI
   try {
-    await fs.access(buildDir);
-    needsBuild = false;
-    console.log(pc.green('✓ Found existing build, skipping build step\n'));
-  } catch {
-    console.log(pc.yellow('⚠️  No build found, building first time...\n'));
-  }
-
-  if (needsBuild) {
-    console.log(pc.cyan('🔨 Building lembaran-web...'));
-    const buildProcess = spawn('bun', ['run', 'build'], {
-      cwd: webDir,
-      stdio: 'inherit',
-      shell: true
-    });
-
-    await new Promise<void>((resolve, reject) => {
-      buildProcess.on('exit', (code) => {
-        if (code === 0) resolve();
-        else reject(new Error(`Build failed with code ${code}`));
-      });
-    });
-
-    console.log(pc.green('✓ Build complete!\n'));
-  }
-
-  console.log(pc.green('✓ Starting production server on http://localhost:1400\n'));
-  console.log(pc.yellow('⚠️  Keep this terminal open! Press Ctrl+C to stop the server.\n'));
-  console.log(pc.dim('📝 All actions will be logged in this terminal.\n'));
-
-  // Spawn the production server (more stable than dev)
-  const serverProcess = spawn('bun', ['run', 'start'], {
-    cwd: webDir,
-    stdio: 'inherit',
-    shell: true
-  });
-
-  // Log file
-  const logFile = path.join(process.cwd(), 'setup-gui.log');
-  const logStream = await fs.openFile(logFile, 'a');
-  await logStream.write(`\n[${new Date().toISOString()}] GUI Setup Session Started (Production Mode)\n`);
-
-  // Auto-restart on crash (like Docker restart policy)
-  serverProcess.on('exit', async (code, signal) => {
-    if (code !== 0 && code !== null) {
-      console.log(pc.yellow(`\n⚠️  Server crashed (code ${code}). Restarting in 3 seconds...\n`));
-      await logStream.write(`[${new Date().toISOString()}] Server crashed with code ${code}, restarting...\n`);
-
-      setTimeout(() => {
-        const newProcess = spawn('bun', ['run', 'start'], {
-          cwd: webDir,
-          stdio: 'inherit',
-          shell: true
-        });
-        // Note: In a real implementation, you'd update the serverProcess reference
-      }, 3000);
+    // Kill all bun run start/dev processes safely
+    const pgrep = spawnSync('pgrep', ['-f', 'bun.*dev|bun.*start|next-server'], { encoding: 'utf-8' });
+    if (pgrep.stdout) {
+      const pids = pgrep.stdout.trim().split('\n').filter(Boolean);
+      if (pids.length > 0) {
+        spawnSync('kill', ['-9', ...pids]);
+      }
     }
-  });
+    
+    // Fallback: kill anything on port 1401 safely
+    const lsof = spawnSync('lsof', ['-ti:1401'], { encoding: 'utf-8' });
+    if (lsof.stdout) {
+      const pids = lsof.stdout.trim().split('\n').filter(Boolean);
+      if (pids.length > 0) {
+        spawnSync('kill', ['-9', ...pids]);
+      }
+    }
+  } catch {
+    // Ignore kill errors
+  }
 
-  // Wait for user to finish
-  console.log(pc.cyan('\n📋 Setup Instructions:'));
-  console.log(pc.dim('  1. Open http://localhost:1400 in your browser'));
-  console.log(pc.dim('  2. Look for "Setup Wizard" or "Get Started" button'));
-  console.log(pc.dim('  3. Follow the visual wizard'));
-  console.log(pc.dim('  4. Come back here and press Enter when done\n'));
+  console.log(pc.cyan('\n🖥️  Starting GUI on http://localhost:1401\n'));
+  console.log(pc.yellow('⚠️  Keep this terminal open!'));
+  console.log(pc.dim('The vault manager will open in your browser.\n'));
 
-  await prompts({
-    type: 'text',
-    name: 'done',
-    message: 'Press Enter when you have completed the GUI setup:',
-    initial: ''
-  });
+  const child = spawn('bun', ['run', 'dev'], { cwd: webDir, stdio: 'inherit', shell: true });
 
-  // Stop the server
-  console.log(pc.yellow('\n⏹️  Stopping server...'));
-  serverProcess.kill();
-
-  await logStream.write(`[${new Date().toISOString()}] GUI Setup Session Completed\n`);
-  await logStream.close();
-
-  console.log(pc.green(`✓ Server stopped. Setup log saved to: ${logFile}\n`));
+  await prompts({ type: 'text', name: '_', message: 'Press Enter to stop GUI server:', initial: '' });
+  child.kill();
+  console.log(pc.green('\n✓ GUI server stopped.\n'));
 }
 
 async function runCLISetup(program: Command) {
@@ -186,33 +111,10 @@ async function runCLISetup(program: Command) {
         });
         if (!confirm) return;
         await Archive.destroyAllData();
-        await clearProgress();
         console.log(pc.green('✓ Old vault destroyed'));
       } else {
         await unlockVaultInteractive();
         return;
-      }
-    }
-
-    // Check if there's saved progress
-    const savedProgress = await loadProgress();
-    if (savedProgress && savedProgress.step >= 1) {
-      console.log(pc.cyan('\n💾 Found saved progress from previous session!'));
-      console.log(pc.dim('You were at Step 2 (Recovery Phrase).\n'));
-
-      const { continueSetup } = await prompts({
-        type: 'confirm',
-        name: 'continueSetup',
-        message: 'Continue from where you left off?',
-        initial: true
-      });
-
-      if (continueSetup) {
-        await runCLISetup(program);
-        return;
-      } else {
-        await clearProgress();
-        console.log(pc.dim('Starting fresh setup...\n'));
       }
     }
 
@@ -227,8 +129,13 @@ async function runCLISetup(program: Command) {
       const passwordResult = await prompts({
         type: 'password',
         name: 'password',
-        message: 'Enter a strong password (min 8 characters):',
-        validate: (val: string) => val.length >= 8 ? true : 'Password must be at least 8 characters'
+        message: 'Enter a strong password (min 8 chars, mix of letters/numbers):',
+        validate: (val: string) => {
+          if (val.length < 8) return 'Password must be at least 8 characters';
+          if (!/[A-Za-z]/.test(val)) return 'Password must contain at least one letter';
+          if (!/[0-9]/.test(val)) return 'Password must contain at least one number';
+          return true;
+        }
       });
 
       if (!passwordResult.password) {
@@ -252,16 +159,27 @@ async function runCLISetup(program: Command) {
       confirmed = true;
     }
 
-    // Save progress after step 1
-    await saveProgress({ password, mnemonic: '', step: 1 });
+    // Step 2+: Recovery phrase and beyond
+    await runStep2AndBeyond(password, '', program);
 
-    // Step 2: Generate recovery phrase
-    console.log(pc.cyan('\n🔑 Step 2/3: Your Recovery Phrase'));
-    console.log(pc.yellow('\n⚠️  PENTING: Tulis 12 kata ini di KERTAS!'));
-    console.log(pc.dim('Jika lupa password, 12 kata ini SATU-SATUNYA cara untuk recover.\n'));
+  } catch (error) {
+    console.log(pc.red('\n✗ Setup failed:'), error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  }
+}
 
-    const mnemonic = generateMnemonic(12);
+async function runStep2AndBeyond(password: string, savedMnemonic: string, _program: Command) {
+  try {
+    const mnemonic = savedMnemonic || generateMnemonic(12);
     const words = mnemonic.split(' ');
+
+    // Step 2: Display recovery phrase
+    console.clear();
+    console.log(pc.cyan('\n🔑 Step 2/3: Your Recovery Phrase'));
+    console.log(pc.yellow('\n⚠️  IMPORTANT: Write these 12 words on PAPER!'));
+    console.log(pc.dim('If you forget your password, these words are the ONLY way to recover your vault.'));
+    console.log(pc.red('\n🛑 SECURITY TIP: Make sure no one is looking at your screen!'));
+    console.log(pc.dim('The screen will be cleared after you confirm.\n'));
 
     // Display words in a nice format
     console.log(pc.bold('\n┌─────────────────────────────────────────────────────────────────┐'));
@@ -288,18 +206,13 @@ async function runCLISetup(program: Command) {
 
     if (!wroteDown) {
       console.log(pc.red('\n⚠️  Setup dibatalkan.'));
-      console.log(pc.yellow('\n💾 Progress tersimpan! Anda bisa lanjut nanti.'));
-      console.log(pc.dim('  • Screenshot 12 kata di atas (hanya untuk sementara)'));
-      console.log(pc.dim('  • Tulis di kertas, lalu hapus screenshot'));
-      console.log(pc.dim('  • Jalankan `lembaran setup` lagi - password & seed phrase akan sama\n'));
-
-      // Save progress
-      await saveProgress({ password, mnemonic, step: 2 });
+      console.log(pc.dim('  • Jalankan `lembaranz setup` lagi untuk memulai proses dari awal\n'));
       return;
     }
 
-    // Save progress after step 2
-    await saveProgress({ password, mnemonic, step: 2 });
+    // Clear screen immediately after confirmation for security
+    console.clear();
+    console.log(pc.green('\n✓ 12 words saved. Screen cleared for your privacy.\n'));
 
     // Verify they wrote it down
     const { wantVerify } = await prompts({
@@ -323,7 +236,7 @@ async function runCLISetup(program: Command) {
         console.log(pc.red('\n✗ Kata tidak cocok! Periksa lagi tulisan Anda.'));
         console.log(pc.yellow('\n12 kata Anda:'));
         console.log(pc.cyan(mnemonic));
-        console.log(pc.dim('\nJalankan `lembaran setup` lagi setelah menulis dengan benar.\n'));
+        console.log(pc.dim('\nJalankan `lembaranz setup` lagi setelah menulis dengan benar.\n'));
         return;
       }
 
@@ -338,9 +251,6 @@ async function runCLISetup(program: Command) {
       console.log(pc.red(`\n✗ Failed to create vault: ${setupResult.error.message}`));
       return;
     }
-
-    // Clear saved progress
-    await clearProgress();
 
     console.log(pc.green('\n✅ Vault created successfully!\n'));
     console.log(pc.bold('🎉 You\'re all set!\n'));
@@ -364,40 +274,11 @@ async function runCLISetup(program: Command) {
       showCommandsHelp();
     }
 
-    console.log(pc.green('\n🎊 Welcome to Lembaran! Your credentials are now secure.\n'));
+    console.log(pc.green('\n🎊 Welcome to Lembaranz! Your credentials are now secure.\n'));
 
   } catch (error) {
     console.log(pc.red('\n✗ Setup failed:'), error instanceof Error ? error.message : String(error));
     process.exit(1);
-  }
-}
-
-// Helper functions
-
-async function saveProgress(data: { password: string; mnemonic: string; step: number }) {
-  try {
-    const progressDir = path.join(process.cwd(), '.lembaran');
-    await fs.mkdir(progressDir, { recursive: true });
-    await fs.writeFile(PROGRESS_FILE, JSON.stringify(data, null, 2));
-  } catch (e) {
-    // Silently fail if can't save progress
-  }
-}
-
-async function loadProgress(): Promise<{ password: string; mnemonic: string; step: number } | null> {
-  try {
-    const content = await fs.readFile(PROGRESS_FILE, 'utf-8');
-    return JSON.parse(content);
-  } catch {
-    return null;
-  }
-}
-
-async function clearProgress() {
-  try {
-    await fs.unlink(PROGRESS_FILE);
-  } catch {
-    // Ignore if file doesn't exist
   }
 }
 
@@ -510,23 +391,23 @@ async function storeFirstCredential() {
       console.log(pc.red(`\n✗ Failed to save: ${result.error.message}`));
     } else {
       console.log(pc.green('\n✅ Credential saved securely!\n'));
-      console.log(pc.dim(`To view it: lembaran browse ${tags[0] || 'credential'}`));
+      console.log(pc.dim(`To view it: lembaranz browse ${tags[0] || 'credential'}`));
     }
   }
 }
 
 function showCommandsHelp() {
   console.log(pc.cyan('\n📋 Available Commands:\n'));
-  console.log(pc.bold('  lembaran launch'));
+  console.log(pc.bold('  lembaranz launch'));
   console.log(pc.dim('    → Launch interactive TUI (full interface)\n'));
-  console.log(pc.bold('  lembaran config save [tag]'));
+  console.log(pc.bold('  lembaranz config save [tag]'));
   console.log(pc.dim('    → Save .env file to vault\n'));
-  console.log(pc.bold('  lembaran config load [tag]'));
+  console.log(pc.bold('  lembaranz config load [tag]'));
   console.log(pc.dim('    → Load credentials to current project\n'));
-  console.log(pc.bold('  lembaran config list'));
+  console.log(pc.bold('  lembaranz config list'));
   console.log(pc.dim('    → List all stored credentials\n'));
-  console.log(pc.bold('  lembaran browse [keyword]'));
+  console.log(pc.bold('  lembaranz browse [keyword]'));
   console.log(pc.dim('    → Search credentials by tag\n'));
-  console.log(pc.bold('  lembaran export'));
+  console.log(pc.bold('  lembaranz export'));
   console.log(pc.dim('    → Export encrypted backup\n'));
 }

@@ -187,7 +187,7 @@ export function registerConfigCommand(program: Command) {
       const actualCommand = commandArgs;
 
       if (!actualCommand || actualCommand.length === 0) {
-        return console.log('You must provide a command to run. Example: lembaran run npm start');
+        return console.log('You must provide a command to run. Example: lembaranz run npm start');
       }
 
       await prepareContext(program.opts());
@@ -258,10 +258,12 @@ export function registerConfigCommand(program: Command) {
         env: { ...process.env, ...safeEnv }
       });
 
+      // @ts-expect-error - ChildProcess has on() method at runtime
       child.on('error', (err: Error) => {
         console.error(`Failed to execute process: ${err.message}`);
       });
 
+      // @ts-expect-error - ChildProcess has on() method at runtime
       child.on('exit', (code: number | null, signal: NodeJS.Signals | null) => {
         process.exitCode = code ?? (signal ? 1 : 0);
       });

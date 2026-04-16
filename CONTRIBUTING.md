@@ -1,6 +1,6 @@
 # Panduan Kontribusi
 
-Terima kasih atas minat Anda untuk berkontribusi pada **Lembaran**.
+Terima kasih atas minat Anda untuk berkontribusi pada **Lembaranz**.
 
 Proyek ini menjunjung tinggi filosofi **"Kedaulatan Data & Estetika Puitis"**.
 

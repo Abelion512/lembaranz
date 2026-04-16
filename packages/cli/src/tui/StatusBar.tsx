@@ -5,20 +5,33 @@ interface StatusBarProps {
     context: string;
     versi: string;
     screen?: string;
+    isLocked?: boolean;
 }
 
-export const StatusBar: React.FC<StatusBarProps> = ({ context, versi, screen }) => {
+export const StatusBar: React.FC<StatusBarProps> = ({ context, versi, screen, isLocked }) => {
+    const contextColor = context === 'saku' ? 'cyan' : 'yellow';
+    
     return (
-        <Box borderStyle="single" borderColor="gray" paddingX={1} justifyContent="space-between" key={`bar-${context}-${screen}`}>
-            <Text>
-                <Text color="cyan" bold>📜 Lembaran</Text>
+        <Box paddingX={1} justifyContent="space-between" key={`bar-${context}-${screen}`}>
+            <Box>
+                <Text color="cyan" bold>📜 Lembaranz</Text>
                 <Text color="gray"> {versi}</Text>
-            </Text>
-            {screen && <Text color="gray" dimColor>[ {screen} ]</Text>}
-            <Text>
-                <Text color="yellow" bold>{context.toUpperCase()}</Text>
+                <Text color="gray"> • </Text>
+                <Text color={isLocked ? 'yellow' : 'green'}>
+                    {isLocked ? '🔒 Locked' : '🔓 Secure'}
+                </Text>
+            </Box>
+            
+            {screen && (
+                <Box borderStyle="single" borderTop={false} borderBottom={false} borderLeft={true} borderRight={true} borderColor="gray" paddingX={1}>
+                    <Text color="gray" dimColor>{screen}</Text>
+                </Box>
+            )}
+            
+            <Box>
+                <Text color={contextColor} bold>{context.toUpperCase()}</Text>
                 <Text color="gray" dimColor> • q:exit</Text>
-            </Text>
+            </Box>
         </Box>
     );
 };

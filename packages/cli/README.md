@@ -1,8 +1,8 @@
 # @lembaranz/cli
 
-**Lembaran CLI - Brankas Aksara Personal yang Berdikari** 🇮🇩
+**Lembaranz CLI - Brankas Aksara Personal yang Berdikari** 🇮🇩
 
-Antarmuka baris perintah (CLI) and TUI resmi untuk Lembaran. Amankan catatan, ide, and rahasia Anda langsung di terminal dengan enkripsi tingkat militer.
+Antarmuka baris perintah (CLI) and TUI resmi untuk Lembaranz. Amankan catatan, ide, and rahasia Anda langsung di terminal dengan enkripsi tingkat militer.
 
 ## 🚀 Instalasi
 
@@ -19,16 +19,16 @@ npm install -g @lembaranz/cli
 Jalankan perintah utama untuk masuk ke antarmuka interaktif:
 
 ```bash
-lembaran mulai
+lembaranz mulai
 ```
 
 ### Perintah Lainnya
 
-- `lembaran ukir`: Membuat catatan baru secara cepat.
-- `lembaran laras`: Mengelola variabel lingkungan (.env) proyek Anda.
-- `lembaran tanam`: Mengimpor direktori dokumen ke dalam brankas.
-- `lembaran petik`: Mengekspor catatan terenkripsi ke format cadangan.
-- `lembaran cari`: Mencari di seluruh arsip yang terenkripsi.
+- `lembaranz ukir`: Membuat catatan baru secara cepat.
+- `lembaranz laras`: Mengelola variabel lingkungan (.env) proyek Anda.
+- `lembaranz tanam`: Mengimpor direktori dokumen ke dalam brankas.
+- `lembaranz petik`: Mengekspor catatan terenkripsi ke format cadangan.
+- `lembaranz cari`: Mencari di seluruh arsip yang terenkripsi.
 
 ## 🔐 Keamanan
 
@@ -38,4 +38,4 @@ lembaran mulai
 
 ## 📄 Lisensi
 
-[MIT](https://github.com/Abelion512/lembaran/blob/main/LICENSE)
+[MIT](https://github.com/Abelion512/lembaranz/blob/main/LICENSE)

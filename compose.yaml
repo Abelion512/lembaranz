@@ -1,19 +1,19 @@
 services:
-  lembaran:
+  lembaranz:
     build:
       context: .
       dockerfile: Dockerfile
-    image: lembaran:latest
-    container_name: lembaran-app
+    image: lembaranz:latest
+    container_name: lembaranz-app
     ports:
       - "1400:1400"
     volumes:
-      - lembaran-data:/app/data
+      - lembaranz-data:/app/data
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
-      - DB_PATH=/app/data/.lembaran-db.json
+      - DB_PATH=/app/data/.lembaranz-db.json
     restart: always
 
 volumes:
-  lembaran-data:
+  lembaranz-data:

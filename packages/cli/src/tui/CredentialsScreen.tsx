@@ -21,7 +21,7 @@ export const CredentialsScreen: React.FC<CredentialsScreenProps> = ({ onBack }) 
 
                 // Cek apakah vault sudah dibuka
                 if (Vault.isLocked()) {
-                    console.error('\n❌ Vault locked! Silakan buka brankas terlebih dahulu dengan command: lembaran mulai');
+                    console.error('\n❌ Vault locked! Silakan buka brankas terlebih dahulu dengan command: lembaranz mulai');
                     onBack();
                     return;
                 }

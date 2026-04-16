@@ -8,7 +8,7 @@ import { prepareContext, openVaultCLI } from '../utils.js';
 export function registerImportCommand(program: Command) {
   program
     .command('import')
-    .description('Import files (.md) or restore backups (.lembaran)')
+    .description('Import files (.md) or restore backups (.lembaranz)')
     .argument('<path>', 'Directory or file to import')
     .action(async (p) => {
       await prepareContext(program.opts());
@@ -28,9 +28,9 @@ export function registerImportCommand(program: Command) {
         return;
       }
 
-      // Case 2: .lembaran file (Restore Backup)
-      if (p.endsWith('.lembaran')) {
-        console.log('Detecting portable backup file (.lembaran)');
+      // Case 2: .lembaranz file (Restore Backup)
+      if (p.endsWith('.lembaranz')) {
+        console.log('Detecting portable backup file (.lembaranz)');
         const buffer = await fs.readFile(p);
 
         const res = await prompts({
@@ -66,7 +66,7 @@ export function registerImportCommand(program: Command) {
           return;
       }
 
-      console.log('Unsupported file format. Use .md or .lembaran');
+      console.log('Unsupported file format. Use .md or .lembaranz');
     });
 }
 

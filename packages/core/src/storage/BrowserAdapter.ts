@@ -1,16 +1,16 @@
 import { openDB, IDBPDatabase } from 'idb';
-import { StorageAdapter, LembaranSchema } from './types';
+import { StorageAdapter, LembaranzSchema } from './types';
 
-const DB_NAME = 'lembaran_next';
+const DB_NAME = 'lembaranz_next';
 const DB_VERSION = 1;
 
 export class BrowserAdapter implements StorageAdapter {
-    private dbInstance: IDBPDatabase<LembaranSchema> | null = null;
+    private dbInstance: IDBPDatabase<LembaranzSchema> | null = null;
 
-    private async initDB(): Promise<IDBPDatabase<LembaranSchema>> {
+    private async initDB(): Promise<IDBPDatabase<LembaranzSchema>> {
         if (this.dbInstance) return this.dbInstance;
 
-        this.dbInstance = await openDB<LembaranSchema>(DB_NAME, DB_VERSION, {
+        this.dbInstance = await openDB<LembaranzSchema>(DB_NAME, DB_VERSION, {
             upgrade(db) {
                 if (!db.objectStoreNames.contains('notes')) {
                     const noteStore = db.createObjectStore('notes', { keyPath: 'id' });
@@ -32,12 +32,12 @@ export class BrowserAdapter implements StorageAdapter {
         return this.dbInstance;
     }
 
-    async get<K extends keyof LembaranSchema>(store: K, key: string) {
+    async get<K extends keyof LembaranzSchema>(store: K, key: string) {
         const db = await this.initDB();
         return db.get(store as any, key);
     }
 
-    async set<K extends keyof LembaranSchema>(store: K, key: string, value: LembaranSchema[K]['value']) {
+    async set<K extends keyof LembaranzSchema>(store: K, key: string, value: LembaranzSchema[K]['value']) {
         const db = await this.initDB();
         if (store === 'notes' || store === 'folders') {
             await db.put(store as any, value);
@@ -46,22 +46,22 @@ export class BrowserAdapter implements StorageAdapter {
         }
     }
 
-    async getAll<K extends keyof LembaranSchema>(store: K) {
+    async getAll<K extends keyof LembaranzSchema>(store: K) {
         const db = await this.initDB();
         return db.getAll(store as any);
     }
 
-    async delete(store: keyof LembaranSchema, key: string) {
+    async delete(store: keyof LembaranzSchema, key: string) {
         const db = await this.initDB();
         await db.delete(store as any, key);
     }
 
-    async count(store: keyof LembaranSchema) {
+    async count(store: keyof LembaranzSchema) {
         const db = await this.initDB();
         return db.count(store as any);
     }
 
-    async clear(store: keyof LembaranSchema) {
+    async clear(store: keyof LembaranzSchema) {
         const db = await this.initDB();
         await db.clear(store as any);
     }

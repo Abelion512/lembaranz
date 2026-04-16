@@ -1,11 +1,12 @@
-# Product Requirements Document (PRD): Lembaran
+# Product Requirements Document (PRD): Lembaranz
 
-**Versi:** 3.4.0  
-**Status:** Production Ready — Fokus CLI/TUI  
-**Tanggal:** 28 Maret 2026  
+**Versi:** 3.5.0
+**Status:** Production Ready — CLI/TUI Stabil, GUI Phase 2
+**Tanggal:** 13 April 2026
 **Bahasa:** Indonesia Baku
+**Branch:** `#33`
 
-> **Lembaran**: Brankas Arsip Digital Personal Buatan Anak Bangsa  
+> **Lembaranz**: Brankas Arsip Digital Personal Buatan Anak Bangsa  
 > **Filosofi:** Kedaulatan Data, Privasi Absolut, Estetika Minimalis  
 > **Konvensi Nama:** Indonesia Puitis (Jiwa, Raga, Suara, Aksara, Brankas)
 
@@ -13,7 +14,7 @@
 
 ## 1. Identitas & Filosofi
 
-Lembaran adalah brankas arsip digital personal yang dikembangkan oleh pengembang Indonesia untuk kedaulatan data lokal.
+Lembaranz adalah brankas arsip digital personal yang dikembangkan oleh pengembang Indonesia untuk kedaulatan data lokal.
 
 ### Visi
 Menjadi standar emas penyimpanan data personal terenkripsi yang **dibuat di Indonesia untuk dunia**.
@@ -96,12 +97,12 @@ Pengelolaan `.env` lintas proyek dengan enkripsi.
 Antarmuka terminal interaktif untuk produktivitas maksimal.
 
 **Commands:**
-- `lembaran mulai` - TUI interaktif
-- `lembaran ukir` - Buat/edit catatan
-- `lembaran laras` - Kelola environment
-- `lembaran tanam` - Import direktori
-- `lembaran cari` - Search encrypted notes
-- `lembaran petik` - Export catatan
+- `lembaranz mulai` - TUI interaktif
+- `lembaranz ukir` - Buat/edit catatan
+- `lembaranz laras` - Kelola environment
+- `lembaranz tanam` - Import direktori
+- `lembaranz cari` - Search encrypted notes
+- `lembaranz petik` - Export catatan
 
 **Status:** ✅ Production Ready
 
@@ -119,7 +120,7 @@ Antarmuka terminal interaktif untuk produktivitas maksimal.
 
 ### Fase 2 — Fitur Utama (Ciri Khas) ✅ **SELESAI 85%**
 - [x] Laras (.env manager) dengan overwrite protection
-- [x] TUI dengan logo Lembaran (seperti gemini/claude)
+- [x] TUI dengan logo Lembaranz (seperti gemini/claude)
 - [x] Fuzzy search encrypted content
 - [x] Import/export multi-format
 - [x] AI YOLO Mode security (single-push)
@@ -139,11 +140,11 @@ Antarmuka terminal interaktif untuk produktivitas maksimal.
 ## 5. Struktur Folder
 
 ```
-lembaran/
+lembaranz/
 ├── packages/
-│   ├── core/          # @lembaran/core (encryption, storage)
-│   ├── cli/           # @lembaran/cli (TUI, commands)
-│   └── web/           # @lembaran/web (landing page, docs)
+│   ├── core/          # @lembaranz/core (encryption, storage)
+│   ├── cli/           # @lembaranz/cli (TUI, commands)
+│   └── web/           # @lembaranz/web (landing page, docs)
 ├── docs/              # Dokumentasi (id/ & en/)
 ├── .githooks/         # Git hooks (YOLO mode)
 ├── scripts/           # Helper scripts

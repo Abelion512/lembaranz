@@ -8,6 +8,7 @@ import { Note } from '@lembaranz/core';
 interface ArchiveScreenProps {
     onBack: () => void;
     initialSearch?: string;
+    isFocused?: boolean;
 }
 
 /**
@@ -36,7 +37,7 @@ const cleanTextForSearch = (text: string): string => {
         .trim();
 };
 
-export const ArchiveScreen: React.FC<ArchiveScreenProps> = ({ onBack, initialSearch }) => {
+export const ArchiveScreen: React.FC<ArchiveScreenProps> = ({ onBack, initialSearch, isFocused = true }) => {
     const [notes, setNotes] = useState<Note[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [search, setSearch] = useState(initialSearch || '');
@@ -81,64 +82,96 @@ export const ArchiveScreen: React.FC<ArchiveScreenProps> = ({ onBack, initialSea
         [notes, selectedNoteId]);
 
     useInput((input, key) => {
+        if (!isFocused) return;
         if (key.escape || (input === 'q' && !selectedNoteId)) {
             if (selectedNoteId) setSelectedNoteId(null);
             else onBack();
         }
     });
 
-    if (isLoading) return <Box padding={1}><Text color="cyan"><Spinner type="dots" /> Membuka arsip...</Text></Box>;
+    if (isLoading) return <Box padding={1}><Text color="cyan"><Spinner type="dots" /> Opening archive...</Text></Box>;
 
     if (selectedNoteId && selectedNote) {
         return (
-            <Box flexDirection="column" padding={1} key="note-detail-container">
-                <Box borderStyle="round" borderColor="cyan" paddingX={1} marginBottom={1}>
+            <Box flexDirection="column" paddingX={2} key="note-detail-container">
+                <Box borderStyle="single" borderColor="cyan" paddingX={1} marginBottom={1}>
                     <Text bold color="cyan">📖 {selectedNote.title || 'Untitled'}</Text>
                 </Box>
-                <Box flexDirection="column" paddingX={1}>
-                    <Text color="gray" dimColor>Dibuat: {selectedNote.createdAt}</Text>
-                    <Box marginY={1} borderStyle="single" borderColor="gray" padding={1}>
-                        {/* Gunakan pembersihan konservatif untuk tampilan detail agar Markdown tetap utuh */}
-                        <Text>{cleanTextForDisplay(selectedNote.content) || '(Catatan Kosong)'}</Text>
+                <Box flexDirection="column">
+                    <Text color="gray" dimColor>Created: {selectedNote.createdAt}</Text>
+                    <Box marginY={1} paddingX={1} minHeight={10}>
+                        <Text>{cleanTextForDisplay(selectedNote.content) || '(Empty Note)'}</Text>
                     </Box>
-                    <Box>
-                        {selectedNote.tags?.map((t, idx) => <Text key={`${t}-${idx}`} color="blue"> #{t}</Text>)}
+                    <Box paddingX={1}>
+                        {selectedNote.tags?.map((t, idx) => (
+                            <Box key={`${t}-${idx}`} marginRight={1}>
+                                <Text color="blue" bold>#</Text>
+                                <Text color="blue">{t}</Text>
+                            </Box>
+                        ))}
                     </Box>
                 </Box>
-                <Box marginTop={1} paddingX={1}>
-                    <Text color="gray" dimColor italic>Tekan [Esc] atau [q] untuk kembali ke daftar</Text>
+                <Box marginTop={1}>
+                    <Text color="gray" dimColor italic>⎯⎯  [Esc] Back to Table</Text>
                 </Box>
             </Box>
         );
     }
 
     return (
-        <Box flexDirection="column" padding={1} key="arsip-list-container">
-            <Box borderStyle="round" borderColor="blue" paddingX={1} marginBottom={1} justifyContent="space-between">
-                <Text color="blue" bold>📂 JELAJAH ARSIP</Text>
-                <Text color="gray">[{filteredNotes.length} catatan]</Text>
+        <Box flexDirection="column" paddingX={2} key="arsip-list-container">
+            {/* Minimal Sub-Header */}
+            <Box marginBottom={1} justifyContent="space-between">
+                <Box>
+                    <Text color="cyan" bold>EXPLORE ARCHIVE</Text>
+                    <Text color="gray"> · {filteredNotes.length}/{notes.length} items</Text>
+                </Box>
+                {search && <Text color="yellow" dimColor>Filter: "{search}"</Text>}
             </Box>
 
+            {/* Integrated Search Bar */}
+            <Box marginBottom={1}>
+                <Text color="gray" dimColor>🔍 </Text>
+                <TextInput value={search} onChange={setSearch} placeholder="search title, tags..." />
+            </Box>
+
+            {/* Table Header */}
             <Box paddingX={1} marginBottom={1}>
-                <Text bold>🔍 Cari: </Text>
-                <TextInput value={search} onChange={setSearch} placeholder="Ketik title, tag, atau isi..." />
+                <Box width={6}><Text color="gray" bold>ID</Text></Box>
+                <Box width={30}><Text color="gray" bold>NAME</Text></Box>
+                <Box><Text color="gray" bold>TAGS</Text></Box>
             </Box>
 
-            <Box paddingX={1} flexDirection="column" minHeight={5}>
+            {/* Table Rows */}
+            <Box flexDirection="column" minHeight={8}>
                 {filteredNotes.length === 0 ? (
-                    <Text color="yellow">⚠️ Tidak ada catatan yang ditemukan.</Text>
+                    <Box paddingX={1}>
+                        <Text color="yellow" dimColor>No records found matching your query.</Text>
+                    </Box>
                 ) : (
                     <ModernSelect
-                        items={filteredNotes.map(n => ({ label: n.title || 'Untitled', value: n.id }))}
+                        items={filteredNotes.map((n, idx) => ({ 
+                            label: (
+                                <Box>
+                                    <Box width={6}><Text color={selectedNoteId === n.id ? 'cyan' : 'gray'}>{(idx + 1).toString().padStart(2, '0')}</Text></Box>
+                                    <Box width={30}><Text bold={selectedNoteId === n.id}>{n.title || 'Untitled'}</Text></Box>
+                                    <Box><Text color="blue" dimColor>{(n.tags || []).slice(0, 2).map(t => `#${t}`).join(' ')}</Text></Box>
+                                </Box>
+                            ) as any, 
+                            value: n.id,
+                            key: n.id 
+                        }))}
                         limit={10}
                         onSelect={(item) => setSelectedNoteId(item.value)}
+                        isFocused={isFocused}
                     />
                 )}
             </Box>
 
-            <Box marginTop={1} paddingX={1}>
-                <Text color="gray" dimColor italic>Gunakan [j/k] atau panah untuk navigasi, [Enter] untuk buka, [Esc] kembali</Text>
+            <Box marginTop={1} justifyContent="space-between">
+                <Text color="gray" dimColor italic>j/k:move · enter:open · esc:back</Text>
             </Box>
         </Box>
     );
 };
+

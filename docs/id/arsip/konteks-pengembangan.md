@@ -1,4 +1,4 @@
-# Konteks Pengembangan & Log Perubahan (Lembaran v2.0.7)
+# Konteks Pengembangan & Log Perubahan (Lembaranz v2.0.7)
 
 Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan optimasi untuk mencapai harmoni antara fitur modern dan estetika *Glass OS* asli.
 
@@ -17,7 +17,7 @@ Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan 
 
 **Solusi**:
 - **Migrasi ke Pundi.ts**: Memperkenalkan `@/aksara/Pundi` sebagai sumber kebenaran (Source of Truth) baru berbasis Zustand.
-- **Pemisahan Logic & View**: Memindahkan rendering utama dari `src/app/page.tsx` ke `src/app/LembaranUtama.tsx` untuk mendukung `Suspense` dan pemuatan asinkron yang lebih baik.
+- **Pemisahan Logic & View**: Memindahkan rendering utama dari `src/app/page.tsx` ke `src/app/LembaranzUtama.tsx` untuk mendukung `Suspense` dan pemuatan asinkron yang lebih baik.
 - **Cleanup**: Menghapus file `toko.ts` dan referensi lama untuk menghindari konflik sirkular.
 
 ## 3. Peningkatan Keamanan & Integritas Data
@@ -58,7 +58,7 @@ Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan 
 **Masalah**: Pengguna developer membutuhkan akses yang lebih cepat daripada sekadar antarmuka web, serta panduan teknis yang mudah diakses dan digunakan.
 
 **Solusi**:
-- **Manajemen Terminal (CLI/TUI)**: Membangun binary `lembaran` berbasis Bun yang mendukung perintah langsung (`list`, `status`, `hapus`) dan antarmuka visual terminal (TUI) interaktif.
+- **Manajemen Terminal (CLI/TUI)**: Membangun binary `lembaranz` berbasis Bun yang mendukung perintah langsung (`list`, `status`, `hapus`) dan antarmuka visual terminal (TUI) interaktif.
 - **Integrated Help System**: Menambahkan halaman `/bantuan` (Dokumentasi) yang dirancang khusus untuk developer dengan fitur salin kode satu-klik.
 - **Roadmap Skalabilitas**: Menyusun rencana masa depan di `docs/FUTURE_IMPROVEMENTS.md` untuk mengarahkan proyek menuju standar *Enterprise*.
 
@@ -85,14 +85,14 @@ Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan 
 **Masalah**: Alur instalasi CLI tidak ramah bagi pengguna WSL/Linux yang belum memiliki `bun`, dan landing page memiliki masalah keterbacaan pada headline serta ukuran tombol yang kurang proporsional.
 
 **Solusi**:
-- **Universal Installer (`install.sh`)**: Menciptakan skrip instalasi satu baris yang cerdas; mampu mendeteksi dan menginstal `bun` secara otomatis sebelum menarik repositori Lembaran dan mendaftarkan perintah `lembaran` secara global.
+- **Universal Installer (`install.sh`)**: Menciptakan skrip instalasi satu baris yang cerdas; mampu mendeteksi dan menginstal `bun` secara otomatis sebelum menarik repositori Lembaranz dan mendaftarkan perintah `lembaranz` secara global.
 - **Refinement Tipografi**: Menurunkan skala headline dari `8xl` ke `6xl` dan melonggarkan *letter-spacing* untuk meningkatkan kenyamanan baca sesuai feedback pengguna.
 - **Proporsionalitas Tombol**: Mengecilkan ukuran tombol aksi utama agar lebih elegan dan tidak mendominasi layar secara berlebihan.
 - **Transparansi Fitur**: Memberikan label "Coming Soon" yang jelas pada widget instalasi untuk metode yang sedang dalam pengembangan (NPM, Brew, dll).
 
 ---
 > [!NOTE]
-> Versi ini menandai kesiapan Lembaran untuk digunakan secara luas oleh komunitas developer melalui alur instalasi yang jauh lebih reliabel.
+> Versi ini menandai kesiapan Lembaranz untuk digunakan secara luas oleh komunitas developer melalui alur instalasi yang jauh lebih reliabel.
 
 ## 9. Hero Redesign & Customization Preview (v2.8.0)
 
@@ -121,22 +121,22 @@ Dokumen ini mendetailkan perubahan besar yang dilakukan selama fase migrasi dan 
 
 ---
 > [!NOTE]
-> Versi 2.9.0 adalah lompatan besar dalam hal fungsionalitas keamanan 'Sentinel' dan kesiapan ekosistem Lembaran.
+> Versi 2.9.0 adalah lompatan besar dalam hal fungsionalitas keamanan 'Sentinel' dan kesiapan ekosistem Lembaranz.
 
 ## 11. Lompatan Besar: Ekosistem Berdikari v3 (v3.0.0)
 
-**Masalah**: Lembaran membutuhkan fitur produktivitas tingkat lanjut agar benar-benar menjadi pilihan utama developer dan pengguna "Power User".
+**Masalah**: Lembaranz membutuhkan fitur produktivitas tingkat lanjut agar benar-benar menjadi pilihan utama developer dan pengguna "Power User".
 
 **Solusi**:
 - **Produktivitas Tanpa Batas (Vim Mode)**: Mengintegrasikan logic navigasi Vim ke dalam editor Tiptap, memungkinkan pengeditan cepat tanpa menyentuh mouse.
 - **Biometrik Modern**: Menyiapkan infrastruktur WebAuthn untuk otentikasi biometrik yang aman dan modern di browser.
-- **Portabilitas Berbasis Privasi**: Mengganti ekspor JSON biasa dengan format `.lembaran` yang terenkripsi penuh, menjamin data tetap aman bahkan saat berada di penyimpanan eksternal.
+- **Portabilitas Berbasis Privasi**: Mengganti ekspor JSON biasa dengan format `.lembaranz` yang terenkripsi penuh, menjamin data tetap aman bahkan saat berada di penyimpanan eksternal.
 - **Alur Kerja Terminal (CLI 2.0)**: Menambahkan perintah `ukir` untuk pengeditan cepat dan fuzzy search pada `jelajah` untuk mempermudah navigasi arsip ribuan catatan via terminal.
 - **Visualisasi Pikiran (Graph View 2.0)**: Redesain total Peta Memori dengan interaksi dinamis dan estetika yang lebih tajam.
 
 ---
 > [!IMPORTANT]
-> Versi 3.0.0 adalah pencapaian tertinggi dalam visi Lembaran sebagai "Aksara yang Berdikari".
+> Versi 3.0.0 adalah pencapaian tertinggi dalam visi Lembaranz sebagai "Aksara yang Berdikari".
 
 ## 12. Penguatan Infrastruktur & Dokumentasi Dinamis (v3.1.0)
 

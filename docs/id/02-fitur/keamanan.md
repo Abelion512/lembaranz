@@ -1,5 +1,5 @@
 
-Di Lembaran, keamanan bukan sekadar fitur tambahan, melainkan fondasi utama. Kami menerapkan prinsip **Zero-Knowledge** dan **Integritas Kriptografis** yang terinspirasi dari teknologi blockchain.
+Di Lembaranz, keamanan bukan sekadar fitur tambahan, melainkan fondasi utama. Kami menerapkan prinsip **Zero-Knowledge** dan **Integritas Kriptografis** yang terinspirasi dari teknologi blockchain.
 
 ## 1. Segel Digital (Integritas Data)
 

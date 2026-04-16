@@ -12,19 +12,21 @@ import { registerSetupCommand } from './commands/Setup.js';
 import { prepareContext } from './utils.js';
 import pkg from '../package.json' assert { type: 'json' };
 
+import { handleError } from './error.js';
+
 // Global error handling
 process.on('unhandledRejection', (reason) => {
-  console.error('\nFatal error (Rejection):', reason);
+  handleError(reason);
 });
 process.on('uncaughtException', (error) => {
-  console.error('\nFatal error (Exception):', error);
+  handleError(error);
 });
 
 const VERSI = pkg.version;
 
 program
-  .name('lembaran')
-  .description('Lembaran -- Personal Script Management CLI')
+  .name('lembaranz')
+  .description('Lembaranz -- Personal Script Management CLI')
   .version(VERSI)
   .option('--saku', 'Use personal vault context (global)')
   .option('--pelataran', 'Use project vault context (local)');

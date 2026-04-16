@@ -11,7 +11,7 @@ async function run() {
         console.log('Unlocking vault...');
         const success = await Archive.unlockVault(password);
         if (!success) {
-            console.error('Failed to unlock vault. Please clear .lembaran-db.json if you forgot the password.');
+            console.error('Failed to unlock vault. Please clear .lembaranz-db.json if you forgot the password.');
             process.exit(1);
         }
     }

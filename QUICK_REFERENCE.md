@@ -1,4 +1,4 @@
-# 📋 Lembaran Quick Reference Card
+# 📋 Lembaranz Quick Reference Card
 
 > **Save this for quick access!**
 
@@ -8,10 +8,10 @@
 
 ```bash
 # First time? Use the wizard
-lembaran setup
+lembaranz setup
 
 # Or launch visual interface
-lembaran launch
+lembaranz launch
 ```
 
 ---
@@ -20,16 +20,13 @@ lembaran launch
 
 | Task | Command |
 |------|---------|
-| **Setup vault** | `lembaran setup` |
-| **Launch TUI** | `lembaran launch` |
-| **Store credential** | `lembaran settings KEY "value"` |
-| **View credentials** | `lembaran settings` |
-| **List profiles** | `lembaran config list` |
-| **Load profile** | `lembaran config load NAME` |
-| **Save profile** | `lembaran config save NAME` |
-| **Search** | `lembaran browse KEYWORD` |
-| **Export backup** | `lembaran export` |
-| **Get help** | `lembaran --help` |
+| **Setup vault** | `lembaranz setup` |
+| **Launch TUI** | `lembaranz launch` |
+| **Add credential** | `lembaranz ukir` |
+| **Load .env** | `lembaranz muat` |
+| **Search** | `lembaranz browse` |
+| **Security dashboard** | `lembaranz security` |
+| **Get help** | `lembaranz --help` |
 
 ---
 
@@ -54,8 +51,8 @@ lembaran launch
 
 ## 📁 Storage Location
 
-- **Linux/Mac**: `~/.lembaran/`
-- **Windows**: `%APPDATA%/.lembaran/`
+- **Linux/Mac**: `~/.lembaranz/`
+- **Windows**: `%APPDATA%/.lembaranz/`
 
 ---
 
@@ -65,7 +62,7 @@ lembaran launch
 |---------|----------|
 | "command not found" | Run `bun link` in project folder |
 | "Vault is locked" | Enter password or use recovery phrase |
-| TUI errors | Use `lembaran setup` instead |
+| TUI errors | Use `lembaranz setup` instead |
 | Forgot password | Use 12-word recovery phrase |
 
 ---
@@ -78,4 +75,4 @@ lembaran launch
 
 ---
 
-**Made with ❤️ in Indonesia 🇮**
+**v3.5.0** | Made with ❤️ in Indonesia 🇮🇩

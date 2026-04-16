@@ -1,7 +1,7 @@
 import { Note, Folder, AppSettings, UserProfile } from '../Formula';
 import { DBSchema } from 'idb';
 
-export interface LembaranSchema extends DBSchema {
+export interface LembaranzSchema extends DBSchema {
     notes: {
         key: string;
         value: Note;
@@ -22,10 +22,10 @@ export interface LembaranSchema extends DBSchema {
 }
 
 export interface StorageAdapter {
-    get<K extends keyof LembaranSchema>(store: K, key: string): Promise<LembaranSchema[K]['value'] | undefined>;
-    set<K extends keyof LembaranSchema>(store: K, key: string, value: LembaranSchema[K]['value']): Promise<void>;
-    getAll<K extends keyof LembaranSchema>(store: K): Promise<LembaranSchema[K]['value'][]>;
-    delete(store: keyof LembaranSchema, key: string): Promise<void>;
-    count(store: keyof LembaranSchema): Promise<number>;
-    clear(store: keyof LembaranSchema): Promise<void>;
+    get<K extends keyof LembaranzSchema>(store: K, key: string): Promise<LembaranzSchema[K]['value'] | undefined>;
+    set<K extends keyof LembaranzSchema>(store: K, key: string, value: LembaranzSchema[K]['value']): Promise<void>;
+    getAll<K extends keyof LembaranzSchema>(store: K): Promise<LembaranzSchema[K]['value'][]>;
+    delete(store: keyof LembaranzSchema, key: string): Promise<void>;
+    count(store: keyof LembaranzSchema): Promise<number>;
+    clear(store: keyof LembaranzSchema): Promise<void>;
 }

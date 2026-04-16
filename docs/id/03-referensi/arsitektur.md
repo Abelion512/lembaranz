@@ -1,5 +1,5 @@
 
-Lembaran menggunakan arsitektur data yang transparan namun aman. Memahami struktur ini akan membantu Anda dalam melakukan audit mandiri terhadap data Anda.
+Lembaranz menggunakan arsitektur data yang transparan namun aman. Memahami struktur ini akan membantu Anda dalam melakukan audit mandiri terhadap data Anda.
 
 ## 1. Objek Catatan (Note)
 
@@ -21,7 +21,7 @@ Data disimpan di **IndexedDB** (untuk versi Web) atau **JSON File** (untuk versi
 
 - Tidak ada database cloud pusat.
 - Tidak ada sinkronisasi otomatis ke server pihak ketiga.
-- Sinkronisasi antar perangkat dilakukan secara manual melalui ekspor/impor `.lembaran`.
+- Sinkronisasi antar perangkat dilakukan secara manual melalui ekspor/impor `.lembaranz`.
 
 ## 3. Keamanan Kredensial
 
@@ -29,7 +29,7 @@ Kredensial dalam catatan diperlakukan dengan tingkat isolasi yang lebih tinggi. 
 
 ## 4. Sistem Dokumentasi (Bantuan)
 
-Dokumentasi Lembaran dikelola secara lokal di dalam folder `docs/`.
+Dokumentasi Lembaranz dikelola secara lokal di dalam folder `docs/`.
 
 ### Cara Menambah Halaman Bantuan Baru:
 1. **Buat file Markdown**: Tambahkan file `.md` di `docs/id/` (Bahasa Indonesia) dan `docs/en/` (Bahasa Inggris). Gunakan nama file yang sama.

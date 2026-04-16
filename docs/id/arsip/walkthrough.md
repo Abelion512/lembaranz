@@ -1,6 +1,6 @@
-# Walkthrough: Struktur Monorepo & Rebranding 'Lembaran'
+# Walkthrough: Struktur Monorepo & Rebranding 'Lembaranz'
 
-Implementasi penuh dari visi **Lembaran** kini telah mencapai milestone besar dengan migrasi ke arsitektur monorepo dan rebranding total.
+Implementasi penuh dari visi **Lembaranz** kini telah mencapai milestone besar dengan migrasi ke arsitektur monorepo dan rebranding total.
 
 ## 1. Arsitektur Monorepo (Bun Workspaces)
 Proyek ini sekarang dibagi menjadi tiga paket utama untuk pemisahan tanggung jawab yang lebih baik:
@@ -9,10 +9,10 @@ Proyek ini sekarang dibagi menjadi tiga paket utama untuk pemisahan tanggung jaw
 - **`packages/cli`**: Antarmuka terminal. Menyediakan TUI puitis untuk pengguna power user.
 - **`packages/web`**: Antarmuka grafis (GUI) berbasis Next.js. Mencakup landing page marketing dan dashboard arsip.
 
-## 2. Rebranding: Dari Abelion ke Lembaran
-Nama "Abelion" telah sepenuhnya diganti dengan **Lembaran**.
+## 2. Rebranding: Dari Abelion ke Lembaranz
+Nama "Abelion" telah sepenuhnya diganti dengan **Lembaranz**.
 - Semua referensi di kode sumber, metadata, dan dokumentasi telah disinkronkan.
-- Domain imajiner dialihkan ke `lembaran.ai`.
+- Domain imajiner dialihkan ke `lembaranz.ai`.
 - Filosofi "Berdikari" diperkuat sebagai pilar utama branding.
 
 ## 3. Landing Page & UX Baru
@@ -21,7 +21,7 @@ Halaman utama (`/`) kini berfungsi sebagai gerbang informasi:
 - **Tabel Perbandingan**: Panduan memilih antara CLI (Master), WEB (Junior), atau APP (Explorer).
 - **Dashboard (`/arsip`)**: Aplikasi utama kini berada di sub-path terproteksi.
 
-## 4. CLI Puitis: `lembaran`
+## 4. CLI Puitis: `lembaranz`
 CLI tetap menjadi fitur unggulan dengan kosa kata puitis:
 | Perintah | Deskripsi |
 |----------|-----------|
@@ -31,4 +31,4 @@ CLI tetap menjadi fitur unggulan dengan kosa kata puitis:
 
 ## 5. Deployment & Performa
 - **Vercel**: Menggunakan konfigurasi monorepo dengan `output: standalone`.
-- **Local-First**: Tetap menggunakan IndexedDB (Web) dan JSON Local (CLI) yang disatukan oleh Adapter Pattern di `@lembaran/core`.
+- **Local-First**: Tetap menggunakan IndexedDB (Web) dan JSON Local (CLI) yang disatukan oleh Adapter Pattern di `@lembaranz/core`.

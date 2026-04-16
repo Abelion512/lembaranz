@@ -1,195 +1,220 @@
-import React, { useState, useCallback, useRef } from 'react';
-import { Box, useApp, useInput } from 'ink';
+import React, { useState, useCallback, useEffect } from 'react';
+import { Box, useApp, useInput, Text } from 'ink';
 import { StatusBar } from './StatusBar.js';
 import { WelcomeScreen } from './WelcomeScreen.js';
 import { MainMenu } from './MainMenu.js';
-import { MonitorScreen } from './MonitorScreen.js';
 import { SecurityScreen } from './SecurityScreen.js';
 import { MessageBox } from './MessageBox.js';
-
-import { ArchiveScreen } from './ArchiveScreen.js';
-import { CarveScreen } from './CarveScreen.js';
 import { CredentialsScreen } from './CredentialsScreen.js';
+import { ArchiveScreen } from './ArchiveScreen.js';
+import { reportToGithub } from '../error.js';
+import { Vault, Context } from '@lembaranz/core';
+import { CommandPopup } from './components/CommandPopup.js';
+import { ModeSelectScreen } from './ModeSelectScreen.js';
 
-type Layar = 'selamat' | 'menu' | 'monitor' | 'security' | 'message' | 'browse' | 'carve' | 'credentials';
+type Layar = 'setup' | 'selamat' | 'menu' | 'security' | 'message' | 'browse' | 'credentials' | 'type_mode';
 
 interface AppProps {
     context: string;
     versi: string;
     initialScreen?: Layar;
-    initialFilter?: string;
 }
 
-interface SessionStats {
-    startTime: number;
-    menuVisits: number;
-    screensViewed: string[];
-}
-
-export const App: React.FC<AppProps> = ({ context, versi, initialScreen, initialFilter }) => {
+export const App: React.FC<AppProps> = ({ context, versi, initialScreen }) => {
     const { exit } = useApp();
     const [screen, setLayar] = useState<Layar>(initialScreen || 'selamat');
-    const [message, setPesan] = useState<{ type: 'success' | 'info'; title: string } | null>(null);
-    const [lastAction, setAksiTerakhir] = useState<string | undefined>();
+    const [message, setPesan] = useState<{ type: 'success' | 'info' | 'error'; title: string; error?: any } | null>(null);
+    const [tuiMode, setTuiMode] = useState<'scroll' | 'type' | 'loading'>('loading');
+    const [showPopup, setShowPopup] = useState(false);
     const [exitAttempts, setExitAttempts] = useState(0);
+    const isLocked = Vault.isLocked();
 
-    // Session tracking
-    const sessionStats = useRef<SessionStats>({
-        startTime: Date.now(),
-        menuVisits: 0,
-        screensViewed: []
-    });
-
-    const goToMenu = useCallback(() => {
-        sessionStats.current.menuVisits++;
-        setLayar('menu');
+    useEffect(() => {
+        const loadSettings = async () => {
+            const settings = await Context.readSettings();
+            if (settings.tuiMode) {
+                setTuiMode(settings.tuiMode);
+            } else {
+                setTuiMode('loading');
+                setLayar('setup');
+            }
+        };
+        loadSettings();
     }, []);
 
-    // Track screen views
-    React.useEffect(() => {
-        if (screen !== 'selamat' && !sessionStats.current.screensViewed.includes(screen)) {
-            sessionStats.current.screensViewed.push(screen);
+    const goToMenu = useCallback(() => {
+        if (tuiMode === 'type') {
+            setLayar('type_mode');
+        } else {
+            setLayar('menu');
         }
-    }, [screen]);
+    }, [tuiMode]);
+
+    const handleModeSelect = async (m: 'scroll' | 'type') => {
+        setTuiMode(m);
+        await Context.writeSettings({ tuiMode: m });
+        if (m === 'type') {
+            setLayar('type_mode');
+        } else {
+            setLayar('menu');
+        }
+    };
 
     const handleSelect = useCallback((aksi: string) => {
-        setAksiTerakhir(aksi);
+        setShowPopup(false);
         switch (aksi) {
-            case 'monitor':
-                setLayar('monitor');
-                break;
             case 'browse':
+            case '/browse':
                 setLayar('browse');
                 break;
-            case 'carve':
-                setLayar('carve');
-                break;
             case 'credentials':
+            case '/save':
                 setLayar('credentials');
                 break;
             case 'audit_keamanan':
+            case '/audit':
                 setLayar('security');
                 break;
             case 'settings':
-                setPesan({ type: 'info', title: 'Gunakan command `lembaran settings` untuk manajemen .env yang lebih mendalam.' });
+            case '/settings':
+                setPesan({ type: 'info', title: 'Settings are managed via terminal commands: `lembaran settings`' });
                 setLayar('message');
                 break;
             case 'exit':
-                showSessionSummaryAndExit();
+            case '/exit':
+            case '/quit':
+                exit();
+                break;
+            case '/menu':
+                setLayar('menu');
                 break;
             default:
-                setPesan({ type: 'info', title: `Fitur "${aksi}" akan segera hadir di versi TUI berikutnya.` });
-                setLayar('message');
+                if (aksi.startsWith('/')) {
+                    // Handle as command if it starts with slash but wasn't caught above
+                    setPesan({ type: 'info', title: `Command '${aksi}' recognized but not implemented in TUI yet.` });
+                    setLayar('message');
+                }
                 break;
         }
-    }, []);
+    }, [exit]);
 
-    const showSessionSummaryAndExit = () => {
-        const duration = Math.floor((Date.now() - sessionStats.current.startTime) / 1000);
-        const minutes = Math.floor(duration / 60);
-        const seconds = duration % 60;
-        const screens = sessionStats.current.screensViewed.join(', ') || 'Menu Utama';
-
-        console.log('\n╭─────────────────────────────────────────────────────────────────╮');
-        console.log('│  📊 Session Summary                                             │');
-        console.log('├─────────────────────────────────────────────────────────────────┤');
-        console.log(`│  Duration:    ${String(minutes).padStart(2)}m ${String(seconds).padStart(2)}s${' '.repeat(35)}│`);
-        console.log(`│  Menu Visits: ${String(sessionStats.current.menuVisits).padStart(2)}${' '.repeat(48)}│`);
-        console.log(`│  Screens:     ${screens.substring(0, 42).padEnd(42)}│`);
-        console.log('├─────────────────────────────────────────────────────────────────┤');
-        console.log('│  💡 Tip: Gunakan "lembaran cari" untuk mencari catatan lama    │');
-        console.log('╰─────────────────────────────────────────────────────────────────╯');
-        console.log('\n👋 Sampai jumpa di lain waktu!\n');
-        exit();
-    };
-
-    // Global exit handler with double-verify and info
     useInput((input, key) => {
-        // Check for exit keys (Ctrl+C, Q, Esc)
-        const isExitKey = (key.ctrl && input === 'c') || input === 'q' || key.escape;
-
-        if (isExitKey) {
-            if (exitAttempts === 0) {
-                // First attempt - show warning with info
-                setExitAttempts(1);
-                setPesan({
-                    type: 'info',
-                    title: '⚠️  Tekan sekali lagi untuk exit (atau tunggu 3 detik)'
-                });
-
-                // Show exit info after 1 second
-                setTimeout(() => {
-                    console.log('\n╭─────────────────────────────────────────────────────────────────╮');
-                    console.log('│  ℹ️  Exit Info                                                   │');
-                    console.log('├─────────────────────────────────────────────────────────────────┤');
-                    console.log('│  • Tekan Ctrl+C / Q / Esc sekali lagi untuk exit             │');
-                    console.log('│  • Atau tunggu 3 detik untuk membatalkan                       │');
-                    console.log('│  • Session summary akan ditampilkan setelah exit             │');
-                    console.log('╰─────────────────────────────────────────────────────────────────╯\n');
-                }, 1000);
-
-                // Auto-reset after 3 seconds
-                setTimeout(() => {
-                    setExitAttempts(0);
-                    setPesan(null);
-                }, 3000);
-            } else {
-                // Second attempt - show session summary and exit
-                showSessionSummaryAndExit();
-            }
+        // Toggle Popup with '/'
+        if (input === '/' && !showPopup && screen !== 'setup') {
+            setShowPopup(true);
             return;
         }
 
-        // Handle message screen dismissal
+        if (showPopup) return; // CommandPopup handles its own input
+
+        // Handle message screen
         if (screen === 'message' && (input === 'q' || key.escape || key.return)) {
+            if (key.return && message?.type === 'error' && message.error) {
+                reportToGithub(message.error);
+            }
             goToMenu();
+            return;
+        }
+
+        const isExitKey = (key.ctrl && input === 'c') || input === 'q' || key.escape;
+
+        if (isExitKey) {
+            if (screen === 'menu' || screen === 'selamat' || screen === 'type_mode') {
+                if (exitAttempts === 0) {
+                    setExitAttempts(1);
+                    setPesan({ type: 'info', title: 'Press again to exit' });
+                    setTimeout(() => { setExitAttempts(0); }, 3000);
+                } else {
+                    exit();
+                }
+            } else {
+                goToMenu();
+            }
+            return;
         }
     });
 
     const renderLayar = () => {
+        if (tuiMode === 'loading' && screen !== 'setup' && screen !== 'selamat') {
+            return <Box padding={2}><Text color="gray">Initializing...</Text></Box>;
+        }
+
         switch (screen) {
+            case 'setup':
+                return <ModeSelectScreen onSelect={handleModeSelect} />;
             case 'selamat':
-                return <WelcomeScreen context={context} versi={versi} onComplete={goToMenu} />;
+                return <WelcomeScreen versi={versi} onComplete={goToMenu} />;
+            case 'type_mode':
+                return (
+                    <Box flexDirection="column" paddingX={4} paddingY={4} alignItems="center" justifyContent="center" flexGrow={1}>
+                        <Text color="#FF5733" bold> LEMBARANZ </Text>
+                        <Text color="gray"> How can we help you today? </Text>
+                        <Box marginTop={2} borderStyle="round" borderColor="gray" paddingX={2}>
+                            <Text dimColor> Press </Text>
+                            <Text color="#FF5733" bold> / </Text>
+                            <Text dimColor> to open commands... </Text>
+                        </Box>
+                    </Box>
+                );
             case 'menu':
-                return <MainMenu onSelect={handleSelect} initialAction={lastAction} />;
-            case 'monitor':
-                return <MonitorScreen context={context} onBack={goToMenu} />;
+                return <MainMenu onSelect={handleSelect} isFocused={!showPopup} />;
             case 'browse':
-                return <ArchiveScreen onBack={goToMenu} initialSearch={initialFilter} />;
-            case 'carve':
-                return <CarveScreen onBack={goToMenu} />;
+                return <ArchiveScreen onBack={goToMenu} isFocused={!showPopup} />;
             case 'credentials':
-                return <CredentialsScreen onBack={goToMenu} />;
+                return <CredentialsScreen onBack={goToMenu} isFocused={!showPopup} />;
             case 'security':
-                return <SecurityScreen onBack={goToMenu} />;
+                return <SecurityScreen onBack={goToMenu} isFocused={!showPopup} />;
             case 'message':
                 return (
-                    <Box flexDirection="column" padding={1}>
-                        {message && <MessageBox type={message.type} title={message.title} isi="Tekan [Enter] atau [q] untuk kembali ke menu." />}
+                    <Box flexDirection="column" paddingX={2} marginTop={1}>
+                        {message && <MessageBox type={message.type} title={message.title} isi="Press [Enter] or [q] to go back." />}
                     </Box>
                 );
             default:
-                return <MainMenu onSelect={handleSelect} initialAction={lastAction} />;
+                return <MainMenu onSelect={handleSelect} />;
         }
     };
 
     const screenName = {
-        selamat: 'Selamat Datang',
-        menu: 'Menu Utama',
-        monitor: 'Status',
-        browse: 'Arsip',
-        carve: 'Ukir',
-        credentials: 'Kredensial',
-        security: 'Keamanan',
+        setup: 'Setup',
+        selamat: 'Welcome',
+        menu: 'Menu',
+        browse: 'Archive',
+        credentials: 'Vault',
+        security: 'Security',
         message: 'Info',
-    }[screen] || 'Menu Utama';
+        type_mode: 'Command',
+    }[screen] || 'Menu';
 
     return (
-        <Box flexDirection="column" key="aplikasi-root">
-            <Box flexDirection="column" marginBottom={1} key="aplikasi-content">
+        <Box 
+            flexDirection="column" 
+            width="100%" 
+            minHeight={22} 
+            backgroundColor="black"
+            borderStyle="round"
+            borderColor="#FF5733"
+            marginX={1}
+            marginTop={1}
+        >
+            {/* Main Content Area */}
+            <Box flexDirection="column" flexGrow={1} width="100%">
                 {renderLayar()}
             </Box>
-            <StatusBar context={context} versi={versi} screen={screenName} />
+
+            {/* Overlay Popup */}
+            {showPopup && (
+                <CommandPopup 
+                    onSelect={handleSelect} 
+                    onClose={() => setShowPopup(false)} 
+                />
+            )}
+
+            {/* Bottom Section: Integrated Status Bar */}
+            <Box flexDirection="column" width="100%" borderStyle="single" borderTop={true} borderBottom={false} borderLeft={false} borderRight={false} borderColor="gray">
+                <StatusBar context={context} versi={versi} screen={screenName} isLocked={isLocked} />
+            </Box>
         </Box>
     );
 };
+

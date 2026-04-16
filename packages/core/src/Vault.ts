@@ -26,6 +26,7 @@ export class Vault {
      * Cleared whenever the vault is locked or key changes.
      */
     private static decryptionCache = new Map<string, string>();
+    private static cacheTimestamps = new Map<string, number>();
 
     /**
      * @param extractable Whether the key can be exported (required for backup)
@@ -36,8 +37,8 @@ export class Vault {
 
         try {
             hash = argon2id(passwordBuffer, salt, {
-                t: 2,
-                m: 19 * 1024,
+                t: 3,
+                m: 64 * 1024,
                 dkLen: 32,
                 p: 1,
             });
@@ -110,11 +111,13 @@ export class Vault {
     static setActiveKey(key: CryptoKey) {
         this.key = key;
         this.decryptionCache.clear();
+        this.cacheTimestamps.clear();
     }
 
     static clearKey() {
         this.key = null;
         this.decryptionCache.clear();
+        this.cacheTimestamps.clear();
     }
 
     static isLocked(): boolean {
@@ -194,10 +197,17 @@ export class Vault {
         if (!packed || !packed.includes('|')) return { data: packed, error: null };
 
         if (!customKey && this.decryptionCache.has(packed)) {
-            const cachedResult = this.decryptionCache.get(packed)!;
-            this.decryptionCache.delete(packed);
-            this.decryptionCache.set(packed, cachedResult);
-            return { data: cachedResult, error: null };
+            const timestamp = this.cacheTimestamps.get(packed) || 0;
+            if (Date.now() - timestamp > 5 * 60 * 1000) { // 5 minutes TTL
+                this.decryptionCache.delete(packed);
+                this.cacheTimestamps.delete(packed);
+            } else {
+                const cachedResult = this.decryptionCache.get(packed)!;
+                this.decryptionCache.delete(packed);
+                this.decryptionCache.set(packed, cachedResult);
+                this.cacheTimestamps.set(packed, Date.now());
+                return { data: cachedResult, error: null };
+            }
         }
 
         try {
@@ -218,9 +228,11 @@ export class Vault {
                     const firstKey = this.decryptionCache.keys().next().value;
                     if (firstKey !== undefined) {
                         this.decryptionCache.delete(firstKey);
+                        this.cacheTimestamps.delete(firstKey);
                     }
                 }
                 this.decryptionCache.set(packed, result.data);
+                this.cacheTimestamps.set(packed, Date.now());
             }
 
             return result;

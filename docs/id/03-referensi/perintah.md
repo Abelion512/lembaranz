@@ -1,5 +1,5 @@
 
-Berikut adalah referensi cepat untuk semua perintah yang tersedia di Lembaran CLI.
+Berikut adalah referensi cepat untuk semua perintah yang tersedia di Lembaranz CLI.
 
 | Perintah | Fungsi | Deskripsi |
 | :--- | :--- | :--- |
@@ -8,7 +8,7 @@ Berikut adalah referensi cepat untuk semua perintah yang tersedia di Lembaran CL
 | `jelajah` | **Search** | Mencari catatan menggunakan algoritma Fuzzy Search |
 | `ukir` | **Editor** | Membuat catatan baru atau mengedit yang sudah ada |
 | `tanam` | **Import** | Mengimpor file Markdown (.md) ke dalam brankas |
-| `petik` | **Export** | Mengekspor seluruh brankas ke format `.lembaran` terenkripsi |
+| `petik` | **Export** | Mengekspor seluruh brankas ke format `.lembaranz` terenkripsi |
 | `perintah` | **Command** | Melihat referensi perintah ini |
 | `berdaulat`| **Autonomous**| Memberikan tugas otonom ke Sentinel Sovereign |
 | `keluar` | **Exit** | Menutup aplikasi CLI |

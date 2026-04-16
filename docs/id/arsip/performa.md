@@ -1,5 +1,5 @@
 
-Lembaran dirancang untuk kecepatan ekstrem. Kami percaya bahwa keamanan tidak boleh mengorbankan pengalaman pengguna. Berikut adalah bagaimana kami menangani ribuan catatan dengan instan.
+Lembaranz dirancang untuk kecepatan ekstrem. Kami percaya bahwa keamanan tidak boleh mengorbankan pengalaman pengguna. Berikut adalah bagaimana kami menangani ribuan catatan dengan instan.
 
 ## 1. Virtualisasi Daftar (Snappy UI)
 
@@ -19,7 +19,7 @@ Meskipun setiap catatan dienkripsi secara individual (AES-GCM), mendekripsi ratu
 
 ## 3. Background Indexing
 
-Saat Anda membuka brankas, Lembaran melakukan pengindeksan di latar belakang.
+Saat Anda membuka brankas, Lembaranz melakukan pengindeksan di latar belakang.
 
 - **Non-blocking**: Pengindeksan tidak membekukan antarmuka (UI).
 - **Chunked Processing**: Data diproses dalam potongan-potongan kecil agar browser tetap responsif.

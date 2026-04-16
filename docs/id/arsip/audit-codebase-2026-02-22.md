@@ -1,4 +1,4 @@
-# Audit Codebase Lembaran (22-02-2026)
+# Audit Codebase Lembaranz (22-02-2026)
 
 ## Ringkasan
 Audit mencakup area core (`Brankas`, `Gudang`, `Arsip`), web (`/bantuan`, i18n, pembacaan berkas), serta konsistensi rute dan dokumentasi.
@@ -37,7 +37,7 @@ Audit mencakup area core (`Brankas`, `Gudang`, `Arsip`), web (`/bantuan`, i18n, 
 ## Temuan Operasional & Keamanan Lainnya
 
 ### 6) Namespace LocalStorage
-- **Status**: ✅ **DIAMANKAN**. Seluruh penggunaan localStorage kini diproteksi dengan prefix `lembaran:` untuk mencegah tabrakan data dengan aplikasi lain pada domain yang sama.
+- **Status**: ✅ **DIAMANKAN**. Seluruh penggunaan localStorage kini diproteksi dengan prefix `lembaranz:` untuk mencegah tabrakan data dengan aplikasi lain pada domain yang sama.
 
 ### 7) Keamanan Link target="_blank"
 - **Status**: ✅ **DIPERBAIKI**. Audit menyeluruh pada komponen web untuk memastikan `rel="noopener noreferrer"` ada pada setiap elemen dengan `target="_blank"`.

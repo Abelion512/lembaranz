@@ -4,8 +4,8 @@
             {
                 "title": "Mulai",
                 "items": [
-                    { "id": "01-mulai/berdikari", "title": "Mulai Berdikari", "desc": "Panduan memahami ekosistem Lembaran.", "icon": "Globe" },
-                    { "id": "01-mulai/cepat", "title": "Mulai Cepat", "desc": "Langkah awal menguasai Lembaran.", "icon": "Rocket" }
+                    { "id": "01-mulai/berdikari", "title": "Mulai Berdikari", "desc": "Panduan memahami ekosistem Lembaranz.", "icon": "Globe" },
+                    { "id": "01-mulai/cepat", "title": "Mulai Cepat", "desc": "Langkah awal menguasai Lembaranz.", "icon": "Rocket" }
                 ]
             },
             {
@@ -13,7 +13,7 @@
                 "items": [
                     { "id": "02-fitur/cli", "title": "Antarmuka CLI", "desc": "Panduan TUI yang efisien.", "icon": "Terminal" },
                     { "id": "02-fitur/keamanan", "title": "Keamanan Absolut", "desc": "Enkripsi AES-GCM 256-bit.", "icon": "Shield" },
-                    { "id": "02-fitur/performa", "title": "Optimasi Performa", "desc": "Rahasia kecepatan Lembaran.", "icon": "Zap" }
+                    { "id": "02-fitur/performa", "title": "Optimasi Performa", "desc": "Rahasia kecepatan Lembaranz.", "icon": "Zap" }
                 ]
             },
             {
@@ -31,7 +31,7 @@
                 "title": "Getting Started",
                 "items": [
                     { "id": "01-mulai/berdikari", "title": "Sovereignty First", "desc": "Understand the ecosystem.", "icon": "Globe" },
-                    { "id": "01-mulai/cepat", "title": "Quick Start", "desc": "Master Lembaran in minutes.", "icon": "Rocket" }
+                    { "id": "01-mulai/cepat", "title": "Quick Start", "desc": "Master Lembaranz in minutes.", "icon": "Rocket" }
                 ]
             }
         ]

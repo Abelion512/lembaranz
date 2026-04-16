@@ -1,12 +1,12 @@
-# Saran dan Perbaikan untuk Lembaran
+# Saran dan Perbaikan untuk Lembaranz
 
 ## 🛠️ Integrasi .env (Konsolidasi Multi-Proyek)
 
-- **Zonal Context Injection**: Implementasikan fitur pada CLI lembaran untuk mendeteksi direktori proyek aktif dan secara otomatis menginjeksi variabel environment ke shell (misal: `lembaran run -- npm start`) tanpa pernah membuat file `.env` fisik.
+- **Zonal Context Injection**: Implementasikan fitur pada CLI lembaranz untuk mendeteksi direktori proyek aktif dan secara otomatis menginjeksi variabel environment ke shell (misal: `lembaranz run -- npm start`) tanpa pernah membuat file `.env` fisik.
 - **Environment Diff & History**: Tambahkan pelacakan perubahan (versioning) khusus untuk variabel rahasia. Developer bisa melihat kapan sebuah API Key berubah tanpa harus menyimpan riwayat di Git.
 - **Workspace Tagging & Scoping**: Gunakan sistem tag untuk mengelompokkan `.env` berdasarkan proyek (misal: `tag:project-alpha`, `tag:production`) untuk mencegah tabrakan variabel antar proyek.
-- **Secure Export Template**: Fitur untuk menghasilkan file `.env.example` secara otomatis dari data yang tersimpan di Lembaran, memastikan struktur file tetap ada di repo tanpa membocorkan nilainya.
-- **Multi-profile Vault**: Dukungan untuk memisahkan brankas antara proyek personal dan kantor dengan kunci master yang berbeda, namun tetap dikelola dalam satu antarmuka Lembaran.
+- **Secure Export Template**: Fitur untuk menghasilkan file `.env.example` secara otomatis dari data yang tersimpan di Lembaranz, memastikan struktur file tetap ada di repo tanpa membocorkan nilainya.
+- **Multi-profile Vault**: Dukungan untuk memisahkan brankas antara proyek personal dan kantor dengan kunci master yang berbeda, namun tetap dikelola dalam satu antarmuka Lembaranz.
 
 ## 🛡️ Keamanan & Privasi (Hardening)
 
@@ -37,26 +37,26 @@
 - **JSON-LD Technical Schema**: Tambahkan skema `SoftwareApplication` dan `HowTo` pada halaman bantuan untuk meningkatkan visibilitas di Google (SEO) dan ringkasan AI (AEO).
 - **Expanded llms.txt**: Perluas file ini dengan contoh kode integrasi nyata untuk berbagai framework (Next.js, Go, Python) agar agen AI bisa memberikan solusi integrasi yang lebih akurat.
 - **Semantic URL Slugs**: Gunakan struktur URL `/catatan/[slug-judul]` alih-alih ID acak. Judul bisa di-slugify secara lokal untuk meningkatkan relevansi pencarian dokumen teknis.
-- **AI-Context Meta Tags**: Gunakan tag meta khusus untuk memberi instruksi kepada bot LLM tentang bagaimana cara merangkum dokumentasi Lembaran (misal: `ai-priority-context`).
+- **AI-Context Meta Tags**: Gunakan tag meta khusus untuk memberi instruksi kepada bot LLM tentang bagaimana cara merangkum dokumentasi Lembaranz (misal: `ai-priority-context`).
 - **GEO (Generative Engine Optimization)**: Optimasi kata kunci puitis Indonesia (Aksara, Brankas) agar mesin pencari generatif memahami konteksnya sebagai aplikasi keamanan data, bukan sekadar istilah sastra.
 
 ## ♿ Aksesibilitas & Metadata
 
 - **High-Contrast Developer Theme**: Sediakan tema kontras tinggi yang mengikuti standar WCAG 2.1 untuk developer dengan gangguan penglihatan.
 - **Screen Reader Security Status**: Pastikan pembaca layar (Screen Reader) memberikan umpan balik suara saat status enkripsi berubah atau saat data terkunci/terbuka.
-- **XMP Metadata for Export**: Saat mengekspor catatan ke format Markdown, sertakan _hash_ integritas dalam komentar XMP agar data tetap bisa divalidasi keasliannya di luar platform Lembaran.
+- **XMP Metadata for Export**: Saat mengekspor catatan ke format Markdown, sertakan _hash_ integritas dalam komentar XMP agar data tetap bisa divalidasi keasliannya di luar platform Lembaranz.
 - **Audit Log Visualization**: Antarmuka visual untuk melihat log aktivitas dari `AuditLog.ts`, membantu developer melacak akses terhadap rahasia mereka.
 - **Schema Versioning Metadata**: Tambahkan metadata `schema_version` pada setiap entri database untuk mempermudah migrasi data otomatis di masa depan tanpa merusak rantai enkripsi.
 
 ## 🚀 Bonus: DX & Arsitektur Masa Depan (Lebihan)
 
-- **Custom Protocol Handler**: Daftarkan protokol kustom (`lembaran://`) sehingga developer bisa membuka catatan atau kredensial spesifik langsung dari terminal atau file `README` via link (misal: `lembaran://catatan/api-key-staging`).
-- **Ephemeral CLI Sessions**: Fitur shell `lembaran` yang membuka _sub-shell_ sementara di mana semua variabel rahasia terinjeksi hanya selama sesi itu aktif, dan otomatis bersih saat keluar (RAM-only environment).
-- **Pre-commit Secret Scanner**: Integrasikan Lembaran dengan Git Hooks lokal untuk memperingatkan developer jika mereka tidak sengaja mengetik teks yang mirip dengan API Key yang tersimpan di Lembaran ke dalam kode mereka.
+- **Custom Protocol Handler**: Daftarkan protokol kustom (`lembaranz://`) sehingga developer bisa membuka catatan atau kredensial spesifik langsung dari terminal atau file `README` via link (misal: `lembaranz://catatan/api-key-staging`).
+- **Ephemeral CLI Sessions**: Fitur shell `lembaranz` yang membuka _sub-shell_ sementara di mana semua variabel rahasia terinjeksi hanya selama sesi itu aktif, dan otomatis bersih saat keluar (RAM-only environment).
+- **Pre-commit Secret Scanner**: Integrasikan Lembaranz dengan Git Hooks lokal untuk memperingatkan developer jika mereka tidak sengaja mengetik teks yang mirip dengan API Key yang tersimpan di Lembaranz ke dalam kode mereka.
 - **P2P Local Sync (Zero-Cloud)**: Gunakan WebRTC atau Local Discovery (mDNS) agar dua perangkat dalam WiFi yang sama bisa melakukan sinkronisasi brankas tanpa pernah menyentuh internet/server luar.
-- **Headless API Mode**: Jalankan Lembaran sebagai daemon latar belakang lokal yang menyediakan endpoint REST/gRPC terbatas (dengan token akses lokal) agar script otomasi bisa mengambil data secara aman.
-- **AI Agent "Memory Bridge"**: Sediakan plugin khusus agar AI Agent dapat "meminjam" konteks dari catatan publik atau bantuan Lembaran secara terstruktur (mengoptimalkan `llms.txt`).
-- **Encrypted Git Remote Helper**: Buat helper agar developer bisa melakukan _git push_ ke repo yang sepenuhnya terenkripsi menggunakan kunci dari Lembaran (mirip git-remote-gcrypt tapi lebih seamless).
+- **Headless API Mode**: Jalankan Lembaranz sebagai daemon latar belakang lokal yang menyediakan endpoint REST/gRPC terbatas (dengan token akses lokal) agar script otomasi bisa mengambil data secara aman.
+- **AI Agent "Memory Bridge"**: Sediakan plugin khusus agar AI Agent dapat "meminjam" konteks dari catatan publik atau bantuan Lembaranz secara terstruktur (mengoptimalkan `llms.txt`).
+- **Encrypted Git Remote Helper**: Buat helper agar developer bisa melakukan _git push_ ke repo yang sepenuhnya terenkripsi menggunakan kunci dari Lembaranz (mirip git-remote-gcrypt tapi lebih seamless).
 - **Semantic Graph Visualization**: Tambahkan fitur untuk melihat keterkaitan antar catatan (Aksara) dalam bentuk grafik, memudahkan developer memetakan arsitektur proyek yang kompleks.
 - **Time-based Access Token**: Fitur untuk mendekripsi kredensial tertentu yang hanya berlaku selama X menit, setelah itu decryptionCache untuk ID tersebut otomatis hangus secara paksa.
-- **"Puitis" CLI Theming**: Izinkan kustomisasi tema TUI di `packages/cli` menggunakan file YAML, sehingga developer bisa mencocokkan skema warna terminal mereka dengan estetika "Developer Vibes" Lembaran.
+- **"Puitis" CLI Theming**: Izinkan kustomisasi tema TUI di `packages/cli` menggunakan file YAML, sehingga developer bisa mencocokkan skema warna terminal mereka dengan estetika "Developer Vibes" Lembaranz.

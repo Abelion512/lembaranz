@@ -2,7 +2,7 @@
 
 **Terakhir Diperbarui: 17 Februari 2026**
 
-Privasi adalah hak fundamental di Lembaran.
+Privasi adalah hak fundamental di Lembaranz.
 
 ## 1. Pengumpulan Data
 Kami **tidak mengumpulkan** data pribadi, catatan, atau password Anda.

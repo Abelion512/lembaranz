@@ -1,14 +1,14 @@
-import { StorageAdapter, LembaranSchema } from './types';
+import { StorageAdapter, LembaranzSchema } from './types';
 import fs from 'fs/promises';
 import path from 'path';
 
-const DEFAULT_DB_FILE = '.lembaran-db.json';
+const DEFAULT_DB_FILE = '.lembaranz-db.json';
 
 interface SchemaStructure {
-    notes: Record<string, LembaranSchema['notes']['value']>;
-    folders: Record<string, LembaranSchema['folders']['value']>;
-    kv: Record<string, LembaranSchema['kv']['value']>;
-    meta: Record<string, LembaranSchema['meta']['value']>;
+    notes: Record<string, LembaranzSchema['notes']['value']>;
+    folders: Record<string, LembaranzSchema['folders']['value']>;
+    kv: Record<string, LembaranzSchema['kv']['value']>;
+    meta: Record<string, LembaranzSchema['meta']['value']>;
 }
 
 export class FileAdapter implements StorageAdapter {
@@ -74,13 +74,13 @@ export class FileAdapter implements StorageAdapter {
         }
     }
 
-    async get<K extends keyof LembaranSchema>(store: K, key: string) {
+    async get<K extends keyof LembaranzSchema>(store: K, key: string) {
         const data = await this.load();
         // @ts-expect-error - dynamic store access
         return data[store][key];
     }
 
-    async set<K extends keyof LembaranSchema>(store: K, key: string, value: LembaranSchema[K]['value']) {
+    async set<K extends keyof LembaranzSchema>(store: K, key: string, value: LembaranzSchema[K]['value']) {
         const data = await this.load();
 
         let actualKey = key;
@@ -93,26 +93,26 @@ export class FileAdapter implements StorageAdapter {
         await this.save();
     }
 
-    async getAll<K extends keyof LembaranSchema>(store: K) {
+    async getAll<K extends keyof LembaranzSchema>(store: K) {
         const data = await this.load();
         // @ts-expect-error - dynamic store access
         return Object.values(data[store]);
     }
 
-    async delete(store: keyof LembaranSchema, key: string) {
+    async delete(store: keyof LembaranzSchema, key: string) {
         const data = await this.load();
         // @ts-expect-error - dynamic store access
         delete data[store][key];
         await this.save();
     }
 
-    async count(store: keyof LembaranSchema) {
+    async count(store: keyof LembaranzSchema) {
         const data = await this.load();
         // @ts-expect-error - dynamic store access
         return Object.keys(data[store]).length;
     }
 
-    async clear(store: keyof LembaranSchema) {
+    async clear(store: keyof LembaranzSchema) {
         const data = await this.load();
         // @ts-expect-error - dynamic store access
         data[store] = {};

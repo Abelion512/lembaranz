@@ -31,6 +31,11 @@ export const MessageBox: React.FC<MessageBoxProps> = ({ type, title, isi }) => {
         <Box borderStyle="round" borderColor={color} paddingX={1} flexDirection="column">
             <Text color={color} bold>{icon} {title}</Text>
             {isi && <Text color="gray">{isi}</Text>}
+            {type === 'error' && (
+                <Box marginTop={1}>
+                    <Text color="cyan" bold>Press [Enter] to report this to GitHub</Text>
+                </Box>
+            )}
         </Box>
     );
 };

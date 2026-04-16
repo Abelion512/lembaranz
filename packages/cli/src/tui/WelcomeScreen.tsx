@@ -2,39 +2,34 @@ import React from 'react';
 import { Box, Text } from 'ink';
 
 interface WelcomeScreenProps {
-    context: string;
     versi: string;
     onComplete: () => void;
 }
 
-const LOGO = `
-  ██╗     ███████╗███╗   ███╗██████╗  █████╗ ██████╗  █████╗ ███╗   ██╗
-  ██║     ██╔════╝████╗ ████║██╔══██╗██╔══██╗██╔══██╗██╔══██╗████╗  ██║
-  ██║     █████╗  ██╔████╔██║██████╔╝███████║██████╔╝███████║██╔██╗ ██║
-  ██║     ██╔══╝  ██║╚██╔╝██║██╔══██╗██╔══██║██╔══██╗██╔══██║██║╚██╗██║
-  ███████╗███████╗██║ ╚═╝ ██║██████╔╝██║  ██║██║  ██║██║  ██║██║ ╚████║
-  ╚══════╝╚══════╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝ ╚═══╝
-`.trim();
-
-export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ context, versi, onComplete }) => {
+export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ versi, onComplete }) => {
     React.useEffect(() => {
-        const timer = setTimeout(onComplete, 2000);
+        const timer = setTimeout(onComplete, 1500);
         return () => clearTimeout(timer);
     }, [onComplete]);
 
     return (
-        <Box flexDirection="column" alignItems="center" justifyContent="center" padding={1} key="selamat-root">
-            <Box key="logo-box">
-                <Text color="cyan">{LOGO}</Text>
+        <Box flexDirection="column" alignItems="center" justifyContent="center" padding={1}>
+            <Text color="cyan" bold>
+{'\n'}
+{'  ██╗     ███████╗███╗   ███╗██████╗  █████╗ ██████╗  █████╗ ███╗   ██╗███████╗\n'}
+{'  ██║     ██╔════╝████╗ ████║██╔══██╗██╔══██╗██╔══██╗██╔══██╗████╗  ██║╚══███╔╝\n'}
+{'  ██║     █████╗  ██╔████╔██║██████╔╝███████║██████╔╝███████║██╔██╗ ██║  ███╔╝ \n'}
+{'  ██║     ██╔══╝  ██║╚██╔╝██║██╔══██╗██╔══██║██╔══██╗██╔══██║██║╚██╗██║ ███╔╝  \n'}
+{'  ███████╗███████╗██║ ╚═╝ ██║██████╔╝██║  ██║██║  ██║██║  ██║██║ ╚████║███████╗\n'}
+{'  ╚══════╝╚══════╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝\n'}
+            </Text>
+
+            <Box marginTop={1} flexDirection="column" alignItems="center">
+                <Text color="gray" dimColor>v{versi} • Self-Hosted Credential Vault</Text>
             </Box>
 
-            <Box marginTop={1} flexDirection="column" alignItems="center" key="info-box">
-                <Text color="gray" dimColor>Brankas Aksara Personal yang Berdikari</Text>
-                <Text color="gray" dimColor>v{versi} • Konteks: <Text color="yellow" bold>{context.toUpperCase()}</Text></Text>
-            </Box>
-
-            <Box marginTop={1} key="loading-box">
-                <Text color="gray" dimColor italic>Memuat antarmuka...</Text>
+            <Box marginTop={1}>
+                <Text color="gray" dimColor italic>Loading interface...</Text>
             </Box>
         </Box>
     );

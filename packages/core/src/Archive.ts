@@ -20,7 +20,7 @@ export interface NoteInput {
 }
 
 /**
- * Archive: Modul utama manajemen brankas dan catatan Lembaran.
+ * Archive: Modul utama manajemen brankas dan catatan Lembaranz.
  * Menangani siklus hidup data dari enkripsi, penyimpanan, hingga pemulihan.
  */
 export const Archive = {
@@ -51,7 +51,7 @@ export const Archive = {
      * @param mnemonic 12 kata kunci pemulihan (opsional)
      */
     async setupVault(password: string, mnemonic?: string): Promise<Result<void>> {
-        if (process.env.DEBUG === 'true') console.log('[ARCHIVE] Memulai setupVault...');
+        if (process.env.LEMBARANZ_DEBUG === 'true') console.log('[ARCHIVE] Memulai setupVault...');
 
         const genResult = await Vault.generateMasterKey();
         if (genResult.error) return genResult;
@@ -170,7 +170,7 @@ export const Archive = {
                     Vault.setActiveKey(passwordKey);
                     // Lakukan migrasi ke V3 agar support reset password & recovery yang lebih baik
                     const resetRes = await this.resetPassword(password);
-                    if (resetRes.error) console.warn('[ARCHIVE] Gagal migrasi otomatis ke V3:', resetRes.error.message);
+                    if (resetRes.error && process.env.LEMBARANZ_DEBUG === 'true') console.warn('[ARCHIVE] Gagal migrasi otomatis ke V3:', resetRes.error.message);
                     return { data: true, error: null };
                 }
             }
@@ -261,7 +261,7 @@ export const Archive = {
         if (typeof window !== 'undefined') {
             const keys = Object.keys(window.localStorage);
             keys.forEach(key => {
-                if (key.startsWith('lembaran:')) {
+                if (key.startsWith('lembaranz:')) {
                     window.localStorage.removeItem(key);
                 }
             });
@@ -473,7 +473,7 @@ export const Archive = {
             for (const n of rawNotes) {
                 const res = await this.decryptNote(n);
                 if (res.error) {
-                    console.error(`[ARCHIVE] Failed to decrypt note ${n.id} for backup.`);
+                    if (process.env.LEMBARANZ_DEBUG === 'true') console.error(`[ARCHIVE] Failed to decrypt note ${n.id} for backup.`);
                     continue;
                 }
                 plainNotes.push(res.data);
@@ -493,7 +493,7 @@ export const Archive = {
 
     /**
      * Restores the vault from a portable backup file.
-     * @param buffer Binary data from .lembaran backup file
+     * @param buffer Binary data from .lembaranz backup file
      * @param passwordBackup Password used to encrypt the backup
      */
     async restoreBackup(buffer: Uint8Array, passwordBackup: string): Promise<Result<{ restored: number, skipped: number }>> {
@@ -554,7 +554,7 @@ export const Archive = {
 
                 const resSave = await this.saveNote(noteInput);
                 if (resSave.error) {
-                    console.error(`[ARCHIVE] Failed to restore note ${note.id}:`, resSave.error.message);
+                    if (process.env.LEMBARANZ_DEBUG === 'true') console.error(`[ARCHIVE] Failed to restore note ${note.id}:`, resSave.error.message);
                     return { status: 'error' as const, id: note.id };
                 } else {
                     return { status: 'restored' as const, id: note.id };

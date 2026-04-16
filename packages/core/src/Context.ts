@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { Result } from './Vault';
 
 export type VaultContext = 'saku' | 'pelataran';
@@ -8,7 +9,7 @@ export type VaultContext = 'saku' | 'pelataran';
  */
 export class Context {
     private static readonly SAKU_FILE = 'saku.json';
-    private static readonly PELATARAN_DIR = '.lembaran';
+    private static readonly PELATARAN_DIR = '.lembaranz';
     private static readonly PELATARAN_FILE = 'pelataran.json';
 
     /**
@@ -37,7 +38,7 @@ export class Context {
             const os = await import('os');
             const fs = await import('node:fs/promises');
 
-            const SAKU_DIR = path.join(os.homedir(), '.lembaran');
+            const SAKU_DIR = path.join(os.homedir(), '.lembaranz');
 
             let jalur: string;
             if (context === 'saku') {
@@ -182,6 +183,69 @@ export class Context {
             }
 
             await fs.writeFile(envPath, newLines.join('\n'), 'utf8');
+            return { data: true, error: null };
+        } catch (err) {
+            return { data: null, error: err instanceof Error ? err : new Error(String(err)) };
+        }
+    }
+    private static readonly SETTINGS_FILE = 'settings.json';
+
+    /**
+     * Reads global or local settings.
+     */
+    static async readSettings(): Promise<import('./Formula').AppSettings> {
+        const defaultSettings: import('./Formula').AppSettings = {
+            language: 'id',
+            theme: 'auto',
+            accentColor: 'cyan',
+            encryptionEnabled: true,
+            syncEnabled: false,
+            lastSyncAt: null,
+            secretMode: 'none',
+            tuiMode: 'scroll'
+        };
+
+        if (typeof window !== 'undefined') return defaultSettings;
+
+        try {
+            const path = await import('path');
+            const fs = await import('node:fs/promises');
+            const os = await import('os');
+
+            const SAKU_DIR = path.join(os.homedir(), '.lembaranz');
+            const settingsPath = path.join(SAKU_DIR, this.SETTINGS_FILE);
+
+            if (await this.fileExists(settingsPath)) {
+                const content = await fs.readFile(settingsPath, 'utf8');
+                return { ...defaultSettings, ...JSON.parse(content) };
+            }
+        } catch (err) {
+            // Silently fail to defaults if settings are unreadable
+        }
+        return defaultSettings;
+    }
+
+    /**
+     * Writes global settings.
+     */
+    static async writeSettings(settings: Partial<import('./Formula').AppSettings>): Promise<Result<boolean>> {
+        if (typeof window !== 'undefined') return { data: null, error: new Error('Bukan lingkungan Node.js') };
+
+        try {
+            const path = await import('path');
+            const fs = await import('node:fs/promises');
+            const os = await import('os');
+
+            const SAKU_DIR = path.join(os.homedir(), '.lembaranz');
+            if (!(await this.fileExists(SAKU_DIR))) {
+                await fs.mkdir(SAKU_DIR, { recursive: true });
+            }
+
+            const settingsPath = path.join(SAKU_DIR, this.SETTINGS_FILE);
+            const current = await this.readSettings();
+            const updated = { ...current, ...settings };
+
+            await fs.writeFile(settingsPath, JSON.stringify(updated, null, 2), 'utf8');
             return { data: true, error: null };
         } catch (err) {
             return { data: null, error: err instanceof Error ? err : new Error(String(err)) };

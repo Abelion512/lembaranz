@@ -1,6 +1,6 @@
 # Audit UI/UX Side-by-Side: Legacy vs. Migration
 
-This audit compares the legacy Lembaran (`arsip_legacy`) with the current Migration project by acting as a QA/User.
+This audit compares the legacy Lembaranz (`arsip_legacy`) with the current Migration project by acting as a QA/User.
 
 ---
 
@@ -10,7 +10,7 @@ This audit compares the legacy Lembaran (`arsip_legacy`) with the current Migrat
 | :--- | :--- | :--- | :--- |
 | **Menu Utama** | **Hanya Bottom Nav** di semua resolusi. | **Hanya Bottom Nav** (No Sidebar). | Sidebar telah dihapus total sesuai arahan. Navigasi bawah digunakan untuk konsistensi Mobile & Desktop. |
 | **Layout** | **Fixed Width (800px)** tengah layar. Luar area adalah `page-bg`. | **Fluid/Responsive**. | Legacy terasa lebih 'centered' dan fokus seperti aplikasi iOS. |
-| **Navigasi Balik** | Menggunakan tombol `<a class="back-link">` manual. | Menggunakan navigasi Next.js. | Animasi transisi antar lembaran di Migration perlu dipoles agar semulus Legacy. |
+| **Navigasi Balik** | Menggunakan tombol `<a class="back-link">` manual. | Menggunakan navigasi Next.js. | Animasi transisi antar lembaranz di Migration perlu dipoles agar semulus Legacy. |
 
 ---
 

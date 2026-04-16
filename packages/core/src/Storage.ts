@@ -1,4 +1,4 @@
-import { StorageAdapter, LembaranSchema } from './storage/types';
+import { StorageAdapter, LembaranzSchema } from './storage/types';
 import { BrowserAdapter } from './storage/BrowserAdapter';
 
 // Singleton instance adapter
@@ -18,7 +18,7 @@ const getAdapter = async (): Promise<StorageAdapter> => {
 };
 
 // Re-export Schema for other consumers
-export type { LembaranSchema };
+export type { LembaranzSchema };
 
 export const Storage = {
     async initialize(customPath?: string) {
@@ -31,32 +31,32 @@ export const Storage = {
         }
     },
 
-    async set<K extends keyof LembaranSchema>(store: K, key: string, value: LembaranSchema[K]['value']) {
+    async set<K extends keyof LembaranzSchema>(store: K, key: string, value: LembaranzSchema[K]['value']) {
         const adp = await getAdapter();
         return adp.set(store, key, value);
     },
 
-    async get<K extends keyof LembaranSchema>(store: K, key: string) {
+    async get<K extends keyof LembaranzSchema>(store: K, key: string) {
         const adp = await getAdapter();
         return adp.get(store, key);
     },
 
-    async getAll<K extends keyof LembaranSchema>(store: K) {
+    async getAll<K extends keyof LembaranzSchema>(store: K) {
         const adp = await getAdapter();
         return adp.getAll(store);
     },
 
-    async delete(store: keyof LembaranSchema, key: string) {
+    async delete(store: keyof LembaranzSchema, key: string) {
         const adp = await getAdapter();
         return adp.delete(store, key);
     },
 
-    async count(store: keyof LembaranSchema) {
+    async count(store: keyof LembaranzSchema) {
         const adp = await getAdapter();
         return adp.count(store);
     },
 
-    async clear(store: keyof LembaranSchema) {
+    async clear(store: keyof LembaranzSchema) {
         const adp = await getAdapter();
         return adp.clear(store);
     }

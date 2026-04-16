@@ -1,5 +1,5 @@
 
-At Lembaran, security is not just an add-on feature, but the core foundation. We apply the principles of **Zero-Knowledge** and **Cryptographic Integrity** inspired by blockchain technology.
+At Lembaranz, security is not just an add-on feature, but the core foundation. We apply the principles of **Zero-Knowledge** and **Cryptographic Integrity** inspired by blockchain technology.
 
 ## 1. Digital Seal (Data Integrity)
 

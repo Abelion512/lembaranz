@@ -1,13 +1,13 @@
-# 🧭 Lembaran Codebase Exploration Guide
+# 🧭 Lembaranz Codebase Exploration Guide
 
-> **For Developers** — Understanding how Lembaran works under the hood
+> **For Developers** — Understanding how Lembaranz works under the hood
 
 ---
 
 ## 📦 Package Structure
 
 ```
-lembaran/ (Monorepo)
+lembaranz/ (Monorepo)
 ├── packages/
 │   ├── core/          # @lembaranz/core — The encryption engine
 │   ├── cli/           # @lembaranz/cli — Terminal interface (TUI)
@@ -18,7 +18,7 @@ lembaran/ (Monorepo)
 
 ## 🔐 Core Package (`@lembaranz/core`)
 
-This is the **heart** of Lembaran — all encryption happens here.
+This is the **heart** of Lembaranz — all encryption happens here.
 
 ### Key Files
 
@@ -213,14 +213,14 @@ packages/cli/src/
 ├── main.ts              # Entry point (Commander.js setup)
 ├── utils.ts             # Helper functions
 ├── commands/            # CLI commands
-│   ├── Config.ts        # `lembaran config save/load/list`
-│   ├── Settings.ts      # `lembaran settings` (env vars + git hooks)
-│   ├── Import.ts        # `lembaran import` (restore backups)
-│   ├── Export.ts        # `lembaran export` (portable backup)
-│   ├── Monitor.ts       # `lembaran monitor` (system health)
-│   ├── Security.ts      # `lembaran security` (security dashboard)
-│   ├── Browse.ts        # `lembaran browse` (search credentials)
-│   └── Launch.ts        # `lembaran launch` (TUI)
+│   ├── Config.ts        # `lembaranz config save/load/list`
+│   ├── Settings.ts      # `lembaranz settings` (env vars + git hooks)
+│   ├── Import.ts        # `lembaranz import` (restore backups)
+│   ├── Export.ts        # `lembaranz export` (portable backup)
+│   ├── Monitor.ts       # `lembaranz monitor` (system health)
+│   ├── Security.ts      # `lembaranz security` (security dashboard)
+│   ├── Browse.ts        # `lembaranz browse` (search credentials)
+│   └── Launch.ts        # `lembaranz launch` (TUI)
 └── tui/                 # Terminal UI components (Ink/React)
     ├── UnlockVaultScreen.tsx
     ├── MainScreen.tsx
@@ -230,7 +230,7 @@ packages/cli/src/
 ### Command Flow
 
 ```
-User types: lembaran config save myproject
+User types: lembaranz config save myproject
                     ↓
 main.ts registers all commands
                     ↓
@@ -454,7 +454,7 @@ export const Storage = {
 ### Beginner (1-2 hours)
 - [ ] Read README.md
 - [ ] Run `bun test` to see tests pass
-- [ ] Try CLI commands: `lembaran --help`
+- [ ] Try CLI commands: `lembaranz --help`
 - [ ] Read `docs/RECOVERY_PHRASE.md`
 
 ### Intermediate (3-5 hours)

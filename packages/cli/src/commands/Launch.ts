@@ -16,6 +16,9 @@ export const runTUI = async (context: VaultContext, versi: string, initialScreen
 
     try {
         await waitUntilExit();
+    } catch (err) {
+        const { handleError } = await import('../error.js');
+        await handleError(err);
     } finally {
         exitTUIScreen();
     }

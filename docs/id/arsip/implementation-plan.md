@@ -9,7 +9,7 @@ Terjadi kebingungan antara `.agent` (tunggal) dan `.agents` (jamak). Folder `.ag
 
 ---
 
-## Fase 2: CLI Puitis & Antarmuka Keamanan — `lembaran`
+## Fase 2: CLI Puitis & Antarmuka Keamanan — `lembaranz`
 
 ### Masalah & Solusi UX:
 Pengguna sering bingung antara Enter/Space di terminal. TUI akan diperkaya dengan instruksi eksplisit: `(Gunakan panah ↑↓ dan Tekan ENTER untuk memilih)`.
@@ -37,8 +37,8 @@ Menggunakan istilah yang lebih progresif dan puitis sesuai tema "Aksara/Brankas"
    - Arahan eksplisit ke URL registrasi web.
 
 ### Teknis:
-1. Perbarui `package.json` dengan `"bin": { "lembaran": "./bin/lembaran" }`.
-2. Modifikasi `bin/lembaran` dan `TUI.ts` untuk mendukung perintah baru dan instruksi UX.
+1. Perbarui `package.json` dengan `"bin": { "lembaranz": "./bin/lembaranz" }`.
+2. Modifikasi `bin/lembaranz` dan `TUI.ts` untuk mendukung perintah baru dan instruksi UX.
 
 ---
 
@@ -56,7 +56,7 @@ Menggunakan istilah yang lebih progresif dan puitis sesuai tema "Aksara/Brankas"
 
 ## Fase 4: Distribusi & Standalone
 - Tambahkan script `build:cli` ke `package.json`.
-- Kompilasi `lembaran.exe` (Standalone Binary).
+- Kompilasi `lembaranz.exe` (Standalone Binary).
 - Verifikasi eksekusi binary.
 
 ## Fase 5: Decoupling Arsitektur

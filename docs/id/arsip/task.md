@@ -6,9 +6,9 @@
 - [x] Instal ulang 5 skill inti via npx
 - [x] Verifikasi aksesibilitas skill
 
-## Fase 2: CLI & Keamanan Puitis (`lembaran`)
+## Fase 2: CLI & Keamanan Puitis (`lembaranz`)
 - [x] Tambahkan field `bin` ke `package.json`
-- [x] Ubah `bin/lembaran` dengan perintah: `pantau`, `jelajah`, `hangus`, `petik`, `kuncung`, `tanam`, `mulai`
+- [x] Ubah `bin/lembaranz` dengan perintah: `pantau`, `jelajah`, `hangus`, `petik`, `kuncung`, `tanam`, `mulai`
 - [x] Implementasikan alur `kuncung` (login manual/web)
 - [x] Implementasikan pesan edukasi Mantra Pemulihan untuk registrasi
 - [x] Tambahkan instruksi UX (Enter/Space) pada `TUI.ts`
@@ -24,14 +24,14 @@
 
 ## Fase 4: Distribusi & Standalone
 - [x] Tambahkan script `build:cli` ke `package.json`
-- [x] Kompilasi `lembaran.exe` (Standalone Binary)
+- [x] Kompilasi `lembaranz.exe` (Standalone Binary)
 - [x] Verifikasi eksekusi binary
 
 ## Fase 5: Decoupling Arsitektur (Web/CLI/Native)
 - [x] Refactor `Gudang.ts` dengan Adapter Pattern
 - [x] Implementasi `BrowserAdapter` (IndexedDB)
 - [x] Implementasi `FileAdapter` (JSON/Bun:File untuk CLI)
-- [x] Verifikasi CLI `lembaran` berjalan tanpa crash IDB
+- [x] Verifikasi CLI `lembaranz` berjalan tanpa crash IDB
 - [x] Dokumentasi arsitektur modular di `walkthrough.md`
 
 ## Fase 6: Dokumentasi & Halaman Informasi
@@ -43,7 +43,7 @@
 - [x] Update `llms.txt` untuk visibilitas AI
 
 ## Fase 7: Redesign Dokumentasi & UX
-- [x] Update Link GitHub ke `Abelion512/lembaran` (Global)
+- [x] Update Link GitHub ke `Abelion512/lembaranz` (Global)
 - [x] Redesign `/bantuan`: Fokus "Cara Download CLI" & Step-by-step
 - [x] Pindahkan akses `/tentang` ke Halaman Setelan (`/laras`)
 - [x] Hapus akses `/tentang` dari `/bantuan` (Diganti Guide CLI)

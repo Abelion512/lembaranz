@@ -1,106 +1,125 @@
-# Lembaran
-> Personal Digital Archive Vault — v3.5.0
+# Lembaranz
+> Self-Hosted Credential & Note Vault — v1.0.1
 
 ## About
-Lembaran is a local-first note management application with end-to-end encryption (AES-GCM + Argon2id). No third-party servers — data is stored entirely on the user's device.
+Lembaranz is a self-hosted, zero-knowledge credential manager. Data is encrypted locally with AES-GCM 256-bit + Argon2id before storage. No cloud, no tracking, no account required. Runs as a TUI (Terminal User Interface) via the `lembaranz` command.
 
-## Monorepo Structure
+## Package Architecture
+
 ```
 packages/
-  core/   — Shared logic: encryption, storage adapter, AI, Sentinel
-  cli/    — Terminal interface (TUI) built with Bun & Ink
-  web/    — Next.js 16 app (App Router + Turbopack)
+  core/   — @lembaranz/core — Encryption engine & storage adapters
+  cli/    — @lembaranz/cli  — TUI (Ink/React) + CLI commands
+  web/    — @lembaranz/web  — Local-only web UI (DO NOT DEPLOY to public)
 ```
 
-## Web Architecture (packages/web)
-- **Framework**: Next.js 16.1.6, React 19, Turbopack
-- **URL Routing**: `app/[locale]/` → all pages prefixed with `/id/` or `/en/`
-- **i18n**: `next-intl` — URL-based locale, not state
-  - `i18n/routing.ts` — locale config (`id` default, `en`)
-  - `i18n/request.ts` — server config, loads messages JSON
-  - `i18n/navigation.ts` — locale-aware `Link`, `useRouter`, `usePathname`
-  - `middleware.ts` — auto-redirect to locale prefix
-  - `messages/id.json`, `messages/en.json` — UI translation dictionaries
-- **State management**: Zustand via `@lembaran/core/Store`
-- **Storage**: IndexedDB (browser) via `BrowserAdapter`, JSON file (Node) via `FileAdapter`
+### Monorepo Workspace
+- Root manifest: `lembaran/package.json`
+- Launch TUI: `bun ./packages/cli/src/main.ts` (or installed `lembaranz`)
+- All workspace packages use `workspace:*` for internal dependencies
 
-## Core Architecture (packages/core)
-- `Archive.ts` — High-level CRUD operations for notes
-- `Vault.ts` — Cryptography engine (AES-GCM, Argon2id)
-- `Storage.ts` — Storage abstraction (auto-detect browser vs Node)
-- `Sentinel.ts` — Background tasks & autonomous agent (**NOT** exported from index.ts — import directly: `@lembaran/core/Sentinel`)
-- `Linguist.ts` — AI translation (Gemini)
-- `Store.ts` — Zustand global store
-- `Context.ts` — Context/path resolver (Node-only, dynamic import)
-- `storage/BrowserAdapter.ts` — IndexedDB adapter
-- `storage/FileAdapter.ts` — JSON file adapter (Node.js)
+## Core Package Architecture (`packages/core/src/`)
 
-## Important Rules for AI
+| File | Purpose |
+|------|---------|
+| `Vault.ts` | Cryptography engine (AES-GCM 256, Argon2id KDF) |
+| `Archive.ts` | High-level CRUD for credentials & notes |
+| `Storage.ts` | Storage abstraction layer |
+| `Sentinel.ts` | Rate limiting, brute-force protection, constant-time compare |
+| `Integrity.ts` | SHA-256 tamper detection for file-backed store |
+| `Password.ts` | BIP39 mnemonic generation & validation |
+| `Context.ts` | Context/path resolver — **Node-only**, not for browser |
+| `AuditLog.ts` | Append-only audit trail |
+| `Formula.ts` | Structured config schema (VaultContext types) |
+| `Senses.ts` | Input sanitization helpers |
+| `storage/FileAdapter.ts` | JSON-file storage adapter (Node.js only) |
+| `storage/BrowserAdapter.ts` | IndexedDB adapter (browser only) |
+| `storage/types.ts` | Shared storage interface types |
+| `index.ts` | Public API barrel export |
 
-### Importing Sentinel
+## Critical AI Rules
+
+### ⚠️ Sentinel Import — CLI Only
+Sentinel is exported from `index.ts` BUT imports `node:child_process` internally.
+Never import it in browser/web bundles:
+
 ```typescript
-// ✅ CORRECT (CLI only)
-import { Sentinel } from '@lembaran/core/Sentinel';
+// ✅ SAFE in CLI/Node context
+import { Sentinel } from '@lembaranz/core';
 
-// ❌ WRONG — causes node:child_process to enter browser bundle
-import { Sentinel } from '@lembaran/core';
+// ❌ DANGEROUS in browser — will bundle node:child_process
+// Use BrowserAdapter pattern instead
 ```
 
-### Use i18n navigation (not next/link directly)
+### ⚠️ Context.ts — Node-only
+`Context.ts` uses `node:fs` and must never be imported in browser bundles.
+
+### Test Timeouts
+`deriveKey` tests require 15s timeout — Argon2id at m=64KB, t=3 intentionally takes ~7s.
+Do NOT lower the KDF parameters. It is the security cost of brute-force resistance.
+
+### Package Names (single 'z')
 ```typescript
-// ✅ CORRECT — locale-aware
-import { Link, useRouter, usePathname } from '@/i18n/navigation';
-
-// ❌ Avoid in [locale] pages — not locale-aware
-import Link from 'next/link';
+import { Archive, Vault } from '@lembaranz/core'; // ✅
+import { ... } from '@lembaranzz/core'; // ❌ old, wrong
 ```
 
-### Locale in client components
+### Error Pattern
+All async functions return `Result<T>` — never throw:
 ```typescript
-// Get current locale
-import { useLocale, useTranslations } from 'next-intl';
-const locale = useLocale(); // 'id' | 'en'
-const t = useTranslations('NamespaceName');
+type Result<T> = { data: T; error: null } | { data: null; error: Error };
 ```
 
-### Environment Variables
-- `.env` is in the **monorepo root** — Next.js reads it via `dotenv` in `next.config.ts`
-- `GEMINI_API_KEY` — for AI translation (Linguist/SecretScrubber)
-- `DB_PATH` — custom path for FileAdapter (CLI)
+## CLI Commands
+
+| Command | Description |
+|---------|-------------|
+| `lembaranz` | Launch TUI (default) |
+| `lembaranz setup` | Interactive setup wizard |
+| `lembaranz config` | Manage `.env` files via vault |
+| `lembaranz browse [keyword]` | Search archive |
+| `lembaranz import <path>` | Import `.md` or `.lembaranz` backup |
+| `lembaranz export` | Export encrypted portable backup |
+| `lembaranz settings` | Manage settings / install git hook |
+| `lembaranz monitor` | System health & integrity |
+| `lembaranz security` | Security dashboard |
+
+## Vault Contexts
+
+| Context | Path | Use Case |
+|---------|------|----------|
+| `saku` | `~/.lembaranz/` | Personal/global vault |
+| `pelataran` | `./.lembaranz/` | Project-local vault |
 
 ## Dev Commands
+
 ```bash
-bun run dev      # Start dev server on port 1400 (auto-kill port first via predev)
-bun run build    # Sync assets + next build
-bun run lint     # ESLint all packages (web + core + cli)
+bun ./packages/cli/src/main.ts          # Run CLI directly
+bun test packages/core/src/__tests__/   # Run all tests
+bun run lint                             # ESLint all packages
 ```
 
-## Naming Conventions
-All code uses **English** identifiers:
-- `Archive` = Notes manager
-- `Vault` = Crypto engine
-- `Storage` = Storage layer
-- `Store` = Zustand state
-- `Context` = Context resolver
-- `Sentinel` = Background task manager
-- `Linguist` = AI translator
-- `Poet` = AI provider manager
+## Repository Structure
+```
+lembaran/          ← This directory (published mono)
+  packages/core/   ← @lembaranz/core — npm published
+  packages/cli/    ← @lembaranz/cli  — npm published (installs as `lembaranz`)
+  packages/web/    ← @lembaranz/web  — NOT published (local GUI only)
+  install.sh       ← One-line installer
+  docs/            ← id/ & en/ documentation
+lembaran-web/      ← Public landing page (deployed separately)
+lembaran-review/   ← QA & testing workspace
+```
 
-## Pages (app/[locale]/)
-| URL | Page |
-|-----|------|
-| `/id/` or `/en/` | Landing page |
-| `/id/pustaka` | Notes list (main app) |
-| `/id/catatan/[id]` | Note editor |
-| `/id/bantuan/[slug]` | Documentation (markdown) |
-| `/id/laras` | Settings |
-| `/id/jatidiri` | Profile |
-| `/id/cari` | Search |
-| `/id/versi` | Changelog |
-| `/id/tentang` | About |
-| `/id/privasi`, `/id/ketentuan` | Legal |
+## Security Model
+- Zero-knowledge: password never stored, only Argon2id-derived key held in memory
+- Auto-lock: vault locks after inactivity (Sentinel)
+- Tamper detection: SHA-256 integrity check on every read (Integrity.ts)
+- Rate limiting: 5 attempts, 5-minute lockout (Sentinel.checkRateLimit)
+- Backup format: `LMBR` magic bytes, v1, Salt(32)+IV(12)+Ciphertext
 
 ## Additional References
-- [AGENTS.md](./AGENTS.md) — Main development guide
-- [CHANGELOG.md](./CHANGELOG.md) — Change history
-- [docs/](./docs/) — Technical documentation
+- [AGENTS.md](./AGENTS.md) — AI agent development guide
+- [SECURITY.md](./SECURITY.md) — Vulnerability disclosure policy
+- [CHANGELOG.md](./CHANGELOG.md) — Version history
+- [docs/](./docs/) — User-facing documentation (id/ & en/)

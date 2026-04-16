@@ -1,6 +1,6 @@
-# Rencana Peningkatan Masa Depan (Lembaran)
+# Rencana Peningkatan Masa Depan (Lembaranz)
 
-Dokumen ini berisi saran teknis dan fungsional untuk meningkatkan Lembaran menjadi platform manajemen data tingkat tinggi.
+Dokumen ini berisi saran teknis dan fungsional untuk meningkatkan Lembaranz menjadi platform manajemen data tingkat tinggi.
 
 ## 🔒 Keamanan & Enkripsi
 1.  **Integrasi WebAuthn (Biometrik)**: [PROGRES] Implementasi dasar registrasi credential sedang dikembangkan. Simulasi bypass telah dihapus untuk keamanan.

@@ -62,6 +62,8 @@ export interface AppSettings {
     customThemes?: Record<string, string>;
     vimMode?: boolean;
     biometricEnabled?: boolean;
+    /** TUI interaction mode: 'scroll' (interactive menu) or 'type' (command-driven) */
+    tuiMode?: 'scroll' | 'type';
 }
 
 export interface UserProfile {

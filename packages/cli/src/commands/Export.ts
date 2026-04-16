@@ -7,7 +7,7 @@ import { prepareContext, openVaultCLI } from '../utils.js';
 export function registerExportCommand(program: Command) {
   program
     .command('export')
-    .description('Export all archives to a .lembaran file (Portable & Encrypted)')
+    .description('Export all archives to a .lembaranz file (Portable & Encrypted)')
     .action(async () => {
       await prepareContext(program.opts());
       if (!(await openVaultCLI())) return console.log('Access denied.');
@@ -35,7 +35,7 @@ export function registerExportCommand(program: Command) {
         }
 
         const buffer = result.data!;
-        const filename = `lembaran-export-${new Date().toISOString().split('T')[0]}.lembaran`;
+        const filename = `lembaranz-export-${new Date().toISOString().split('T')[0]}.lembaranz`;
 
         await fs.writeFile(filename, buffer);
         console.log(`Successfully exported to: ${filename}`);

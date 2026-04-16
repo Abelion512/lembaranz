@@ -113,7 +113,10 @@ export function ModernSelect<V>({
         }
 
         if (key.return) {
-            onSelect?.(items[indexAbs]);
+            const item = items[indexAbs];
+            if (item) {
+                onSelect?.(item);
+            }
         }
     }, [items, isLooping, hasLimit, limit, rotateIndex, indexAbs, onSelect]), { isActive: isFocused });
 
