@@ -1,23 +1,34 @@
-# Panduan Kontribusi
+# Contributing to Lembaranz
 
-Terima kasih atas minat Anda untuk berkontribusi pada **Lembaranz**.
+Thank you for your interest in contributing to **Lembaranz**! We welcome contributions from developers, security researchers, and writers around the globe.
 
-Proyek ini menjunjung tinggi filosofi **"Kedaulatan Data & Estetika Puitis"**.
+This project is built on the philosophy of **"Data Sovereignty & Poetic Aesthetics"**.
 
-## Standar Kode & Vibe
+## Development Vibe & Standards
 
-1.  **Bahasa**: Utamakan Bahasa Indonesia baku namun puitis untuk penamaan modul, variabel, dan komentar jika memungkinkan (misal: `Arsip`, `Brankas`, `Gudang`).
-2.  **Keamanan**: Jangan pernah menonaktifkan enkripsi sisi-klien. Setiap PR yang melemahkan keamanan akan ditolak.
-3.  **Local-First**: Pastikan fitur baru bekerja tanpa koneksi internet (Offline-first).
+1.  **Philosophy**: Every feature must respect user privacy. We follow a strict **local-first, zero-knowledge** architecture.
+2.  **Naming Convention**: While the documentation is in English, we often use Indonesian-inspired or poetic identifiers for internal modules where it adds character (e.g., `Arsip`, `Brankas`).
+3.  **Security First**: Never bypass or weaken client-side encryption. Any PR that compromises data security will be rejected.
 
-## Cara Berkontribusi
+## How to Contribute
 
-1.  Fork repositori ini.
-2.  Buat branch fitur (`git checkout -b fitur-baru`).
-3.  Commit perubahan Anda (`git commit -m 'Menambahkan fitur baru'`).
-4.  Push ke branch (`git push origin fitur-baru`).
-5.  Buat Pull Request.
+1.  **Fork the Repository**: Create your own copy of the project.
+2.  **Clone Locally**: `git clone https://github.com/Abelion512/lembaranz.git`
+3.  **Setup Environment**:
+    - Ensure you have [Bun](https://bun.sh) installed.
+    - Run `bun install` to set up dependencies.
+4.  **Create a Feature Branch**: `git checkout -b feat/your-feature-name`
+5.  **Commit with Purpose**: Use [Conventional Commits](https://www.conventionalcommits.org/) (e.g., `feat:`, `fix:`, `docs:`).
+6.  **Test Your Changes**: Run `bun test` and verify the TUI manually.
+7.  **Submit a Pull Request**: Explain your changes clearly in the PR template.
 
-## Lisensi
+## Code of Conduct
 
-Dengan berkontribusi, Anda menyetujui kode Anda dilisensikan di bawah MIT License.
+By participating in this project, you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## License
+
+By contributing, you agree that your contributions will be licensed under the **MIT License**.
+
+---
+*Stay Secure. Stay Local.*

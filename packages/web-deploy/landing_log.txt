@@ -1,5 +1,0 @@
-
-> @lembaranzz/web@1.0.1 dev
-> next dev -p 1400 -p 1400
-
-You are using Node.js 18.19.1. For Next.js, Node.js version ">=20.9.0" is required.
