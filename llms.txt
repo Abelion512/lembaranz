@@ -4,65 +4,36 @@
 ## About
 Lembaranz is a self-hosted, zero-knowledge credential manager. Data is encrypted locally with AES-GCM 256-bit + Argon2id before storage. No cloud, no tracking, no account required. Runs as a TUI (Terminal User Interface) via the `lembaranz` command.
 
-## Package Architecture
+## Project Structure (Standalone)
 
 ```
-packages/
-  core/   — @lembaranz/core — Encryption engine & storage adapters
+/
+  core/   — @lembaranz/core — Encryption engine & storage adapters (Atomic Writes)
   cli/    — @lembaranz/cli  — TUI (Ink/React) + CLI commands
-  web/    — @lembaranz/web  — Local-only web UI (DO NOT DEPLOY to public)
 ```
 
-### Monorepo Workspace
-- Root manifest: `lembaran/package.json`
-- Launch TUI: `bun ./packages/cli/src/main.ts` (or installed `lembaranz`)
-- All workspace packages use `workspace:*` for internal dependencies
+### Build & Run
+- Root manifest: `package.json` (Consolidated dependencies)
+- Launch TUI (Dev): `bun cli/src/main.ts`
+- Binary name: `lembaranz`
+- Build verification: `tsc --noEmit` on both components.
 
-## Core Package Architecture (`packages/core/src/`)
+## Core Package Architecture (`core/src/`)
 
 | File | Purpose |
 |------|---------|
-| `Vault.ts` | Cryptography engine (AES-GCM 256, Argon2id KDF) |
+| `Vault.ts` | Cryptography engine (AES-GCM 256, Argon2id 64MB) |
 | `Archive.ts` | High-level CRUD for credentials & notes |
-| `Storage.ts` | Storage abstraction layer |
-| `Sentinel.ts` | Rate limiting, brute-force protection, constant-time compare |
-| `Integrity.ts` | SHA-256 tamper detection for file-backed store |
-| `Password.ts` | BIP39 mnemonic generation & validation |
-| `Context.ts` | Context/path resolver — **Node-only**, not for browser |
-| `AuditLog.ts` | Append-only audit trail |
-| `Formula.ts` | Structured config schema (VaultContext types) |
-| `Senses.ts` | Input sanitization helpers |
-| `storage/FileAdapter.ts` | JSON-file storage adapter (Node.js only) |
-| `storage/BrowserAdapter.ts` | IndexedDB adapter (browser only) |
-| `storage/types.ts` | Shared storage interface types |
+| `Sentinel.ts` | Rate limiting & constant-time compare |
+| `storage/FileAdapter.ts` | JSON-file storage adapter (Atomic Writes) |
 | `index.ts` | Public API barrel export |
 
 ## Critical AI Rules
 
-### ⚠️ Sentinel Import — CLI Only
-Sentinel is exported from `index.ts` BUT imports `node:child_process` internally.
-Never import it in browser/web bundles:
-
-```typescript
-// ✅ SAFE in CLI/Node context
-import { Sentinel } from '@lembaranz/core';
-
-// ❌ DANGEROUS in browser — will bundle node:child_process
-// Use BrowserAdapter pattern instead
-```
-
-### ⚠️ Context.ts — Node-only
-`Context.ts` uses `node:fs` and must never be imported in browser bundles.
-
-### Test Timeouts
-`deriveKey` tests require 15s timeout — Argon2id at m=64KB, t=3 intentionally takes ~7s.
-Do NOT lower the KDF parameters. It is the security cost of brute-force resistance.
-
-### Package Names (single 'z')
-```typescript
-import { Archive, Vault } from '@lembaranz/core'; // ✅
-import { ... } from '@lembaranzz/core'; // ❌ old, wrong
-```
+### ⚠️ Vault Contexts
+Lembaran uses two main contexts:
+1. `saku`: Global vault (`~/.lembaran/saku.json`)
+2. `pelataran`: Local project vault (`./.lembaran-db.json`)
 
 ### Error Pattern
 All async functions return `Result<T>` — never throw:
@@ -70,56 +41,28 @@ All async functions return `Result<T>` — never throw:
 type Result<T> = { data: T; error: null } | { data: null; error: Error };
 ```
 
+### Security Parameters (OWASP)
+- **Argon2id**: Memory 64MB, Iterations 2, Parallelism 1.
+- **AES-GCM**: 256-bit key, 12-byte IV.
+- **Storage**: Atomic write-to-temp-then-rename to prevent corruption.
+
 ## CLI Commands
 
 | Command | Description |
 |---------|-------------|
 | `lembaranz` | Launch TUI (default) |
 | `lembaranz setup` | Interactive setup wizard |
-| `lembaranz config` | Manage `.env` files via vault |
-| `lembaranz browse [keyword]` | Search archive |
-| `lembaranz import <path>` | Import `.md` or `.lembaranz` backup |
-| `lembaranz export` | Export encrypted portable backup |
-| `lembaranz settings` | Manage settings / install git hook |
 | `lembaranz monitor` | System health & integrity |
 | `lembaranz security` | Security dashboard |
-
-## Vault Contexts
-
-| Context | Path | Use Case |
-|---------|------|----------|
-| `saku` | `~/.lembaranz/` | Personal/global vault |
-| `pelataran` | `./.lembaranz/` | Project-local vault |
+| `lembaranz launch` | Enter TUI mode |
 
 ## Dev Commands
 
 ```bash
-bun ./packages/cli/src/main.ts          # Run CLI directly
-bun test packages/core/src/__tests__/   # Run all tests
-bun run lint                             # ESLint all packages
+bun cli/src/main.ts          # Run CLI directly
+bunx tsc --noEmit --project cli/tsconfig.json # Type Check CLI
+bunx tsc --noEmit --project core/tsconfig.json # Type Check Core
 ```
 
-## Repository Structure
-```
-lembaran/          ← This directory (published mono)
-  packages/core/   ← @lembaranz/core — npm published
-  packages/cli/    ← @lembaranz/cli  — npm published (installs as `lembaranz`)
-  packages/web/    ← @lembaranz/web  — NOT published (local GUI only)
-  install.sh       ← One-line installer
-  docs/            ← id/ & en/ documentation
-lembaran-web/      ← Public landing page (deployed separately)
-lembaran-review/   ← QA & testing workspace
-```
-
-## Security Model
-- Zero-knowledge: password never stored, only Argon2id-derived key held in memory
-- Auto-lock: vault locks after inactivity (Sentinel)
-- Tamper detection: SHA-256 integrity check on every read (Integrity.ts)
-- Rate limiting: 5 attempts, 5-minute lockout (Sentinel.checkRateLimit)
-- Backup format: `LMBR` magic bytes, v1, Salt(32)+IV(12)+Ciphertext
-
-## Additional References
-- [AGENTS.md](./AGENTS.md) — AI agent development guide
-- [SECURITY.md](./SECURITY.md) — Vulnerability disclosure policy
-- [CHANGELOG.md](./CHANGELOG.md) — Version history
-- [docs/](./docs/) — User-facing documentation (id/ & en/)
+---
+*Stay Secure. Stay Local.*

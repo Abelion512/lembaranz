@@ -1,4 +1,11 @@
 {
-  "url": "https://context7.com/abelion512/lembaranz",
-  "public_key": "pk_KweOAsawBwi5fRMImCwIW"
+  "url": "https://github.com/Abelion512/lembaranz",
+  "name": "lembaranz",
+  "description": "Lembaranz is a local-first, zero-knowledge encrypted vault for credentials and secret notes, designed for terminal power users. It provides a premium TUI experience and a robust core engine for managing secrets without ever relying on the cloud. Everything is encrypted locally using AES-256-GCM and Argon2id (OWASP Hardened 64MB), ensuring that your most sensitive data—from API keys to secret notes—stays entirely under your control.",
+  "benefits": [
+    "Data Sovereignty: Zero-knowledge architecture ensures that secrets never leave the user's local machine, providing absolute privacy.",
+    "Professional-Grade Security: Hardened with 64MB Argon2id for brute-force resistance and atomic writes to prevent database corruption during power loss.",
+    "Developer Flow: Terminal-first design (Ink/React) allows developers to manage, search, and inject credentials/env-vars seamlessly without leaving their workspace.",
+    "Zero-Latency Reliability: Works 100% offline with no server dependency, providing instant access to secrets with local-first persistence."
+  ]
 }

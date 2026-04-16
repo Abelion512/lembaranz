@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "jsx": "react-jsx",
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "strict": true,
+        "noEmit": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "paths": {
+            "@lembaranz/core": [
+                "../core/src/index.ts"
+            ],
+            "@lembaranz/core/*": [
+                "../core/src/*"
+            ]
+        }
+    },
+    "include": [
+        "src/**/*"
+    ]
+}
