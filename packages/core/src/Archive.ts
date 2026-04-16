@@ -5,10 +5,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { Integrity } from './Integrity';
 
 /** Input for creating or updating a note (before encryption) */
-export interface NoteInput {
+export type NoteInput = Omit<Note, 'id' | 'title' | 'createdAt' | 'updatedAt' | 'tags' | 'preview' | '_hash'> & {
     id?: EntityId;
     title: string;
-    content: string;
     folderId: EntityId | null;
     isPinned: boolean;
     isFavorite: boolean;
@@ -17,7 +16,7 @@ export interface NoteInput {
     createdAt?: string;
     /** Accepts both raw credentials object (pre-encryption) or already-encrypted string */
     credentials?: Record<string, unknown> | string;
-}
+};
 
 /**
  * Archive: Modul utama manajemen brankas dan catatan Lembaranz.
