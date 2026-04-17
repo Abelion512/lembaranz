@@ -43,8 +43,26 @@ export class FileAdapter implements StorageAdapter {
     private async load(): Promise<SchemaStructure> {
         if (this.data) return this.data;
 
+        let content: string;
         try {
-            const content = await fs.readFile(this.filePath, 'utf-8');
+            content = await fs.readFile(this.filePath, 'utf-8');
+        } catch (error) {
+            const readError = error as NodeJS.ErrnoException;
+            if (readError.code === 'ENOENT') {
+                // Expected behavior on first run when DB file does not exist yet
+                this.data = {
+                    notes: {},
+                    folders: {},
+                    kv: {},
+                    meta: {}
+                };
+                return this.data;
+            }
+
+            throw new Error(`Failed to read DB file at ${this.filePath}`, { cause: error });
+        }
+
+        try {
             const parsed = JSON.parse(content);
             this.data = {
                 notes: parsed.notes || {},
@@ -52,14 +70,10 @@ export class FileAdapter implements StorageAdapter {
                 kv: parsed.kv || {},
                 meta: parsed.meta || {}
             };
-        } catch (_error) {
-            this.data = {
-                notes: {},
-                folders: {},
-                kv: {},
-                meta: {}
-            };
+        } catch (error) {
+            throw new Error(`invalid JSON in DB file: ${this.filePath}`, { cause: error });
         }
+
         return this.data!;
     }
 
