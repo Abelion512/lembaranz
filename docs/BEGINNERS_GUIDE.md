@@ -139,7 +139,6 @@ What would you like to do next?
 | What You Want to Do | Command |
 |---------------------|---------|
 | **Setup vault** (first time) | `lembaranz setup` |
-| **Launch visual interface** | `lembaranz launch` |
 | **Store a credential** | `lembaranz settings KEY "value"` |
 | **View stored credentials** | `lembaranz settings` |
 | **List .env profiles** | `lembaranz config list` |

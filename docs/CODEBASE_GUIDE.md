@@ -11,7 +11,7 @@ lembaranz/ (Monorepo)
 ├── packages/
 │   ├── core/          # @lembaranz/core — The encryption engine
 │   ├── cli/           # @lembaranz/cli — Terminal interface (TUI)
-│   └── web/           # @lembaranz/web — Local-only web UI (DO NOT DEPLOY)
+│   └── web/           # @lembaranz/web — (Planned: Currently Disabled)
 ```
 
 ---
@@ -247,9 +247,10 @@ Save .env to vault with tag "myproject"
 
 ---
 
-## 🌐 Web Package (`@lembaranz/web`)
+## 🌐 Web Package (`@lembaranz/web`) — DISABLED
 
-### ⚠️ WARNING: LOCAL TESTING ONLY
+> [!WARNING]
+> **DEVELOPMENT ON HOLD**: This package is currently disabled and folder is excluded from certain branches to focus on TUI stability. The following structure reflects the **Target Architecture**, not the current local state.
 
 **Why not deploy?**
 - Credentials decrypted in browser memory

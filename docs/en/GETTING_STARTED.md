@@ -44,14 +44,6 @@ lembaranz mulai
 2.  **Create Password**: Choose a strong password. **Important:** We do not store your password. If you lose it, your data cannot be recovered.
 3.  **Start Writing**: Use the `ukir` command or the web interface to save your first "Aksara" (note).
 
-## 🌐 Web Interface
-
-If you prefer a visual experience, you can run the web application:
-```bash
-bun run dev
-```
-Then open [http://localhost:1400](http://localhost:1400) in your browser.
-
-## 📚 Learn More
+3.  **Start Writing**: Use the `ukir` command to save your first "Aksara" (note).
 - [CLI Command Reference](/bantuan/cli)
 - [Security Architecture](/bantuan/keamanan)

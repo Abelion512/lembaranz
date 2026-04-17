@@ -1,7 +1,7 @@
 # Product Requirements Document (PRD): Lembaranz
 
 **Versi:** 3.5.0
-**Status:** Production Ready — CLI/TUI Stabil, GUI Phase 2
+**Status:** Production Ready — CLI/TUI Stabil, GUI Planned
 **Tanggal:** 13 April 2026
 **Bahasa:** Indonesia Baku
 **Branch:** `#33`
@@ -80,7 +80,7 @@ Manajemen catatan terenkripsi dengan CLI-first approach.
 - Fuzzy search (encrypted content)
 - Import/export (.md, .json)
 
-**Status:** ✅ Production Ready (CLI), ⏳ Web UI deprecated
+**Status:** ✅ Production Ready (CLI), ⏳ Web UI (Planned — Disabled)
 
 ### C. Laras (Environment Manager)
 Pengelolaan `.env` lintas proyek dengan enkripsi.
@@ -144,7 +144,7 @@ lembaranz/
 ├── packages/
 │   ├── core/          # @lembaranz/core (encryption, storage)
 │   ├── cli/           # @lembaranz/cli (TUI, commands)
-│   └── web/           # @lembaranz/web (landing page, docs)
+│   └── web/           # @lembaranz/web (Planned: Landing page, docs)
 ├── docs/              # Dokumentasi (id/ & en/)
 ├── .githooks/         # Git hooks (YOLO mode)
 ├── scripts/           # Helper scripts

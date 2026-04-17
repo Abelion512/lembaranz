@@ -61,8 +61,8 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "dev": "bun --cwd web dev",
-    "build": "bun --cwd web build",
+    "planned:dev": "bun --cwd web dev",
+    "planned:build": "bun --cwd web build",
     "cli": "bun ./packages/cli/src/main.ts",
     "lint": "eslint .",
     "test": "bun test ./packages/core/src/__tests__/",

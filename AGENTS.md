@@ -8,7 +8,7 @@ Proyek ini mengikuti konvensi penamaan 'Indonesia Puitis' dalam struktur monorep
 
 - `packages/core/src`: Logika inti, penyimpanan, dan utilitas (Jiwa).
 - `packages/cli/src`: Antarmuka terminal (TUI).
-- `packages/web/app`: Aplikasi Next.js 16 (GUI & Landing Page).
+- `packages/web`: Antarmuka Grafis (Planned — Disabled).
 
 ## 🤖 Aturan Agen
 
@@ -36,7 +36,6 @@ Proyek ini mengikuti konvensi penamaan 'Indonesia Puitis' dalam struktur monorep
 
 ## 🚀 Perintah Eksekusi
 
-- `bun run dev`: Jalankan Web (port 1400).
 - `bun run cli`: Jalankan CLI TUI.
 - `bun run test:perf`: Stress-test 1000 catatan.
 - `bun link`: Daftarkan CLI secara global (dari root).

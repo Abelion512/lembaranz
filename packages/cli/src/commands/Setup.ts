@@ -29,7 +29,7 @@ export function registerSetupCommand(program: Command) {
           message: 'Choose setup mode:',
           choices: [
             { title: '⌨️   CLI — Terminal wizard', value: 'cli' },
-            { title: '🖥️  GUI — Web interface (localhost:1401)', value: 'gui' },
+            // { title: '🖥️  GUI — Web interface (localhost:1401)', value: 'gui' }, // Disabled: Refactoring in progress
           ],
         });
 

@@ -1,6 +1,5 @@
 {
-  "buildCommand": "bun run build",
-  "installCommand": "bun install",
-  "outputDirectory": "packages/web/.next",
-  "framework": "nextjs"
+  "buildCommand": "echo 'Web UI Disabled'",
+  "outputDirectory": "docs",
+  "framework": null
 }
