@@ -7,7 +7,7 @@ type MessageType = 'success' | 'error' | 'warning' | 'info';
 interface MessageBoxProps {
     type: MessageType;
     title: string;
-    isi?: string;
+    content?: string;
 }
 
 const COLORS: Record<MessageType, string> = {
@@ -24,14 +24,14 @@ const ICONS: Record<MessageType, string> = {
     info: '[i]',
 };
 
-export const MessageBox: React.FC<MessageBoxProps> = ({ type, title, isi }) => {
+export const MessageBox: React.FC<MessageBoxProps> = ({ type, title, content }) => {
     const color = COLORS[type];
     const icon = ICONS[type];
 
     return (
         <Box borderStyle="round" borderColor={color} paddingX={1} flexDirection="column" alignSelf="center" width={60}>
             <Text color={color} bold>{icon} {title}</Text>
-            {isi && <Text color={UI_TOKENS.meta}>{isi}</Text>}
+            {content && <Text color={UI_TOKENS.meta}>{content}</Text>}
         </Box>
     );
 };

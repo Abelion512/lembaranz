@@ -1,15 +1,15 @@
 import { Result } from './Vault';
 
-export type VaultContext = 'saku' | 'pelataran';
+export type VaultContext = 'personal' | 'project';
 
 /**
  * Context: Context and Path Resolver.
- * Decoupled from Node.js top-level imports to support browser bundles.
+ * Standardizes directory and file naming for personal and project vaults.
  */
 export class Context {
-    private static readonly SAKU_FILE = 'saku.json';
-    private static readonly PELATARAN_DIR = '.lembaranz';
-    private static readonly PELATARAN_FILE = 'pelataran.json';
+    private static readonly PERSONAL_FILE = 'personal.json'; // Legacy: saku.json
+    private static readonly PROJECT_DIR = '.lembaranz';
+    private static readonly PROJECT_FILE = 'project.json';  // Legacy: pelataran.json
 
     /**
      * Helper to check if a file or directory exists asynchronously.
@@ -26,46 +26,65 @@ export class Context {
 
     /**
      * Resolves the absolute path for the given context.
-     * Works only in Node.js environment.
+     * Includes automatic migration from legacy naming.
      */
     static async resolvePath(context: VaultContext): Promise<string> {
         if (typeof window !== 'undefined') return '';
 
         try {
-            // Dynamic imports for ESM/Node compatibility
             const path = await import('path');
             const os = await import('os');
             const fs = await import('node:fs/promises');
 
-            const SAKU_DIR = path.join(os.homedir(), '.lembaranz');
+            const PERSONAL_BASE_DIR = path.join(os.homedir(), '.lembaranz');
+            let targetPath: string;
 
-            let jalur: string;
-            if (context === 'saku') {
-                if (!(await this.fileExists(SAKU_DIR))) {
-                    await fs.mkdir(SAKU_DIR, { recursive: true });
+            if (context === 'personal') {
+                if (!(await this.fileExists(PERSONAL_BASE_DIR))) {
+                    await fs.mkdir(PERSONAL_BASE_DIR, { recursive: true });
                 }
-                jalur = path.join(SAKU_DIR, this.SAKU_FILE);
+                
+                // MIGRATION: Check for legacy saku.json
+                const legacyPath = path.join(PERSONAL_BASE_DIR, 'saku.json');
+                const newPath = path.join(PERSONAL_BASE_DIR, this.PERSONAL_FILE);
+                
+                if (await this.fileExists(legacyPath) && !(await this.fileExists(newPath))) {
+                    if (process.env.DEBUG === 'true') console.log('[CONTEXT] Migrating saku.json to personal.json...');
+                    await fs.rename(legacyPath, newPath);
+                }
+                
+                targetPath = newPath;
             } else {
                 const root = (await this.findProjectRoot()) || process.cwd();
-                const localDir = path.join(root, this.PELATARAN_DIR);
+                const localDir = path.join(root, this.PROJECT_DIR);
                 if (!(await this.fileExists(localDir))) {
                     await fs.mkdir(localDir, { recursive: true });
                 }
-                jalur = path.join(localDir, this.PELATARAN_FILE);
+
+                // MIGRATION: Check for legacy pelataran.json
+                const legacyPath = path.join(localDir, 'pelataran.json');
+                const newPath = path.join(localDir, this.PROJECT_FILE);
+
+                if (await this.fileExists(legacyPath) && !(await this.fileExists(newPath))) {
+                    if (process.env.DEBUG === 'true') console.log('[CONTEXT] Migrating pelataran.json to project.json...');
+                    await fs.rename(legacyPath, newPath);
+                }
+
+                targetPath = newPath;
             }
 
             if (process.env.DEBUG === 'true') {
-                console.log(`[CONTEXT] Path ${context}: ${jalur}`);
+                console.log(`[CONTEXT] Resolved ${context} path: ${targetPath}`);
             }
-            return jalur;
+            return targetPath;
         } catch (err) {
-            console.error('[CONTEXT] Gagal menemukan jalur:', err);
+            console.error('[CONTEXT] Failed to resolve path:', err);
             return '';
         }
     }
 
     /**
-     * Detects the project root. Node.js only.
+     * Detects the project root by searching for .git or package.json.
      */
     private static async findProjectRoot(dir: string = (typeof process !== 'undefined' ? process.cwd() : '')): Promise<string | null> {
         if (typeof window !== 'undefined') return null;
@@ -88,26 +107,29 @@ export class Context {
     }
 
     /**
-     * Smart context detection. Node.js only.
+     * Smart context detection. Returns 'project' if local configuration exists.
      */
     static async detectContextAuto(): Promise<VaultContext> {
-        if (typeof window !== 'undefined') return 'saku';
+        if (typeof window !== 'undefined') return 'personal';
 
         try {
             const path = await import('path');
-
             const root = await this.findProjectRoot();
-            if (root && (await this.fileExists(path.join(root, this.PELATARAN_DIR, this.PELATARAN_FILE)))) {
-                return 'pelataran';
+            
+            // Check for both legacy and new project files
+            if (root) {
+                const hasNew = await this.fileExists(path.join(root, this.PROJECT_DIR, this.PROJECT_FILE));
+                const hasLegacy = await this.fileExists(path.join(root, this.PROJECT_DIR, 'pelataran.json'));
+                if (hasNew || hasLegacy) return 'project';
             }
         } catch {
-            // Default to saku on error
+            // Default on error
         }
-        return 'saku';
+        return 'personal';
     }
 
     /**
-     * Reads local .env. Node.js only.
+     * Reads local .env file.
      */
     static async readEnv(): Promise<Record<string, string>> {
         if (typeof window !== 'undefined') return {};
@@ -145,17 +167,17 @@ export class Context {
     }
 
     /**
-     * Writes or updates a local .env variable. Node.js only.
+     * Writes or updates a local .env variable.
      */
     static async writeEnv(key: string, value: string): Promise<Result<boolean>> {
-        if (typeof window !== 'undefined') return { data: null, error: new Error('Bukan lingkungan Node.js') };
+        if (typeof window !== 'undefined') return { data: null, error: new Error('Node.js environment required') };
 
         try {
             const path = await import('path');
             const fs = await import('node:fs/promises');
 
             const root = await this.findProjectRoot();
-            if (!root) return { data: null, error: new Error('Akar proyek tidak ditemukan.') };
+            if (!root) return { data: null, error: new Error('Project root not found') };
             const envPath = path.join(root, '.env');
 
             let content = '';

@@ -18,7 +18,8 @@ export class AuditLog {
                 import('path')
             ]);
 
-            const sakuDir = (await Context.resolvePath('saku')).replace('saku.json', '');
+            const targetFile = await Context.resolvePath('personal');
+            const sakuDir = path.dirname(targetFile);
             const logPath = path.join(sakuDir, this.LOG_FILE);
 
             const entry = {
@@ -36,7 +37,7 @@ export class AuditLog {
     }
 
     static async readLog(): Promise<string> {
-        if (typeof window !== 'undefined') return 'Audit log is only available in the Desktop app.';
+        if (typeof window !== 'undefined') return 'Audit log is only available in CLI/Desktop environment.';
 
         try {
             const [fs, path] = await Promise.all([
@@ -44,7 +45,8 @@ export class AuditLog {
                 import('path')
             ]);
 
-            const sakuDir = (await Context.resolvePath('saku')).replace('saku.json', '');
+            const targetFile = await Context.resolvePath('personal');
+            const sakuDir = path.dirname(targetFile);
             const logPath = path.join(sakuDir, this.LOG_FILE);
 
             return await fs.readFile(logPath, 'utf-8');

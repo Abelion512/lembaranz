@@ -2,15 +2,15 @@ import { Context, Storage, VaultContext, Archive, Sentinel } from '@lembaranz/co
 import prompts from 'prompts';
 
 export interface GlobalOptions {
-  saku?: boolean;
-  pelataran?: boolean;
+  personal?: boolean;
+  project?: boolean;
 }
 
 export const prepareContext = async (opts: GlobalOptions): Promise<VaultContext> => {
   let context: VaultContext;
 
-  if (opts.saku) context = 'saku';
-  else if (opts.pelataran) context = 'pelataran';
+  if (opts.personal) context = 'personal';
+  else if (opts.project) context = 'project';
   else context = await Context.detectContextAuto();
 
   const path = await Context.resolvePath(context);

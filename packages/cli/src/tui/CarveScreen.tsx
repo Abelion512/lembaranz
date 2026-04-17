@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, Text, useInput } from 'ink';
 import TextInput from 'ink-text-input';
 import Spinner from 'ink-spinner';
+import { UI_TOKENS } from './theme.js';
 
 interface CarveScreenProps {
     onBack: () => void;
@@ -35,13 +36,13 @@ export const CarveScreen: React.FC<CarveScreenProps> = ({ onBack }) => {
             });
 
             if (result.error) {
-                setErrorMessage(result.error.message || 'Gagal menyimpan catatan');
+                setErrorMessage(result.error.message || 'Failed to save entry');
                 setStep('error');
             } else {
                 onBack();
             }
         } catch (e: unknown) {
-            setErrorMessage((e as Error).message || 'Terjadi kesalahan sistem saat menyimpan');
+            setErrorMessage((e as Error).message || 'System error during save operation');
             setStep('error');
         }
     };
@@ -59,59 +60,59 @@ export const CarveScreen: React.FC<CarveScreenProps> = ({ onBack }) => {
 
     return (
         <Box flexDirection="column" padding={1} key="carve-root">
-            <Box borderStyle="round" borderColor="green" paddingX={1} marginBottom={1}>
-                <Text bold color="green">📝 UKIR AKSARA BARU</Text>
+            <Box borderStyle="round" borderColor={UI_TOKENS.brand} paddingX={1} marginBottom={1}>
+                <Text bold color={UI_TOKENS.brand}>📝 CREATE NEW ENTRY</Text>
             </Box>
 
             {step === 'title' && (
                 <Box flexDirection="column" key="step-title">
-                    <Text>Masukkan title catatan:</Text>
-                    <Box marginTop={1} borderStyle="single" borderColor="gray" paddingX={1}>
+                    <Text>Enter entry title:</Text>
+                    <Box marginTop={1} borderStyle="single" borderColor={UI_TOKENS.meta} paddingX={1}>
                         <TextInput
                             value={title}
                             onChange={setTitle}
                             onSubmit={handleTitleSubmit}
-                            placeholder="Judul..."
+                            placeholder="Title..."
                         />
                     </Box>
                     <Box marginTop={1}>
-                        <Text color="gray" dimColor italic>Tekan [Enter] untuk lanjut ke isi</Text>
+                        <Text color={UI_TOKENS.meta} dimColor italic>Press [Enter] to continue to content</Text>
                     </Box>
                 </Box>
             )}
 
             {step === 'content' && (
                 <Box flexDirection="column" key="step-content">
-                    <Text>Judul: <Text color="green" bold>{title}</Text></Text>
+                    <Text>Title: <Text color={UI_TOKENS.brand} bold>{title}</Text></Text>
                     <Box marginTop={1}>
-                        <Text>Masukkan isi aksara:</Text>
+                        <Text>Enter entry content:</Text>
                     </Box>
-                    <Box marginTop={1} borderStyle="single" borderColor="gray" paddingX={1}>
+                    <Box marginTop={1} borderStyle="single" borderColor={UI_TOKENS.meta} paddingX={1}>
                         <TextInput
                             value={content}
                             onChange={setContent}
                             onSubmit={handleContentSubmit}
-                            placeholder="Ketik isi di sini..."
+                            placeholder="Type content here..."
                         />
                     </Box>
                     <Box marginTop={1}>
-                        <Text color="gray" dimColor italic>Tekan [Enter] untuk simpan, [Esc] kembali ke title</Text>
+                        <Text color={UI_TOKENS.meta} dimColor italic>Press [Enter] to save, [Esc] return to title</Text>
                     </Box>
                 </Box>
             )}
 
             {step === 'saving' && (
                 <Box key="step-saving">
-                    <Text color="cyan"><Spinner type="dots" /> Mengabadikan aksara...</Text>
+                    <Text color={UI_TOKENS.accent}><Spinner type="dots" /> Saving entry to vault...</Text>
                 </Box>
             )}
 
             {step === 'error' && (
                 <Box flexDirection="column" key="step-error">
-                    <Text color="red" bold>❌ Terjadi Kesalahan:</Text>
-                    <Text color="red">{errorMessage}</Text>
+                    <Text color={UI_TOKENS.danger} bold>❌ Error Occurred:</Text>
+                    <Text color={UI_TOKENS.danger}>{errorMessage}</Text>
                     <Box marginTop={1}>
-                        <Text color="gray" dimColor italic>Tekan [Enter] atau [Esc] untuk kembali mengedit</Text>
+                        <Text color={UI_TOKENS.meta} dimColor italic>Press [Enter] or [Esc] to return to editor</Text>
                     </Box>
                 </Box>
             )}

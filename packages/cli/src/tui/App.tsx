@@ -11,12 +11,12 @@ import { CrashScreen } from './CrashScreen.js';
 import { SettingsScreen } from './SettingsScreen.js';
 import { UI_TOKENS } from './theme.js';
 
-type Layar = 'selamat' | 'menu' | 'security' | 'message' | 'browse' | 'credentials' | 'settings';
+type ScreenType = 'welcome' | 'menu' | 'security' | 'message' | 'browse' | 'credentials' | 'settings';
 
 interface AppProps {
     context: string;
     versi: string;
-    initialScreen?: Layar;
+    initialScreen?: ScreenType;
 }
 
 class ErrorBoundary extends Component<{ children: ReactNode; screen: string }, { hasError: boolean; error: Error | null }> {
@@ -43,38 +43,38 @@ class ErrorBoundary extends Component<{ children: ReactNode; screen: string }, {
 
 export const App: React.FC<AppProps> = ({ context, versi, initialScreen }) => {
     const { exit } = useApp();
-    const [screen, setLayar] = useState<Layar>(initialScreen || 'selamat');
+    const [screen, setScreen] = useState<ScreenType>(initialScreen || 'welcome');
     const [lastMenuIndex, setLastMenuIndex] = useState(0);
-    const [message, setPesan] = useState<{ type: 'success' | 'info'; title: string } | null>(null);
+    const [message, setMessage] = useState<{ type: 'success' | 'info'; title: string } | null>(null);
     const [exitAttempts, setExitAttempts] = useState(0);
 
     const goToMenu = useCallback(() => {
-        setLayar('menu');
+        setScreen('menu');
     }, []);
 
-    const handleSelect = useCallback((aksi: string) => {
-        switch (aksi) {
+    const handleSelect = useCallback((action: string) => {
+        switch (action) {
             case 'browse':
-                setLayar('browse');
+                setScreen('browse');
                 break;
             case 'credentials':
-                setLayar('credentials');
+                setScreen('credentials');
                 break;
-            case 'audit_keamanan':
-                setLayar('security');
+            case 'health_check':
+                setScreen('security');
                 break;
             case 'settings':
-                setLayar('settings');
+                setScreen('settings');
                 break;
             case 'exit':
                 exit();
                 break;
             default:
-                setPesan({ type: 'info', title: 'Fitur ini akan segera hadir.' });
-                setLayar('message');
+                setMessage({ type: 'info', title: 'This feature will be available soon.' });
+                setScreen('message');
                 break;
         }
-    }, []);
+    }, [exit]);
 
     useInput((input, key) => {
         // Handle message screen first (highest priority)
@@ -89,7 +89,7 @@ export const App: React.FC<AppProps> = ({ context, versi, initialScreen }) => {
         if (isExitKey) {
             if (exitAttempts === 0) {
                 setExitAttempts(1);
-                // Snappy 1s threshold (Claude-style)
+                // Snappy 1s threshold
                 setTimeout(() => { setExitAttempts(0); }, 1000);
             } else {
                 exit();
@@ -98,9 +98,9 @@ export const App: React.FC<AppProps> = ({ context, versi, initialScreen }) => {
         }
     });
 
-    const renderLayar = () => {
+    const renderScreen = () => {
         switch (screen) {
-            case 'selamat':
+            case 'welcome':
                 return <WelcomeScreen versi={versi} onComplete={goToMenu} />;
             case 'menu':
                 return <MainMenu
@@ -119,7 +119,7 @@ export const App: React.FC<AppProps> = ({ context, versi, initialScreen }) => {
             case 'message':
                 return (
                     <Box flexDirection="column" padding={1}>
-                        {message && <MessageBox type={message.type} title={message.title} isi="Press [Enter] or [q] to go back." />}
+                        {message && <MessageBox type={message.type} title={message.title} content="Press [Enter] or [q] to go back." />}
                     </Box>
                 );
             default:
@@ -128,7 +128,7 @@ export const App: React.FC<AppProps> = ({ context, versi, initialScreen }) => {
     };
 
     const screenName = {
-        selamat: 'Welcome',
+        welcome: 'Welcome',
         menu: 'Main Menu',
         browse: 'Archive',
         credentials: 'Store',
@@ -141,7 +141,7 @@ export const App: React.FC<AppProps> = ({ context, versi, initialScreen }) => {
         <ErrorBoundary screen={screenName}>
             <Box flexDirection="column" width="100%">
                 <Box flexDirection="column" marginBottom={0} width="100%">
-                    {renderLayar()}
+                    {renderScreen()}
                 </Box>
                 
                 {exitAttempts > 0 && (

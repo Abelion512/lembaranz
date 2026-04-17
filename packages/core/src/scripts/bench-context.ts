@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 
 async function runBench() {
     console.log('Setting up benchmark environment...');
-    const tempDir = join(tmpdir(), `laras-bench-${Date.now()}`);
+    const tempDir = join(tmpdir(), `config-bench-${Date.now()}`);
     await mkdir(tempDir, { recursive: true });
     await writeFile(join(tempDir, 'package.json'), '{}');
 

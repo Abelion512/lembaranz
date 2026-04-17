@@ -20,10 +20,11 @@ export interface NoteInput {
 }
 
 /**
- * Archive: Modul utama manajemen brankas dan catatan Lembaranz.
- * Menangani siklus hidup data dari enkripsi, penyimpanan, hingga pemulihan.
+ * Archive: Core module for vault management and entry lifecycle.
+ * Handles encryption, storage, recovery, and data integrity.
  */
 export const Archive = {
+    /** Checks if the authentication metadata is initialized. */
     async isVaultInitialized(): Promise<Result<boolean>> {
         try {
             const validator = await Storage.get('meta', 'auth_validator');
@@ -34,7 +35,7 @@ export const Archive = {
     },
 
     /**
-     * Memeriksa apakah brankas sudah disetup.
+     * Checks if the vault base configuration (salt) is present.
      */
     async isVaultSetup(): Promise<boolean> {
         try {
@@ -46,12 +47,12 @@ export const Archive = {
     },
 
     /**
-     * Menyiapkan brankas baru dengan kata sandi dan kunci pemulihan (mnemonic).
-     * @param password Kata sandi utama
-     * @param mnemonic 12 kata kunci pemulihan (opsional)
+     * Initializes a new vault with a password and optional recovery mnemonic.
+     * @param password Master password
+     * @param mnemonic 12-word recovery mnemonic (optional)
      */
     async setupVault(password: string, mnemonic?: string): Promise<Result<void>> {
-        if (process.env.DEBUG === 'true') console.log('[ARCHIVE] Memulai setupVault...');
+        if (process.env.DEBUG === 'true') console.log('[ARCHIVE] Initializing setupVault...');
 
         const genResult = await Vault.generateMasterKey();
         if (genResult.error) return genResult;
@@ -108,8 +109,8 @@ export const Archive = {
     },
 
     /**
-     * Membuka brankas menggunakan kata sandi.
-     * Mendukung migrasi otomatis dari V2 ke V3.
+     * Unlocks the vault using a password.
+     * Handles automatic migration from V2 (Legacy) to V3 (Decoupled).
      */
     async unlockVault(password: string): Promise<Result<boolean>> {
         try {
@@ -127,7 +128,7 @@ export const Archive = {
             const authValidator = await Storage.get('meta', 'auth_validator') as string;
             const wrappedKey = await Storage.get('meta', 'auth_wrapped_key') as string;
 
-            if (!saltHex || !authValidator) return { data: null, error: new Error('Data otentikasi tidak lengkap') };
+            if (!saltHex || !authValidator) return { data: null, error: new Error('Authentication data incomplete') };
 
             const salt = new Uint8Array(saltHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
 
@@ -135,7 +136,7 @@ export const Archive = {
             if (deriveResult.error) return deriveResult as Result<boolean>;
             const passwordKey = deriveResult.data;
 
-            // Coba V3 (Decoupled Master Key)
+            // Attempt V3 (Decoupled Master Key)
             if (wrappedKey) {
                 const decResult = await Vault.decryptPacked(wrappedKey, passwordKey);
                 if (decResult.error) return decResult as Result<boolean>;
@@ -154,7 +155,7 @@ export const Archive = {
                     return { data: true, error: null };
                 }
             } else {
-                // Migrasi dari V2 (Master Key = Password Key)
+                // Migration from V2 (Master Key = Password Key)
                 const [ivHex, base64Data] = authValidator.split('|');
                 const iv = new Uint8Array(ivHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
                 const binaryString = atob(base64Data);
@@ -168,9 +169,9 @@ export const Archive = {
 
                 if (decResult.data === 'LEMBARAN_SECURED_V2') {
                     Vault.setActiveKey(passwordKey);
-                    // Lakukan migrasi ke V3 agar support reset password & recovery yang lebih baik
+                    // Automatic migration to V3 for improved security and recovery
                     const resetRes = await this.resetPassword(password);
-                    if (resetRes.error) console.warn('[ARCHIVE] Gagal migrasi otomatis ke V3:', resetRes.error.message);
+                    if (resetRes.error) console.warn('[ARCHIVE] Automatic migration to V3 failed:', resetRes.error.message);
                     return { data: true, error: null };
                 }
             }
@@ -182,14 +183,14 @@ export const Archive = {
     },
 
     /**
-     * Memulihkan akses brankas menggunakan Kunci Kertas (mnemonic).
+     * Recovers vault access using a paper key (mnemonic).
      */
     async recoverVault(mnemonic: string): Promise<Result<boolean>> {
         try {
             const mSaltHex = await Storage.get('meta', 'recovery_salt') as string;
             const wrappedKey = await Storage.get('meta', 'recovery_wrapped_key') as string;
 
-            if (!mSaltHex || !wrappedKey) return { data: null, error: new Error('Data pemulihan tidak ditemukan') };
+            if (!mSaltHex || !wrappedKey) return { data: null, error: new Error('Recovery data not found') };
 
             const mSalt = new Uint8Array(mSaltHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
 
@@ -213,7 +214,7 @@ export const Archive = {
     },
 
     /**
-     * Menetapkan kata sandi baru untuk brankas yang sedang terbuka.
+     * Updates the master password for the currently open vault.
      */
     async resetPassword(newPassword: string): Promise<Result<void>> {
         const masterKey = Vault.getActiveKey();
@@ -249,7 +250,7 @@ export const Archive = {
     },
 
     /**
-     * Menghapus seluruh data aplikasi secara permanen.
+     * Permanently destroys all local application data.
      */
     async destroyAllData(): Promise<void> {
         await Promise.all([
@@ -270,7 +271,7 @@ export const Archive = {
     },
 
     /**
-     * Saves a new note or updates an existing one.
+     * Saves a new entry or updates an existing one.
      * Encrypts all sensitive fields before storage.
      */
     async saveNote(note: NoteInput): Promise<Result<StoredNote>> {
@@ -314,12 +315,12 @@ export const Archive = {
             if (resContent.error) return resContent as Result<StoredNote>;
             if (resPreview.error) return resPreview as Result<StoredNote>;
 
-            let secureKredensial: string | undefined = undefined;
+            let secureCredentials: string | undefined = undefined;
             if (note.credentials) {
                 const credsStr = typeof note.credentials === 'string' ? note.credentials : JSON.stringify(note.credentials);
                 const resCreds = await Vault.encryptPacked(credsStr);
                 if (resCreds.error) return resCreds as Result<StoredNote>;
-                secureKredensial = resCreds.data;
+                secureCredentials = resCreds.data;
             }
 
             const finalNote: StoredNote = {
@@ -327,7 +328,7 @@ export const Archive = {
                 title: resTitle.data,
                 content: resContent.data,
                 preview: resPreview.data,
-                credentials: secureKredensial,
+                credentials: secureCredentials,
                 isCredentials: note.isCredentials,
                 updatedAt: new Date().toISOString(),
                 _hash: checkHash,
@@ -341,8 +342,8 @@ export const Archive = {
     },
 
     /**
-     * Retrieves all notes with decrypted titles and previews.
-     * Content remains encrypted for security.
+     * Retrieves all entries with decrypted titles and previews.
+     * Full content remains encrypted for security.
      */
     async getAllNotes(): Promise<Result<DecryptedNote[]>> {
         if (Vault.isLocked()) return { data: null, error: new Error('Vault locked') };
@@ -371,7 +372,7 @@ export const Archive = {
     },
 
     /**
-     * Fully decrypts a single note including content and credentials.
+     * Fully decrypts a single entry including content and credentials.
      */
     async decryptNote(note: StoredNote): Promise<Result<DecryptedNote>> {
         try {
@@ -414,14 +415,14 @@ export const Archive = {
     },
 
     /**
-     * Menghapus catatan berdasarkan ID.
+     * Deletes an entry by ID.
      */
     async deleteNote(id: EntityId) {
         await Storage.delete('notes', id);
     },
 
     /**
-     * Mengambil catatan spesifik berdasarkan ID dan mendekripsinya.
+     * Retrieves and decrypts a specific entry by ID.
      */
     async getNoteById(id: EntityId): Promise<Result<Note | undefined>> {
         if (Vault.isLocked()) return { data: null, error: new Error('Vault locked') };
@@ -435,7 +436,7 @@ export const Archive = {
     },
 
     /**
-     * Mengambil statistik jumlah catatan dan folder.
+     * Retrieves statistics (entry and folder counts).
      */
     async getStats() {
         try {
@@ -448,9 +449,9 @@ export const Archive = {
     },
 
     /**
-     * Menetapkan Panic Key: kata sandi yang jika dimasukkan saat login
-     * akan menghapus semua data brankas secara permanen.
-     * @param panicPassword Kata sandi yang akan bertindak sebagai tombol panik
+     * Sets a Panic Key: a password that, when entered at login,
+     * triggers permanent destruction of all vault data.
+     * @param panicPassword The password acting as a kill-switch
      */
     async setPanicKey(panicPassword: string): Promise<void> {
         const hash = await Integrity.computeHash(panicPassword);
@@ -458,10 +459,9 @@ export const Archive = {
     },
 
     /**
-     * Membuat cadangan (backup) portabel.
-     * Mendekripsi semua data di memori, membungkusnya dalam JSON plaintext,
-     * lalu mengenkripsinya dengan struktur portabel dan password backup.
-     * Ini memungkinkan file dibuka di mesin lain.
+     * Creates a portable encrypted backup.
+     * Decrypts entries into memory, packages them in JSON, and re-encrypts
+     * using the backup password for inter-machine portability.
      */
     async createBackup(passwordBackup: string): Promise<Result<Uint8Array>> {
         if (Vault.isLocked()) return { data: null, error: new Error('Vault locked') };
@@ -493,7 +493,7 @@ export const Archive = {
 
     /**
      * Restores the vault from a portable backup file.
-     * @param buffer Binary data from .lembaranz backup file
+     * @param buffer Binary data from backup file
      * @param passwordBackup Password used to encrypt the backup
      */
     async restoreBackup(buffer: Uint8Array, passwordBackup: string): Promise<Result<{ restored: number, skipped: number }>> {
@@ -501,28 +501,26 @@ export const Archive = {
 
         try {
             const resDec = await Vault.decryptPortable(buffer, passwordBackup);
-            if (resDec.error) return { data: null, error: new Error('Failed to open backup file. Wrong password or corrupted file.', { cause: resDec.error }) };
+            if (resDec.error) return { data: null, error: new Error('Failed to open backup file. Incorrect password or corrupted file.', { cause: resDec.error }) };
 
             let backup: { version?: string; notes?: StoredNote[] };
             try {
                 backup = JSON.parse(resDec.data, (_key, value) => {
-                    // Prevent prototype pollution
                     if (_key === '__proto__' || _key === 'constructor' || _key === 'prototype') return undefined;
                     return value;
                 });
             } catch {
-                return { data: null, error: new Error('Invalid backup format: Failed to parse backup data.') };
+                return { data: null, error: new Error('Invalid backup format: Parse failed.') };
             }
 
             if (!backup.notes || !Array.isArray(backup.notes)) {
-                return { data: null, error: new Error('Invalid backup format: No notes data found.') };
+                return { data: null, error: new Error('Invalid backup format: No entries found.') };
             }
 
             const notes = backup.notes as StoredNote[];
             let restored = 0;
             let skipped = 0;
 
-            // Fetch all existing notes for fast lookup
             const existingNotes = await Storage.getAll('notes') as StoredNote[];
             const existingNotesMap = new Map<string, StoredNote>(existingNotes.map(n => [n.id, n]));
 

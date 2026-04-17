@@ -14,7 +14,7 @@ const MENU_ITEMS = [
     { label: `${UI_SYMBOLS.dir}  Store Credentials`, value: 'credentials' },
     { label: `${UI_SYMBOLS.lst}  View Archive`, value: 'browse' },
     { label: `${UI_SYMBOLS.cfg}  System Config`, value: 'settings' },
-    { label: `${UI_SYMBOLS.doc}  Health Check`, value: 'audit_keamanan' },
+    { label: `${UI_SYMBOLS.doc}  Health Check`, value: 'health_check' },
     { label: `${UI_SYMBOLS.ext}  Exit`, value: 'exit' },
 ];
 

@@ -10,8 +10,7 @@
 lembaranz/ (Monorepo)
 ├── packages/
 │   ├── core/          # @lembaranz/core — The encryption engine
-│   ├── cli/           # @lembaranz/cli — Terminal interface (TUI)
-│   └── web/           # @lembaranz/web — (Planned: Currently Disabled)
+│   └── cli/           # @lembaranz/cli — Terminal interface (TUI)
 ```
 
 ---
@@ -247,28 +246,6 @@ Save .env to vault with tag "myproject"
 
 ---
 
-## 🌐 Web Package (`@lembaranz/web`) — DISABLED
-
-> [!WARNING]
-> **DEVELOPMENT ON HOLD**: This package is currently disabled and folder is excluded from certain branches to focus on TUI stability. The following structure reflects the **Target Architecture**, not the current local state.
-
-**Why not deploy?**
-- Credentials decrypted in browser memory
-- Vulnerable to network attacks if exposed
-- Designed for development/testing only
-
-### Structure
-
-```
-packages/web/
-├── app/[locale]/        # Next.js 16 App Router
-│   ├── layout.tsx       # i18n + SEO metadata
-│   ├── page.tsx         # Landing page
-│   └── ...
-├── components/          # React components
-│   ├── landing/         # Landing page sections
-│   └── shared/          # Shared utilities
-├── gaya/                # Tailwind CSS styles
 ├── i18n/                # Internationalization setup
 └── messages/            # Translation files (id.json, en.json)
 ```

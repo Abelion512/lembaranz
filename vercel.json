@@ -1,5 +1,4 @@
 {
-  "buildCommand": "echo 'Web UI Disabled'",
-  "outputDirectory": "docs",
-  "framework": null
+  "buildCommand": "echo 'CLI-Only'",
+  "outputDirectory": "docs"
 }

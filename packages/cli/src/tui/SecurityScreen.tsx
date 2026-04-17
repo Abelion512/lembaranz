@@ -19,7 +19,7 @@ export const SecurityScreen: React.FC<SecurityScreenProps> = ({ onBack }) => {
     });
 
     useEffect(() => {
-        let timer: Timer;
+        let timer: any;
         if (isScanning) {
             timer = setInterval(() => {
                 setScanProgress(p => {
@@ -57,7 +57,7 @@ export const SecurityScreen: React.FC<SecurityScreenProps> = ({ onBack }) => {
         {
             title: 'Vault Integrity',
             status: 'SECURE: Local-Only',
-            detail: `Mount point: ${os.homedir()}/.lembaranz`,
+            detail: `Mount point detected at: ${os.homedir()}/.lembaranz`,
             color: UI_TOKENS.brand,
         },
     ];
@@ -66,7 +66,7 @@ export const SecurityScreen: React.FC<SecurityScreenProps> = ({ onBack }) => {
         return (
             <Box flexDirection="column" padding={2} width="100%" alignItems="center" justifyContent="center">
                 <Text color={UI_TOKENS.accent} bold>
-                 <Spinner type="dots" /> INITIALIZING DEEP SYSTEM SCAN...
+                 <Spinner type="dots" /> INITIALIZING SYSTEM DIAGNOSTICS...
                 </Text>
                 <Box marginTop={1} width={40} borderStyle="single" borderColor={UI_TOKENS.meta}>
                     <Box width={`${scanProgress}%`} backgroundColor={UI_TOKENS.brand}>
@@ -86,7 +86,7 @@ export const SecurityScreen: React.FC<SecurityScreenProps> = ({ onBack }) => {
     return (
         <Box flexDirection="column" padding={1} width="100%">
             <Box borderStyle="round" borderColor={UI_TOKENS.accent} paddingX={1} marginBottom={1} width="100%">
-                <Text color={UI_TOKENS.accent} bold>🩺 VAULT HEALTH CHECK • DOCTOR MODE [SCAN COMPLETE]</Text>
+                <Text color={UI_TOKENS.accent} bold>🩺 VAULT SYSTEM DIAGNOSTICS [SCAN COMPLETE]</Text>
             </Box>
 
             <Box flexDirection="column" paddingX={1}>
@@ -101,7 +101,7 @@ export const SecurityScreen: React.FC<SecurityScreenProps> = ({ onBack }) => {
 
             <Box paddingX={1} marginTop={1}>
                 <Box borderStyle="round" borderColor={UI_TOKENS.brand} paddingX={2}>
-                    <Text color={UI_TOKENS.brand} bold>DIAGNOSIS: SYSTEM SOVEREIGNTY SECURED.</Text>
+                    <Text color={UI_TOKENS.brand} bold>SCAN RESULT: SYSTEM SECURED.</Text>
                 </Box>
             </Box>
 

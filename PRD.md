@@ -80,7 +80,7 @@ Manajemen catatan terenkripsi dengan CLI-first approach.
 - Fuzzy search (encrypted content)
 - Import/export (.md, .json)
 
-**Status:** ✅ Production Ready (CLI), ⏳ Web UI (Planned — Disabled)
+**Status:** ✅ Production Ready (CLI)
 
 ### C. Laras (Environment Manager)
 Pengelolaan `.env` lintas proyek dengan enkripsi.
@@ -111,7 +111,7 @@ Antarmuka terminal interaktif untuk produktivitas maksimal.
 ## 4. Roadmap & Progress
 
 ### Fase 1 — Pondasi (MVP) ✅ **SELESAI 100%**
-- [x] Setup Monorepo (Core, Web, CLI)
+- [x] Setup Monorepo (Core, CLI)
 - [x] Implementasi Brankas (AES-GCM + Argon2id)
 - [x] CLI Commands (ukir, laras, tanam, cari)
 - [x] TUI Interaktif (Ink-based)
@@ -143,8 +143,7 @@ Antarmuka terminal interaktif untuk produktivitas maksimal.
 lembaranz/
 ├── packages/
 │   ├── core/          # @lembaranz/core (encryption, storage)
-│   ├── cli/           # @lembaranz/cli (TUI, commands)
-│   └── web/           # @lembaranz/web (Planned: Landing page, docs)
+│   └── cli/           # @lembaranz/cli (TUI, commands)
 ├── docs/              # Dokumentasi (id/ & en/)
 ├── .githooks/         # Git hooks (YOLO mode)
 ├── scripts/           # Helper scripts

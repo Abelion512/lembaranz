@@ -32,15 +32,8 @@ tokens.json
 # 🏗️ BUILD ARTIFACTS (HASIL KOMPILASI)
 # ═══════════════════════════════════════════════════════════
 
-# Next.js (Web)
-.next/
-out/
-build/
-dist/
-
 # TypeScript
 *.tsbuildinfo
-next-env.d.ts
 
 # Node.js
 node_modules/

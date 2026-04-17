@@ -28,8 +28,8 @@ program
 
 // Global Flags
 program
-  .option('--saku', 'Use personal vault context (global)')
-  .option('--pelataran', 'Use project vault context (local)');
+  .option('--personal', 'Use personal vault context (global)')
+  .option('--project', 'Use project vault context (local)');
 
 // Register all commands
 registerSetupCommand(program);
