@@ -527,37 +527,51 @@ export const Archive = {
             const existingNotesMap = new Map<string, StoredNote>(existingNotes.map(n => [n.id, n]));
 
             const restorePromises = notes.map(async (note) => {
-                const existing = existingNotesMap.get(note.id);
-                if (existing) {
-                    const existingDate = new Date(existing.updatedAt).getTime();
-                    const newDate = new Date(note.updatedAt).getTime();
-                    if (existingDate >= newDate) {
-                        return { status: 'skipped' as const, id: note.id };
+                try {
+                    const existing = existingNotesMap.get(note.id);
+                    if (existing) {
+                        const existingDate = new Date(existing.updatedAt).getTime();
+                        const newDate = new Date(note.updatedAt).getTime();
+                        if (existingDate >= newDate) {
+                            return { status: 'skipped' as const, id: note.id };
+                        }
                     }
-                }
 
-                // Convert StoredNote to NoteInput for saveNote
-                const noteInput: NoteInput = {
-                    id: note.id,
-                    title: note.title,
-                    content: note.content,
-                    folderId: note.folderId,
-                    isPinned: note.isPinned,
-                    isFavorite: note.isFavorite,
-                    tags: note.tags,
-                    createdAt: note.createdAt,
-                    credentials: note.credentials ? JSON.parse(note.credentials, (_k, v) => {
-                        if (_k === '__proto__' || _k === 'constructor' || _k === 'prototype') return undefined;
-                        return v;
-                    }) : undefined,
-                };
+                    let parsedCredentials: NoteInput['credentials'] = undefined;
+                    if (typeof note.credentials === 'string') {
+                        try {
+                            parsedCredentials = JSON.parse(note.credentials, (_k, v) => {
+                                if (_k === '__proto__' || _k === 'constructor' || _k === 'prototype') return undefined;
+                                return v;
+                            });
+                        } catch {
+                            parsedCredentials = note.credentials;
+                        }
+                    }
 
-                const resSave = await this.saveNote(noteInput);
-                if (resSave.error) {
-                    console.error(`[ARCHIVE] Failed to restore note ${note.id}:`, resSave.error.message);
+                    // Convert StoredNote to NoteInput for saveNote
+                    const noteInput: NoteInput = {
+                        id: note.id,
+                        title: note.title,
+                        content: note.content,
+                        folderId: note.folderId,
+                        isPinned: note.isPinned,
+                        isFavorite: note.isFavorite,
+                        tags: note.tags,
+                        createdAt: note.createdAt,
+                        credentials: parsedCredentials,
+                    };
+
+                    const resSave = await this.saveNote(noteInput);
+                    if (resSave.error) {
+                        console.error(`[ARCHIVE] Failed to restore note ${note.id}:`, resSave.error.message);
+                        return { status: 'error' as const, id: note.id };
+                    } else {
+                        return { status: 'restored' as const, id: note.id };
+                    }
+                } catch (error) {
+                    console.error(`[ARCHIVE] Unexpected restore error for note ${note.id}:`, error);
                     return { status: 'error' as const, id: note.id };
-                } else {
-                    return { status: 'restored' as const, id: note.id };
                 }
             });
 
