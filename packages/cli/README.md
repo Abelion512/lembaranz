@@ -35,6 +35,7 @@ lembaranz mulai
 - **Zero-Knowledge**: Kata sandi Anda tidak pernah disimpan or dikirim.
 - **Argon2id**: Derivasi kunci yang sangat kuat terhadap serangan GPU.
 - **AES-GCM 256**: Standar enkripsi industri untuk integritas data.
+- **Rate-limit Unlock Feedback**: CLI memberi estimasi menit tunggu minimum dan sisa percobaan buka brankas secara konsisten.
 
 ## 📄 Lisensi
 
