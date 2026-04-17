@@ -4,6 +4,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import prompts from 'prompts';
 import { prepareContext, openVaultCLI } from '../utils.js';
+import { getImportPathStatErrorMessage } from './ImportErrors.js';
 
 export function registerImportCommand(program: Command) {
   program
@@ -14,8 +15,20 @@ export function registerImportCommand(program: Command) {
       await prepareContext(program.opts());
       if (!(await openVaultCLI())) return console.log('Access denied.');
 
-      const stats = await fs.stat(p);
+      let stats: Awaited<ReturnType<typeof fs.stat>>;
+      try {
+        stats = await fs.stat(p);
+      } catch (err) {
+        console.log(getImportPathStatErrorMessage(p, err));
+        return;
+      }
+
       const isDir = stats.isDirectory();
+
+      if (!isDir && !stats.isFile()) {
+        console.log(`Unsupported path type: "${p}". Use a directory, .md file, or .lembaranz backup.`);
+        return;
+      }
 
       // Case 1: Directory (Find .md files)
       if (isDir) {
