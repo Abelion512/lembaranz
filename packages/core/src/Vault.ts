@@ -17,6 +17,10 @@ export type Result<T> = { data: T; error: null } | { data: null; error: Error };
 
 const ALGO_ENC = 'AES-GCM';
 const MAX_CACHE_ITEMS = 100;
+const HEX_0 = 48;
+const HEX_9 = 57;
+const HEX_A = 97;
+const HEX_F = 102;
 
 export class Vault {
     private static key: CryptoKey | null = null;
@@ -203,9 +207,21 @@ export class Vault {
     private static hexToBytes(hex: string): Uint8Array {
         const bytes = new Uint8Array(hex.length / 2);
         for (let i = 0; i < bytes.length; i++) {
-            bytes[i] = parseInt(hex.substring(i * 2, i * 2 + 2), 16);
+            const firstCode = hex.charCodeAt(i * 2);
+            const secondCode = hex.charCodeAt(i * 2 + 1);
+
+            const firstNibble = this.hexCharToNibble(firstCode);
+            const secondNibble = this.hexCharToNibble(secondCode);
+            bytes[i] = firstNibble < 0 || secondNibble < 0 ? 0 : (firstNibble << 4) | secondNibble;
         }
         return bytes;
+    }
+
+    private static hexCharToNibble(code: number): number {
+        if (code >= HEX_0 && code <= HEX_9) return code - HEX_0;
+        const lowerCode = code | 32;
+        if (lowerCode >= HEX_A && lowerCode <= HEX_F) return lowerCode - 87;
+        return -1;
     }
 
     static async decryptPacked(packed: string, customKey?: CryptoKey): Promise<Result<string>> {

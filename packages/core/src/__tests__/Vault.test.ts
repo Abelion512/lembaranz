@@ -133,6 +133,19 @@ describe('Vault', () => {
             const result2 = await Vault.decryptPacked(packResult.data!);
             expect(result2.data).toBe(original);
         });
+
+        test('should decrypt packed payload with uppercase IV hex', async () => {
+            const original = 'uppercase iv support';
+            const packResult = await Vault.encryptPacked(original);
+            expect(packResult.error).toBeNull();
+
+            const [ivHex, base64] = packResult.data!.split('|');
+            const uppercasePayload = `${ivHex.toUpperCase()}|${base64}`;
+
+            const unpackResult = await Vault.decryptPacked(uppercasePayload);
+            expect(unpackResult.error).toBeNull();
+            expect(unpackResult.data).toBe(original);
+        });
     });
 
     describe('encryptPortable / decryptPortable', () => {

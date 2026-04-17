@@ -74,6 +74,7 @@ Semua halaman bantuan di `/bantuan` kini menggunakan `DocRenderer.tsx`.
 - Proteksi timpa file .env di CLI
 - [NEW] Root layout crash (Missing html/body) di Next.js 16.1.6
 - [NEW] Locale routing doubling (/en/id/ fix)
+- [NEW] Optimasi parsing hex IV di Vault untuk dekripsi packed data yang lebih cepat
 
 ### Added
 - [NEW] Support @lembaranzz scope untuk seluruh monorepo
