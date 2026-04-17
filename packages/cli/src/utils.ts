@@ -41,8 +41,13 @@ export const openVaultCLI = async (): Promise<boolean> => {
     return false;
   }
 
+  if (result.data === false) {
+    console.log('Failed to open vault: Authentication failed.');
+    return false;
+  }
+
   Sentinel.resetRateLimit('vault-unlock');
-  return !!result.data;
+  return result.data === true;
 };
 
 export const enterTUIScreen = () => {
