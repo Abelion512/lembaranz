@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Security
+- Hardened vault unlock flow with centralized brute-force rate limiting in core `Archive.unlockVault`.
+- Removed plaintext setup secret persistence (`password` and `mnemonic`) from setup progress file.
+- Hardened file storage adapter against prototype-pollution keys (`__proto__`, `prototype`, `constructor`).
+- Replaced shell-string issue reporter launcher with argument-based process spawning to reduce command injection surface.
+
 ## [1.0.1] - 2026-04-13
 
 ### Added

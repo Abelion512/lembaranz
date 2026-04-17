@@ -1,4 +1,4 @@
-import { Context, Storage, VaultContext, Archive, Sentinel } from '@lembaranz/core';
+import { Context, Storage, VaultContext, Archive } from '@lembaranz/core';
 import prompts from 'prompts';
 
 export interface GlobalOptions {
@@ -26,22 +26,12 @@ export const openVaultCLI = async (): Promise<boolean> => {
   });
   if (!res.pw) return false;
 
-  const rateCheck = Sentinel.checkRateLimit('vault-unlock');
-  if (!rateCheck.allowed) {
-    const remainingMs = (rateCheck.resetAt || 0) - Date.now();
-    const minutes = Math.ceil(remainingMs / 60000);
-    console.log(`Too many failed attempts. Try again in ${minutes} minute(s).`);
-    return false;
-  }
-
   const result = await Archive.unlockVault(res.pw);
   if (result.error) {
-    const remaining = rateCheck.remaining !== undefined ? `${rateCheck.remaining} attempt(s) left` : 'locked';
-    console.log(`Failed to open vault: ${result.error.message} [${remaining}]`);
+    console.log(`Failed to open vault: ${result.error.message}`);
     return false;
   }
 
-  Sentinel.resetRateLimit('vault-unlock');
   return !!result.data;
 };
 

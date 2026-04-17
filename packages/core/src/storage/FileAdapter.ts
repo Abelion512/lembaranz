@@ -14,6 +14,7 @@ interface SchemaStructure {
 export class FileAdapter implements StorageAdapter {
     private data: SchemaStructure | null = null;
     private filePath: string;
+    private static readonly BLOCKED_KEYS = new Set(['__proto__', 'prototype', 'constructor']);
 
     constructor(customPath?: string) {
         // Smart path detection: Custom Path > Environment variable > Current Directory
@@ -80,6 +81,9 @@ export class FileAdapter implements StorageAdapter {
     }
 
     async get<K extends keyof LembaranzSchema>(store: K, key: string) {
+        if (FileAdapter.BLOCKED_KEYS.has(key)) {
+            return undefined;
+        }
         const data = await this.load();
         // @ts-expect-error - dynamic store access
         return data[store][key];
@@ -91,6 +95,9 @@ export class FileAdapter implements StorageAdapter {
         let actualKey = key;
         if ((store === 'notes' || store === 'folders') && (value as { id?: string }).id) {
             actualKey = (value as { id: string }).id;
+        }
+        if (FileAdapter.BLOCKED_KEYS.has(actualKey)) {
+            throw new Error(`[FILE_ADAPTER_ERROR] Invalid key "${actualKey}"`);
         }
 
         // @ts-expect-error - dynamic store access
@@ -105,6 +112,9 @@ export class FileAdapter implements StorageAdapter {
     }
 
     async delete(store: keyof LembaranzSchema, key: string) {
+        if (FileAdapter.BLOCKED_KEYS.has(key)) {
+            return;
+        }
         const data = await this.load();
         // @ts-expect-error - dynamic store access
         delete data[store][key];

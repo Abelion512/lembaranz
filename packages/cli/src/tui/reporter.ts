@@ -1,4 +1,4 @@
-import { exec } from 'child_process';
+import { spawn } from 'node:child_process';
 import os from 'os';
 import pkg from '../../package.json' assert { type: 'json' };
 
@@ -55,5 +55,9 @@ ${sanitizeStack(error.stack)}
 
 export function openReport(url: string): void {
     const start = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open';
-    exec(`${start} "${url}"`);
+    if (process.platform === 'win32') {
+        spawn('cmd', ['/c', 'start', '', url], { stdio: 'ignore', detached: true });
+        return;
+    }
+    spawn(start, [url], { stdio: 'ignore', detached: true });
 }

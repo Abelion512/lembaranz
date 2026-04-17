@@ -3,6 +3,7 @@ import { Vault, Result } from './Vault';
 import { StoredNote, DecryptedNote, Note, EntityId } from './Formula';
 import { v4 as uuidv4 } from 'uuid';
 import { Integrity } from './Integrity';
+import { Sentinel } from './Sentinel';
 
 /** Input for creating or updating a note (before encryption) */
 export interface NoteInput {
@@ -113,6 +114,14 @@ export const Archive = {
      */
     async unlockVault(password: string): Promise<Result<boolean>> {
         try {
+            const rateCheck = Sentinel.checkRateLimit('vault-unlock');
+            if (!rateCheck.allowed) {
+                return {
+                    data: false,
+                    error: new Error('Too many failed attempts. Please wait before trying again.')
+                };
+            }
+
             // Panic Key Check
             const panicHash = await Storage.get('meta', 'panic_hash') as string;
             if (panicHash) {
@@ -151,6 +160,7 @@ export const Archive = {
 
                 if (valResult.data === 'LEMBARAN_SECURED_V3') {
                     Vault.setActiveKey(masterKey);
+                    Sentinel.resetRateLimit('vault-unlock');
                     return { data: true, error: null };
                 }
             } else {
@@ -171,6 +181,7 @@ export const Archive = {
                     // Lakukan migrasi ke V3 agar support reset password & recovery yang lebih baik
                     const resetRes = await this.resetPassword(password);
                     if (resetRes.error) console.warn('[ARCHIVE] Gagal migrasi otomatis ke V3:', resetRes.error.message);
+                    Sentinel.resetRateLimit('vault-unlock');
                     return { data: true, error: null };
                 }
             }

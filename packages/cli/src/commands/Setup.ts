@@ -123,14 +123,11 @@ async function runCLISetup(program: Command) {
         initial: true
       });
 
+      await clearProgress();
       if (!continueSetup) {
-        await clearProgress();
         console.log(pc.dim('Starting fresh setup...\n'));
       } else {
-        // Continue from saved progress - jump to step 2
-        console.log(pc.green('\n✅ Resuming from saved progress...\n'));
-        await runStep2AndBeyond(savedProgress.password, savedProgress.mnemonic, program);
-        return;
+        console.log(pc.yellow('\n⚠️  Secure resume requires re-entering credentials. Starting fresh setup...\n'));
       }
     }
 
@@ -176,10 +173,10 @@ async function runCLISetup(program: Command) {
     }
 
     // Save progress after step 1
-    await saveProgress({ password, mnemonic: '', step: 1 });
+    await saveProgress({ step: 1 });
 
     // Step 2+: Recovery phrase and beyond
-    await runStep2AndBeyond(password, '', program);
+    await runStep2AndBeyond(password, program);
 
   } catch (error) {
     console.log(pc.red('\n✗ Setup failed:'), error instanceof Error ? error.message : String(error));
@@ -187,9 +184,9 @@ async function runCLISetup(program: Command) {
   }
 }
 
-async function runStep2AndBeyond(password: string, savedMnemonic: string, _program: Command) {
+async function runStep2AndBeyond(password: string, _program: Command) {
   try {
-    const mnemonic = savedMnemonic || generateMnemonic(12);
+    const mnemonic = generateMnemonic(12);
     const words = mnemonic.split(' ');
 
     // Step 2: Display recovery phrase
@@ -225,15 +222,15 @@ async function runStep2AndBeyond(password: string, savedMnemonic: string, _progr
       console.log(pc.yellow('\n💾 Progress tersimpan! Anda bisa lanjut nanti.'));
       console.log(pc.dim('  • Screenshot 12 kata di atas (hanya untuk sementara)'));
       console.log(pc.dim('  • Tulis di kertas, lalu hapus screenshot'));
-      console.log(pc.dim('  • Jalankan `lembaranz setup` lagi - password & seed phrase akan sama\n'));
+      console.log(pc.dim('  • Jalankan `lembaranz setup` lagi untuk melanjutkan secara aman\n'));
 
       // Save progress
-      await saveProgress({ password, mnemonic, step: 2 });
+      await saveProgress({ step: 2 });
       return;
     }
 
     // Save progress after step 2
-    await saveProgress({ password, mnemonic, step: 2 });
+    await saveProgress({ step: 2 });
 
     // Verify they wrote it down
     const { wantVerify } = await prompts({
@@ -308,7 +305,7 @@ async function runStep2AndBeyond(password: string, savedMnemonic: string, _progr
 
 // Helper functions
 
-async function saveProgress(data: { password: string; mnemonic: string; step: number }) {
+async function saveProgress(data: { step: number }) {
   try {
     const progressDir = path.join(process.cwd(), '.lembaranz');
     await fs.mkdir(progressDir, { recursive: true });
@@ -318,7 +315,7 @@ async function saveProgress(data: { password: string; mnemonic: string; step: nu
   }
 }
 
-async function loadProgress(): Promise<{ password: string; mnemonic: string; step: number } | null> {
+async function loadProgress(): Promise<{ step: number } | null> {
   try {
     const content = await fs.readFile(PROGRESS_FILE, 'utf-8');
     return JSON.parse(content);
