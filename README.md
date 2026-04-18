@@ -8,8 +8,6 @@
 
 > **Your credentials belong to you.** Zero-knowledge encryption, local-first, no cloud dependencies.
 
----
-
 ## Overview
 
 Lembaranz is a **self-hosted, zero-knowledge credential manager** that gives you complete control over your secrets. Built for power users who live in the terminal, it encrypts everything locally using **AES-GCM 256-bit encryption** with **Argon2id (64MB Hardened)** key derivation.
