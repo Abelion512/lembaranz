@@ -248,7 +248,9 @@ export const generateMnemonic = (wordCount: number = 12): string => {
  * Validates that a mnemonic phrase contains only valid BIP39 words.
  * Note: This does NOT validate the checksum (which requires the full bip39 library).
  */
+const BIP39_WORDLIST_SET = new Set(BIP39_WORDLIST);
+
 export const validateMnemonic = (mnemonic: string): boolean => {
     const words = mnemonic.trim().toLowerCase().split(/\s+/);
-    return words.every(word => BIP39_WORDLIST.includes(word));
+    return words.every(word => BIP39_WORDLIST_SET.has(word));
 };
