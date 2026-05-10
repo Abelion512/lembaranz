@@ -518,7 +518,7 @@ export class TerminalUI {
 
         if (selection.target && selection.target.length > 0) {
             console.log(pc.dim('Importing credentials...'));
-            for (const key of selection.target) {
+            await Promise.all(selection.target.map(async (key: string) => {
                 const saveResult = await Archive.saveNote({
                     id: '',
                     title: `🛡️ ENV: ${key}`,
@@ -540,7 +540,7 @@ export class TerminalUI {
                 } else {
                     console.log(pc.green(`  ├── ✅ ${key}`));
                 }
-            }
+            }));
             console.log(pc.green('✨ Selesai! Kredensial Anda kini tersimpan aman di Lembaran.'));
         }
     }
