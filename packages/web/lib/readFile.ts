@@ -6,14 +6,20 @@ import path from 'path';
  * Dirancang untuk bekerja di pengembangan lokal dan produksi (Vercel Standalone).
  */
 export function readFile(fileName: string): string | null {
+    if (!fileName || typeof fileName !== 'string') return null;
+
+    // 0. Hapus null bytes untuk mencegah poisoning
+    const safeFileName = fileName.replace(/\0/g, '');
+
     const cwd = process.cwd();
     
     // 1. Normalisasi path untuk mencegah traversal (e.g., ../../)
-    const normalizedRelativePath = path.normalize(fileName).replace(/^(\.\.[\\/])+/g, '');
+    const normalizedRelativePath = path.normalize(safeFileName).replace(/^(\.\.[\\/])+/g, '');
     
     // 2. Batasi akses hanya ke folder dokumentasi atau aset publik tertentu
-    if (!normalizedRelativePath.startsWith('docs') &&
-        !normalizedRelativePath.startsWith('public')) {
+    // Menggunakan split untuk memastikan kita memeriksa folder utama secara eksak
+    const firstPart = normalizedRelativePath.split(/[\\/]/)[0];
+    if (firstPart !== 'docs' && firstPart !== 'public') {
         return null;
     }
 
@@ -28,7 +34,12 @@ export function readFile(fileName: string): string | null {
     for (const p of searchLocations) {
         try {
             if (fs.existsSync(p) && fs.statSync(p).isFile()) {
-                return fs.readFileSync(p, 'utf8');
+                // Validasi tambahan: pastikan berkas yang dibaca memang berada dalam folder 'docs' atau 'public'
+                const resolvedPath = path.resolve(p);
+                const pathParts = resolvedPath.split(path.sep);
+                if (pathParts.includes('docs') || pathParts.includes('public')) {
+                    return fs.readFileSync(p, 'utf8');
+                }
             }
         } catch (_e) {
             // Diabaikan: kegagalan IO pada lokasi pencarian tertentu
@@ -40,7 +51,14 @@ export function readFile(fileName: string): string | null {
     for (let i = 0; i < 2; i++) {
         const target = path.join(currentDir, normalizedRelativePath);
         try {
-            if (fs.existsSync(target) && fs.statSync(target).isFile()) return fs.readFileSync(target, 'utf8');
+            if (fs.existsSync(target) && fs.statSync(target).isFile()) {
+                // Validasi ketat bahwa target tetap berada di dalam struktur yang diizinkan
+                const resolvedTarget = path.resolve(target);
+                const targetParts = resolvedTarget.split(path.sep);
+                if (targetParts.includes('docs') || targetParts.includes('public')) {
+                    return fs.readFileSync(target, 'utf8');
+                }
+            }
         } catch (_e) {
             // Diabaikan: kegagalan IO pada traversal direktori
         }
