@@ -118,9 +118,16 @@ describe('Vault', () => {
             expect(unpackResult.data).toBe(original);
         });
 
-        test('should return plaintext for non-packed strings', async () => {
+        test('should return plaintext for strings without pipe (unformatted)', async () => {
             const result = await Vault.decryptPacked('not encrypted');
             expect(result.data).toBe('not encrypted');
+            expect(result.error).toBeNull();
+        });
+
+        test('should return original value for invalid inputs (null, undefined, empty)', async () => {
+            expect((await Vault.decryptPacked('')).data).toBe('');
+            expect((await Vault.decryptPacked(null as any)).data).toBe(null);
+            expect((await Vault.decryptPacked(undefined as any)).data).toBe(undefined);
         });
 
         test('should cache decrypted results', async () => {
