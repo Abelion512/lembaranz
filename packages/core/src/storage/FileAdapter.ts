@@ -14,6 +14,8 @@ interface SchemaStructure {
 export class FileAdapter implements StorageAdapter {
     private data: SchemaStructure | null = null;
     private filePath: string;
+    private savePromise: Promise<void> | null = null;
+    private nextSavePromise: Promise<void> | null = null;
 
     constructor(customPath?: string) {
         // Smart path detection: Custom Path > Environment variable > Current Directory
@@ -65,13 +67,30 @@ export class FileAdapter implements StorageAdapter {
 
     private async save(): Promise<void> {
         if (!this.data) return;
-        try {
-            await this.ensureDirectory();
-            await fs.writeFile(this.filePath, JSON.stringify(this.data, null, 2));
-        } catch (error) {
-            console.error(`[FILE_ADAPTER_ERROR] Failed to save to ${this.filePath}:`, error);
-            throw error;
+
+        if (this.savePromise) {
+            if (!this.nextSavePromise) {
+                this.nextSavePromise = this.savePromise.then(() => {
+                    this.nextSavePromise = null;
+                    return this.save();
+                });
+            }
+            return this.nextSavePromise;
         }
+
+        this.savePromise = (async () => {
+            try {
+                await this.ensureDirectory();
+                await fs.writeFile(this.filePath, JSON.stringify(this.data, null, 2));
+            } catch (error) {
+                console.error(`[FILE_ADAPTER_ERROR] Failed to save to ${this.filePath}:`, error);
+                throw error;
+            } finally {
+                this.savePromise = null;
+            }
+        })();
+
+        return this.savePromise;
     }
 
     async get<K extends keyof LembaranSchema>(store: K, key: string) {
