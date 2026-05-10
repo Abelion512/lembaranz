@@ -22,9 +22,6 @@ export type { LembaranSchema };
 
 export const Storage = {
     async initialize(customPath?: string) {
-        if (process.env.DEBUG === 'true') {
-            console.log(`[STORAGE] Initialize: ${customPath || 'default'}`);
-        }
         if (typeof window === 'undefined') {
             const { FileAdapter } = await import('./storage/FileAdapter');
             adapter = new FileAdapter(customPath);
