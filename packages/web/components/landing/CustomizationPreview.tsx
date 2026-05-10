@@ -1,18 +1,20 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Palette, Settings, Shield, Zap } from 'lucide-react';
+
+const colors = [
+    { id: 'blue', hex: '#3b82f6', label: 'Classic Blue' },
+    { id: 'emerald', hex: '#10b981', label: 'Deep Emerald' },
+    { id: 'amber', hex: '#f59e0b', label: 'Cyber Amber' },
+    { id: 'rose', hex: '#f43f5e', label: 'Soft Rose' },
+    { id: 'purple', hex: '#a855f7', label: 'Vibrant Purple' }
+];
 
 export const CustomizationPreview = () => {
     const [activeColor, setActiveColor] = useState('blue');
 
-    const colors = [
-        { id: 'blue', hex: '#3b82f6', label: 'Classic Blue' },
-        { id: 'emerald', hex: '#10b981', label: 'Deep Emerald' },
-        { id: 'amber', hex: '#f59e0b', label: 'Cyber Amber' },
-        { id: 'rose', hex: '#f43f5e', label: 'Soft Rose' },
-        { id: 'purple', hex: '#a855f7', label: 'Vibrant Purple' }
-    ];
+    const activeHex = useMemo(() => colors.find(c => c.id === activeColor)?.hex, [activeColor]);
 
     return (
         <div className="w-full max-w-5xl mx-auto mt-24 px-4">
@@ -40,7 +42,7 @@ export const CustomizationPreview = () => {
 
                             <div className="space-y-6">
                                 <div className="flex items-center gap-4">
-                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg transition-all duration-500`} style={{ backgroundColor: colors.find(c => c.id === activeColor)?.hex }}>
+                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg transition-all duration-500`} style={{ backgroundColor: activeHex }}>
                                         <Shield size={24} />
                                     </div>
                                     <div className="flex-1 space-y-2">
@@ -60,13 +62,13 @@ export const CustomizationPreview = () => {
                                     <div className="h-1.5 w-3/4 bg-white/5 rounded-full" />
                                 </div>
 
-                                <button className="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-widest text-white transition-all duration-500" style={{ backgroundColor: colors.find(c => c.id === activeColor)?.hex }}>
+                                <button className="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-widest text-white transition-all duration-500" style={{ backgroundColor: activeHex }}>
                                     Simpan Perubahan
                                 </button>
                             </div>
 
                             {/* Glow Effect */}
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 blur-[80px] -z-10 opacity-30 transition-all duration-500" style={{ backgroundColor: colors.find(c => c.id === activeColor)?.hex }} />
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 blur-[80px] -z-10 opacity-30 transition-all duration-500" style={{ backgroundColor: activeHex }} />
                         </div>
                     </div>
                 </div>
