@@ -175,13 +175,8 @@ export class Vault {
 
         const { data, iv } = result.data;
 
-        // Optimized hex encoding: ~3-4x faster than Array.from().map()
-        const HEX_CHARS = '0123456789abcdef';
-        let ivHex = '';
-        for (let i = 0; i < iv.length; i++) {
-            const v = iv[i];
-            ivHex += HEX_CHARS[v >> 4] + HEX_CHARS[v & 15];
-        }
+        // Optimized hex encoding
+        const ivHex = this.bytesToHex(iv);
 
         // Optimized chunked base64 encoding: handles large arrays without Maximum call stack size exceeded
         // ~10x faster than spread operator for large buffers
@@ -200,12 +195,26 @@ export class Vault {
     /**
      * Optimized hex string to Uint8Array conversion without regex.
      */
-    private static hexToBytes(hex: string): Uint8Array {
+    public static hexToBytes(hex: string): Uint8Array {
         const bytes = new Uint8Array(hex.length / 2);
         for (let i = 0; i < bytes.length; i++) {
             bytes[i] = parseInt(hex.substring(i * 2, i * 2 + 2), 16);
         }
         return bytes;
+    }
+
+    /**
+     * Optimized Uint8Array to hex string conversion.
+     * ~3-4x faster than Array.from().map().
+     */
+    public static bytesToHex(bytes: Uint8Array): string {
+        const HEX_CHARS = '0123456789abcdef';
+        let hex = '';
+        for (let i = 0; i < bytes.length; i++) {
+            const v = bytes[i];
+            hex += HEX_CHARS[v >> 4] + HEX_CHARS[v & 15];
+        }
+        return hex;
     }
 
     static async decryptPacked(packed: string, customKey?: CryptoKey): Promise<Result<string>> {

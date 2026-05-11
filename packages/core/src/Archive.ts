@@ -63,7 +63,7 @@ export const Archive = {
         const masterKeyBuffer = exportResult.data;
 
         const salt = crypto.getRandomValues(new Uint8Array(16));
-        const saltHex = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
+        const saltHex = Vault.bytesToHex(salt);
 
         const deriveResult = await Vault.deriveKey(password, salt);
         if (deriveResult.error) return deriveResult;
@@ -87,7 +87,7 @@ export const Archive = {
 
         if (mnemonic) {
             const mnemonicSalt = crypto.getRandomValues(new Uint8Array(16));
-            const mSaltHex = Array.from(mnemonicSalt).map(b => b.toString(16).padStart(2, '0')).join('');
+            const mSaltHex = Vault.bytesToHex(mnemonicSalt);
 
             const mDeriveResult = await Vault.deriveKey(mnemonic, mnemonicSalt);
             if (mDeriveResult.error) return mDeriveResult;
@@ -130,7 +130,7 @@ export const Archive = {
 
             if (!saltHex || !authValidator) return { data: null, error: new Error('Authentication data incomplete') };
 
-            const salt = new Uint8Array(saltHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+            const salt = Vault.hexToBytes(saltHex);
 
             const deriveResult = await Vault.deriveKey(password, salt);
             if (deriveResult.error) return deriveResult as Result<boolean>;
@@ -157,7 +157,7 @@ export const Archive = {
             } else {
                 // Migration from V2 (Master Key = Password Key)
                 const [ivHex, base64Data] = authValidator.split('|');
-                const iv = new Uint8Array(ivHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+                const iv = Vault.hexToBytes(ivHex);
                 const binaryString = atob(base64Data);
                 const bytes = new Uint8Array(binaryString.length);
                 for (let i = 0; i < binaryString.length; i++) {
@@ -192,7 +192,7 @@ export const Archive = {
 
             if (!mSaltHex || !wrappedKey) return { data: null, error: new Error('Recovery data not found') };
 
-            const mSalt = new Uint8Array(mSaltHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+            const mSalt = Vault.hexToBytes(mSaltHex);
 
             const deriveResult = await Vault.deriveKey(mnemonic, mSalt);
             if (deriveResult.error) return deriveResult as Result<boolean>;
@@ -225,7 +225,7 @@ export const Archive = {
         const masterKeyBuffer = exportResult.data;
 
         const salt = crypto.getRandomValues(new Uint8Array(16));
-        const saltHex = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
+        const saltHex = Vault.bytesToHex(salt);
 
         const deriveResult = await Vault.deriveKey(newPassword, salt);
         if (deriveResult.error) return deriveResult;
