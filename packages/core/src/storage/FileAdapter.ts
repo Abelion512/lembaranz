@@ -14,6 +14,8 @@ interface SchemaStructure {
 export class FileAdapter implements StorageAdapter {
     private data: SchemaStructure | null = null;
     private filePath: string;
+    private savePromise: Promise<void> | null = null;
+    private nextSavePromise: Promise<void> | null = null;
 
     constructor(customPath?: string) {
         // Smart path detection: Custom Path > Environment variable > Current Directory
@@ -79,18 +81,35 @@ export class FileAdapter implements StorageAdapter {
 
     private async save(): Promise<void> {
         if (!this.data) return;
-        const tempPath = `${this.filePath}.tmp`;
-        try {
-            await this.ensureDirectory();
-            // Atomic write: write to temp file first, then rename
-            await fs.writeFile(tempPath, JSON.stringify(this.data, null, 2), 'utf-8');
-            await fs.rename(tempPath, this.filePath);
-        } catch (error) {
-            // Cleanup temp file if it exists and write failed
-            try { await fs.unlink(tempPath); } catch (_) { /* ignore */ }
-            console.error(`[FILE_ADAPTER_ERROR] Failed to save to ${this.filePath}:`, error);
-            throw error;
+
+        if (this.savePromise) {
+            if (!this.nextSavePromise) {
+                this.nextSavePromise = this.savePromise.then(() => {
+                    this.nextSavePromise = null;
+                    return this.save();
+                });
+            }
+            return this.nextSavePromise;
         }
+
+        this.savePromise = (async () => {
+            const tempPath = `${this.filePath}.tmp`;
+            try {
+                await this.ensureDirectory();
+                // Atomic write: write to temp file first, then rename
+                await fs.writeFile(tempPath, JSON.stringify(this.data, null, 2), 'utf-8');
+                await fs.rename(tempPath, this.filePath);
+            } catch (error) {
+                // Cleanup temp file if it exists and write failed
+                try { await fs.unlink(tempPath); } catch (_) { /* ignore */ }
+                console.error(`[FILE_ADAPTER_ERROR] Failed to save to ${this.filePath}:`, error);
+                throw error;
+            } finally {
+                this.savePromise = null;
+            }
+        })();
+
+        return this.savePromise;
     }
 
     async get<K extends keyof LembaranzSchema>(store: K, key: string) {
