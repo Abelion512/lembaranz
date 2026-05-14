@@ -1,11 +1,11 @@
-import { marked } from 'marked';
 import { Link } from '@/i18n/navigation';
 import { ChevronLeft } from 'lucide-react';
 import { readFile } from '@/lib/readFile';
+import { safeMarked } from '@/lib/safeMarked';
 
 export default async function ChangelogPage() {
     const content = readFile('CHANGELOG.md');
-    const htmlContent = content ? await marked.parse(content) : '<p>Changelog tidak ditemukan.</p>';
+    const htmlContent = content ? await safeMarked.parse(content) : '<p>Changelog tidak ditemukan.</p>';
 
     return (
         <div className='flex-1 flex flex-col min-h-0 bg-(--background) px-5 pt-14 pb-20 overflow-y-auto no-scrollbar'>

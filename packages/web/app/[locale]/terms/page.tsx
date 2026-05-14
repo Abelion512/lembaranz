@@ -1,7 +1,7 @@
-import { marked } from 'marked';
 import { Link } from '@/i18n/navigation';
 import { ChevronLeft, Github } from 'lucide-react';
 import { readFile } from '@/lib/readFile';
+import { safeMarked } from '@/lib/safeMarked';
 
 export const metadata = {
     title: 'Ketentuan Layanan — Lembaran',
@@ -10,7 +10,7 @@ export const metadata = {
 
 export default async function TermsPage() {
     const content = readFile('TERMS.md');
-    const htmlContent = content ? await marked.parse(content) : '<p>Dokumen tidak ditemukan.</p>';
+    const htmlContent = content ? await safeMarked.parse(content) : '<p>Dokumen tidak ditemukan.</p>';
 
     return (
         <div className='flex-1 flex flex-col min-h-screen bg-(--background) overflow-y-auto no-scrollbar'>

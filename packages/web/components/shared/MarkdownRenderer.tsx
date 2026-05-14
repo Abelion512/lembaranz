@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Marked } from 'marked';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Book, ArrowLeft } from 'lucide-react';
 import { getDocContent } from '@/lib/getDocContent';
+import { safeMarked } from '@/lib/safeMarked';
 
 interface MarkdownRendererProps {
     slug: string;
@@ -13,41 +13,6 @@ interface MarkdownRendererProps {
 
 // Cache in-memory: key = "slug-lang" → html string
 const contentCache = new Map<string, string>();
-
-/**
- * Hardening Renderer Markdown:
- * 1. Blokir raw HTML.
- * 2. Filter protokol berbahaya pada link.
- * 3. Tambahkan rel="noopener noreferrer" pada link eksternal.
- */
-const markdownRenderer = new Marked({ gfm: true });
-markdownRenderer.use({
-    renderer: {
-        html() {
-            return ''; // Blokir eksekusi HTML mentah dalam markdown
-        },
-        link(token) {
-            const href = token.href;
-            const text = token.text;
-            const title = token.title;
-
-            // Keamanan: Tolak protokol berbahaya (XSS)
-            const dangerousSchemes = /^(javascript|data|vbscript|file):/i;
-            if (dangerousSchemes.test(href)) {
-                return `<span>${text}</span>`;
-            }
-
-            // Keamanan: Tambahkan atribut pengaman untuk link eksternal
-            const isExternal = href.startsWith('http');
-            const rel = isExternal ? 'rel="noopener noreferrer" target="_blank"' : '';
-            // XSS fix: Escape title attribute value
-            const safeTitle = title ? title.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
-            const titleAttr = safeTitle ? `title="${safeTitle}"` : '';
-
-            return `<a href="${href}" ${rel} ${titleAttr}>${text}</a>`;
-        }
-    }
-});
 
 export function MarkdownRenderer({ slug }: MarkdownRendererProps) {
     const lang = useLocale() as 'id' | 'en';
@@ -76,7 +41,7 @@ export function MarkdownRenderer({ slug }: MarkdownRendererProps) {
             if (cancelled) return;
 
             if (content) {
-                const parsed = await markdownRenderer.parse(content);
+                const parsed = await safeMarked.parse(content);
                 contentCache.set(cacheKey, parsed as string);
                 setHtmlContent(parsed as string);
             } else {
