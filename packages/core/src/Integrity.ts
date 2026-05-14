@@ -27,7 +27,7 @@ export const Integrity = {
         const hashArray = new Uint8Array(hashBuffer);
 
         // Optimized bytes-to-hex conversion using a pre-allocated string and bitwise operations
-        // This is ~4x faster than using .toString(16).padStart(2, '0') in a loop
+        // This avoids the overhead of .toString(16) and .padStart() calls in each iteration
         let hashHex = '';
         for (let i = 0; i < hashArray.length; i++) {
             const v = hashArray[i];
