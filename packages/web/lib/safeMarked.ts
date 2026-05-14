@@ -28,8 +28,8 @@ safeMarked.use({
             const isExternal = href.startsWith('http');
             const rel = isExternal ? 'rel="noopener noreferrer" target="_blank"' : '';
             // XSS fix: Escape href and title attribute value
-            const safeHref = href.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            const safeTitle = title ? title.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+            const safeHref = href.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const safeTitle = title ? title.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
             const titleAttr = safeTitle ? `title="${safeTitle}"` : '';
 
             return `<a href="${safeHref}" ${rel} ${titleAttr}>${text}</a>`;
@@ -46,10 +46,10 @@ safeMarked.use({
             }
 
             // XSS fix: Escape href, text, and title attribute value
-            const safeHref = href.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            const safeTitle = title ? title.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+            const safeHref = href.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const safeTitle = title ? title.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
             const titleAttr = safeTitle ? `title="${safeTitle}"` : '';
-            const safeText = text ? text.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+            const safeText = text ? text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
 
             return `<img src="${safeHref}" alt="${safeText}" ${titleAttr} />`;
         }
