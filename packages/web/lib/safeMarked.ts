@@ -27,11 +27,31 @@ safeMarked.use({
             // Keamanan: Tambahkan atribut pengaman untuk link eksternal
             const isExternal = href.startsWith('http');
             const rel = isExternal ? 'rel="noopener noreferrer" target="_blank"' : '';
-            // XSS fix: Escape title attribute value
-            const safeTitle = title ? title.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+            // XSS fix: Escape href and title attribute value
+            const safeHref = href.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const safeTitle = title ? title.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
             const titleAttr = safeTitle ? `title="${safeTitle}"` : '';
 
-            return `<a href="${href}" ${rel} ${titleAttr}>${text}</a>`;
+            return `<a href="${safeHref}" ${rel} ${titleAttr}>${text}</a>`;
+        },
+        image(token) {
+            const href = token.href;
+            const text = token.text;
+            const title = token.title;
+
+            // Keamanan: Tolak protokol berbahaya pada gambar (XSS)
+            const dangerousSchemes = /^(javascript|data|vbscript|file):/i;
+            if (dangerousSchemes.test(href)) {
+                return `<span>${text}</span>`;
+            }
+
+            // XSS fix: Escape href, text, and title attribute value
+            const safeHref = href.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const safeTitle = title ? title.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+            const titleAttr = safeTitle ? `title="${safeTitle}"` : '';
+            const safeText = text ? text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+
+            return `<img src="${safeHref}" alt="${safeText}" ${titleAttr} />`;
         }
     }
 });
