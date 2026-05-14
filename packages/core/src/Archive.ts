@@ -50,7 +50,7 @@ export const Archive = {
         const masterKeyBuffer = exportResult.data;
 
         const salt = crypto.getRandomValues(new Uint8Array(16));
-        const saltHex = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
+        const saltHex = Vault.bytesToHex(salt);
 
         const deriveResult = await Vault.deriveKey(password, salt);
         if (deriveResult.error) return deriveResult;
@@ -74,7 +74,7 @@ export const Archive = {
 
         if (mnemonic) {
             const mnemonicSalt = crypto.getRandomValues(new Uint8Array(16));
-            const mSaltHex = Array.from(mnemonicSalt).map(b => b.toString(16).padStart(2, '0')).join('');
+            const mSaltHex = Vault.bytesToHex(mnemonicSalt);
 
             const mDeriveResult = await Vault.deriveKey(mnemonic, mnemonicSalt);
             if (mDeriveResult.error) return mDeriveResult;
@@ -212,7 +212,7 @@ export const Archive = {
         const masterKeyBuffer = exportResult.data;
 
         const salt = crypto.getRandomValues(new Uint8Array(16));
-        const saltHex = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
+        const saltHex = Vault.bytesToHex(salt);
 
         const deriveResult = await Vault.deriveKey(newPassword, salt);
         if (deriveResult.error) return deriveResult;
