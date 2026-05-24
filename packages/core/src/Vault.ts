@@ -199,10 +199,22 @@ export class Vault {
     /**
      * Optimized hex string to Uint8Array conversion without regex.
      */
-    private static hexToBytes(hex: string): Uint8Array {
+    static hexToBytes(hex: string): Uint8Array {
         const bytes = new Uint8Array(hex.length / 2);
         for (let i = 0; i < bytes.length; i++) {
             bytes[i] = parseInt(hex.substring(i * 2, i * 2 + 2), 16);
+        }
+        return bytes;
+    }
+
+    /**
+     * Optimized base64 string to Uint8Array conversion.
+     */
+    static base64ToBytes(base64: string): Uint8Array {
+        const binaryString = atob(base64);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
         }
         return bytes;
     }
@@ -221,11 +233,7 @@ export class Vault {
             const [ivHex, base64] = packed.split('|');
             const iv = this.hexToBytes(ivHex);
 
-            const binaryString = atob(base64);
-            const bytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) {
-                bytes[i] = binaryString.charCodeAt(i);
-            }
+            const bytes = this.base64ToBytes(base64);
 
             const result = await this.decrypt(bytes.buffer, iv, customKey);
             if (result.error) return result;
