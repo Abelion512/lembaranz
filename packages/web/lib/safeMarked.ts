@@ -22,7 +22,7 @@ function isDangerousUrl(url: string | null | undefined): boolean {
           ? String.fromCharCode(parseInt(n.substring(2), 16))
           : String.fromCharCode(+n.substring(1));
       }
-      return match; // Return as-is if not matched to specific entities we care about
+      return match;
     }
   );
 
@@ -30,12 +30,10 @@ function isDangerousUrl(url: string | null | undefined): boolean {
   try {
     decoded = decodeURIComponent(decoded);
   } catch {
-    // Fail securely: if decoding fails, we continue with the partially decoded string.
-    // This prevents malformed %-sequences from hiding dangerous payloads.
+    // Fail securely: continue with partially decoded string to catch obfuscated payloads
   }
 
   // 3. Aggressively strip whitespace and control characters [\x00-\x20]
-  // Impact: Neutralizes "jav ascript:" or "javascript\n:" bypasses.
   decoded = decoded.replace(/[\x00-\x20]+/g, "");
 
   // 4. Test against dangerous schemes
