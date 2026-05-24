@@ -180,8 +180,32 @@ export class Vault {
         // Impact: ~3x faster than Array.from().map().join('') for performance-critical encryption paths
         const ivHex = this.bytesToHex(iv);
 
-        const base64 = btoa(String.fromCharCode(...new Uint8Array(data)));
+        const base64 = this.bytesToBase64(new Uint8Array(data));
         return { data: `${ivHex}|${base64}`, error: null };
+    }
+
+    /**
+     * Optimized Uint8Array to Base64 string conversion without stack overflow on large buffers.
+     */
+    static bytesToBase64(bytes: Uint8Array): string {
+        let binary = '';
+        const chunkSize = 8192;
+        for (let i = 0; i < bytes.length; i += chunkSize) {
+            binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize) as unknown as number[]);
+        }
+        return btoa(binary);
+    }
+
+    /**
+     * Optimized Base64 string to Uint8Array conversion without regex or map array allocations.
+     */
+    static base64ToBytes(base64: string): Uint8Array {
+        const binaryString = atob(base64);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        return bytes;
     }
 
     /**
@@ -221,11 +245,7 @@ export class Vault {
             const [ivHex, base64] = packed.split('|');
             const iv = this.hexToBytes(ivHex);
 
-            const binaryString = atob(base64);
-            const bytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) {
-                bytes[i] = binaryString.charCodeAt(i);
-            }
+            const bytes = this.base64ToBytes(base64);
 
             const result = await this.decrypt(bytes.buffer, iv, customKey);
             if (result.error) return result;
