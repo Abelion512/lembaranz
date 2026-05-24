@@ -233,20 +233,30 @@ export class Vault {
   }
 
   /**
-   * Optimized hex string to Uint8Array conversion without regex or substring allocation.
-   * ~6.4x faster than parseInt(hex.substring(...), 16).
+   * Optimized hex string to Uint8Array conversion without regex.
+   * Uses charCodeAt and bitwise math to calculate nibbles directly, preventing substring() and parseInt() string allocations.
    */
   public static hexToBytes(hex: string): Uint8Array {
     const bytes = new Uint8Array(hex.length / 2);
-    for (let i = 0; i < bytes.length; i++) {
-      const h1 = hex.charCodeAt(i * 2);
-      const h2 = hex.charCodeAt(i * 2 + 1);
+    for (let i = 0, j = 0; i < hex.length; i += 2, j++) {
+      const c1 = hex.charCodeAt(i);
+      const c2 = hex.charCodeAt(i + 1);
+      const n1 = c1 < 58 ? c1 - 48 : c1 < 97 ? c1 - 55 : c1 - 87;
+      const n2 = c2 < 58 ? c2 - 48 : c2 < 97 ? c2 - 55 : c2 - 87;
+      bytes[j] = (n1 << 4) | n2;
+    }
+    return bytes;
+  }
 
-      // Convert char codes to nibbles directly using math
-      const n1 = h1 >= 97 ? h1 - 87 : h1 >= 65 ? h1 - 55 : h1 - 48;
-      const n2 = h2 >= 97 ? h2 - 87 : h2 >= 65 ? h2 - 55 : h2 - 48;
-
-      bytes[i] = (n1 << 4) | n2;
+  /**
+   * Optimized base64 to Uint8Array conversion using an iterative loop.
+   * Replaces inefficient inline conversions like Uint8Array.from(atob(...)).
+   */
+  public static base64ToBytes(base64: string): Uint8Array {
+    const binaryString = atob(base64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
     }
     return bytes;
   }
@@ -280,14 +290,7 @@ export class Vault {
     try {
       const [ivHex, base64] = packed.split("|");
       const iv = this.hexToBytes(ivHex);
-
-      // Fast cross-platform base64 to Uint8Array loop
-      const binaryString = atob(base64);
-      const len = binaryString.length;
-      const bytes = new Uint8Array(len);
-      for (let i = 0; i < len; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
+      const bytes = this.base64ToBytes(base64);
 
       const result = await this.decrypt(bytes.buffer, iv, customKey);
       if (result.error) return result;
