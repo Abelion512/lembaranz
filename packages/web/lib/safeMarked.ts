@@ -29,7 +29,21 @@ function isDangerousUrl(url: string | null | undefined): boolean {
   try {
     normalized = decodeURIComponent(normalized);
   } catch {
-    // Fail securely: continue with partially decoded string to catch obfuscated payloads
+    // Fallback: decode valid sequences, leave invalid ones
+    let temp = "";
+    for (let i = 0; i < normalized.length; i++) {
+      if (normalized[i] === "%" && i + 2 < normalized.length) {
+        try {
+          temp += decodeURIComponent(normalized.substring(i, i + 3));
+          i += 2;
+        } catch {
+          temp += normalized[i];
+        }
+      } else {
+        temp += normalized[i];
+      }
+    }
+    normalized = temp;
   }
 
   // 3. Aggressively strip all whitespace and control characters [\x00-\x20]
