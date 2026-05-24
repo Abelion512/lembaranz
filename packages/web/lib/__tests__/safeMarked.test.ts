@@ -30,4 +30,28 @@ describe('safeMarked Rendering', () => {
         expect(result).toContain('alt="x&quot;onerror=&quot;alert(1)"');
         expect(result).not.toContain('"onerror='); // The test should check that it doesn't contain the raw, unescaped quote + "onerror="
     });
+
+    test('harus menetralkan link jahat yang di-encode URI', async () => {
+        const result = await safeMarked.parse('[klik](javascript%3Aalert("xss"))');
+        expect(result).not.toContain('href="javascript');
+        expect(result).toContain('<span>klik</span>');
+    });
+
+    test('harus menetralkan link jahat dengan spasi', async () => {
+        const result = await safeMarked.parse('[klik]( javascript:alert("xss"))');
+        expect(result).not.toContain('href=" javascript:');
+        expect(result).toContain('<span>klik</span>');
+    });
+
+    test('harus menetralkan link jahat dengan spasi ber-encode', async () => {
+        const result = await safeMarked.parse('[klik](%20javascript:alert("xss"))');
+        expect(result).not.toContain('href="%20javascript:');
+        expect(result).toContain('<span>klik</span>');
+    });
+
+    test('harus menetralkan link jahat dengan HTML entity', async () => {
+        const result = await safeMarked.parse('[klik](&#x6A;avascript:alert("xss"))');
+        expect(result).not.toContain('href="&#x6A;avascript:');
+        expect(result).toContain('<span>klik</span>');
+    });
 });
