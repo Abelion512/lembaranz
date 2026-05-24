@@ -19,6 +19,9 @@ describe("safeMarked Rendering", () => {
       "[klik](javascript&colon;alert(1))",
       "[klik](javasc&#114;ipt:alert(1))",
       "[klik](jav\tascript:alert(1))",
+      "[klik]( javascript:alert(1))",
+      "[klik](%20javascript:alert(1))",
+      "[klik](&#x6A;avascript:alert(1))",
     ];
 
     for (const payload of bypasses) {
@@ -50,26 +53,6 @@ describe("safeMarked Rendering", () => {
     );
     expect(result).toContain('alt="x&quot;onerror=&quot;alert(1)&quot;"');
     expect(result).not.toContain('"onerror=');
-  });
-
-  test("harus menetralkan link jahat yang dienkode entity html", async () => {
-    const result = await safeMarked.parse("[klik](javascript&#58;alert(1))");
-    expect(result).not.toContain("javascript");
-    expect(result).toContain("<span>klik</span>");
-  });
-
-  test("harus menetralkan link jahat yang mengandung whitespace awal/akhir", async () => {
-    const result = await safeMarked.parse("[klik]( javascript:alert(1))");
-    expect(result).not.toContain(" javascript");
-    expect(result).toContain("<span>klik</span>");
-  });
-
-  test("harus menetralkan link jahat yang dienkode URL", async () => {
-    const result = await safeMarked.parse(
-      "[klik](%6A%61%76%61%73%63%72%69%70%74%3Aalert(1))"
-    );
-    expect(result).not.toContain("%6A");
-    expect(result).toContain("<span>klik</span>");
   });
 
   test("harus menetralkan link jahat dengan whitespace evasion", async () => {

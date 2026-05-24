@@ -3,6 +3,7 @@
 **Vulnerability:** The `safeMarked` utility in `packages/web/lib/safeMarked.ts` did not filter image protocols and failed to properly escape attributes like `href` on links.
 **Learning:** This oversight allows an attacker to inject XSS payloads using specially crafted URLs for links/images (e.g., `![x](javascript:alert(1))` or `[x](https://x.com"onmouseover="alert(1)")`) even when raw HTML is stripped.
 **Prevention:** Always implement a full custom renderer that not only filters dangerous protocols but comprehensively escapes HTML characters (`<`, `>`, `"`) from user-provided URLs and titles.
+<<<<<<< HEAD
 
 ## 2024-03-05 - [Fix XSS Bypass in Markdown Link Scheme Validation]
 **Vulnerability:** The regex used to sanitize dangerous links in `packages/web/lib/safeMarked.ts` (`/^(javascript|data|vbscript|file):/i`) could be easily bypassed by using HTML entities (e.g., `javascript&#58;`), URL encodings (e.g., `%6A...`), or whitespace padding (e.g., ` javascript:`).
@@ -28,3 +29,9 @@
 **Vulnerability:** Unsanitized keys and values from `.env` files loaded dynamically via `Config.ts run` were directly passed to `spawn()`. This allowed the potential injection of non-POSIX keys or control characters via the environment payload.
 **Learning:** Parsing plaintext configurations directly into OS environment dictionaries without strict boundary validation creates injection vectors, particularly when used to spawn local commands dynamically.
 **Prevention:** Always validate configuration keys against standard POSIX conventions (e.g. `/^[a-zA-Z_][a-zA-Z0-9_]*$/`) and aggressively strip out control characters (`/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g`) from values before merging them into `process.env`.
+=======
+## 2025-05-21 - Hardened XSS Protection in safeMarked.ts
+**Vulnerability:** The markdown renderer (`safeMarked.ts`) relied on a naive regex (`/^(javascript|data|vbscript|file):/i`) to block dangerous URL schemes. This was bypassable via URL encoding (e.g. `javascript%3A`), HTML entity encoding (e.g. `&#x6A;avascript:`), and whitespace padding (e.g. ` javascript:`).
+**Learning:** Naive regexes against user-controlled URLs are insufficient for XSS protection because marked/markdown parsers will pass the encoded/spaced string exactly as is into the HTML output, where the browser will then happily decode and execute the payload. The evaluation of dangerous schemes must decode the input and strip evasive characters first.
+**Prevention:** Implement a decoding helper (`isDangerousUrl`) that actively decodes HTML entities and URIs, and strips whitespaces/control characters before validating against the dangerous scheme list. Additionally, fallback mechanisms (manual byte iteration) are required if standard decoding (`decodeURIComponent`) throws an error on malformed URIs to prevent the check from failing open.
+>>>>>>> origin/sentinel-xss-evasion-fix-5417413543429405873
