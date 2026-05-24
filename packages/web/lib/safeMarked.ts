@@ -6,7 +6,41 @@ import { Marked } from 'marked';
  * 2. Filter protokol berbahaya pada link.
  * 3. Tambahkan rel="noopener noreferrer" pada link eksternal.
  */
+
+function isDangerousUrl(url: string): boolean {
+    let normalized = url;
+
+    // Unescape entities
+    normalized = normalized.replace(/&#(\d+);?/g, (_, dec) => String.fromCharCode(parseInt(dec, 10)))
+                           .replace(/&#x([0-9a-f]+);?/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+                           .replace(/&colon;/gi, ':');
+
+    try {
+        normalized = decodeURIComponent(normalized);
+    } catch {
+        // Fallback: decode character by character if malformed
+        let decoded = '';
+        for (let i = 0; i < normalized.length; i++) {
+            if (normalized[i] === '%' && i + 2 < normalized.length) {
+                const hex = normalized.substring(i + 1, i + 3);
+                if (/^[0-9a-f]{2}$/i.test(hex)) {
+                    decoded += String.fromCharCode(parseInt(hex, 16));
+                    i += 2;
+                    continue;
+                }
+            }
+            decoded += normalized[i];
+        }
+        normalized = decoded;
+    }
+
+    normalized = normalized.replace(/[\x00-\x20]+/g, '');
+
+    return /^(javascript|data|vbscript|file):/i.test(normalized);
+}
+
 export const safeMarked = new Marked({ gfm: true });
+
 
 safeMarked.use({
     renderer: {
@@ -19,8 +53,7 @@ safeMarked.use({
             const title = token.title;
 
             // Keamanan: Tolak protokol berbahaya (XSS)
-            const dangerousSchemes = /^(javascript|data|vbscript|file):/i;
-            if (dangerousSchemes.test(href)) {
+            if (isDangerousUrl(href)) {
                 return `<span>${text}</span>`;
             }
 
@@ -40,8 +73,7 @@ safeMarked.use({
             const title = token.title;
 
             // Keamanan: Tolak protokol berbahaya pada gambar (XSS)
-            const dangerousSchemes = /^(javascript|data|vbscript|file):/i;
-            if (dangerousSchemes.test(href)) {
+            if (isDangerousUrl(href)) {
                 return `<span>${text}</span>`;
             }
 
