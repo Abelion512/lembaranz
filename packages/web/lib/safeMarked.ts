@@ -57,7 +57,7 @@ safeMarked.use({
     link(token) {
       const { href, text, title } = token;
 
-      // Security: Validate URL scheme to prevent XSS (javascript:, etc.)
+      // Security: Reject dangerous protocols (XSS)
       if (isDangerousUrl(href)) {
         return `<span>${text}</span>`;
       }

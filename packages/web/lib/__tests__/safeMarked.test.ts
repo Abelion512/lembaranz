@@ -13,6 +13,25 @@ describe('safeMarked Rendering', () => {
         expect(result).toContain('<span>klik</span>');
     });
 
+    test('harus menetralkan link jahat (evasion vectors)', async () => {
+        const bypasses = [
+            '[klik](javascript%3Aalert(1))',
+            '[klik](javascript&colon;alert(1))',
+            '[klik](javasc&#114;ipt:alert(1))',
+            '[klik](jav\tascript:alert(1))',
+        ];
+
+        for (const payload of bypasses) {
+            const result = await safeMarked.parse(payload);
+            expect(result).not.toContain('href="javascript');
+
+            // Allow either the sanitized span output OR failed parsing (treated as plain text)
+            // Due to how marked parses tabs inside the href, sometimes it doesn't parse it as a link at all.
+            const isSafe = result.includes('<span>klik</span>') || !result.includes('<a ');
+            expect(isSafe).toBe(true);
+        }
+    });
+
     test('harus menetralkan gambar jahat', async () => {
         const result = await safeMarked.parse('![gambar](javascript:alert("xss"))');
         expect(result).not.toContain('src="javascript:');
