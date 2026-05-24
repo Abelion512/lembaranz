@@ -1,78 +1,122 @@
-import { Marked } from 'marked';
+import { Marked } from "marked";
 
 /**
- * Helper to check for dangerous URLs that might bypass basic regex checks
+ * Robustly checks for dangerous URLs that might bypass basic regex checks.
+ * Handles entity decoding, URI decoding, and whitespace stripping.
  */
 function isDangerousUrl(url: string | null | undefined): boolean {
-    if (!url) return false;
-    let decoded = url;
-    try {
-        decoded = decodeURIComponent(url);
-    } catch (_e) {
-        // Ignore decoding errors
+  if (!url) return false;
+
+  let decoded = url;
+
+  // 1. Decode HTML entities (hex, decimal, and specific named ones like &colon;)
+  decoded = decoded.replace(
+    /&(#(?:\d+)|(?:#x[0-9a-fA-F]+)|(?:\w+));?/gi,
+    (match, n) => {
+      n = n.toLowerCase();
+      if (n === "colon") return ":";
+      if (n === "tab") return "\t";
+      if (n === "newline") return "\n";
+      if (n.charAt(0) === "#") {
+        return n.charAt(1) === "x"
+          ? String.fromCharCode(parseInt(n.substring(2), 16))
+          : String.fromCharCode(+n.substring(1));
+      }
+      return match; // Return as-is if not matched to specific entities we care about
     }
+  );
 
-    // Decode HTML entities
-    decoded = decoded.replace(/&#x([0-9a-f]+);?/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
-    decoded = decoded.replace(/&#(\d+);?/g, (_, dec) => String.fromCharCode(parseInt(dec, 10)));
-    decoded = decoded.replace(/&colon;/gi, ':').replace(/&tab;/gi, '\t').replace(/&newline;/gi, '\n');
+  // 2. Decode URI components
+  try {
+    decoded = decodeURIComponent(decoded);
+  } catch {
+    // Fail securely: if decoding fails, we continue with the partially decoded string.
+    // This prevents malformed %-sequences from hiding dangerous payloads.
+  }
 
-    // Strip whitespace and control characters
-    decoded = decoded.replace(/[\x00-\x20]+/g, '');
+  // 3. Aggressively strip whitespace and control characters [\x00-\x20]
+  // Impact: Neutralizes "jav ascript:" or "javascript\n:" bypasses.
+  decoded = decoded.replace(/[\x00-\x20]+/g, "");
 
-    return /^(javascript|data|vbscript|file):/i.test(decoded);
+  // 4. Test against dangerous schemes
+  const dangerousSchemes = /^(javascript|data|vbscript|file):/i;
+  return dangerousSchemes.test(decoded);
 }
 
 /**
- * Hardening Renderer Markdown:
- * 1. Blokir raw HTML.
- * 2. Filter protokol berbahaya pada link.
- * 3. Tambahkan rel="noopener noreferrer" pada link eksternal.
+ * Hardened Markdown Renderer:
+ * 1. Blocks raw HTML injection.
+ * 2. Filters dangerous protocols (XSS) in links and images.
+ * 3. Escapes all user-provided attributes (href, src, alt, title).
+ * 4. Adds security headers for external links.
  */
 export const safeMarked = new Marked({ gfm: true });
 
 safeMarked.use({
-    renderer: {
-        html() {
-            return ''; // Blokir eksekusi HTML mentah dalam markdown
-        },
-        link(token) {
-            const href = token.href;
-            const text = token.text;
-            const title = token.title;
+  renderer: {
+    html() {
+      return ""; // Block raw HTML execution
+    },
+    link(token) {
+      const { href, text, title } = token;
 
-            // Keamanan: Tolak protokol berbahaya (XSS)
-            if (isDangerousUrl(href)) {
-                return `<span>${text}</span>`;
-            }
+      // Security: Reject dangerous protocols (XSS)
+      if (isDangerousUrl(href)) {
+        return `<span>${text}</span>`;
+      }
 
-            // Keamanan: Tambahkan atribut pengaman untuk link eksternal
-            const isExternal = href.startsWith('http');
-            const rel = isExternal ? 'rel="noopener noreferrer" target="_blank"' : '';
-            // XSS fix: Escape href and title attribute value
-            const safeHref = href.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            const safeTitle = title ? title.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
-            const titleAttr = safeTitle ? `title="${safeTitle}"` : '';
+      // Security: Standard escaping for attributes
+      const safeHref = href
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+      const safeTitle = title
+        ? title
+            .replace(/&/g, "&amp;")
+            .replace(/"/g, "&quot;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+        : "";
 
-            return `<a href="${safeHref}" ${rel} ${titleAttr}>${text}</a>`;
-        },
-        image(token) {
-            const href = token.href;
-            const text = token.text;
-            const title = token.title;
+      const isExternal = href.startsWith("http");
+      const rel = isExternal ? 'rel="noopener noreferrer" target="_blank"' : "";
+      const titleAttr = safeTitle ? `title="${safeTitle}"` : "";
 
-            // Keamanan: Tolak protokol berbahaya pada gambar (XSS)
-            if (isDangerousUrl(href)) {
-                return `<span>${text}</span>`;
-            }
+      return `<a href="${safeHref}" ${rel} ${titleAttr}>${text}</a>`;
+    },
+    image(token) {
+      const { href, text, title } = token;
 
-            // XSS fix: Escape href, text, and title attribute value
-            const safeHref = href.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            const safeTitle = title ? title.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
-            const titleAttr = safeTitle ? `title="${safeTitle}"` : '';
-            const safeText = text ? text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+      // Security: Reject dangerous protocols for images (XSS)
+      if (isDangerousUrl(href)) {
+        return `<span>${text}</span>`;
+      }
 
-            return `<img src="${safeHref}" alt="${safeText}" ${titleAttr} />`;
-        }
-    }
+      // Security: Standard escaping for attributes
+      const safeHref = href
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+      const safeTitle = title
+        ? title
+            .replace(/&/g, "&amp;")
+            .replace(/"/g, "&quot;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+        : "";
+      const safeText = text
+        ? text
+            .replace(/&/g, "&amp;")
+            .replace(/"/g, "&quot;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+        : "";
+
+      const titleAttr = safeTitle ? `title="${safeTitle}"` : "";
+
+      return `<img src="${safeHref}" alt="${safeText}" ${titleAttr} />`;
+    },
+  },
 });
