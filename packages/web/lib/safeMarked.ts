@@ -1,6 +1,55 @@
 import { Marked } from 'marked';
 
 /**
+ * Helper to check if a URL uses a dangerous protocol to prevent XSS.
+ * It decodes URI components, unescapes HTML entities, and strips whitespace/control characters.
+ */
+function isDangerousUrl(url: string): boolean {
+    if (!url) return false;
+
+    let current = url;
+    let previous = '';
+
+    while (current !== previous) {
+        previous = current;
+
+        // Unescape HTML entities
+        current = current.replace(/&#[xX]([0-9a-fA-F]+);?/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+        current = current.replace(/&#([0-9]+);?/g, (_, dec) => String.fromCharCode(parseInt(dec, 10)));
+        const entities: Record<string, string> = {
+            '&colon;': ':', '&tab;': '\t', '&newline;': '\n', '&quot;': '"', '&amp;': '&', '&lt;': '<', '&gt;': '>'
+        };
+        for (const [entity, char] of Object.entries(entities)) {
+            current = current.replace(new RegExp(entity, 'gi'), char);
+        }
+
+        // Decode URI components safely
+        try {
+            current = decodeURIComponent(current);
+        } catch {
+            let temp = '';
+            for (let i = 0; i < current.length; i++) {
+                if (current[i] === '%' && i + 2 < current.length) {
+                    const parsed = parseInt(current.substring(i + 1, i + 3), 16);
+                    if (!isNaN(parsed)) {
+                        temp += String.fromCharCode(parsed);
+                        i += 2;
+                        continue;
+                    }
+                }
+                temp += current[i];
+            }
+            current = temp;
+        }
+    }
+
+    // Strip whitespace and control characters (including backslash used for evasion)
+    const sanitized = current.replace(/[\x00-\x20\\]+/g, '').toLowerCase();
+    const dangerousSchemes = /^(javascript|data|vbscript|file):/i;
+    return dangerousSchemes.test(sanitized);
+}
+
+/**
  * Hardening Renderer Markdown:
  * 1. Blokir raw HTML.
  * 2. Filter protokol berbahaya pada link.
@@ -18,9 +67,8 @@ safeMarked.use({
             const text = token.text;
             const title = token.title;
 
-            // Keamanan: Tolak protokol berbahaya (XSS)
-            const dangerousSchemes = /^(javascript|data|vbscript|file):/i;
-            if (dangerousSchemes.test(href)) {
+            // Keamanan: Tolak protokol berbahaya dengan penanganan encoding (XSS)
+            if (isDangerousUrl(href)) {
                 return `<span>${text}</span>`;
             }
 
@@ -39,9 +87,8 @@ safeMarked.use({
             const text = token.text;
             const title = token.title;
 
-            // Keamanan: Tolak protokol berbahaya pada gambar (XSS)
-            const dangerousSchemes = /^(javascript|data|vbscript|file):/i;
-            if (dangerousSchemes.test(href)) {
+            // Keamanan: Tolak protokol berbahaya pada gambar dengan penanganan encoding (XSS)
+            if (isDangerousUrl(href)) {
                 return `<span>${text}</span>`;
             }
 
