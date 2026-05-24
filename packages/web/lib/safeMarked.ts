@@ -1,5 +1,20 @@
 import { Marked } from 'marked';
 
+function isDangerousUrl(url: string): boolean {
+    try {
+        let decoded = url;
+        try {
+            decoded = decodeURIComponent(url);
+        } catch { }
+        decoded = decoded.replace(/&#[xX]([A-Fa-f0-9]+);?/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+        decoded = decoded.replace(/&#(\d+);?/g, (_, dec) => String.fromCharCode(parseInt(dec, 10)));
+        decoded = decoded.replace(/[\x00-\x20]+/g, '');
+        return /^(javascript|data|vbscript|file):/i.test(decoded);
+    } catch {
+        return true; // Fail secure
+    }
+}
+
 /**
  * Hardening Renderer Markdown:
  * 1. Blokir raw HTML.
@@ -19,8 +34,7 @@ safeMarked.use({
             const title = token.title;
 
             // Keamanan: Tolak protokol berbahaya (XSS)
-            const dangerousSchemes = /^(javascript|data|vbscript|file):/i;
-            if (dangerousSchemes.test(href)) {
+            if (isDangerousUrl(href)) {
                 return `<span>${text}</span>`;
             }
 
@@ -40,8 +54,7 @@ safeMarked.use({
             const title = token.title;
 
             // Keamanan: Tolak protokol berbahaya pada gambar (XSS)
-            const dangerousSchemes = /^(javascript|data|vbscript|file):/i;
-            if (dangerousSchemes.test(href)) {
+            if (isDangerousUrl(href)) {
                 return `<span>${text}</span>`;
             }
 

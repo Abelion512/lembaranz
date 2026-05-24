@@ -1,6 +1,21 @@
 import { expect, test, describe } from "bun:test";
 import { Marked } from 'marked';
 
+function isDangerousUrl(url: string): boolean {
+    try {
+        let decoded = url;
+        try {
+            decoded = decodeURIComponent(url);
+        } catch { }
+        decoded = decoded.replace(/&#[xX]([A-Fa-f0-9]+);?/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+        decoded = decoded.replace(/&#(\d+);?/g, (_, dec) => String.fromCharCode(parseInt(dec, 10)));
+        decoded = decoded.replace(/[\x00-\x20]+/g, '');
+        return /^(javascript|data|vbscript|file):/i.test(decoded);
+    } catch {
+        return true;
+    }
+}
+
 // Kita uji logika renderer yang sama dengan yang ada di MarkdownRenderer
 const markdownRenderer = new Marked({ gfm: true });
 markdownRenderer.use({
@@ -13,16 +28,17 @@ markdownRenderer.use({
             const text = token.text;
             const title = token.title;
 
-            const dangerousSchemes = /^(javascript|data|vbscript|file):/i;
-            if (dangerousSchemes.test(href)) {
+            if (isDangerousUrl(href)) {
                 return `<span>${text}</span>`;
             }
 
             const isExternal = href.startsWith('http');
             const rel = isExternal ? 'rel="noopener noreferrer" target="_blank"' : '';
-            const titleAttr = title ? `title="${title}"` : '';
+            const safeHref = href.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const safeTitle = title ? title.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+            const titleAttr = safeTitle ? `title="${safeTitle}"` : '';
 
-            return `<a href="${href}" ${rel} ${titleAttr}>${text}</a>`;
+            return `<a href="${safeHref}" ${rel} ${titleAttr}>${text}</a>`;
         }
     }
 });
@@ -37,6 +53,20 @@ describe("MarkdownRenderer Hardening", () => {
 
     test("harus menetralkan link javascript:", async () => {
         const md = "[Klik Saya](javascript:alert(1))";
+        const html = await markdownRenderer.parse(md);
+        expect(html).toContain("<span>Klik Saya</span>");
+        expect(html).not.toContain("href=");
+    });
+
+    test("harus menetralkan link javascript dengan URL encoding", async () => {
+        const md = "[Klik Saya](%6Aavascript:alert(1))";
+        const html = await markdownRenderer.parse(md);
+        expect(html).toContain("<span>Klik Saya</span>");
+        expect(html).not.toContain("href=");
+    });
+
+    test("harus menetralkan link javascript dengan HTML entities", async () => {
+        const md = "[Klik Saya](&#x6A;avascript:alert(1))";
         const html = await markdownRenderer.parse(md);
         expect(html).toContain("<span>Klik Saya</span>");
         expect(html).not.toContain("href=");
