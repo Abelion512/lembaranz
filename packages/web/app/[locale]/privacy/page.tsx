@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 export default async function PrivacyPage() {
-    const content = readFile('PRIVACY.md');
+    const content = await readFile('PRIVACY.md');
     const htmlContent = content ? await safeMarked.parse(content) : '<p>Dokumen tidak ditemukan.</p>';
 
     return (

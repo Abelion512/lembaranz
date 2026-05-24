@@ -4,7 +4,7 @@ import { readFile } from '@/lib/readFile';
 import { safeMarked } from '@/lib/safeMarked';
 
 export default async function ChangelogPage() {
-    const content = readFile('CHANGELOG.md');
+    const content = await readFile('CHANGELOG.md');
     const htmlContent = content ? await safeMarked.parse(content) : '<p>Changelog tidak ditemukan.</p>';
 
     return (

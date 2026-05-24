@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 export default async function TermsPage() {
-    const content = readFile('TERMS.md');
+    const content = await readFile('TERMS.md');
     const htmlContent = content ? await safeMarked.parse(content) : '<p>Dokumen tidak ditemukan.</p>';
 
     return (

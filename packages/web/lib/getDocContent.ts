@@ -42,11 +42,11 @@ export async function getDocContent(slug: string, lang: 'id' | 'en' = 'id') {
     }
 
     // Cari langsung di folder docs/${lang}/${cleanedSlug}.md
-    let content = readFile(`docs/${lang}/${cleanedSlug}.md`);
+    let content = await readFile(`docs/${lang}/${cleanedSlug}.md`);
 
     // Fallback ke Bahasa Indonesia jika di Bahasa Inggris tidak ada
     if (!content && lang === 'en') {
-        content = readFile(`docs/id/${cleanedSlug}.md`);
+        content = await readFile(`docs/id/${cleanedSlug}.md`);
     }
 
     return content;
@@ -69,7 +69,7 @@ let helpMetadataCache: HelpIndex | null = null;
 
 export async function getHelpMetadata(lang: 'id' | 'en' = 'id') {
     if (!helpMetadataCache) {
-        const raw = readFile('docs/indeks.json');
+        const raw = await readFile('docs/indeks.json');
         if (!raw) {
             console.error('[getHelpMetadata] Gagal membaca docs/indeks.json');
             return null;
