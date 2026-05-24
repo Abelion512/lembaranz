@@ -220,11 +220,26 @@ export function registerConfigCommand(program: Command) {
         if (clean && !clean.startsWith('#')) {
           const index = clean.indexOf('=');
           if (index !== -1) {
-            const key = clean.substring(0, index).trim();
+            let key = clean.substring(0, index).trim();
+            if (key.startsWith('export ')) {
+              key = key.substring(7).trim();
+            }
+
+            // Validate key against standard POSIX convention
+            if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key)) {
+              console.warn(`⚠️  Skipping invalid environment variable key: ${key}`);
+              continue;
+            }
+
             let val = clean.substring(index + 1).trim();
             if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
               val = val.substring(1, val.length - 1);
             }
+
+            // Sanitize value by stripping out non-whitespace control characters
+            // eslint-disable-next-line no-control-regex
+            val = val.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+
             parsedEnv[key] = val;
           }
         }
