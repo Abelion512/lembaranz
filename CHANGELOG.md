@@ -1,100 +1,109 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+Semua perubahan penting pada proyek ini akan didokumentasikan di file ini.
+
+## [1.0.2] - 2026-05-11
+
+### Fixed
+- **Persistensi File**: Perbaikan race condition dan implementasi penulisan atomik pada `FileAdapter`.
+- **Penyatuan Merek**: Mengganti semua penyebutan "Lembaran" yang tersisa menjadi "Lembaranz" di CLI dan dokumentasi.
+- **Sintaks CLI**: Perbaikan kesalahan sintaksis di `TerminalUI` akibat konflik penggabungan.
+- **Integrasi Senses**: Menambahkan modul `Senses` dan pengujian unit dari sesi Jules.
 
 ## [1.0.1] - 2026-04-13
 
 ### Added
-- **Landing Page Redesign**: Clean, install-first layout inspired by OpenCode.ai
-- **Multi-Page Routing**: Separate pages for `/`, `/why`, `/faq`, `/docs`
-- **Multiple Install Methods**: npm, bun, curl, docker, git clone
-- **Dark Mode Toggle**: Light, dark, and system theme support
-- **Control Orb**: Unified settings panel (Theme, Language, AI, MCP)
-- **Branch `#33`**: All CI/CD workflows updated from `main` to `#33`
+- **Desain Ulang Landing Page**: Tata letak bersih dan fokus pada instalasi, terinspirasi oleh OpenCode.ai.
+- **Routing Multi-Halaman**: Halaman terpisah untuk `/`, `/why`, `/faq`, dan `/docs`.
+- **Berbagai Metode Instalasi**: npm, bun, curl, docker, dan git clone.
+- **Toggle Mode Gelap**: Dukungan tema terang, gelap, dan sistem.
+- **Control Orb**: Panel pengaturan terpadu (Tema, Bahasa, AI, MCP).
+- **Cabang #33**: Semua alur kerja CI/CD diperbarui dari `main` ke `#33`.
 
 ### Changed
-- **Mobile UX Optimized**: Collapsible install commands on mobile
-- **Version Reset**: All packages reset to 1.0.x after scope migration
-- **README Simplified**: Clean, direct, no gimmick
+- **Optimasi UX Mobile**: Perintah instalasi yang dapat diciutkan pada perangkat seluler.
+- **Reset Versi**: Semua paket direset ke 1.0.x setelah migrasi scope.
+- **Penyederhanaan README**: Bersih, langsung, tanpa gimmick.
 
 ### Fixed
-- **Clone URL**: Fixed `YOUR_USERNAME` → `Abelion512/lembaranz`
-- **npm Ignore**: Internal folders excluded from publish
-- **Tailwind Classes**: Deprecated syntax updated
+- **URL Clone**: Perbaikan `YOUR_USERNAME` → `Abelion512/lembaranz`.
+- **npm Ignore**: Folder internal dikecualikan dari publikasi.
+- **Kelas Tailwind**: Pembaruan sintaksis yang sudah usang (deprecated).
 
 ---
 
 ## [1.0.0] - 2026-03-30
 
 ### Added
-- **Scope Migration**: Migrated to `@lembaranzz` organization scope
-- **Package Reset**: Reset packages to stable `1.0.0`
-- **Textual Lockfile**: Transitioned to `bun.lock` for auditability
-- **Unified CLI**: Integrated `lembaranz` command for monorepo ecosystem
+- **Migrasi Scope**: Migrasi total ke organisasi `@lembaranz`.
+- **Reset Paket**: Reset seluruh paket ke rilis stabil `1.0.0`.
+- **Textual Lockfile**: Transisi ke `bun.lock` (teks) untuk auditabilitas yang lebih baik.
+- **AEO/GEO Optimization**: Optimasi metadata SEO tingkat lanjut dengan JSON-LD dan rich context regional.
+- **Unified CLI**: Integrasi penuh perintah `lembaranz` untuk ekosistem monorepo.
 
 ---
 
 ## [3.5.0] - 2026-04-13 *(Pre-Reset)*
 
-> Versions 3.0.0–3.5.0 were published under the legacy `lembaranz` package name before scope migration to `@lembaranzz`.
+> Versi 3.0.0–3.5.0 diterbitkan di bawah nama paket lama `lembaranz` sebelum migrasi scope ke `@lembaranz`.
 
 ### Added
-- **GitBook + Apple HIG Style**: Landing page redesign with AEO/GEO optimization
-- **Beginner-Friendly Section**: 4-step guide for first-time users
-- **JSON-LD Structured Data**: SoftwareApplication + FAQPage schema
+- **Gaya GitBook + Apple HIG**: Desain ulang landing page dengan optimasi AEO/GEO.
+- **Bagian Ramah Pemula**: Panduan 4 langkah untuk pengguna baru.
+- **Data Terstruktur JSON-LD**: Skema SoftwareApplication + FAQPage.
 
 ### Changed
-- **GUI vs Web Clarified**: Desktop GUI (Tauri) vs Web Dashboard (Docker)
-- **All Workflows**: Updated from `main` to `#33` branch
+- **Klarifikasi GUI vs Web**: Desktop GUI (Tauri) vs Dashboard Web (Docker).
+- **Semua Alur Kerja**: Diperbarui dari cabang `main` ke `#33`.
 
 ---
 
 ## [3.4.0] - 2026-03-28
 
 ### Added
-- **AI YOLO Mode**: Single-push security system for Git (auto-disable after 1 push)
-- **Dependabot Configuration**: Auto-updates for npm + github-actions
-- **PRD Refactor**: CLI/TUI focus, 75% progress
+- **Mode AI YOLO**: Sistem keamanan satu-dorongan untuk Git (otomatis non-aktif setelah 1 push).
+- **Konfigurasi Dependabot**: Pembaruan otomatis untuk npm + github-actions.
+- **Refaktor PRD**: Fokus pada CLI/TUI, progres 75%.
 
 ### Fixed
-- **TypeScript**: ChildProcess typing in `Env.ts`
-- **Web Vault**: Marked as CLI-only (deprecated for web)
+- **TypeScript**: Pengetikan ChildProcess di `Env.ts`.
+- **Web Vault**: Ditandai sebagai khusus CLI (sudah usang untuk web).
 
 ### Removed
-- **Web Vault UI**: Removed web vault feature
+- **UI Web Vault**: Fitur web vault dihapus.
 
 ---
 
 ## [3.3.0] - 2026-02-22
 
 ### Added
-- **Modern TUI Restoration**: Rebuilt interactive interface with Ink/React
-- **Unlooping Scroll Logic**: Custom menu navigation without cursor wrapping
-- **Settings Subcommand**: `lembaranz pengaturan` for .env management
+- **Restorasi TUI Modern**: Membangun kembali antarmuka interaktif dengan Ink/React.
+- **Logika Gulir Tanpa Loop**: Navigasi menu kustom tanpa pembungkusan kursor.
+- **Sub-perintah Pengaturan**: `lembaranz pengaturan` untuk manajemen .env.
 
 ### Fixed
-- **Emoji & Encoding**: Cleaned broken characters in terminal UI
-- **Scrolling Trap**: Fixed viewport logic for full list scrolling
+- **Emoji & Encoding**: Pembersihan karakter rusak di UI terminal.
+- **Scrolling Trap**: Perbaikan logika viewport untuk pengguliran daftar penuh.
 
 ---
 
-## [3.0.0–3.2.0] - 2026-02-18 to 2026-02-20
+## [3.2.0] - 2026-02-20
 
 ### Added
-- **Vim Mode**: H/J/K/L navigation in editor
-- **Biometric Auth**: WebAuthn simulation (Touch/FaceID)
-- **Encrypted Vault (.lembaranz)**: Backup exports with master key protection
-- **Fuzzy Search**: Smart CLI search for quick access
-- **Panic Key**: Emergency data wipe with passphrase
-- **Session Timeout**: Auto-lock after inactivity
+- **Mode Vim**: Navigasi H/J/K/L di editor.
+- **Otentikasi Biometrik**: Simulasi WebAuthn (Touch/FaceID).
+- **Vault Terenkripsi (.lembaranz)**: Ekspor cadangan dengan perlindungan kunci master.
+- **Pencarian Fuzzy**: Pencarian cerdas CLI untuk akses cepat.
+- **Tombol Panik**: Penghapusan data darurat dengan frasa sandi.
+- **Sesi Berakhir**: Penguncian otomatis setelah tidak aktif.
 
 ---
 
 ## [2.0.0–2.9.0] - 2026-02-17 to 2026-02-18
 
 ### Added
-- **Dynamic Hero Section**: Cycling word titles
-- **Installation Script**: `install.sh` for automated setup
-- **Virtualized Lists**: `react-window` for handling thousands of notes
-- **Smart Find Search**: Background indexing of encrypted content
-- **Public Documentation**: Basic guides accessible without unlocking vault
+- **Bagian Hero Dinamis**: Judul kata yang berganti-ganti.
+- **Skrip Instalasi**: `install.sh` untuk penyiapan otomatis.
+- **Daftar Virtual**: `react-window` untuk menangani ribuan catatan.
+- **Smart Find Search**: Pengindeksan latar belakang konten terenkripsi.
+- **Dokumentasi Publik**: Panduan dasar yang dapat diakses tanpa membuka brankas.

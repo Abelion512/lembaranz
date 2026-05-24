@@ -16,11 +16,11 @@
 *.crt
 *.secret
 
-# Lembaran Vault (Database Terenkripsi)
-.lembaran/
-.lembaran-db.json
-.lembaran/setup-progress.json
-*.lembaran
+# Lembaranz Vault (Database Terenkripsi)
+.lembaranz/
+.lembaranz-db.json
+.lembaranz/setup-progress.json
+*.lembaranz
 
 # Credentials & Tokens
 credentials.json

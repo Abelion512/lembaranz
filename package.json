@@ -1,6 +1,6 @@
 {
   "name": "lembaranz",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Lembaranz - Personal Digital Archive Vault with zero-knowledge encryption",
   "workspaces": [
     "packages/*"
