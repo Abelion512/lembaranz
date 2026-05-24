@@ -22,6 +22,9 @@ describe("safeMarked Rendering", () => {
       "[klik]( javascript:alert(1))",
       "[klik](%20javascript:alert(1))",
       "[klik](&#x6A;avascript:alert(1))",
+      "[klik](javascript&#58alert(1))",
+      "[klik](javascript%09:alert(1))",
+      "[klik](java%0Ascript:alert(1))",
     ];
 
     for (const payload of bypasses) {
@@ -33,7 +36,6 @@ describe("safeMarked Rendering", () => {
     }
   });
 
-<<<<<<< HEAD
   test("harus menetralkan gambar jahat", async () => {
     const result = await safeMarked.parse('![gambar](javascript:alert("xss"))');
     expect(result).not.toContain('src="javascript:');
@@ -54,18 +56,6 @@ describe("safeMarked Rendering", () => {
     );
     expect(result).toContain('alt="x&quot;onerror=&quot;alert(1)&quot;"');
     expect(result).not.toContain('"onerror=');
-  });
-
-  test("harus menetralkan link jahat dengan whitespace evasion", async () => {
-    const result = await safeMarked.parse('[klik](javascript%09:alert("xss"))');
-    expect(result).not.toContain('href="javascript');
-    expect(result).toContain("<span>klik</span>");
-  });
-
-  test("harus menetralkan link jahat dengan HTML entities tanpa semicolon", async () => {
-    const result = await safeMarked.parse('[klik](javascript&#58alert("xss"))');
-    expect(result).not.toContain('href="javascript');
-    expect(result).toContain("<span>klik</span>");
   });
 
   test("harus menetralkan gambar jahat dengan karakter tidak valid setelah persen", async () => {
@@ -105,29 +95,4 @@ describe("safeMarked - XSS Prevention Filter Bypasses", () => {
     expect(html).toContain("<span>XSS</span>");
     expect(html).not.toContain("href");
   });
-=======
-    test('harus escape attribute di gambar', async () => {
-        const result = await safeMarked.parse('![x"onerror="alert(1)](https://x.com)');
-        expect(result).toContain('alt="x&quot;onerror=&quot;alert(1)"');
-        expect(result).not.toContain('"onerror='); // The test should check that it doesn't contain the raw, unescaped quote + "onerror="
-    });
-
-    test('harus menetralkan encoded link jahat', async () => {
-        const result = await safeMarked.parse('[klik](javascript%3Aalert("xss"))');
-        expect(result).not.toContain('href="javascript');
-        expect(result).toContain('<span>klik</span>');
-    });
-
-    test('harus menetralkan entity link jahat', async () => {
-        const result = await safeMarked.parse('[klik](javascript&#58;alert("xss"))');
-        expect(result).not.toContain('href="javascript');
-        expect(result).toContain('<span>klik</span>');
-    });
-
-    test('harus menetralkan whitespace evasion', async () => {
-        const result = await safeMarked.parse('[klik](java%0Ascript:alert("xss"))');
-        expect(result).not.toContain('href="java');
-        expect(result).toContain('<span>klik</span>');
-    });
->>>>>>> origin/sentinel-xss-evasion-prevention-485405559514056841
 });
