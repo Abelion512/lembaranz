@@ -79,7 +79,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for our 
 
 - **English** for code comments and documentation.
 - Use **Conventional Commits**.
-- **Consolidated Flow**: Main development happens on the `testing` branch.
+- **Consolidated Flow**: Main development happens on the `testing` branch before being merged into the default `serenity` branch.
 
 ---
 
