@@ -294,7 +294,7 @@ export const Archive = {
     if (typeof window !== "undefined") {
       const keys = Object.keys(window.localStorage);
       keys.forEach((key) => {
-        if (key.startsWith("lembaranzz:")) {
+        if (key.startsWith("lembaranz:")) {
           window.localStorage.removeItem(key);
         }
       });

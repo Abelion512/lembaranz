@@ -1,10 +1,10 @@
-# Getting Started with Lembaranzz
+# Getting Started with Lembaranz
 
-Welcome to **Lembaranzz**, your poetic and secure personal archive platform. This guide will help you set up and start your journey towards data sovereignty.
+Welcome to **Lembaranz**, your poetic and secure personal archive platform. This guide will help you set up and start your journey towards data sovereignty.
 
 ## ⚡ Prerequisites
 
-Before installing Lembaranzz, ensure you have the following tools installed on your system:
+Before installing Lembaranz, ensure you have the following tools installed on your system:
 
 1.  **Bun Runtime**: The fastest JavaScript runtime.
     - [Download & Install Bun](https://bun.sh)
@@ -16,7 +16,7 @@ Before installing Lembaranzz, ensure you have the following tools installed on y
 ### 1. Simple One-Line Install (Recommended)
 Open your terminal and run:
 ```bash
-curl -fsSL https://lembaranzz.vercel.app/install.sh | bash
+curl -fsSL https://lembaranz.vercel.app/install.sh | bash
 ```
 *Note: For Windows users, make sure you have Git Bash installed to run this command.*
 
@@ -24,8 +24,8 @@ curl -fsSL https://lembaranzz.vercel.app/install.sh | bash
 If you prefer to set it up manually:
 ```bash
 # Clone the repository
-git clone https://github.com/Abelion512/lembaranzz.git
-cd lembaranzz
+git clone https://github.com/Abelion512/lembaranz.git
+cd lembaranz
 
 # Install dependencies and register CLI
 bun install
@@ -36,7 +36,7 @@ bun link
 
 Once installed, you can start the interactive terminal interface (TUI) by typing:
 ```bash
-lembaranzz mulai
+lembaranz mulai
 ```
 
 ### Steps for First-Time Setup:

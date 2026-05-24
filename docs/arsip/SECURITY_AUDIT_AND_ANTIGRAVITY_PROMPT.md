@@ -59,10 +59,10 @@
 ## 🚀 Prompt untuk Antigravity (UI/UX Debugging)
 
 ```markdown
-# Debug UI/UX Design & Frontend - Lembaranzz v3.4.0
+# Debug UI/UX Design & Frontend - Lembaranz v3.4.0
 
 ## Konteks Proyek
-**Lembaranzz** adalah brankas arsip digital personal dengan fokus pada:
+**Lembaranz** adalah brankas arsip digital personal dengan fokus pada:
 - Enkripsi zero-knowledge (AES-GCM 256-bit, Argon2id)
 - CLI/TUI-first untuk developer productivity
 - Local-first architecture (data tetap di perangkat)
@@ -81,7 +81,7 @@
 **Referensi:** Gemini CLI (`gemini`), Claude Code (`claude`)
 
 **Requirement:**
-- Tampilkan logo Lembaranzz di header TUI (seperti gemini/claude)
+- Tampilkan logo Lembaranz di header TUI (seperti gemini/claude)
 - Logo harus muncul saat aplikasi mulai
 - Gunakan ASCII art atau Unicode box drawing
 - Warna konsisten dengan brand (blue/purple gradient jika bisa)
@@ -123,7 +123,7 @@
 **Contoh Perbaikan:**
 ```
 ❌ SEBELUM: "Vault is locked. Cannot save data."
-✅ SESUDAH: "Brankas terkunci! Buka dulu dengan 'lembaranzz mulai'"
+✅ SESUDAH: "Brankas terkunci! Buka dulu dengan 'lembaranz mulai'"
 
 ❌ SEBELUM: "Key derivation failed"
 ✅ SESUDAH: "Password salah! Silakan coba lagi"
@@ -241,9 +241,9 @@ function sanitizePassword(password: string): void {
 ## Contact & Support
 
 Jika ada pertanyaan atau butuh klarifikasi:
-- GitHub Issues: https://github.com/Abelion512/lembaranzz/issues
+- GitHub Issues: https://github.com/Abelion512/lembaranz/issues
 - Email: agen.salva@gmail.com
-- Dokumentasi: https://lembaranzz.vercel.app/bantuan
+- Dokumentasi: https://lembaranz.vercel.app/bantuan
 
 **Made with ❤️ in Indonesia 🇮🇩**
 ```

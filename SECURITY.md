@@ -8,19 +8,19 @@
 
 ## Overview
 
-Lembaranzz is a local-first, zero-knowledge credential manager that operates natively in your terminal. There is **no cloud telemetry, no automated external backups, and no centralized managed keys**. The security of your vault relies entirely on the strength of your master password and the integrity of your local system.
+Lembaranz is a local-first, zero-knowledge credential manager that operates natively in your terminal. There is **no cloud telemetry, no automated external backups, and no centralized managed keys**. The security of your vault relies entirely on the strength of your master password and the integrity of your local system.
 
-For a comprehensive overview of our cryptographic architecture, threat model, and recent security advisories, please visit our [Security Portal](https://lembaranzz.sh/security).
+For a comprehensive overview of our cryptographic architecture, threat model, and recent security advisories, please visit our [Security Portal](https://lembaranz.sh/security).
 
 ## Reporting a Vulnerability
 
-We take the security of Lembaranzz seriously. If you have discovered a vulnerability, please responsibly disclose it.
+We take the security of Lembaranz seriously. If you have discovered a vulnerability, please responsibly disclose it.
 
 **Do NOT report security vulnerabilities via public GitHub issues.**
 
 ### How to Report
 
-**Email:** security@lembaranzz.sh (or agen.salva@gmail.com)
+**Email:** security@lembaranz.sh (or agen.salva@gmail.com)
 **Expected Response Time:** Within 48 hours
 **Preferred Language:** English or Indonesian
 

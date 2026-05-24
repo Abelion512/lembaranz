@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Lembaranzzz Installer — https://lembaranzzz.sh
+# Lembaranzz Installer — https://lembaranzz.sh
 # Supports: Linux, macOS, WSL
 
 set -euo pipefail
 
 echo ""
-echo "🚀 Installing Lembaranzzz..."
+echo "🚀 Installing Lembaranzz..."
 echo ""
 
 OS=$(uname -s)
@@ -35,11 +35,11 @@ fi
 if command -v bun &>/dev/null; then
   echo "✓ Package manager: bun"
   echo "↓ Installing globally via bun..."
-  bun add -g lembaranzzz
+  bun add -g lembaranzz
 elif command -v npm &>/dev/null; then
   echo "✓ Package manager: npm"
   echo "↓ Installing globally via npm..."
-  npm install -g lembaranzzz
+  npm install -g lembaranzz
 else
   echo "✗ Error: No package manager found. Please install node/npm or bun first."
   echo "  To install bun: curl -fsSL https://bun.sh/install | bash"
@@ -47,6 +47,6 @@ else
 fi
 
 echo ""
-echo "✅ Lembaranzzz installed successfully!"
-echo "   Run 'lembaranzz' to launch the TUI, or 'lembaranzz setup' to initialize your vault."
+echo "✅ Lembaranzz installed successfully!"
+echo "   Run 'lembaranz' to launch the TUI, or 'lembaranz setup' to initialize your vault."
 echo ""

@@ -1,4 +1,4 @@
-import { Archive, Context, VaultContext, Vault } from '@lembaranzz/core';
+import { Archive, Context, VaultContext, Vault } from '@lembaranz/core';
 import pc from 'picocolors';
 import prompts from 'prompts';
 import fs from 'node:fs/promises';
@@ -116,7 +116,7 @@ export class TerminalUI {
         console.log(`  ${pc.blue('carve')}      - Note editor (Multi-line)`);
         console.log(`  ${pc.blue('credentials')} - Menyimpan rahasia & akun secara aman`);
         console.log(`  ${pc.blue('import')}     - Mengimpor file Markdown (.md)`);
-        console.log(`  ${pc.blue('export')}     - Export vault (.lembaranzz)`);
+        console.log(`  ${pc.blue('export')}     - Export vault (.lembaranz)`);
         console.log(`  ${pc.blue('serve')}    - Menjalankan API Server lokal`);
         console.log(`  ${pc.blue('bersih')}    - Membersihkan screen`);
         console.log(`  ${pc.blue('exit')}    - Keluar dari aplikasi\n`);
@@ -439,7 +439,7 @@ export class TerminalUI {
             return;
         }
 
-        const filename = `lembaranzz-petikan-${new Date().toISOString().split('T')[0]}.lembaranzz`;
+        const filename = `lembaranz-petikan-${new Date().toISOString().split('T')[0]}.lembaranz`;
         await fs.writeFile(filename, encRes.data);
         console.log(pc.green(`✅ Berhasil dipetik ke: ${pc.bold(filename)}`));
     }
@@ -490,7 +490,7 @@ export class TerminalUI {
     static async actionAuditPrivacy() {
         console.log(pc.bold(pc.green('\n🛡️ LAPORAN PRIVASI & AUDIT TRANSPARANSI')));
         console.log(pc.dim('Melihat aktivitas pemrosesan data oleh Sentinel...\n'));
-        const { AuditLog } = await import('@lembaranzz/core');
+        const { AuditLog } = await import('@lembaranz/core');
         const log = await AuditLog.readLog();
         console.log(log);
         console.log(pc.dim('\nKetik apa saja untuk kembali...'));
@@ -541,7 +541,7 @@ export class TerminalUI {
                     console.log(pc.green(`  ├── ✅ ${key}`));
                 }
             }));
-            console.log(pc.green('✨ Selesai! Kredensial Anda kini tersimpan aman di Lembaranzz.'));
+            console.log(pc.green('✨ Selesai! Kredensial Anda kini tersimpan aman di Lembaranz.'));
         }
     }
 

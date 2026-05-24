@@ -8,7 +8,7 @@ export type VaultContext = 'personal' | 'project';
  */
 export class Context {
     private static readonly PERSONAL_FILE = 'personal.json'; // Legacy: saku.json
-    private static readonly PROJECT_DIR = '.lembaranzz';
+    private static readonly PROJECT_DIR = '.lembaranz';
     private static readonly PROJECT_FILE = 'project.json';  // Legacy: pelataran.json
 
     /**
@@ -36,7 +36,7 @@ export class Context {
             const os = await import('os');
             const fs = await import('node:fs/promises');
 
-            const PERSONAL_BASE_DIR = path.join(os.homedir(), '.lembaranzz');
+            const PERSONAL_BASE_DIR = path.join(os.homedir(), '.lembaranz');
             let targetPath: string;
 
             if (context === 'personal') {

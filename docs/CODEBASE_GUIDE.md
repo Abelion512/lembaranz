@@ -1,23 +1,23 @@
-# 🧭 Lembaranzz Codebase Exploration Guide
+# 🧭 Lembaranz Codebase Exploration Guide
 
-> **For Developers** — Understanding how Lembaranzz works under the hood
+> **For Developers** — Understanding how Lembaranz works under the hood
 
 ---
 
 ## 📦 Package Structure
 
 ```
-lembaranzz/ (Monorepo)
+lembaranz/ (Monorepo)
 ├── packages/
-│   ├── core/          # @lembaranzz/core — The encryption engine
-│   └── cli/           # @lembaranzz/cli — Terminal interface (TUI)
+│   ├── core/          # @lembaranz/core — The encryption engine
+│   └── cli/           # @lembaranz/cli — Terminal interface (TUI)
 ```
 
 ---
 
-## 🔐 Core Package (`@lembaranzz/core`)
+## 🔐 Core Package (`@lembaranz/core`)
 
-This is the **heart** of Lembaranzz — all encryption happens here.
+This is the **heart** of Lembaranz — all encryption happens here.
 
 ### Key Files
 
@@ -203,7 +203,7 @@ await Archive.resetPassword("newPassword456");
 
 ---
 
-## 🖥️ CLI Package (`@lembaranzz/cli`)
+## 🖥️ CLI Package (`@lembaranz/cli`)
 
 ### Structure
 
@@ -212,14 +212,14 @@ packages/cli/src/
 ├── main.ts              # Entry point (Commander.js setup)
 ├── utils.ts             # Helper functions
 ├── commands/            # CLI commands
-│   ├── Config.ts        # `lembaranzz config save/load/list`
-│   ├── Settings.ts      # `lembaranzz settings` (env vars + git hooks)
-│   ├── Import.ts        # `lembaranzz import` (restore backups)
-│   ├── Export.ts        # `lembaranzz export` (portable backup)
-│   ├── Monitor.ts       # `lembaranzz monitor` (system health)
-│   ├── Security.ts      # `lembaranzz security` (security dashboard)
-│   ├── Browse.ts        # `lembaranzz browse` (search credentials)
-│   └── Launch.ts        # `lembaranzz launch` (TUI)
+│   ├── Config.ts        # `lembaranz config save/load/list`
+│   ├── Settings.ts      # `lembaranz settings` (env vars + git hooks)
+│   ├── Import.ts        # `lembaranz import` (restore backups)
+│   ├── Export.ts        # `lembaranz export` (portable backup)
+│   ├── Monitor.ts       # `lembaranz monitor` (system health)
+│   ├── Security.ts      # `lembaranz security` (security dashboard)
+│   ├── Browse.ts        # `lembaranz browse` (search credentials)
+│   └── Launch.ts        # `lembaranz launch` (TUI)
 └── tui/                 # Terminal UI components (Ink/React)
     ├── UnlockVaultScreen.tsx
     ├── MainScreen.tsx
@@ -229,7 +229,7 @@ packages/cli/src/
 ### Command Flow
 
 ```
-User types: lembaranzz config save myproject
+User types: lembaranz config save myproject
                     ↓
 main.ts registers all commands
                     ↓
@@ -300,7 +300,7 @@ bun test packages/web   # Web components
 ```typescript
 // packages/cli/src/commands/MyCommand.ts
 import { Command } from 'commander';
-import { Archive } from '@lembaranzz/core';
+import { Archive } from '@lembaranz/core';
 import { prepareContext, openVaultCLI } from '../utils.js';
 
 export function registerMyCommand(program: Command) {
@@ -369,7 +369,7 @@ export const Storage = {
           │                 │                  │
           ▼                 ▼                  ▼
 ┌─────────────────────────────────────────────────────────┐
-│                   @lembaranzz/core                        │
+│                   @lembaranz/core                        │
 │                                                          │
 │  ┌──────────────────────────────────────────────────┐   │
 │  │              Archive.ts (High-Level)              │   │
@@ -432,7 +432,7 @@ export const Storage = {
 ### Beginner (1-2 hours)
 - [ ] Read README.md
 - [ ] Run `bun test` to see tests pass
-- [ ] Try CLI commands: `lembaranzz --help`
+- [ ] Try CLI commands: `lembaranz --help`
 - [ ] Read `docs/RECOVERY_PHRASE.md`
 
 ### Intermediate (3-5 hours)

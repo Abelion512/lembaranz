@@ -6,7 +6,7 @@ Semua perubahan penting pada proyek ini akan didokumentasikan di file ini.
 
 ### Fixed
 - **Persistensi File**: Perbaikan race condition dan implementasi penulisan atomik pada `FileAdapter`.
-- **Penyatuan Merek**: Mengganti semua penyebutan "Lembaranz" yang tersisa menjadi "Lembaranzz" di CLI dan dokumentasi.
+- **Penyatuan Merek**: Mengganti semua penyebutan "Lembaranz" yang tersisa menjadi "Lembaranz" di CLI dan dokumentasi.
 - **Sintaks CLI**: Perbaikan kesalahan sintaksis di `TerminalUI` akibat konflik penggabungan.
 - **Integrasi Senses**: Menambahkan modul `Senses` dan pengujian unit dari sesi Jules.
 
@@ -26,7 +26,7 @@ Semua perubahan penting pada proyek ini akan didokumentasikan di file ini.
 - **Penyederhanaan README**: Bersih, langsung, tanpa gimmick.
 
 ### Fixed
-- **URL Clone**: Perbaikan `YOUR_USERNAME` → `Abelion512/lembaranzz`.
+- **URL Clone**: Perbaikan `YOUR_USERNAME` → `Abelion512/lembaranz`.
 - **npm Ignore**: Folder internal dikecualikan dari publikasi.
 - **Kelas Tailwind**: Pembaruan sintaksis yang sudah usang (deprecated).
 
@@ -35,17 +35,17 @@ Semua perubahan penting pada proyek ini akan didokumentasikan di file ini.
 ## [1.0.0] - 2026-03-30
 
 ### Added
-- **Migrasi Scope**: Migrasi total ke organisasi `@lembaranzz`.
+- **Migrasi Scope**: Migrasi total ke organisasi `@lembaranz`.
 - **Reset Paket**: Reset seluruh paket ke rilis stabil `1.0.0`.
 - **Textual Lockfile**: Transisi ke `bun.lock` (teks) untuk auditabilitas yang lebih baik.
 - **AEO/GEO Optimization**: Optimasi metadata SEO tingkat lanjut dengan JSON-LD dan rich context regional.
-- **Unified CLI**: Integrasi penuh perintah `lembaranzz` untuk ekosistem monorepo.
+- **Unified CLI**: Integrasi penuh perintah `lembaranz` untuk ekosistem monorepo.
 
 ---
 
 ## [3.5.0] - 2026-04-13 *(Pre-Reset)*
 
-> Versi 3.0.0–3.5.0 diterbitkan di bawah nama paket lama `lembaranzz` sebelum migrasi scope ke `@lembaranzz`.
+> Versi 3.0.0–3.5.0 diterbitkan di bawah nama paket lama `lembaranz` sebelum migrasi scope ke `@lembaranz`.
 
 ### Added
 - **Gaya GitBook + Apple HIG**: Desain ulang landing page dengan optimasi AEO/GEO.
@@ -79,7 +79,7 @@ Semua perubahan penting pada proyek ini akan didokumentasikan di file ini.
 ### Added
 - **Restorasi TUI Modern**: Membangun kembali antarmuka interaktif dengan Ink/React.
 - **Logika Gulir Tanpa Loop**: Navigasi menu kustom tanpa pembungkusan kursor.
-- **Sub-perintah Pengaturan**: `lembaranzz pengaturan` untuk manajemen .env.
+- **Sub-perintah Pengaturan**: `lembaranz pengaturan` untuk manajemen .env.
 
 ### Fixed
 - **Emoji & Encoding**: Pembersihan karakter rusak di UI terminal.
@@ -92,7 +92,7 @@ Semua perubahan penting pada proyek ini akan didokumentasikan di file ini.
 ### Added
 - **Mode Vim**: Navigasi H/J/K/L di editor.
 - **Otentikasi Biometrik**: Simulasi WebAuthn (Touch/FaceID).
-- **Vault Terenkripsi (.lembaranzz)**: Ekspor cadangan dengan perlindungan kunci master.
+- **Vault Terenkripsi (.lembaranz)**: Ekspor cadangan dengan perlindungan kunci master.
 - **Pencarian Fuzzy**: Pencarian cerdas CLI untuk akses cepat.
 - **Tombol Panik**: Penghapusan data darurat dengan frasa sandi.
 - **Sesi Berakhir**: Penguncian otomatis setelah tidak aktif.

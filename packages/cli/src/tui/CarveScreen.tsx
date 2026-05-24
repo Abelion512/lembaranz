@@ -23,7 +23,7 @@ export const CarveScreen: React.FC<CarveScreenProps> = ({ onBack }) => {
         setStep('saving');
 
         try {
-            const { Archive } = await import('@lembaranzz/core');
+            const { Archive } = await import('@lembaranz/core');
             const result = await Archive.saveNote({
                 id: '',
                 title: title.trim(),

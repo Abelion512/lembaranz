@@ -18,7 +18,7 @@ export const UnlockVaultScreen: React.FC<UnlockVaultScreenProps> = ({ onSuccess 
 
     useEffect(() => {
         const check = async () => {
-            const { Archive } = await import('@lembaranzz/core');
+            const { Archive } = await import('@lembaranz/core');
             const result = await Archive.isVaultInitialized();
             if (result.error) {
                 setError('Gagal memeriksa status brankas.');
@@ -41,7 +41,7 @@ export const UnlockVaultScreen: React.FC<UnlockVaultScreenProps> = ({ onSuccess 
         setError(null);
 
         try {
-            const { Archive } = await import('@lembaranzz/core');
+            const { Archive } = await import('@lembaranz/core');
             if (mode === 'setup') {
                 const result = await Archive.setupVault(password);
                 if (result.error) {
@@ -68,7 +68,7 @@ export const UnlockVaultScreen: React.FC<UnlockVaultScreenProps> = ({ onSuccess 
         setIsLoading(true);
         setError(null);
         try {
-            const { Archive } = await import('@lembaranzz/core');
+            const { Archive } = await import('@lembaranz/core');
             const result = await Archive.recoverVault(mnemonic);
             if (!result.error && result.data) {
                 // Force user to set new password after recovery

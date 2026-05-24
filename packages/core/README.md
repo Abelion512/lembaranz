@@ -1,12 +1,12 @@
-# @lembaranzz/core
+# @lembaranz/core
 
 **The Sovereign Encryption Engine**
 
-`@lembaranzz/core` is the cryptographic heart of the Lembaranzz ecosystem. It provides high-level abstractions for zero-knowledge data protection, local-first storage, and tamper-proof data integrity.
+`@lembaranz/core` is the cryptographic heart of the Lembaranz ecosystem. It provides high-level abstractions for zero-knowledge data protection, local-first storage, and tamper-proof data integrity.
 
 ## 🔐 Cryptographic Architecture
 
-Lembaranzz employs industry-standard authenticated encryption and high-cost key derivation to ensure data privacy without ever touching the cloud.
+Lembaranz employs industry-standard authenticated encryption and high-cost key derivation to ensure data privacy without ever touching the cloud.
 
 ### 1. Key Derivation (Argon2id)
 We use the **Argon2id** algorithm (provided by `@noble/hashes`) to derive encryption keys from user passwords. This ensures extreme resistance to GPU and ASIC-based brute-force attacks.
@@ -33,7 +33,7 @@ To prevent "Seal Broken" errors caused by object property reordering, the `Integ
 ## 🚀 Usage
 
 ```typescript
-import { Archive, Sentinel, Integrity } from '@lembaranzz/core';
+import { Archive, Sentinel, Integrity } from '@lembaranz/core';
 
 // 1. Initialize a vault
 const archive = await Archive.createVault('master-password');

@@ -1,10 +1,10 @@
-# 🚀 Beginner's Guide to Lembaranzz (For GUI Users)
+# 🚀 Beginner's Guide to Lembaranz (For GUI Users)
 
 > **Prefer GUI over terminal?** No problem! This guide is made for you.
 
 ---
 
-## 📖 What is Lembaranzz? (Simple Explanation)
+## 📖 What is Lembaranz? (Simple Explanation)
 
 **Think of it like Bitwarden/1Password, but:**
 - ✅ You host it yourself (no cloud)
@@ -28,7 +28,7 @@
 Run this command in your terminal:
 
 ```bash
-lembaranzz setup
+lembaranz setup
 ```
 
 You'll see an **interactive wizard** that guides you through:
@@ -46,11 +46,11 @@ You'll see an **interactive wizard** that guides you through:
 After setup, you can add credentials in several ways:
 
 #### **Option A: Using Setup Wizard** (Easiest)
-When you run `lembaranzz setup`, it will ask if you want to store a credential right away.
+When you run `lembaranz setup`, it will ask if you want to store a credential right away.
 
 #### **Option B: Using the TUI** (Visual Interface)
 ```bash
-lembaranzz launch
+lembaranz launch
 ```
 This opens a **visual terminal interface** where you can:
 - Navigate with arrow keys
@@ -61,10 +61,10 @@ This opens a **visual terminal interface** where you can:
 #### **Option C: Using Simple Commands**
 ```bash
 # Store an API key
-lembaranzz settings API_KEY "sk-proj-abc123..."
+lembaranz settings API_KEY "sk-proj-abc123..."
 
 # Check what you stored
-lembaranzz settings
+lembaranz settings
 ```
 
 ---
@@ -75,23 +75,23 @@ When you need to use stored credentials:
 
 ```bash
 # List all stored credentials
-lembaranzz config list
+lembaranz config list
 
 # Load credentials to your current project
-lembaranzz config load myproject
+lembaranz config load myproject
 
 # Run a command with credentials injected
-lembaranzz run --tag myproject npm start
+lembaranz run --tag myproject npm start
 ```
 
 ---
 
 ## 🎨 Visual Guide: What You'll See
 
-### When You Run `lembaranzz setup`
+### When You Run `lembaranz setup`
 
 ```
-🚀 Lembaranzz Setup Wizard
+🚀 Lembaranz Setup Wizard
 Let's set up your secure credential vault in 3 easy steps.
 
 📝 Step 1/3: Create Your Master Password
@@ -138,14 +138,14 @@ What would you like to do next?
 
 | What You Want to Do | Command |
 |---------------------|---------|
-| **Setup vault** (first time) | `lembaranzz setup` |
-| **Store a credential** | `lembaranzz settings KEY "value"` |
-| **View stored credentials** | `lembaranzz settings` |
-| **List .env profiles** | `lembaranzz config list` |
-| **Load credentials** | `lembaranzz config load myproject` |
-| **Search credentials** | `lembaranzz browse api` |
-| **Export backup** | `lembaranzz export` |
-| **Get help** | `lembaranzz --help` |
+| **Setup vault** (first time) | `lembaranz setup` |
+| **Store a credential** | `lembaranz settings KEY "value"` |
+| **View stored credentials** | `lembaranz settings` |
+| **List .env profiles** | `lembaranz config list` |
+| **Load credentials** | `lembaranz config load myproject` |
+| **Search credentials** | `lembaranz browse api` |
+| **Export backup** | `lembaranz export` |
+| **Get help** | `lembaranz --help` |
 
 ---
 
@@ -154,7 +154,7 @@ What would you like to do next?
 ### Q: I forgot my password! What do I do?
 **A**: Use your 12-word recovery phrase:
 ```bash
-lembaranzz launch
+lembaranz launch
 # Press 'r' when prompted
 # Enter your 12 words
 # Set a new password
@@ -167,32 +167,32 @@ lembaranzz launch
 **A**: On your local machine only. No cloud, no server, no internet connection needed.
 
 **Storage location:**
-- **Linux/Mac**: `~/.lembaranzz/`
-- **Windows**: `%APPDATA%/.lembaranzz/`
+- **Linux/Mac**: `~/.lembaranz/`
+- **Windows**: `%APPDATA%/.lembaranz/`
 
 ### Q: Can I backup my data?
 **A**: Yes! Run:
 ```bash
-lembaranzz export
+lembaranz export
 ```
-This creates an encrypted `.lembaranzz` file that you can store safely (like on a USB drive).
+This creates an encrypted `.lembaranz` file that you can store safely (like on a USB drive).
 
 ### Q: How do I share credentials between projects?
 **A**: Use tags! When saving:
 ```bash
-lembaranzz config save projectA
-lembaranzz config save projectB
+lembaranz config save projectA
+lembaranz config save projectB
 ```
 Then load to any project:
 ```bash
-cd /path/to/projectA && lembaranzz config load projectA
+cd /path/to/projectA && lembaranz config load projectA
 ```
 
 ---
 
 ## 🎮 Interactive TUI Navigation
 
-When you run `lembaranzz launch`, you'll see a visual interface. Here's how to navigate:
+When you run `lembaranz launch`, you'll see a visual interface. Here's how to navigate:
 
 ### Keyboard Shortcuts:
 - **Arrow Keys** ↑↓ ←→ : Move selection
@@ -239,28 +239,28 @@ When you run `lembaranzz launch`, you'll see a visual interface. Here's how to n
 ### Problem: "command not found"
 **Solution**: Reinstall globally:
 ```bash
-cd /path/to/lembaranzz
+cd /path/to/lembaranz
 bun link
 ```
 
 ### Problem: "Vault is locked"
 **Solution**: Unlock with password or recovery phrase:
 ```bash
-lembaranzz launch
+lembaranz launch
 # Enter password or press 'r' for recovery
 ```
 
 ### Problem: TUI shows errors
 **Solution**: Use the setup wizard instead:
 ```bash
-lembaranzz setup
+lembaranz setup
 ```
 This is more beginner-friendly and less error-prone.
 
 ### Problem: I want to start over
 **Solution**: Destroy vault and create new:
 ```bash
-lembaranzz setup
+lembaranz setup
 # Choose "Destroy and create new"
 ```
 ⚠️ **Warning**: This deletes ALL your data!
@@ -271,8 +271,8 @@ lembaranzz setup
 
 Now that you've set up your vault, you can:
 
-1. **Explore the TUI**: `lembaranzz launch`
-2. **Read the full documentation**: `lembaranzz --help`
+1. **Explore the TUI**: `lembaranz launch`
+2. **Read the full documentation**: `lembaranz --help`
 3. **Learn about recovery**: See `docs/RECOVERY_PHRASE.md`
 4. **Understand the codebase**: See `docs/CODEBASE_GUIDE.md`
 
@@ -280,9 +280,9 @@ Now that you've set up your vault, you can:
 
 ## 💬 Need Help?
 
-- **GitHub Issues**: https://github.com/Abelion512/lembaranzz/issues
+- **GitHub Issues**: https://github.com/Abelion512/lembaranz/issues
 - **Email**: agen.salva@gmail.com
-- **Documentation**: `lembaranzz --help`
+- **Documentation**: `lembaranz --help`
 
 ---
 

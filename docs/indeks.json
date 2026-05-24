@@ -4,8 +4,8 @@
             {
                 "title": "Getting Started",
                 "items": [
-                    { "id": "01-mulai/cepat", "title": "Quick Start Guide", "desc": "Get up and running with Lembaranzz CLI.", "icon": "Rocket" },
-                    { "id": "en/GETTING_STARTED", "title": "General Introduction", "desc": "Overview of the Lembaranzz ecosystem.", "icon": "Globe" }
+                    { "id": "01-mulai/cepat", "title": "Quick Start Guide", "desc": "Get up and running with Lembaranz CLI.", "icon": "Rocket" },
+                    { "id": "en/GETTING_STARTED", "title": "General Introduction", "desc": "Overview of the Lembaranz ecosystem.", "icon": "Globe" }
                 ]
             },
             {

@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import prompts from 'prompts';
-import { Archive } from '@lembaranzz/core';
-import { generateMnemonic } from '@lembaranzz/core';
+import { Archive } from '@lembaranz/core';
+import { generateMnemonic } from '@lembaranz/core';
 import { prepareContext } from '../utils.js';
 import pc from 'picocolors';
 import { spawn } from 'node:child_process';
@@ -9,7 +9,7 @@ import { execSync } from 'node:child_process';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 
-const PROGRESS_FILE = path.join(process.cwd(), '.lembaranzz', 'setup-progress.json');
+const PROGRESS_FILE = path.join(process.cwd(), '.lembaranz', 'setup-progress.json');
 
 export function registerSetupCommand(program: Command) {
   program
@@ -17,7 +17,7 @@ export function registerSetupCommand(program: Command) {
     .alias('init')
     .description('Interactive setup wizard (CLI or GUI)')
     .action(async () => {
-      console.log(pc.bold('\n🚀 Lembaranzz Setup Wizard'));
+      console.log(pc.bold('\n🚀 Lembaranz Setup Wizard'));
       console.log(pc.dim('Set up your secure credential vault.\n'));
 
       try {
@@ -225,7 +225,7 @@ async function runStep2AndBeyond(password: string, savedMnemonic: string, _progr
       console.log(pc.yellow('\n💾 Progress tersimpan! Anda bisa lanjut nanti.'));
       console.log(pc.dim('  • Screenshot 12 kata di atas (hanya untuk sementara)'));
       console.log(pc.dim('  • Tulis di kertas, lalu hapus screenshot'));
-      console.log(pc.dim('  • Jalankan `lembaranzz setup` lagi - password & seed phrase akan sama\n'));
+      console.log(pc.dim('  • Jalankan `lembaranz setup` lagi - password & seed phrase akan sama\n'));
 
       // Save progress
       await saveProgress({ password, mnemonic, step: 2 });
@@ -257,7 +257,7 @@ async function runStep2AndBeyond(password: string, savedMnemonic: string, _progr
         console.log(pc.red('\n✗ Kata tidak cocok! Periksa lagi tulisan Anda.'));
         console.log(pc.yellow('\n12 kata Anda:'));
         console.log(pc.cyan(mnemonic));
-        console.log(pc.dim('\nJalankan `lembaranzz setup` lagi setelah menulis dengan benar.\n'));
+        console.log(pc.dim('\nJalankan `lembaranz setup` lagi setelah menulis dengan benar.\n'));
         return;
       }
 
@@ -298,7 +298,7 @@ async function runStep2AndBeyond(password: string, savedMnemonic: string, _progr
       showCommandsHelp();
     }
 
-    console.log(pc.green('\n🎊 Welcome to Lembaranzz! Your credentials are now secure.\n'));
+    console.log(pc.green('\n🎊 Welcome to Lembaranz! Your credentials are now secure.\n'));
 
   } catch (error) {
     console.log(pc.red('\n✗ Setup failed:'), error instanceof Error ? error.message : String(error));
@@ -310,7 +310,7 @@ async function runStep2AndBeyond(password: string, savedMnemonic: string, _progr
 
 async function saveProgress(data: { password: string; mnemonic: string; step: number }) {
   try {
-    const progressDir = path.join(process.cwd(), '.lembaranzz');
+    const progressDir = path.join(process.cwd(), '.lembaranz');
     await fs.mkdir(progressDir, { recursive: true });
     await fs.writeFile(PROGRESS_FILE, JSON.stringify(data, null, 2));
   } catch (_e) {
@@ -444,23 +444,23 @@ async function storeFirstCredential() {
       console.log(pc.red(`\n✗ Failed to save: ${result.error.message}`));
     } else {
       console.log(pc.green('\n✅ Credential saved securely!\n'));
-      console.log(pc.dim(`To view it: lembaranzz browse ${tags[0] || 'credential'}`));
+      console.log(pc.dim(`To view it: lembaranz browse ${tags[0] || 'credential'}`));
     }
   }
 }
 
 function showCommandsHelp() {
   console.log(pc.cyan('\n📋 Available Commands:\n'));
-  console.log(pc.bold('  lembaranzz launch'));
+  console.log(pc.bold('  lembaranz launch'));
   console.log(pc.dim('    → Launch interactive TUI (full interface)\n'));
-  console.log(pc.bold('  lembaranzz config save [tag]'));
+  console.log(pc.bold('  lembaranz config save [tag]'));
   console.log(pc.dim('    → Save .env file to vault\n'));
-  console.log(pc.bold('  lembaranzz config load [tag]'));
+  console.log(pc.bold('  lembaranz config load [tag]'));
   console.log(pc.dim('    → Load credentials to current project\n'));
-  console.log(pc.bold('  lembaranzz config list'));
+  console.log(pc.bold('  lembaranz config list'));
   console.log(pc.dim('    → List all stored credentials\n'));
-  console.log(pc.bold('  lembaranzz browse [keyword]'));
+  console.log(pc.bold('  lembaranz browse [keyword]'));
   console.log(pc.dim('    → Search credentials by tag\n'));
-  console.log(pc.bold('  lembaranzz export'));
+  console.log(pc.bold('  lembaranz export'));
   console.log(pc.dim('    → Export encrypted backup\n'));
 }

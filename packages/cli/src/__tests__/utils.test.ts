@@ -9,10 +9,10 @@ mock.module('prompts', () => ({
   default: promptsMock
 }));
 
-mock.module('@lembaranzz/core', () => ({
+mock.module('@lembaranz/core', () => ({
   Context: {
     detectContextAuto: mock(async () => 'saku'),
-    resolvePath: mock(async () => '/tmp/lembaranzz')
+    resolvePath: mock(async () => '/tmp/lembaranz')
   },
   Storage: {
     initialize: mock(async () => {})

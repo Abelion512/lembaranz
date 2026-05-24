@@ -1,7 +1,7 @@
 {
-  "name": "lembaranzz",
+  "name": "lembaranz",
   "version": "1.0.2",
-  "description": "Lembaranzz - Personal Digital Archive Vault with zero-knowledge encryption",
+  "description": "Lembaranz - Personal Digital Archive Vault with zero-knowledge encryption",
   "workspaces": [
     "packages/*"
   ],
@@ -10,15 +10,15 @@
   "private": false,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Abelion512/lembaranzz.git"
+    "url": "git+https://github.com/Abelion512/lembaranz.git"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
-  "homepage": "https://github.com/Abelion512/lembaranzz#readme",
+  "homepage": "https://github.com/Abelion512/lembaranz#readme",
   "bugs": {
-    "url": "https://github.com/Abelion512/lembaranzz/issues"
+    "url": "https://github.com/Abelion512/lembaranz/issues"
   },
   "files": [
     "packages/",
@@ -41,7 +41,7 @@
     ".env.example"
   ],
   "keywords": [
-    "lembaranzz",
+    "lembaranz",
     "notes",
     "vault",
     "encrypted",
@@ -71,7 +71,7 @@
     "clean": "rm -rf node_modules"
   },
   "bin": {
-    "lembaranzz": "./packages/cli/src/main.ts"
+    "lembaranz": "./packages/cli/src/main.ts"
   },
   "dependencies": {
     "@abelionorg/tagger-public": "^1.0.2",

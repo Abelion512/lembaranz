@@ -1,4 +1,4 @@
-import { Context, Storage, VaultContext, Archive, Sentinel } from '@lembaranzz/core';
+import { Context, Storage, VaultContext, Archive, Sentinel } from '@lembaranz/core';
 import prompts from 'prompts';
 
 export interface GlobalOptions {
