@@ -23,3 +23,8 @@
 **Vulnerability:** The Markdown renderer (`safeMarked.ts`) relied on a raw regex (`/^(javascript|data|vbscript|file):/i`) against un-normalized `href` attributes to prevent XSS. This allowed bypasses using URI encoding (`javascript%3A`), HTML entities (`javascript&colon;`, `javasc&#114;ipt:`), or whitespace/control character injection (`jav\tascript:`).
 **Learning:** Checking for dangerous schemes using regex on raw HTML attributes is insufficient because the browser will decode and normalize entities and whitespace before executing the payload.
 **Prevention:** Always decode (URI + HTML entities) and normalize (strip whitespace `[\x00-\x20]+`) URLs before validating their scheme against a blacklist. Implemented `isDangerousUrl` helper in `safeMarked.ts` to perform this multi-layered sanitization before scheme validation.
+
+## 2025-02-12 - [Unsanitized Environment Variables Execution in CLI Config]
+**Vulnerability:** Unsanitized keys and values from `.env` files loaded dynamically via `Config.ts run` were directly passed to `spawn()`. This allowed the potential injection of non-POSIX keys or control characters via the environment payload.
+**Learning:** Parsing plaintext configurations directly into OS environment dictionaries without strict boundary validation creates injection vectors, particularly when used to spawn local commands dynamically.
+**Prevention:** Always validate configuration keys against standard POSIX conventions (e.g. `/^[a-zA-Z_][a-zA-Z0-9_]*$/`) and aggressively strip out control characters (`/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g`) from values before merging them into `process.env`.
