@@ -1,5 +1,4 @@
-
-## 2025-05-24 - [Fix XSS via Unescaped Markdown Links and Images]
-**Vulnerability:** The `safeMarked` utility in `packages/web/lib/safeMarked.ts` did not filter image protocols and failed to properly escape attributes like `href` on links.
-**Learning:** This oversight allows an attacker to inject XSS payloads using specially crafted URLs for links/images (e.g., `![x](javascript:alert(1))` or `[x](https://x.com"onmouseover="alert(1)")`) even when raw HTML is stripped.
-**Prevention:** Always implement a full custom renderer that not only filters dangerous protocols but comprehensively escapes HTML characters (`<`, `>`, `"`) from user-provided URLs and titles.
+## 2026-05-19 - [XSS Bypass via URI decoding errors and Entity Obfuscation]
+**Vulnerability:** The Markdown renderer's `isDangerousUrl` validation could be bypassed using payloads like `jav ascript:` or HTML entities `javascript&#58;`. Furthermore, an initial fix attempt to decode these using `decodeURI` introduced a critical bypass where an attacker could pass malformed URIs (e.g. `%`), crashing `decodeURI`, falling back to the raw entity string, and bypassing the scheme check while still rendering perfectly in the DOM.
+**Learning:** In Javascript, `decodeURI` throws a `URIError` when encountering malformed sequences. If you catch this error and fail open (return the original encoded string), it creates an evasion vector. The system must fail securely by returning the stripped but unescaped string, effectively dropping the malformed bits but persisting the decoded payload, so validation regex can detect it.
+**Prevention:** Always ensure parsing failure conditions fail securely (fail-closed/fail-safe) rather than falling back to the raw, unvalidated input.
