@@ -17,7 +17,6 @@ export type Result<T> = { data: T; error: null } | { data: null; error: Error };
 
 const ALGO_ENC = "AES-GCM";
 const MAX_CACHE_ITEMS = 100;
-const HEX_CHARS = "0123456789abcdef";
 
 export class Vault {
   private static key: CryptoKey | null = null;
