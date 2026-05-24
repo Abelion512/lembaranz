@@ -2,15 +2,14 @@ import { Marked } from "marked";
 
 /**
  * Robustly checks for dangerous URLs that might bypass basic regex checks.
- * Handles entity decoding, URI decoding, and whitespace stripping.
+ * Handles entity decoding, URI decoding, and aggressive whitespace stripping.
+ * Impact: Neutralizes "jav ascript:", "javascript&#58;", and malformed URI bypasses.
  */
 function isDangerousUrl(url: string | null | undefined): boolean {
   if (!url) return false;
 
-  let decoded = url;
-
-  // 1. Decode HTML entities (hex, decimal, and specific named ones like &colon;)
-  decoded = decoded.replace(
+  // 1. Decode HTML entities (named, hex, and decimal)
+  let normalized = url.replace(
     /&(#(?:\d+)|(?:#x[0-9a-fA-F]+)|(?:\w+));?/gi,
     (match, n) => {
       n = n.toLowerCase();
@@ -28,23 +27,23 @@ function isDangerousUrl(url: string | null | undefined): boolean {
 
   // 2. Decode URI components
   try {
-    decoded = decodeURIComponent(decoded);
+    normalized = decodeURIComponent(normalized);
   } catch {
     // Fail securely: continue with partially decoded string to catch obfuscated payloads
   }
 
-  // 3. Aggressively strip whitespace and control characters [\x00-\x20]
-  decoded = decoded.replace(/[\x00-\x20]+/g, "");
+  // 3. Aggressively strip all whitespace and control characters [\x00-\x20]
+  normalized = normalized.replace(/[\x00-\x20]+/g, "").toLowerCase();
 
   // 4. Test against dangerous schemes
   const dangerousSchemes = /^(javascript|data|vbscript|file):/i;
-  return dangerousSchemes.test(decoded);
+  return dangerousSchemes.test(normalized);
 }
 
 /**
  * Hardened Markdown Renderer:
  * 1. Blocks raw HTML injection.
- * 2. Filters dangerous protocols (XSS) in links and images.
+ * 2. Filters dangerous protocols (XSS) in links and images with normalization.
  * 3. Escapes all user-provided attributes (href, src, alt, title).
  * 4. Adds security headers for external links.
  */

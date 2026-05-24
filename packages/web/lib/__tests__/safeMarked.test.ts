@@ -49,3 +49,33 @@ describe('safeMarked Rendering', () => {
         expect(result).toContain('<span>klik</span>');
     });
 });
+
+describe('safeMarked - XSS Prevention Filter Bypasses', () => {
+    test('should block javascript: links with spaces', async () => {
+        const html = await safeMarked.parse('[XSS]( javascript:alert(1) )');
+        expect(html).toContain('<span>XSS</span>');
+        expect(html).not.toContain('href');
+    });
+
+    test('should block URL encoded javascript: links', async () => {
+        const html = await safeMarked.parse('[XSS](javascript%3Aalert(1))');
+        expect(html).toContain('<span>XSS</span>');
+        expect(html).not.toContain('href');
+    });
+
+    test('should block HTML entity encoded javascript: links', async () => {
+        const html = await safeMarked.parse('[XSS](javascript&#58;alert(1))');
+        expect(html).toContain('<span>XSS</span>');
+        expect(html).not.toContain('href');
+
+        const html2 = await safeMarked.parse('[XSS](&#x6A;avascript:alert(1))');
+        expect(html2).toContain('<span>XSS</span>');
+        expect(html2).not.toContain('href');
+    });
+
+    test('should block javascript: links with control characters', async () => {
+        const html = await safeMarked.parse('[XSS](\x0Bjavascript:alert(1))');
+        expect(html).toContain('<span>XSS</span>');
+        expect(html).not.toContain('href');
+    });
+});
