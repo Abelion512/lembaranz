@@ -82,7 +82,7 @@ export const Archive = {
     if (wrapResult.error) return wrapResult;
     const wrappedKey = wrapResult.data;
 
-    const validator = "LEMBARAN_SECURED_V3";
+    const validator = "LEMBARANZ_SECURED_V3";
     const valEncryptResult = await Vault.encryptPacked(validator, masterKey);
     if (valEncryptResult.error) return valEncryptResult;
     const encryptedValidator = valEncryptResult.data;
@@ -167,7 +167,7 @@ export const Archive = {
         const valResult = await Vault.decryptPacked(authValidator, masterKey);
         if (valResult.error) return valResult as Result<boolean>;
 
-        if (valResult.data === "LEMBARAN_SECURED_V3") {
+        if (valResult.data === "LEMBARANZ_SECURED_V3") {
           Vault.setActiveKey(masterKey);
           return { data: true, error: null };
         }
@@ -184,7 +184,7 @@ export const Archive = {
         );
         if (decResult.error) return decResult as Result<boolean>;
 
-        if (decResult.data === "LEMBARAN_SECURED_V2") {
+        if (decResult.data === "LEMBARANZ_SECURED_V2") {
           Vault.setActiveKey(passwordKey);
           // Automatic migration to V3 for improved security and recovery
           const resetRes = await this.resetPassword(password);
@@ -273,7 +273,7 @@ export const Archive = {
     await Storage.set("meta", "auth_salt", saltHex);
     await Storage.set("meta", "auth_wrapped_key", wrappedKey);
 
-    const validator = "LEMBARAN_SECURED_V3";
+    const validator = "LEMBARANZ_SECURED_V3";
     const valEncryptResult = await Vault.encryptPacked(validator, masterKey);
     if (valEncryptResult.error) return valEncryptResult;
 
@@ -294,7 +294,7 @@ export const Archive = {
     if (typeof window !== "undefined") {
       const keys = Object.keys(window.localStorage);
       keys.forEach((key) => {
-        if (key.startsWith("lembaranz:")) {
+        if (key.startsWith("lembaranzz:")) {
           window.localStorage.removeItem(key);
         }
       });

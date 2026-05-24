@@ -13,7 +13,7 @@ export const StatusBar: React.FC<StatusBarProps> = ({ context, versi, screen, is
   return (
     <Box borderStyle="single" borderColor={UI_TOKENS.meta} paddingX={1} justifyContent="space-between" width="100%">
       <Box shadow="single">
-        <Text color={UI_TOKENS.brand} bold>LEMBARANZ</Text>
+        <Text color={UI_TOKENS.brand} bold>LEMBARANZZ</Text>
         <Text color={UI_TOKENS.meta}> v{versi}</Text>
       </Box>
 

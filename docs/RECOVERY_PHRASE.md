@@ -12,7 +12,7 @@ The 12-word recovery phrase (also called **mnemonic** or **paper key**) is your 
 
 ### 1. **Generation** (First Setup)
 
-When you create a new vault, Lembaranz generates a random 12-word phrase:
+When you create a new vault, Lembaranzz generates a random 12-word phrase:
 
 ```
 Your Password ──► Argon2id ──► Password Key ──┐
@@ -106,7 +106,7 @@ await Archive.resetPassword(newPassword);
 
 ### Modulo Bias Mitigation
 
-Lembaranz uses **rejection sampling** to avoid modulo bias when selecting words:
+Lembaranzz uses **rejection sampling** to avoid modulo bias when selecting words:
 
 ```typescript
 // BAD (biased):
@@ -235,7 +235,7 @@ async recoverVault(mnemonic: string): Promise<Result<boolean>> {
 ### **First Time Setup**
 
 ```bash
-$ lembaranz launch
+$ lembaranzz launch
 
 🔐 Setup New Vault
 ━━━━━━━━━━━━━━━━━
@@ -259,7 +259,7 @@ Press Enter to continue...
 ### **Recovery (Forgot Password)**
 
 ```bash
-$ lembaranz launch
+$ lembaranzz launch
 
 🔒 Vault Locked
 ━━━━━━━━━━━━━━━
@@ -333,7 +333,7 @@ When you setup vault with mnemonic, these keys are stored:
 meta/
 ├── auth_salt              # Salt for password derivation
 ├── auth_wrapped_key       # Master Key encrypted with Password Key
-├── auth_validator         # Encrypted "LEMBARAN_SECURED_V3" marker
+├── auth_validator         # Encrypted "LEMBARANZ_SECURED_V3" marker
 ├── recovery_salt          # Salt for mnemonic derivation
 ├── recovery_wrapped_key   # Master Key encrypted with Recovery Key
 └── panic_hash             # Hash of panic key (emergency wipe)

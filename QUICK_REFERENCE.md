@@ -1,4 +1,4 @@
-# 📋 Lembaranz Quick Reference Card
+# 📋 Lembaranzz Quick Reference Card
 
 > **Save this for quick access!**
 
@@ -8,10 +8,10 @@
 
 ```bash
 # First time? Use the wizard
-lembaranz setup
+lembaranzz setup
 
 # Or launch visual interface
-lembaranz launch
+lembaranzz launch
 ```
 
 ---
@@ -20,13 +20,13 @@ lembaranz launch
 
 | Task | Command |
 |------|---------|
-| **Setup vault** | `lembaranz setup` |
-| **Launch TUI** | `lembaranz launch` |
-| **Add credential** | `lembaranz ukir` |
-| **Load .env** | `lembaranz muat` |
-| **Search** | `lembaranz browse` |
-| **Security dashboard** | `lembaranz security` |
-| **Get help** | `lembaranz --help` |
+| **Setup vault** | `lembaranzz setup` |
+| **Launch TUI** | `lembaranzz launch` |
+| **Add credential** | `lembaranzz ukir` |
+| **Load .env** | `lembaranzz muat` |
+| **Search** | `lembaranzz browse` |
+| **Security dashboard** | `lembaranzz security` |
+| **Get help** | `lembaranzz --help` |
 
 ---
 
@@ -51,8 +51,8 @@ lembaranz launch
 
 ## 📁 Storage Location
 
-- **Linux/Mac**: `~/.lembaranz/`
-- **Windows**: `%APPDATA%/.lembaranz/`
+- **Linux/Mac**: `~/.lembaranzz/`
+- **Windows**: `%APPDATA%/.lembaranzz/`
 
 ---
 
@@ -62,7 +62,7 @@ lembaranz launch
 |---------|----------|
 | "command not found" | Run `bun link` in project folder |
 | "Vault is locked" | Enter password or use recovery phrase |
-| TUI errors | Use `lembaranz setup` instead |
+| TUI errors | Use `lembaranzz setup` instead |
 | Forgot password | Use 12-word recovery phrase |
 
 ---

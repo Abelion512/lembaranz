@@ -20,7 +20,7 @@ export const CustomizationPreview = () => {
         <div className="w-full max-w-5xl mx-auto mt-24 px-4">
             <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold tracking-tight mb-4">Kustomisasi Tanpa Batas</h2>
-                <p className="text-gray-500 font-medium">Lembaran didesain untuk menyesuaikan dengan selera estetika Anda.</p>
+                <p className="text-gray-500 font-medium">Lembaranz didesain untuk menyesuaikan dengan selera estetika Anda.</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">

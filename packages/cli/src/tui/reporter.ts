@@ -2,7 +2,7 @@ import { spawn } from 'child_process';
 import os from 'os';
 import pkg from '../../package.json' assert { type: 'json' };
 
-const REPO_URL = 'https://github.com/Abelion512/lembaranz';
+const REPO_URL = 'https://github.com/Abelion512/lembaranzz';
 
 function sanitizeStack(stack?: string): string {
     if (!stack) return 'No stack trace available';
@@ -21,7 +21,7 @@ export function generateIssueUrl(error: Error, metadata: ReportMetadata = {}): s
     const title = encodeURIComponent(`[CRASH] ${error.name}: ${error.message}`);
     
     const bodyText = `
-### 🚨 Lembaranz TUI Crash Report
+### 🚨 Lembaranzz TUI Crash Report
 *This report was generated automatically to assist in debugging.*
 
 #### 🛠️ Error Details
@@ -31,7 +31,7 @@ export function generateIssueUrl(error: Error, metadata: ReportMetadata = {}): s
 - **Screen:** ${metadata.screen || 'Unknown'}
 
 #### 💻 Environment Context
-- **Lembaranz Version:** ${pkg.version}
+- **Lembaranzz Version:** ${pkg.version}
 - **OS:** ${os.type()} ${os.release()} (${os.arch()})
 - **Runtime:** ${process.version} (Bun/Node)
 - **Uptime:** ${(process.uptime() / 60).toFixed(2)} minutes
@@ -46,7 +46,7 @@ ${sanitizeStack(error.stack)}
 2. ...
 
 ---
-*Powered by Lembaranz Autonomous Diagnostic Engine*
+*Powered by Lembaranzz Autonomous Diagnostic Engine*
 `.trim();
 
     const body = encodeURIComponent(bodyText);

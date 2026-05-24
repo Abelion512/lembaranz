@@ -3,7 +3,7 @@ import { Box, Text, useInput } from 'ink';
 import TextInput from 'ink-text-input';
 import Spinner from 'ink-spinner';
 import { ModernSelect } from './components/ModernSelect.js';
-import { Note } from '@lembaranz/core';
+import { Note } from '@lembaranzz/core';
 import { UI_TOKENS } from './theme.js';
 
 interface ArchiveScreenProps {
@@ -38,7 +38,7 @@ export const ArchiveScreen: React.FC<ArchiveScreenProps> = ({ onBack, initialSea
     useEffect(() => {
         const load = async () => {
             try {
-                const { Archive } = await import('@lembaranz/core');
+                const { Archive } = await import('@lembaranzz/core');
                 const result = await Archive.getAllNotes();
                 if (!result.error) {
                     setNotes(result.data || []);

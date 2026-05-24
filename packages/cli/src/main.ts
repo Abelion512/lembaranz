@@ -22,8 +22,8 @@ process.on('uncaughtException', (error) => {
 const VERSI = pkg.version;
 
 program
-  .name('lembaranz')
-  .description('Lembaranz -- Personal Digital Archive Vault (CLI)')
+  .name('lembaranzz')
+  .description('Lembaranzz -- Personal Digital Archive Vault (CLI)')
   .version(VERSI);
 
 // Global Flags

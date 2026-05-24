@@ -2,7 +2,7 @@
 
 **Terakhir Diperbarui: 17 Februari 2026**
 
-Selamat datang di Lembaranz.
+Selamat datang di Lembaranzz.
 
 ## 1. Penggunaan Data
 Aplikasi ini bersifat **Local-First**. Kami tidak menyimpan data Anda di server kami. Seluruh catatan dan kunci enkripsi tersimpan di perangkat Anda (Browser IndexedDB atau File Lokal).

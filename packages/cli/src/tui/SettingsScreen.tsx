@@ -15,7 +15,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
     });
 
     const CONFIG_ITEMS = [
-        { label: 'Storage Root', value: '~/.lembaranz' },
+        { label: 'Storage Root', value: '~/.lembaranzz' },
         { label: 'Default Context', value: 'SAKU (Global)' },
         { label: 'Encryption Mode', value: 'AES-GCM-256' },
         { label: 'Compression', value: 'Gzip-Level-9' },

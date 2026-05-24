@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { Archive, Context } from "@lembaranz/core";
+import { Archive, Context } from "@lembaranzz/core";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { spawn } from "node:child_process";
@@ -67,7 +67,7 @@ export function registerConfigCommand(program: Command) {
 
       const hookFile = path.join(gitHooksPath, "pre-commit");
       const hookContent = `#!/bin/bash
-# Lembaranz Pre-commit Secret Scanner
+# Lembaranzz Pre-commit Secret Scanner
 
 echo "Scanning staged files for hardcoded secrets..."
 
@@ -92,10 +92,10 @@ done
 
 if [ $has_secrets -eq 1 ]; then
   echo ""
-  echo "Lembaranz Security Warning!"
+  echo "Lembaranzz Security Warning!"
   echo "Commit cancelled due to detected hardcoded secrets."
-  echo "Tip: Store environment variables in the vault with: lembaranz config save [tag]"
-  echo "     and use Zonal Context Injection: lembaranz run."
+  echo "Tip: Store environment variables in the vault with: lembaranzz config save [tag]"
+  echo "     and use Zonal Context Injection: lembaranzz run."
   echo ""
   exit 1
 fi
@@ -105,7 +105,7 @@ exit 0
 `;
       await fs.writeFile(hookFile, hookContent, { mode: 0o755 });
       return console.log(
-        "Successfully installed Lembaranz Pre-commit Secret Scanner."
+        "Successfully installed Lembaranzz Pre-commit Secret Scanner."
       );
     });
 
@@ -337,7 +337,7 @@ exit 0
 
       if (!actualCommand || actualCommand.length === 0) {
         return console.log(
-          "You must provide a command to run. Example: lembaranz run npm start"
+          "You must provide a command to run. Example: lembaranzz run npm start"
         );
       }
 

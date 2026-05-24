@@ -1,6 +1,6 @@
-# Contributing to Lembaranz
+# Contributing to Lembaranzz
 
-Thank you for your interest in contributing to **Lembaranz**! We welcome contributions from developers, security researchers, and writers around the globe.
+Thank you for your interest in contributing to **Lembaranzz**! We welcome contributions from developers, security researchers, and writers around the globe.
 
 This project is built on the philosophy of **"Data Sovereignty & Poetic Aesthetics"**.
 
@@ -13,7 +13,7 @@ This project is built on the philosophy of **"Data Sovereignty & Poetic Aestheti
 ## How to Contribute
 
 1.  **Fork the Repository**: Create your own copy of the project.
-2.  **Clone Locally**: `git clone https://github.com/Abelion512/lembaranz.git`
+2.  **Clone Locally**: `git clone https://github.com/Abelion512/lembaranzz.git`
 3.  **Setup Environment**:
     - Ensure you have [Bun](https://bun.sh) installed.
     - Run `bun install` to set up dependencies.

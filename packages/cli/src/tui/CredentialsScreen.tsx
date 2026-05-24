@@ -18,10 +18,10 @@ export const CredentialsScreen: React.FC<CredentialsScreenProps> = ({ onBack }) 
         else if (step === 'password') {
             setStep('saving');
             try {
-                const { Archive, Vault } = await import('@lembaranz/core');
+                const { Archive, Vault } = await import('@lembaranzz/core');
 
                 if (Vault.isLocked()) {
-                    console.error('\n❌ Vault locked! Please unlock the vault first using: lembaranz launch');
+                    console.error('\n❌ Vault locked! Please unlock the vault first using: lembaranzz launch');
                     onBack();
                     return;
                 }

@@ -6,7 +6,7 @@ import { FileAdapter } from '../storage/FileAdapter';
 
 describe('FileAdapter load error handling', () => {
     test('initializes empty store when DB file does not exist', async () => {
-        const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'lembaranz-file-adapter-'));
+        const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'lembaranzz-file-adapter-'));
         const dbPath = path.join(tempDir, 'db.json');
         const adapter = new FileAdapter(dbPath);
 
@@ -18,7 +18,7 @@ describe('FileAdapter load error handling', () => {
     });
 
     test('throws for malformed JSON and does not auto-reset file', async () => {
-        const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'lembaranz-file-adapter-'));
+        const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'lembaranzz-file-adapter-'));
         const dbPath = path.join(tempDir, 'db.json');
         const malformedContent = '{"notes": {';
         await fs.writeFile(dbPath, malformedContent, 'utf-8');

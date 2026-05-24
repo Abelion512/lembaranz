@@ -9,10 +9,10 @@
         "esModuleInterop": true,
         "skipLibCheck": true,
         "paths": {
-            "@lembaranz/core": [
+            "@lembaranzz/core": [
                 "../core/src/index.ts"
             ],
-            "@lembaranz/core/*": [
+            "@lembaranzz/core/*": [
                 "../core/src/*"
             ]
         }

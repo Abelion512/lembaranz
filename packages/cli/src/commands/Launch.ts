@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { VaultContext } from '@lembaranz/core';
+import { VaultContext } from '@lembaranzz/core';
 import React from 'react';
 import { render } from 'ink';
 import { prepareContext, enterTUIScreen, exitTUIScreen } from '../utils.js';

@@ -1,22 +1,22 @@
-# Lembaranzz
+# Lembaranzzz
 > Self-Hosted Credential & Note Vault — v1.0.1
 
 ## About
-Lembaranzz is a self-hosted, zero-knowledge credential manager. Data is encrypted locally with AES-GCM 256-bit + Argon2id before storage. No cloud, no tracking, no account required. Runs as a TUI (Terminal User Interface) via the `lembaranzz` command.
+Lembaranzzz is a self-hosted, zero-knowledge credential manager. Data is encrypted locally with AES-GCM 256-bit + Argon2id before storage. No cloud, no tracking, no account required. Runs as a TUI (Terminal User Interface) via the `lembaranzzz` command.
 
 ## Project Structure (Standalone)
 
 ```
 /
   packages/
-    core/ — @lembaranzz/core — Encryption engine & storage adapters (Atomic Writes)
-    cli/  — @lembaranzz/cli  — TUI (Ink/React) + CLI commands
+    core/ — @lembaranzzz/core — Encryption engine & storage adapters (Atomic Writes)
+    cli/  — @lembaranzzz/cli  — TUI (Ink/React) + CLI commands
 ```
 
 ### Build & Run
 - Root manifest: `package.json` (Consolidated dependencies)
 - Launch TUI (Dev): `bun packages/cli/src/main.ts`
-- Binary name: `lembaranzz`
+- Binary name: `lembaranzzz`
 - Build verification: `tsc --noEmit` on both components.
 
 ## Core Package Architecture (`packages/core/src/`)
@@ -32,9 +32,9 @@ Lembaranzz is a self-hosted, zero-knowledge credential manager. Data is encrypte
 ## Critical AI Rules
 
 ### ⚠️ Vault Contexts
-Lembaranz uses two main contexts:
-1. `saku`: Global vault (`~/.lembaranz/saku.json`)
-2. `pelataran`: Local project vault (`./.lembaranz-db.json`)
+Lembaranzz uses two main contexts:
+1. `saku`: Global vault (`~/.lembaranzz/saku.json`)
+2. `pelataran`: Local project vault (`./.lembaranzz-db.json`)
 
 ### Error Pattern
 All async functions return `Result<T>` — never throw:
@@ -51,11 +51,11 @@ type Result<T> = { data: T; error: null } | { data: null; error: Error };
 
 | Command | Description |
 |---------|-------------|
-| `lembaranzz` | Launch TUI (default) |
-| `lembaranzz setup` | Interactive setup wizard |
-| `lembaranzz monitor` | System health & integrity |
-| `lembaranzz security` | Security dashboard |
-| `lembaranzz launch` | Enter TUI mode |
+| `lembaranzzz` | Launch TUI (default) |
+| `lembaranzzz setup` | Interactive setup wizard |
+| `lembaranzzz monitor` | System health & integrity |
+| `lembaranzzz security` | Security dashboard |
+| `lembaranzzz launch` | Enter TUI mode |
 
 ## Dev Commands
 

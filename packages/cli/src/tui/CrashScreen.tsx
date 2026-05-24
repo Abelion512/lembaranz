@@ -29,7 +29,7 @@ export const CrashScreen: React.FC<CrashScreenProps> = ({ error, screen }) => {
             </Box>
 
             <Box flexDirection="column" marginBottom={1}>
-                <Text color={UI_TOKENS.text} bold>Lembaranz has encountered a critical failure.</Text>
+                <Text color={UI_TOKENS.text} bold>Lembaranzz has encountered a critical failure.</Text>
                 <Text color={UI_TOKENS.meta}>Diagnostic data has been aggregated for the Autonomous Engine.</Text>
             </Box>
 

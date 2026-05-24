@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { Archive } from '@lembaranz/core';
+import { Archive } from '@lembaranzz/core';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import prompts from 'prompts';
@@ -9,7 +9,7 @@ import { getImportPathStatErrorMessage } from './ImportErrors.js';
 export function registerImportCommand(program: Command) {
   program
     .command('import')
-    .description('Import files (.md) or restore backups (.lembaranz)')
+    .description('Import files (.md) or restore backups (.lembaranzz)')
     .argument('<path>', 'Directory or file to import')
     .action(async (p) => {
       await prepareContext(program.opts());
@@ -26,7 +26,7 @@ export function registerImportCommand(program: Command) {
       const isDir = stats.isDirectory();
 
       if (!isDir && !stats.isFile()) {
-        console.log(`Unsupported path type: "${p}". Use a directory, .md file, or .lembaranz backup.`);
+        console.log(`Unsupported path type: "${p}". Use a directory, .md file, or .lembaranzz backup.`);
         return;
       }
 
@@ -41,9 +41,9 @@ export function registerImportCommand(program: Command) {
         return;
       }
 
-      // Case 2: .lembaranz file (Restore Backup)
-      if (p.endsWith('.lembaranz')) {
-        console.log('Detecting portable backup file (.lembaranz)');
+      // Case 2: .lembaranzz file (Restore Backup)
+      if (p.endsWith('.lembaranzz')) {
+        console.log('Detecting portable backup file (.lembaranzz)');
         const buffer = await fs.readFile(p);
 
         const res = await prompts({
@@ -79,7 +79,7 @@ export function registerImportCommand(program: Command) {
           return;
       }
 
-      console.log('Unsupported file format. Use .md or .lembaranz');
+      console.log('Unsupported file format. Use .md or .lembaranzz');
     });
 }
 

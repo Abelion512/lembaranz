@@ -1,4 +1,4 @@
-# Product Requirements Document (PRD): Lembaranz
+# Product Requirements Document (PRD): Lembaranzz
 
 **Versi:** 3.5.0
 **Status:** Production Ready — CLI/TUI Stabil, GUI Planned
@@ -6,7 +6,7 @@
 **Bahasa:** Indonesia Baku
 **Branch:** `#33`
 
-> **Lembaranz**: Brankas Arsip Digital Personal Buatan Anak Bangsa  
+> **Lembaranzz**: Brankas Arsip Digital Personal Buatan Anak Bangsa  
 > **Filosofi:** Kedaulatan Data, Privasi Absolut, Estetika Minimalis  
 > **Konvensi Nama:** Indonesia Puitis (Jiwa, Raga, Suara, Aksara, Brankas)
 
@@ -14,7 +14,7 @@
 
 ## 1. Identitas & Filosofi
 
-Lembaranz adalah brankas arsip digital personal yang dikembangkan oleh pengembang Indonesia untuk kedaulatan data lokal.
+Lembaranzz adalah brankas arsip digital personal yang dikembangkan oleh pengembang Indonesia untuk kedaulatan data lokal.
 
 ### Visi
 Menjadi standar emas penyimpanan data personal terenkripsi yang **dibuat di Indonesia untuk dunia**.
@@ -97,12 +97,12 @@ Pengelolaan `.env` lintas proyek dengan enkripsi.
 Antarmuka terminal interaktif untuk produktivitas maksimal.
 
 **Commands:**
-- `lembaranz mulai` - TUI interaktif
-- `lembaranz ukir` - Buat/edit catatan
-- `lembaranz laras` - Kelola environment
-- `lembaranz tanam` - Import direktori
-- `lembaranz cari` - Search encrypted notes
-- `lembaranz petik` - Export catatan
+- `lembaranzz mulai` - TUI interaktif
+- `lembaranzz ukir` - Buat/edit catatan
+- `lembaranzz laras` - Kelola environment
+- `lembaranzz tanam` - Import direktori
+- `lembaranzz cari` - Search encrypted notes
+- `lembaranzz petik` - Export catatan
 
 **Status:** ✅ Production Ready
 
@@ -120,7 +120,7 @@ Antarmuka terminal interaktif untuk produktivitas maksimal.
 
 ### Fase 2 — Fitur Utama (Ciri Khas) ✅ **SELESAI 85%**
 - [x] Laras (.env manager) dengan overwrite protection
-- [x] TUI dengan logo Lembaranz (seperti gemini/claude)
+- [x] TUI dengan logo Lembaranzz (seperti gemini/claude)
 - [x] Fuzzy search encrypted content
 - [x] Import/export multi-format
 - [x] AI YOLO Mode security (single-push)
@@ -140,10 +140,10 @@ Antarmuka terminal interaktif untuk produktivitas maksimal.
 ## 5. Struktur Folder
 
 ```
-lembaranz/
+lembaranzz/
 ├── packages/
-│   ├── core/          # @lembaranz/core (encryption, storage)
-│   └── cli/           # @lembaranz/cli (TUI, commands)
+│   ├── core/          # @lembaranzz/core (encryption, storage)
+│   └── cli/           # @lembaranzz/cli (TUI, commands)
 ├── docs/              # Dokumentasi (id/ & en/)
 ├── .githooks/         # Git hooks (YOLO mode)
 ├── scripts/           # Helper scripts

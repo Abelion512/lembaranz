@@ -24,8 +24,8 @@ export const MonitorScreen: React.FC<MonitorScreenProps> = ({ context, onBack })
         const load = async () => {
             try {
                 // Lazy import to avoid Bun crash with node:fs modules during Ink render
-                const { Archive, Context } = await import('@lembaranz/core');
-                const { Vault } = await import('@lembaranz/core');
+                const { Archive, Context } = await import('@lembaranzz/core');
+                const { Vault } = await import('@lembaranzz/core');
 
                 const initRes = await Archive.isVaultInitialized();
                 setIsInit(!initRes.error && !!initRes.data);

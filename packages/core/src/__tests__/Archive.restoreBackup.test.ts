@@ -40,8 +40,8 @@ describe("Archive.restoreBackup - credential isolation", () => {
   let tmpDir = "";
 
   beforeEach(async () => {
-    tmpDir = await mkdtemp(path.join(os.tmpdir(), "lembaranz-core-archive-"));
-    await Storage.initialize(path.join(tmpDir, ".lembaranz-db.json"));
+    tmpDir = await mkdtemp(path.join(os.tmpdir(), "lembaranzz-core-archive-"));
+    await Storage.initialize(path.join(tmpDir, ".lembaranzz-db.json"));
     await Archive.setupVault(vaultPassword);
   }, 60000);
 

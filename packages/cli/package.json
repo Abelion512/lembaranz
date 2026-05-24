@@ -1,7 +1,7 @@
 {
-  "name": "@lembaranz/cli",
+  "name": "@lembaranzz/cli",
   "version": "1.0.1",
-  "description": "Lembaranz CLI - Personal encrypted note vault with terminal interface",
+  "description": "Lembaranzz CLI - Personal encrypted note vault with terminal interface",
   "author": "Abelion Lavv <agen.salva@gmail.com>",
   "license": "MIT",
   "private": false,
@@ -10,7 +10,7 @@
   },
   "type": "module",
   "keywords": [
-    "lembaranz",
+    "lembaranzz",
     "notes",
     "vault",
     "encrypted",
@@ -21,16 +21,16 @@
     "terminal",
     "tui"
   ],
-  "homepage": "https://github.com/Abelion512/lembaranz#readme",
+  "homepage": "https://github.com/Abelion512/lembaranzz#readme",
   "bugs": {
-    "url": "https://github.com/Abelion512/lembaranz/issues"
+    "url": "https://github.com/Abelion512/lembaranzz/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Abelion512/lembaranz.git"
+    "url": "git+https://github.com/Abelion512/lembaranzz.git"
   },
   "bin": {
-    "lembaranz": "./src/main.ts"
+    "lembaranzz": "./src/main.ts"
   },
   "files": [
     "src/**/*.ts",
@@ -46,7 +46,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@lembaranz/core": "^1.0.1",
+    "@lembaranzz/core": "^1.0.1",
     "commander": "^14.0.3",
     "ink": "^6.8.0",
     "ink-select-input": "^6.2.0",

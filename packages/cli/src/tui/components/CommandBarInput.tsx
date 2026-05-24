@@ -61,7 +61,7 @@ export const InputBilahPerintah: React.FC<CommandBarInputProps> = ({ onSubmit, h
 
     return (
         <Box>
-            <Text color="cyan">Lembaranz {'>'} </Text>
+            <Text color="cyan">Lembaranzz {'>'} </Text>
             <TextInput 
                 value={value} 
                 onChange={setNilai} 

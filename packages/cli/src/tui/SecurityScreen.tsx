@@ -57,7 +57,7 @@ export const SecurityScreen: React.FC<SecurityScreenProps> = ({ onBack }) => {
         {
             title: 'Vault Integrity',
             status: 'SECURE: Local-Only',
-            detail: `Mount point detected at: ${os.homedir()}/.lembaranz`,
+            detail: `Mount point detected at: ${os.homedir()}/.lembaranzz`,
             color: UI_TOKENS.brand,
         },
     ];
