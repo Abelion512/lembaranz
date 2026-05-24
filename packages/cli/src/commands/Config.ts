@@ -1,23 +1,25 @@
-import { Command } from 'commander';
-import { Archive } from '@lembaranz/core';
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import { spawn } from 'node:child_process';
-import { prepareContext, openVaultCLI } from '../utils.js';
-import prompts from 'prompts';
+import { Command } from "commander";
+import { Archive, Context } from "@lembaranz/core";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { spawn } from "node:child_process";
+import { prepareContext, openVaultCLI } from "../utils.js";
+import prompts from "prompts";
 
 export function registerConfigCommand(program: Command) {
   const configCmd = program
-    .command('config')
-    .alias('cfg')
-    .description('Manage vault configurations, local environments, and security hooks');
+    .command("config")
+    .alias("cfg")
+    .description(
+      "Manage vault configurations, local environments, and security hooks"
+    );
 
   // --- Local Environment Management (formerly 'settings') ---
   configCmd
-    .command('set')
-    .description('Set a local environment variable in .env')
-    .argument('<key>', 'Variable name')
-    .argument('<value>', 'Variable value')
+    .command("set")
+    .description("Set a local environment variable in .env")
+    .argument("<key>", "Variable name")
+    .argument("<value>", "Variable value")
     .action(async (key, value) => {
       await prepareContext(program.opts());
       const result = await Context.writeEnv(key, value);
@@ -29,39 +31,41 @@ export function registerConfigCommand(program: Command) {
     });
 
   configCmd
-    .command('get')
-    .description('Get a local environment variable')
-    .argument('<key>', 'Variable name')
+    .command("get")
+    .description("Get a local environment variable")
+    .argument("<key>", "Variable name")
     .action(async (key) => {
       await prepareContext(program.opts());
       const env = await Context.readEnv();
-      console.log(`${key}=${env[key] || '(not set)'}`);
+      console.log(`${key}=${env[key] || "(not set)"}`);
     });
 
   configCmd
-    .command('show')
-    .description('Show all local configurations')
+    .command("show")
+    .description("Show all local configurations")
     .action(async () => {
       await prepareContext(program.opts());
       const env = await Context.readEnv();
-      console.log('Local Configuration (.env):');
+      console.log("Local Configuration (.env):");
       Object.entries(env).forEach(([k, v]) => {
         console.log(`  ${k}=${v}`);
       });
     });
 
   configCmd
-    .command('hook')
-    .description('Install Git Pre-commit hook to prevent secret leaks')
+    .command("hook")
+    .description("Install Git Pre-commit hook to prevent secret leaks")
     .action(async () => {
-      const gitHooksPath = path.join(process.cwd(), '.git', 'hooks');
+      const gitHooksPath = path.join(process.cwd(), ".git", "hooks");
       try {
         await fs.access(gitHooksPath);
       } catch {
-        return console.log('.git/hooks directory not found. Make sure you are inside a Git repository.');
+        return console.log(
+          ".git/hooks directory not found. Make sure you are inside a Git repository."
+        );
       }
 
-      const hookFile = path.join(gitHooksPath, 'pre-commit');
+      const hookFile = path.join(gitHooksPath, "pre-commit");
       const hookContent = `#!/bin/bash
 # Lembaranz Pre-commit Secret Scanner
 
@@ -100,38 +104,45 @@ echo "Scan clean. Allowing commit."
 exit 0
 `;
       await fs.writeFile(hookFile, hookContent, { mode: 0o755 });
-      return console.log('Successfully installed Lembaranz Pre-commit Secret Scanner.');
+      return console.log(
+        "Successfully installed Lembaranz Pre-commit Secret Scanner."
+      );
     });
 
   // --- Vault Profile Management ---
   configCmd
-    .command('save')
-    .description('Save the local .env file to the vault')
-    .argument('[tag]', 'Project tag name (default: current directory name)')
+    .command("save")
+    .description("Save the local .env file to the vault")
+    .argument("[tag]", "Project tag name (default: current directory name)")
     .action(async (tag) => {
       await prepareContext(program.opts());
-      if (!(await openVaultCLI())) return console.log('Access denied.');
+      if (!(await openVaultCLI())) return console.log("Access denied.");
 
       const targetTag = tag || path.basename(process.cwd());
-      const envPath = path.join(process.cwd(), '.env');
+      const envPath = path.join(process.cwd(), ".env");
 
       try {
-        const content = await fs.readFile(envPath, 'utf8');
+        const content = await fs.readFile(envPath, "utf8");
         const title = `.env - ${targetTag}`;
 
         const notesResult = await Archive.getAllNotes();
         if (notesResult.error) {
-          console.error('Failed to read vault:', notesResult.error.message);
+          console.error("Failed to read vault:", notesResult.error.message);
           return;
         }
 
         const notes = notesResult.data!;
-        const existing = notes.find(n => n.title === title && n.tags.includes('env'));
+        const existing = notes.find(
+          (n) => n.title === title && n.tags.includes("env")
+        );
 
         if (existing) {
           const fullResult = await Archive.getNoteById(existing.id);
           if (fullResult.error) {
-            console.error('Failed to decrypt .env profile:', fullResult.error.message);
+            console.error(
+              "Failed to decrypt .env profile:",
+              fullResult.error.message
+            );
             return;
           }
 
@@ -149,12 +160,18 @@ exit 0
             tags: fullNote.tags,
             createdAt: fullNote.createdAt,
             isCredentials: fullNote.isCredentials,
-            credentials: typeof fullNote.credentials === 'string'
-              ? fullNote.credentials
-              : fullNote.credentials ? JSON.stringify(fullNote.credentials) : undefined,
+            credentials:
+              typeof fullNote.credentials === "string"
+                ? fullNote.credentials
+                : fullNote.credentials
+                ? JSON.stringify(fullNote.credentials)
+                : undefined,
           });
           if (saveResult.error) {
-            console.error('Failed to update .env profile:', saveResult.error.message);
+            console.error(
+              "Failed to update .env profile:",
+              saveResult.error.message
+            );
             return;
           }
 
@@ -163,56 +180,76 @@ exit 0
         }
 
         const newResult = await Archive.saveNote({
-          id: '', title, content,
-          folderId: null, isPinned: false, isFavorite: false,
-          tags: ['env', targetTag], createdAt: new Date().toISOString()
+          id: "",
+          title,
+          content,
+          folderId: null,
+          isPinned: false,
+          isFavorite: false,
+          tags: ["env", targetTag],
+          createdAt: new Date().toISOString(),
         });
 
         if (newResult.error) {
-          console.error('Failed to store new .env profile:', newResult.error.message);
+          console.error(
+            "Failed to store new .env profile:",
+            newResult.error.message
+          );
           return;
         }
 
-        console.log(`Successfully stored .env profile: ${targetTag} in the vault.`);
+        console.log(
+          `Successfully stored .env profile: ${targetTag} in the vault.`
+        );
       } catch (e: unknown) {
-        if (e && typeof e === 'object' && 'code' in e && e.code === 'ENOENT') {
-          console.log('.env file not found in the current directory.');
+        if (e && typeof e === "object" && "code" in e && e.code === "ENOENT") {
+          console.log(".env file not found in the current directory.");
         } else {
-          console.log(`Failed to save: ${e instanceof Error ? e.message : String(e)}`);
+          console.log(
+            `Failed to save: ${e instanceof Error ? e.message : String(e)}`
+          );
         }
       }
     });
 
   configCmd
-    .command('load')
-    .alias('fetch')
-    .description('Load an .env file from the vault to the local directory')
-    .argument('<tag>', 'Project tag name')
+    .command("load")
+    .alias("fetch")
+    .description("Load an .env file from the vault to the local directory")
+    .argument("<tag>", "Project tag name")
     .action(async (tag) => {
       await prepareContext(program.opts());
-      if (!(await openVaultCLI())) return console.log('Access denied.');
+      if (!(await openVaultCLI())) return console.log("Access denied.");
 
       const title = `.env - ${tag}`;
       const notesResult = await Archive.getAllNotes();
       if (notesResult.error) {
-        return console.log(`Failed to read vault: ${notesResult.error.message}`);
+        return console.log(
+          `Failed to read vault: ${notesResult.error.message}`
+        );
       }
 
       const notes = notesResult.data!;
-      const existingHeader = notes.find(n => n.title === title && n.tags.includes('env'));
+      const existingHeader = notes.find(
+        (n) => n.title === title && n.tags.includes("env")
+      );
 
       if (!existingHeader) {
-        return console.log(`No .env profile with tag '${tag}' found in the vault.`);
+        return console.log(
+          `No .env profile with tag '${tag}' found in the vault.`
+        );
       }
 
       const fullResult = await Archive.getNoteById(existingHeader.id);
       if (fullResult.error) {
-        return console.log(`Failed to decrypt .env profile '${tag}': ${fullResult.error.message}`);
+        return console.log(
+          `Failed to decrypt .env profile '${tag}': ${fullResult.error.message}`
+        );
       }
 
       const fullNote = fullResult.data!;
 
-      const envPath = path.join(process.cwd(), '.env');
+      const envPath = path.join(process.cwd(), ".env");
       try {
         // Check if .env file already exists and ask for confirmation
         let shouldOverwrite = true;
@@ -220,13 +257,13 @@ exit 0
           await fs.access(envPath);
           // File exists, ask for confirmation
           const response = await prompts({
-            type: 'confirm',
-            name: 'confirm',
-            message: '.env file already exists. Overwrite?',
-            initial: false
+            type: "confirm",
+            name: "confirm",
+            message: ".env file already exists. Overwrite?",
+            initial: false,
           });
           if (!response.confirm) {
-            console.log('Operation cancelled. .env file was not overwritten.');
+            console.log("Operation cancelled. .env file was not overwritten.");
             return;
           }
         } catch {
@@ -235,87 +272,119 @@ exit 0
         }
 
         if (shouldOverwrite) {
-          await fs.writeFile(envPath, fullNote.content, 'utf8');
-          console.log(`Successfully loaded .env profile '${tag}' to ${envPath}`);
+          await fs.writeFile(envPath, fullNote.content, "utf8");
+          console.log(
+            `Successfully loaded .env profile '${tag}' to ${envPath}`
+          );
         }
       } catch (e: unknown) {
-        console.log(`Failed to write .env file: ${e instanceof Error ? e.message : String(e)}`);
+        console.log(
+          `Failed to write .env file: ${
+            e instanceof Error ? e.message : String(e)
+          }`
+        );
       }
     });
 
   configCmd
-    .command('list')
-    .description('List .env profiles stored in the vault')
+    .command("list")
+    .description("List .env profiles stored in the vault")
     .action(async () => {
       await prepareContext(program.opts());
-      if (!(await openVaultCLI())) return console.log('Access denied.');
+      if (!(await openVaultCLI())) return console.log("Access denied.");
 
       const notesResult = await Archive.getAllNotes();
       if (notesResult.error) {
-        return console.log(`Failed to read vault: ${notesResult.error.message}`);
+        return console.log(
+          `Failed to read vault: ${notesResult.error.message}`
+        );
       }
 
       const notes = notesResult.data!;
-      const envNotes = notes.filter(n => n.tags.includes('env') && n.title.startsWith('.env - '));
+      const envNotes = notes.filter(
+        (n) => n.tags.includes("env") && n.title.startsWith(".env - ")
+      );
 
       if (envNotes.length === 0) {
-        return console.log('No .env profiles stored in the vault yet.');
+        return console.log("No .env profiles stored in the vault yet.");
       }
 
-      console.log('Stored .env Profiles:');
-      envNotes.forEach(n => {
-        const tag = n.title.replace('.env - ', '');
-        console.log(`  - ${tag} (Saved: ${new Date(n.updatedAt || n.createdAt).toLocaleString()})`);
+      console.log("Stored .env Profiles:");
+      envNotes.forEach((n) => {
+        const tag = n.title.replace(".env - ", "");
+        console.log(
+          `  - ${tag} (Saved: ${new Date(
+            n.updatedAt || n.createdAt
+          ).toLocaleString()})`
+        );
       });
     });
 
   program
-    .command('run')
-    .description('Inject environment from vault then execute a sub-command (Zonal Context Injection)')
-    .option('-t, --tag <tag>', 'Specific .env profile name (default: directory name)')
-    .argument('<command...>', 'Command to execute (e.g., npm start)')
+    .command("run")
+    .description(
+      "Inject environment from vault then execute a sub-command (Zonal Context Injection)"
+    )
+    .option(
+      "-t, --tag <tag>",
+      "Specific .env profile name (default: directory name)"
+    )
+    .argument("<command...>", "Command to execute (e.g., npm start)")
     .allowUnknownOption()
     .action(async (commandArgs, options) => {
       const targetTag = options.tag || path.basename(process.cwd());
       const actualCommand = commandArgs;
 
       if (!actualCommand || actualCommand.length === 0) {
-        return console.log('You must provide a command to run. Example: lembaranz run npm start');
+        return console.log(
+          "You must provide a command to run. Example: lembaranz run npm start"
+        );
       }
 
       await prepareContext(program.opts());
-      if (!(await openVaultCLI())) return console.log('Access denied.');
+      if (!(await openVaultCLI())) return console.log("Access denied.");
 
       const title = `.env - ${targetTag}`;
       const notesResult = await Archive.getAllNotes();
       if (notesResult.error) {
-        return console.log(`Failed to read vault: ${notesResult.error.message}`);
+        return console.log(
+          `Failed to read vault: ${notesResult.error.message}`
+        );
       }
 
       const notes = notesResult.data!;
-      const existingHeader = notes.find(n => n.title === title && n.tags.includes('env'));
+      const existingHeader = notes.find(
+        (n) => n.title === title && n.tags.includes("env")
+      );
 
       if (!existingHeader) {
-        return console.log(`No .env profile with tag '${targetTag}' found in the vault.`);
+        return console.log(
+          `No .env profile with tag '${targetTag}' found in the vault.`
+        );
       }
 
       const fullResult = await Archive.getNoteById(existingHeader.id);
       if (fullResult.error) {
-        return console.log(`Failed to decrypt .env profile '${targetTag}': ${fullResult.error.message}`);
+        return console.log(
+          `Failed to decrypt .env profile '${targetTag}': ${fullResult.error.message}`
+        );
       }
 
       const fullNote = fullResult.data!;
 
       // Parsing raw .env text to an object
       const parsedEnv: Record<string, string> = {};
-      for (const line of fullNote.content.split('\n')) {
+      for (const line of fullNote.content.split("\n")) {
         const clean = line.trim();
-        if (clean && !clean.startsWith('#')) {
-          const index = clean.indexOf('=');
+        if (clean && !clean.startsWith("#")) {
+          const index = clean.indexOf("=");
           if (index !== -1) {
             const key = clean.substring(0, index).trim();
             let val = clean.substring(index + 1).trim();
-            if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+            if (
+              (val.startsWith('"') && val.endsWith('"')) ||
+              (val.startsWith("'") && val.endsWith("'"))
+            ) {
               val = val.substring(1, val.length - 1);
             }
             parsedEnv[key] = val;
@@ -323,33 +392,92 @@ exit 0
         }
       }
 
-      // Filter dangerous environment variables that could enable library injection
+      // Filter dangerous environment variables that could enable library injection or alter runtime behavior
       const DANGEROUS_ENV_KEYS = new Set([
-        'LD_PRELOAD', 'LD_LIBRARY_PATH', 'DYLD_INSERT_LIBRARIES',
-        'DYLD_LIBRARY_PATH', 'NODE_OPTIONS', 'NODE_PATH',
-        'BASH_ENV', 'ENV', 'PROMPT_COMMAND', 'PYTHONPATH', 'PYTHONSTARTUP', 'PYTHONINSPECT'
+        // Dynamic Linker / Library Injection
+        "LD_PRELOAD",
+        "LD_LIBRARY_PATH",
+        "LD_AUDIT",
+        "LD_DEBUG",
+        "LD_PROFILE",
+        "LD_USE_LOAD_BIAS",
+        "LD_ORIGIN_PATH",
+        "DYLD_INSERT_LIBRARIES",
+        "DYLD_LIBRARY_PATH",
+        "DYLD_FRAMEWORK_PATH",
+        "DYLD_FALLBACK_LIBRARY_PATH",
+        "DYLD_FALLBACK_FRAMEWORK_PATH",
+        "DYLD_PRINT_TO_FILE",
+        "DYLD_FORCE_FLAT_NAMESPACE",
+
+        // Language Runtimes
+        "NODE_OPTIONS",
+        "NODE_PATH",
+        "NODE_ICU_DATA",
+        "NODE_REPL_HISTORY",
+        "PYTHONPATH",
+        "PYTHONHOME",
+        "PYTHONSTARTUP",
+        "PYTHONINSPECT",
+        "RUBYLIB",
+        "RUBYOPT",
+        "PERL5LIB",
+        "PERL5OPT",
+        "PERLIO_DEBUG",
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+
+        // Shell & Execution
+        "BASH_ENV",
+        "ENV",
+        "PROMPT_COMMAND",
+        "IFS",
+        "PS1",
+        "PS2",
+        "PS3",
+        "PS4",
+
+        // System & Security
+        "GCONV_PATH",
+        "GETCONF_DIR",
+        "HOSTALIASES",
+        "MALLOC_CHECK_",
+        "MALLOC_PERTURB_",
+        "RESOLV_HOST_CONF",
+        "RES_OPTIONS",
+        "TERMINFO",
+        "TERMINFO_DIRS",
+        "TERMCAP",
       ]);
 
       const safeEnv: Record<string, string> = {};
-      const keyRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+      const VALID_KEY_REGEX = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
       // eslint-disable-next-line no-control-regex
       const controlCharRegex = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g;
 
       for (const [key, val] of Object.entries(parsedEnv)) {
-        if (!keyRegex.test(key)) {
-          console.warn(`⚠️  Skipping invalid env var key: ${key}`);
+        const upperKey = key.toUpperCase();
+
+        // 1. Validate key format
+        if (!VALID_KEY_REGEX.test(key)) {
+          console.warn(`⚠️  Stripping malformed env var key: ${key}`);
           continue;
         }
 
-        const upperKey = key.toUpperCase();
+        // 2. Check blocklist
         if (DANGEROUS_ENV_KEYS.has(upperKey)) {
           console.warn(`⚠️  Stripping dangerous env var: ${key}`);
           continue;
         }
 
-        // Sanitize value by removing null bytes and control characters
-        const safeVal = (val as string).replace(controlCharRegex, '');
-        safeEnv[key] = safeVal;
+        // 3. Sanitize value (strip non-whitespace control characters)
+        const sanitizedVal = (val as string).replace(controlCharRegex, "");
+
+        if (sanitizedVal !== val) {
+          console.warn(`⚠️  Sanitized control characters from env var: ${key}`);
+        }
+
+        safeEnv[key] = sanitizedVal;
       }
 
       // Command string & args
@@ -359,16 +487,16 @@ exit 0
       console.log(`Injecting isolated context '${targetTag}'...`);
 
       const child = spawn(cmd, args, {
-        stdio: 'inherit',
+        stdio: "inherit",
         shell: false,
-        env: { ...process.env, ...safeEnv }
+        env: { ...process.env, ...safeEnv },
       });
 
-      child.on('error', (err: Error) => {
+      child.on("error", (err: Error) => {
         console.error(`Failed to execute process: ${err.message}`);
       });
 
-      child.on('exit', (code: number | null, signal: NodeJS.Signals | null) => {
+      child.on("exit", (code: number | null, signal: NodeJS.Signals | null) => {
         process.exitCode = code ?? (signal ? 1 : 0);
       });
     });
