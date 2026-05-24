@@ -30,4 +30,22 @@ describe('safeMarked Rendering', () => {
         expect(result).toContain('alt="x&quot;onerror=&quot;alert(1)"');
         expect(result).not.toContain('"onerror='); // The test should check that it doesn't contain the raw, unescaped quote + "onerror="
     });
+
+    test('harus menetralkan link jahat yang dienkode entity html', async () => {
+        const result = await safeMarked.parse('[klik](javascript&#58;alert(1))');
+        expect(result).not.toContain('javascript');
+        expect(result).toContain('<span>klik</span>');
+    });
+
+    test('harus menetralkan link jahat yang mengandung whitespace awal/akhir', async () => {
+        const result3 = await safeMarked.parse('[klik]( javascript:alert(1))');
+        expect(result3).not.toContain(' javascript');
+        expect(result3).toContain('<span>klik</span>');
+    });
+
+    test('harus menetralkan link jahat yang dienkode URL', async () => {
+        const result = await safeMarked.parse('[klik](%6A%61%76%61%73%63%72%69%70%74%3Aalert(1))');
+        expect(result).not.toContain('%6A');
+        expect(result).toContain('<span>klik</span>');
+    });
 });

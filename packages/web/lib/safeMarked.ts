@@ -1,6 +1,29 @@
 import { Marked } from 'marked';
 
 /**
+ * Helper to check for dangerous URLs that might bypass basic regex checks
+ */
+function isDangerousUrl(url: string | null | undefined): boolean {
+    if (!url) return false;
+    let decoded = url;
+    try {
+        decoded = decodeURIComponent(url);
+    } catch (_e) {
+        // Ignore decoding errors
+    }
+
+    // Decode HTML entities
+    decoded = decoded.replace(/&#x([0-9a-f]+);?/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+    decoded = decoded.replace(/&#(\d+);?/g, (_, dec) => String.fromCharCode(parseInt(dec, 10)));
+    decoded = decoded.replace(/&colon;/gi, ':').replace(/&tab;/gi, '\t').replace(/&newline;/gi, '\n');
+
+    // Strip whitespace and control characters
+    decoded = decoded.replace(/[\x00-\x20]+/g, '');
+
+    return /^(javascript|data|vbscript|file):/i.test(decoded);
+}
+
+/**
  * Hardening Renderer Markdown:
  * 1. Blokir raw HTML.
  * 2. Filter protokol berbahaya pada link.
@@ -19,8 +42,7 @@ safeMarked.use({
             const title = token.title;
 
             // Keamanan: Tolak protokol berbahaya (XSS)
-            const dangerousSchemes = /^(javascript|data|vbscript|file):/i;
-            if (dangerousSchemes.test(href)) {
+            if (isDangerousUrl(href)) {
                 return `<span>${text}</span>`;
             }
 
@@ -40,8 +62,7 @@ safeMarked.use({
             const title = token.title;
 
             // Keamanan: Tolak protokol berbahaya pada gambar (XSS)
-            const dangerousSchemes = /^(javascript|data|vbscript|file):/i;
-            if (dangerousSchemes.test(href)) {
+            if (isDangerousUrl(href)) {
                 return `<span>${text}</span>`;
             }
 
