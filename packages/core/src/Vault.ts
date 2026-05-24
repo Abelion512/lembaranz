@@ -292,7 +292,11 @@ export class Vault {
       const iv = this.hexToBytes(ivHex);
       const bytes = this.base64ToBytes(base64);
 
-      const result = await this.decrypt(bytes.buffer, iv, customKey);
+      const result = await this.decrypt(
+        bytes.buffer as ArrayBuffer,
+        iv,
+        customKey
+      );
       if (result.error) return result;
 
       if (!customKey) {

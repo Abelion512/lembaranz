@@ -2,19 +2,28 @@ import { describe, test, expect, spyOn, beforeEach, afterEach } from "bun:test";
 import { haptic } from "../Senses";
 
 describe("Senses (Haptic)", () => {
-  let vibrateSpy: any;
+  interface GlobalWithNavigator {
+    navigator:
+      | {
+          vibrate: (pattern: number | number[]) => boolean;
+        }
+      | undefined;
+  }
+
+  let vibrateSpy: { mockRestore: () => void; [key: string]: unknown };
+  const g = globalThis as unknown as GlobalWithNavigator;
 
   beforeEach(() => {
     // Mock navigator.vibrate if it doesn't exist in the environment
-    if (typeof (global as any).navigator === "undefined") {
-      (global as any).navigator = {
+    if (typeof g.navigator === "undefined") {
+      (g as { navigator: unknown }).navigator = {
         vibrate: () => true,
       };
-    } else if (typeof (global as any).navigator.vibrate === "undefined") {
-      (global as any).navigator.vibrate = () => true;
+    } else if (typeof g.navigator.vibrate === "undefined") {
+      (g.navigator as { vibrate: unknown }).vibrate = () => true;
     }
 
-    vibrateSpy = spyOn(global.navigator, "vibrate");
+    vibrateSpy = spyOn(g.navigator!, "vibrate") as unknown as typeof vibrateSpy;
   });
 
   afterEach(() => {
@@ -57,14 +66,13 @@ describe("Senses (Haptic)", () => {
   });
 
   test("vibrate should not throw if navigator.vibrate is missing", () => {
-    const originalVibrate = global.navigator.vibrate;
-    // @ts-expect-error - testing missing navigator.vibrate
-    delete global.navigator.vibrate;
+    const originalVibrate = g.navigator!.vibrate;
+    (g.navigator as { vibrate: unknown }).vibrate = undefined;
 
     expect(() => haptic.vibrate(100)).not.toThrow();
 
     // Restore
-    global.navigator.vibrate = originalVibrate;
+    (g.navigator as { vibrate: unknown }).vibrate = originalVibrate;
   });
 
   test("helper methods should work when destructured", () => {
@@ -78,14 +86,14 @@ describe("Senses (Haptic)", () => {
   });
 
   test("vibrate should not call navigator.vibrate if navigator is undefined", () => {
-    const originalNavigator = (global as any).navigator;
-    (global as any).navigator = undefined;
+    const originalNavigator = g.navigator;
+    (g as { navigator: unknown }).navigator = undefined;
 
     haptic.vibrate(100);
     // We can't easily assert on a missing navigator with spyOn,
     // but we verify it doesn't throw.
     expect(true).toBe(true);
 
-    (global as any).navigator = originalNavigator;
+    (g as { navigator: unknown }).navigator = originalNavigator;
   });
 });

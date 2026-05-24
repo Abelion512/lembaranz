@@ -24,7 +24,9 @@ export interface NoteInput {
  * Handles encryption, storage, recovery, and data integrity.
  */
 export const Archive = {
-  /** Checks if the authentication metadata is initialized. */
+  /**
+   * Checks if the authentication metadata is initialized in storage.
+   */
   async isVaultInitialized(): Promise<Result<boolean>> {
     try {
       const validator = await Storage.get("meta", "auth_validator");
@@ -155,7 +157,8 @@ export const Archive = {
         const decResult = await Vault.decryptPacked(wrappedKey, passwordKey);
         if (decResult.error) return decResult as Result<boolean>;
 
-        const masterKeyBuffer = Vault.base64ToBytes(decResult.data).buffer;
+        const masterKeyBuffer = Vault.base64ToBytes(decResult.data)
+          .buffer as ArrayBuffer;
 
         const importResult = await Vault.importRawKey(masterKeyBuffer);
         if (importResult.error) return importResult as Result<boolean>;
@@ -174,7 +177,11 @@ export const Archive = {
         const iv = Vault.hexToBytes(ivHex);
         const bytes = Vault.base64ToBytes(base64Data);
 
-        const decResult = await Vault.decrypt(bytes.buffer, iv, passwordKey);
+        const decResult = await Vault.decrypt(
+          bytes.buffer as ArrayBuffer,
+          iv,
+          passwordKey
+        );
         if (decResult.error) return decResult as Result<boolean>;
 
         if (decResult.data === "LEMBARAN_SECURED_V2") {
@@ -222,7 +229,8 @@ export const Archive = {
       const decResult = await Vault.decryptPacked(wrappedKey, recoveryKey);
       if (decResult.error) return decResult as Result<boolean>;
 
-      const keyBuffer = Vault.base64ToBytes(decResult.data).buffer;
+      const keyBuffer = Vault.base64ToBytes(decResult.data)
+        .buffer as ArrayBuffer;
 
       const importResult = await Vault.importRawKey(keyBuffer);
       if (importResult.error) return importResult as Result<boolean>;

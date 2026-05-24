@@ -1,4 +1,5 @@
 import { FileAdapter } from "../storage/FileAdapter";
+import { StoredNote } from "../Formula";
 import fs from "fs/promises";
 
 async function main() {
@@ -23,7 +24,7 @@ async function main() {
       tags: [],
       createdAt: "",
       updatedAt: "",
-    } as any);
+    } as unknown as StoredNote);
   }
   console.timeEnd("Sequential Saves");
 
@@ -48,7 +49,7 @@ async function main() {
         tags: [],
         createdAt: "",
         updatedAt: "",
-      } as any)
+      } as unknown as StoredNote)
     );
   }
   await Promise.all(promises);
@@ -58,12 +59,12 @@ async function main() {
   console.time("Overlapping Saves");
   const adapter3 = new FileAdapter(filePath);
   await Promise.all([
-    adapter3.set("notes", "1", { id: "1" } as any),
+    adapter3.set("notes", "1", { id: "1" } as unknown as StoredNote),
     new Promise((r) => setTimeout(r, 5)).then(() =>
-      adapter3.set("notes", "2", { id: "2" } as any)
+      adapter3.set("notes", "2", { id: "2" } as unknown as StoredNote)
     ),
     new Promise((r) => setTimeout(r, 15)).then(() =>
-      adapter3.set("notes", "3", { id: "3" } as any)
+      adapter3.set("notes", "3", { id: "3" } as unknown as StoredNote)
     ),
   ]);
   console.timeEnd("Overlapping Saves");
