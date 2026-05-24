@@ -57,7 +57,7 @@ export const Archive = {
         const passwordKey = deriveResult.data;
 
         const wrapResult = await Vault.encryptPacked(
-            btoa(String.fromCharCode(...new Uint8Array(masterKeyBuffer))),
+            Vault.bytesToBase64(new Uint8Array(masterKeyBuffer)),
             passwordKey
         );
         if (wrapResult.error) return wrapResult;
@@ -81,7 +81,7 @@ export const Archive = {
             const recoveryKey = mDeriveResult.data;
 
             const mWrapResult = await Vault.encryptPacked(
-                btoa(String.fromCharCode(...new Uint8Array(masterKeyBuffer))),
+                Vault.bytesToBase64(new Uint8Array(masterKeyBuffer)),
                 recoveryKey
             );
             if (mWrapResult.error) return mWrapResult;
@@ -117,7 +117,7 @@ export const Archive = {
 
             if (!saltHex || !authValidator) return { data: null, error: new Error('Data otentikasi tidak lengkap') };
 
-            const salt = new Uint8Array(saltHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+            const salt = Vault.hexToBytes(saltHex);
 
             const deriveResult = await Vault.deriveKey(password, salt);
             if (deriveResult.error) return deriveResult as Result<boolean>;
@@ -128,7 +128,7 @@ export const Archive = {
                 const decResult = await Vault.decryptPacked(wrappedKey, passwordKey);
                 if (decResult.error) return decResult as Result<boolean>;
 
-                const masterKeyBuffer = Uint8Array.from(atob(decResult.data), c => c.charCodeAt(0)).buffer;
+                const masterKeyBuffer = Vault.base64ToBytes(decResult.data).buffer;
 
                 const importResult = await Vault.importRawKey(masterKeyBuffer);
                 if (importResult.error) return importResult as Result<boolean>;
@@ -144,12 +144,8 @@ export const Archive = {
             } else {
                 // Migrasi dari V2 (Master Key = Password Key)
                 const [ivHex, base64Data] = authValidator.split('|');
-                const iv = new Uint8Array(ivHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
-                const binaryString = atob(base64Data);
-                const bytes = new Uint8Array(binaryString.length);
-                for (let i = 0; i < binaryString.length; i++) {
-                    bytes[i] = binaryString.charCodeAt(i);
-                }
+                const iv = Vault.hexToBytes(ivHex);
+                const bytes = Vault.base64ToBytes(base64Data);
 
                 const decResult = await Vault.decrypt(bytes.buffer, iv, passwordKey);
                 if (decResult.error) return decResult as Result<boolean>;
@@ -179,7 +175,7 @@ export const Archive = {
 
             if (!mSaltHex || !wrappedKey) return { data: null, error: new Error('Data pemulihan tidak ditemukan') };
 
-            const mSalt = new Uint8Array(mSaltHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+            const mSalt = Vault.hexToBytes(mSaltHex);
 
             const deriveResult = await Vault.deriveKey(mnemonic, mSalt);
             if (deriveResult.error) return deriveResult as Result<boolean>;
@@ -188,7 +184,7 @@ export const Archive = {
             const decResult = await Vault.decryptPacked(wrappedKey, recoveryKey);
             if (decResult.error) return decResult as Result<boolean>;
 
-            const keyBuffer = Uint8Array.from(atob(decResult.data), c => c.charCodeAt(0)).buffer;
+            const keyBuffer = Vault.base64ToBytes(decResult.data).buffer;
 
             const importResult = await Vault.importRawKey(keyBuffer);
             if (importResult.error) return importResult as Result<boolean>;
@@ -219,7 +215,7 @@ export const Archive = {
         const passwordKey = deriveResult.data;
 
         const wrapResult = await Vault.encryptPacked(
-            btoa(String.fromCharCode(...new Uint8Array(masterKeyBuffer))),
+            Vault.bytesToBase64(new Uint8Array(masterKeyBuffer)),
             passwordKey
         );
         if (wrapResult.error) return wrapResult;
