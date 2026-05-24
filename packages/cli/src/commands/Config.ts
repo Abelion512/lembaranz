@@ -230,20 +230,59 @@ export function registerConfigCommand(program: Command) {
         }
       }
 
-      // Filter dangerous environment variables that could enable library injection
+      // Filter dangerous environment variables that could enable library injection or alter runtime behavior
       const DANGEROUS_ENV_KEYS = new Set([
-        'LD_PRELOAD', 'LD_LIBRARY_PATH', 'DYLD_INSERT_LIBRARIES',
-        'DYLD_LIBRARY_PATH', 'NODE_OPTIONS', 'NODE_PATH',
-        'BASH_ENV', 'ENV', 'PROMPT_COMMAND'
+        // Dynamic Linker / Library Injection
+        'LD_PRELOAD', 'LD_LIBRARY_PATH', 'LD_AUDIT', 'LD_DEBUG',
+        'LD_PROFILE', 'LD_USE_LOAD_BIAS', 'LD_ORIGIN_PATH',
+        'DYLD_INSERT_LIBRARIES', 'DYLD_LIBRARY_PATH', 'DYLD_FRAMEWORK_PATH',
+        'DYLD_FALLBACK_LIBRARY_PATH', 'DYLD_FALLBACK_FRAMEWORK_PATH',
+        'DYLD_PRINT_TO_FILE', 'DYLD_FORCE_FLAT_NAMESPACE',
+
+        // Language Runtimes
+        'NODE_OPTIONS', 'NODE_PATH', 'NODE_ICU_DATA', 'NODE_REPL_HISTORY',
+        'PYTHONPATH', 'PYTHONHOME', 'PYTHONSTARTUP', 'PYTHONINSPECT',
+        'RUBYLIB', 'RUBYOPT', 'PERL5LIB', 'PERL5OPT', 'PERLIO_DEBUG',
+        'JAVA_TOOL_OPTIONS', '_JAVA_OPTIONS',
+
+        // Shell & Execution
+        'BASH_ENV', 'ENV', 'PROMPT_COMMAND', 'IFS',
+        'PS1', 'PS2', 'PS3', 'PS4',
+
+        // System & Security
+        'GCONV_PATH', 'GETCONF_DIR', 'HOSTALIASES',
+        'MALLOC_CHECK_', 'MALLOC_PERTURB_',
+        'RESOLV_HOST_CONF', 'RES_OPTIONS',
+        'TERMINFO', 'TERMINFO_DIRS', 'TERMCAP'
       ]);
 
       const safeEnv: Record<string, string> = {};
+      const VALID_KEY_REGEX = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+
       for (const [key, val] of Object.entries(parsedEnv)) {
-        if (!DANGEROUS_ENV_KEYS.has(key.toUpperCase())) {
-          safeEnv[key] = val as string;
-        } else {
-          console.warn(`⚠️  Stripping dangerous env var: ${key}`);
+        const upperKey = key.toUpperCase();
+
+        // 1. Validate key format
+        if (!VALID_KEY_REGEX.test(key)) {
+          console.warn(`⚠️  Stripping malformed env var key: ${key}`);
+          continue;
         }
+
+        // 2. Check blocklist
+        if (DANGEROUS_ENV_KEYS.has(upperKey)) {
+          console.warn(`⚠️  Stripping dangerous env var: ${key}`);
+          continue;
+        }
+
+        // 3. Sanitize value (strip null bytes and control characters)
+        // eslint-disable-next-line no-control-regex
+        const sanitizedVal = (val as string).replace(/[\x00-\x1F\x7F]/g, '');
+
+        if (sanitizedVal !== val) {
+          console.warn(`⚠️  Sanitized control characters from env var: ${key}`);
+        }
+
+        safeEnv[key] = sanitizedVal;
       }
 
       // Command string & args
