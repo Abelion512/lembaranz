@@ -234,16 +234,29 @@ export function registerConfigCommand(program: Command) {
       const DANGEROUS_ENV_KEYS = new Set([
         'LD_PRELOAD', 'LD_LIBRARY_PATH', 'DYLD_INSERT_LIBRARIES',
         'DYLD_LIBRARY_PATH', 'NODE_OPTIONS', 'NODE_PATH',
-        'BASH_ENV', 'ENV', 'PROMPT_COMMAND'
+        'BASH_ENV', 'ENV', 'PROMPT_COMMAND', 'PYTHONPATH', 'PYTHONSTARTUP', 'PYTHONINSPECT'
       ]);
 
       const safeEnv: Record<string, string> = {};
+      const keyRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+      // eslint-disable-next-line no-control-regex
+      const controlCharRegex = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g;
+
       for (const [key, val] of Object.entries(parsedEnv)) {
-        if (!DANGEROUS_ENV_KEYS.has(key.toUpperCase())) {
-          safeEnv[key] = val as string;
-        } else {
-          console.warn(`⚠️  Stripping dangerous env var: ${key}`);
+        if (!keyRegex.test(key)) {
+          console.warn(`⚠️  Skipping invalid env var key: ${key}`);
+          continue;
         }
+
+        const upperKey = key.toUpperCase();
+        if (DANGEROUS_ENV_KEYS.has(upperKey)) {
+          console.warn(`⚠️  Stripping dangerous env var: ${key}`);
+          continue;
+        }
+
+        // Sanitize value by removing null bytes and control characters
+        const safeVal = (val as string).replace(controlCharRegex, '');
+        safeEnv[key] = safeVal;
       }
 
       // Command string & args
