@@ -1,5 +1,4 @@
-
-## 2025-05-24 - [Fix XSS via Unescaped Markdown Links and Images]
-**Vulnerability:** The `safeMarked` utility in `packages/web/lib/safeMarked.ts` did not filter image protocols and failed to properly escape attributes like `href` on links.
-**Learning:** This oversight allows an attacker to inject XSS payloads using specially crafted URLs for links/images (e.g., `![x](javascript:alert(1))` or `[x](https://x.com"onmouseover="alert(1)")`) even when raw HTML is stripped.
-**Prevention:** Always implement a full custom renderer that not only filters dangerous protocols but comprehensively escapes HTML characters (`<`, `>`, `"`) from user-provided URLs and titles.
+## 2025-05-22 - XSS Evasion Mitigation in Markdown Renderer
+**Vulnerability:** The Markdown renderer (`safeMarked.ts`) relied on a raw regex (`/^(javascript|data|vbscript|file):/i`) against un-normalized `href` attributes to prevent XSS. This allowed bypasses using URI encoding (`javascript%3A`), HTML entities (`javascript&colon;`, `javasc&#114;ipt:`), or whitespace/control character injection (`jav\tascript:`).
+**Learning:** Checking for dangerous schemes using regex on raw HTML attributes is insufficient because the browser will decode and normalize entities and whitespace before executing the payload.
+**Prevention:** Always decode (URI + HTML entities) and normalize (strip whitespace `[\x00-\x20]+`) URLs before validating their scheme against a blacklist. Implemented `isDangerousUrl` helper in `safeMarked.ts` to perform this multi-layered sanitization before scheme validation.
