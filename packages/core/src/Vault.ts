@@ -236,6 +236,9 @@ export class Vault {
    * Utilizes charCodeAt and bitwise math to avoid substring allocation and parseInt overhead.
    */
   public static hexToBytes(hex: string): Uint8Array {
+    if (hex.length % 2 !== 0) {
+      throw new Error("Invalid hex string length");
+    }
     const bytes = new Uint8Array(hex.length / 2);
     for (let i = 0; i < bytes.length; i++) {
       const c1 = hex.charCodeAt(i * 2);
