@@ -9,7 +9,14 @@ function isDangerousUrl(url: string | null | undefined): boolean {
     try {
         decoded = decodeURIComponent(url);
     } catch (_e) {
-        // Ignore decoding errors
+        // Fallback: manual character-by-character decode for malformed URIs
+        decoded = url.replace(/%([0-9A-Fa-f]{2})/g, (match, hex) => {
+            try {
+                return decodeURIComponent(match);
+            } catch {
+                return String.fromCharCode(parseInt(hex, 16));
+            }
+        });
     }
 
     // Decode HTML entities

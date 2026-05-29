@@ -48,4 +48,10 @@ describe('safeMarked Rendering', () => {
         expect(result).not.toContain('%6A');
         expect(result).toContain('<span>klik</span>');
     });
+
+    test('harus menetralkan link jahat yang memiliki invalid URL encoding (bypass)', async () => {
+        const result = await safeMarked.parse('[klik](%6A%61%76%61%73%63%72%69%70%74%3Aalert(1)%FF)');
+        expect(result).not.toContain('alert(1)');
+        expect(result).toContain('<span>klik</span>');
+    });
 });

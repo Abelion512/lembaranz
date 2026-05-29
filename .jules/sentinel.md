@@ -14,6 +14,7 @@
 **Learning:** Overly broad blocklists (e.g., stripping all keys starting with `NODE_` or `LD_`) can cause critical regressions by inadvertently removing standard variables like `NODE_ENV` or `LDAP_URL`. Value sanitization must also be careful not to strip standard whitespace control characters (`\t`, `\n`, `\r`) which are often necessary for multi-line configurations like RSA keys.
 **Prevention:** Implement strict regex validation for keys (`/^[a-zA-Z_][a-zA-Z0-9_]*$/`), use an explicit and targeted blocklist (`DANGEROUS_ENV_KEYS`) for dangerous keys rather than broad prefixes, and safely strip only non-whitespace control characters (`/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g`) from values.
 
+
 ## 2025-05-25 - [Fix Plaintext Credential Storage in Setup Wizard]
 **Vulnerability:** The CLI setup wizard (`packages/cli/src/commands/Setup.ts`) temporarily saved the user's master password and recovery phrase (mnemonic) in plaintext to a local file (`.lembaranz/setup-progress.json`) in order to resume progress if the wizard was interrupted.
 **Learning:** Saving highly sensitive credentials to the disk in plaintext—even temporarily—exposes them to unauthorized reading and negates the security benefits of the encrypted vault. Operating system or application crashes can also cause the temporary file to be abandoned and remain on disk indefinitely.
@@ -28,3 +29,8 @@
 **Vulnerability:** The CLI setup wizard (`packages/cli/src/commands/Setup.ts`) saved the user's master password and mnemonic recovery phrase in plaintext to a local file (`.lembaranz/setup-progress.json`) to allow resuming an interrupted setup process.
 **Learning:** This is a critical security vulnerability because any local process or user with read access to that directory could steal the master key/recovery phrase.
 **Prevention:** Sensitive state variables like master passwords, mnemonics, or encryption keys must always be stored exclusively in memory during setup or execution. State persistence should never log these values to disk unencrypted, even temporarily.
+
+## 2024-05-29 - [Fix URIError XSS Bypass in safeMarked]
+**Vulnerability:** The `isDangerousUrl` validation utility within `packages/web/lib/safeMarked.ts` relied on `decodeURIComponent` which natively throws a `URIError` when it encounters malformed encoding (e.g. `%FF`). The existing code would catch the error and do nothing, allowing the validation regex to test the original malformed URL string instead of its decoded version, rendering evasion tactics possible.
+**Learning:** `decodeURIComponent` should never be blindly trusted without handling malformed components in a robust fallback mechanism. If an attacker submits a protocol encoded purely in hex with an invalid trailing character (`%6A%61%76%61%73%63%72%69%70%74%3Aalert(1)%FF`), they can successfully bypass security validations entirely.
+**Prevention:** If `decodeURIComponent` fails, always fall back to a manual character-by-character replacement function to reliably decode individual components before falling through to string/pattern validations.
