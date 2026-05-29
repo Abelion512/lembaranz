@@ -18,3 +18,8 @@
 **Vulnerability:** The CLI setup wizard (`packages/cli/src/commands/Setup.ts`) temporarily saved the user's master password and recovery phrase (mnemonic) in plaintext to a local file (`.lembaranz/setup-progress.json`) in order to resume progress if the wizard was interrupted.
 **Learning:** Saving highly sensitive credentials to the disk in plaintext—even temporarily—exposes them to unauthorized reading and negates the security benefits of the encrypted vault. Operating system or application crashes can also cause the temporary file to be abandoned and remain on disk indefinitely.
 **Prevention:** Never save passwords, mnemonics, or keys in plaintext. State persistence for multi-step setup flows must be handled entirely in memory. If persistence is absolutely necessary, use secure platform-native credential managers rather than plain files.
+
+## 2025-05-26 - [Remove Plaintext Saving of Master Password and Mnemonic]
+**Vulnerability:** The setup wizard (`packages/cli/src/commands/Setup.ts`) saved the user's master password and mnemonic to a local JSON file (`.lembaranz/setup-progress.json`) in plaintext to allow resuming an interrupted setup process.
+**Learning:** Writing highly sensitive setup credentials (master password, recovery phrase) to disk in plaintext completely undermines the zero-knowledge and encryption models. State persistence for multi-step setup flows must be handled entirely in memory.
+**Prevention:** Never use local temporary files to store unencrypted passwords or mnemonics for the sake of UX conveniences like "resuming setup". If a setup process is interrupted, force the user to start over completely to ensure credentials only ever exist in memory or encrypted in the vault.

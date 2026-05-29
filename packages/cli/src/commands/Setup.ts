@@ -20,6 +20,15 @@ export function registerSetupCommand(program: Command) {
       console.log(pc.dim('Set up your secure credential vault.\n'));
 
       try {
+        // Security Remediation: Clean up any legacy plaintext progress files left over from older versions
+        try {
+          const progressDir = path.join(process.cwd(), '.lembaranz');
+          const progressFile = path.join(progressDir, 'setup-progress.json');
+          await fs.unlink(progressFile);
+        } catch {
+          // Ignore if the legacy file does not exist
+        }
+
         await prepareContext(program.opts());
 
         const { mode } = await prompts({
@@ -193,8 +202,7 @@ async function runStep2AndBeyond(password: string, savedMnemonic: string, _progr
 
     if (!wroteDown) {
       console.log(pc.red('\n⚠️  Setup dibatalkan.'));
-      console.log(pc.yellow('\n💾 Progress tersimpan! Anda bisa lanjut nanti.'));
-      console.log(pc.dim('  • Jalankan lembaranz setup lagi untuk memulai kembali proses setup.\n'));
+      console.log(pc.yellow('\n⚠️  Anda harus memulai ulang proses setup dari awal.'));
       return;
     }
 
