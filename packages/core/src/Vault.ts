@@ -232,12 +232,18 @@ export class Vault {
   }
 
   /**
-   * Optimized hex string to Uint8Array conversion without regex.
+   * Optimized hex string to Uint8Array conversion using charCodeAt and bitwise math.
+   * Avoids intermediate string allocations (substring) and parseInt overhead.
    */
   public static hexToBytes(hex: string): Uint8Array {
-    const bytes = new Uint8Array(hex.length / 2);
-    for (let i = 0; i < bytes.length; i++) {
-      bytes[i] = parseInt(hex.substring(i * 2, i * 2 + 2), 16);
+    const len = hex.length;
+    const bytes = new Uint8Array(len / 2);
+    for (let i = 0; i < len; i += 2) {
+      const c1 = hex.charCodeAt(i);
+      const c2 = hex.charCodeAt(i + 1);
+      const n1 = (c1 & 0xf) + (c1 >> 6) * 9;
+      const n2 = (c2 & 0xf) + (c2 >> 6) * 9;
+      bytes[i / 2] = (n1 << 4) | n2;
     }
     return bytes;
   }
