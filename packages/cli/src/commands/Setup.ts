@@ -24,7 +24,7 @@ export function registerSetupCommand(program: Command) {
           const progressDir = path.join(process.cwd(), '.lembaranz');
           const progressFile = path.join(progressDir, 'setup-progress.json');
           await fs.unlink(progressFile);
-        } catch (_e) {
+        } catch {
           // Ignore if the legacy file does not exist
         }
 
