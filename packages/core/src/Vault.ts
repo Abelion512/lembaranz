@@ -226,13 +226,20 @@ export class Vault {
    * Avoids intermediate string allocations (substring) and parseInt overhead.
    */
   public static hexToBytes(hex: string): Uint8Array {
-    const len = hex.length;
-    const bytes = new Uint8Array(len / 2);
+    if (hex.length % 2 !== 0) {
+      throw new Error("Invalid hex string length");
+    }
+    const bytes = new Uint8Array(hex.length / 2);
     for (let i = 0; i < bytes.length; i++) {
       const c1 = hex.charCodeAt(i * 2);
       const c2 = hex.charCodeAt(i * 2 + 1);
+
+      // Bitwise magic to convert hex character code to nibble value (0-15):
+      // - Numbers '0'-'9' (48-57) >> 6 = 0. Result is simply c & 0xf.
+      // - Letters 'a'-'f' (97-102) and 'A'-'F' (65-70) >> 6 = 1. Result adds 9 to c & 0xf.
       const n1 = (c1 & 0xf) + (c1 >> 6) * 9;
       const n2 = (c2 & 0xf) + (c2 >> 6) * 9;
+
       bytes[i] = (n1 << 4) | n2;
     }
     return bytes;
