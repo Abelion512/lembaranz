@@ -23,3 +23,8 @@
 **Vulnerability:** The setup wizard (`packages/cli/src/commands/Setup.ts`) saved the user's master password and mnemonic to a local JSON file (`.lembaranz/setup-progress.json`) in plaintext to allow resuming an interrupted setup process.
 **Learning:** Writing highly sensitive setup credentials (master password, recovery phrase) to disk in plaintext completely undermines the zero-knowledge and encryption models. State persistence for multi-step setup flows must be handled entirely in memory.
 **Prevention:** Never use local temporary files to store unencrypted passwords or mnemonics for the sake of UX conveniences like "resuming setup". If a setup process is interrupted, force the user to start over completely to ensure credentials only ever exist in memory or encrypted in the vault.
+
+## 2025-05-27 - [Plaintext Secrets Storage]
+**Vulnerability:** The CLI setup wizard (`packages/cli/src/commands/Setup.ts`) saved the user's master password and mnemonic recovery phrase in plaintext to a local file (`.lembaranz/setup-progress.json`) to allow resuming an interrupted setup process.
+**Learning:** This is a critical security vulnerability because any local process or user with read access to that directory could steal the master key/recovery phrase.
+**Prevention:** Sensitive state variables like master passwords, mnemonics, or encryption keys must always be stored exclusively in memory during setup or execution. State persistence should never log these values to disk unencrypted, even temporarily.

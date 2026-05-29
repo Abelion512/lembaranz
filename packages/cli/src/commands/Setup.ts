@@ -117,6 +117,9 @@ async function runCLISetup(program: Command) {
       }
     }
 
+    // Clean up any legacy setup-progress.json files to prevent data leaks
+    await clearProgress();
+
     // Step 1: Create password
     console.log(pc.cyan('\n📝 Step 1/3: Create Your Master Password'));
     console.log(pc.dim('This password protects all your credentials. Make it strong!\n'));
@@ -159,7 +162,7 @@ async function runCLISetup(program: Command) {
     }
 
     // Step 2+: Recovery phrase and beyond
-    await runStep2AndBeyond(password, '', program);
+    await runStep2AndBeyond(password, program);
 
   } catch (error) {
     console.log(pc.red('\n✗ Setup failed:'), error instanceof Error ? error.message : String(error));
@@ -167,9 +170,9 @@ async function runCLISetup(program: Command) {
   }
 }
 
-async function runStep2AndBeyond(password: string, savedMnemonic: string, _program: Command) {
+async function runStep2AndBeyond(password: string, _program: Command) {
   try {
-    const mnemonic = savedMnemonic || generateMnemonic(12);
+    const mnemonic = generateMnemonic(12);
     const words = mnemonic.split(' ');
 
     // Step 2: Display recovery phrase
@@ -203,6 +206,9 @@ async function runStep2AndBeyond(password: string, savedMnemonic: string, _progr
     if (!wroteDown) {
       console.log(pc.red('\n⚠️  Setup dibatalkan.'));
       console.log(pc.yellow('\n⚠️  Anda harus memulai ulang proses setup dari awal.'));
+      console.log(pc.dim('  • Screenshot 12 kata di atas (hanya untuk sementara)'));
+      console.log(pc.dim('  • Tulis di kertas, lalu hapus screenshot'));
+      console.log(pc.dim('  • Jalankan `lembaranz setup` lagi\n'));
       return;
     }
 
@@ -275,6 +281,14 @@ async function runStep2AndBeyond(password: string, savedMnemonic: string, _progr
 }
 
 // Helper functions
+
+async function clearProgress() {
+  try {
+    await fs.unlink(PROGRESS_FILE);
+  } catch {
+    // Ignore if file doesn't exist
+  }
+}
 
 async function unlockVaultInteractive() {
   console.log(pc.cyan('\n🔓 Unlocking Vault'));
