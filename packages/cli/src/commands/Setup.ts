@@ -194,9 +194,7 @@ async function runStep2AndBeyond(password: string, savedMnemonic: string, _progr
     if (!wroteDown) {
       console.log(pc.red('\n⚠️  Setup dibatalkan.'));
       console.log(pc.yellow('\n💾 Progress tersimpan! Anda bisa lanjut nanti.'));
-      console.log(pc.dim('  • Screenshot 12 kata di atas (hanya untuk sementara)'));
-      console.log(pc.dim('  • Tulis di kertas, lalu hapus screenshot'));
-      console.log(pc.dim('  • Jalankan `lembaranz setup` lagi - password & seed phrase akan sama\n'));
+      console.log(pc.dim('  • Jalankan lembaranz setup lagi untuk memulai kembali proses setup.\n'));
       return;
     }
 
