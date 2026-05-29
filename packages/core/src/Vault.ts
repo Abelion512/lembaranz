@@ -215,18 +215,7 @@ export class Vault {
     // Optimized hex encoding using bytesToHex
     const ivHex = this.bytesToHex(iv);
 
-    // Optimized chunked base64 encoding: handles large arrays without Maximum call stack size exceeded
-    // ~10x faster than spread operator for large buffers
-    const bytes = new Uint8Array(data);
-    const CHUNK_SIZE = 8192;
-    const chunks = [];
-    for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
-      const chunk = bytes.subarray(i, i + CHUNK_SIZE);
-      chunks.push(
-        String.fromCharCode.apply(null, chunk as unknown as number[])
-      );
-    }
-    const base64 = btoa(chunks.join(""));
+    const base64 = this.bytesToBase64(new Uint8Array(data));
 
     return { data: `${ivHex}|${base64}`, error: null };
   }
@@ -262,6 +251,37 @@ export class Vault {
     return hex;
   }
 
+  /**
+   * Optimized Uint8Array to Base64 string conversion.
+   * Uses chunked processing to prevent "Maximum call stack size exceeded" errors
+   * on large datasets. ~10x faster than spread operator for large buffers.
+   */
+  public static bytesToBase64(bytes: Uint8Array): string {
+    const CHUNK_SIZE = 8192;
+    const chunks = [];
+    for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
+      const chunk = bytes.subarray(i, i + CHUNK_SIZE);
+      chunks.push(
+        String.fromCharCode.apply(null, chunk as unknown as number[])
+      );
+    }
+    return btoa(chunks.join(""));
+  }
+
+  /**
+   * Optimized Base64 string to Uint8Array conversion.
+   * Uses highly optimized iterative loop to avoid the memory overhead of Uint8Array.from.
+   */
+  public static base64ToBytes(base64: string): Uint8Array {
+    const binaryString = atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+  }
+
   static async decryptPacked(
     packed: string,
     customKey?: CryptoKey
@@ -278,14 +298,7 @@ export class Vault {
     try {
       const [ivHex, base64] = packed.split("|");
       const iv = this.hexToBytes(ivHex);
-
-      // Fast cross-platform base64 to Uint8Array loop
-      const binaryString = atob(base64);
-      const len = binaryString.length;
-      const bytes = new Uint8Array(len);
-      for (let i = 0; i < len; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
+      const bytes = this.base64ToBytes(base64);
 
       const result = await this.decrypt(bytes.buffer, iv, customKey);
       if (result.error) return result;

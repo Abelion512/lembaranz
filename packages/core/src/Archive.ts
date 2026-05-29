@@ -70,7 +70,7 @@ export const Archive = {
         const passwordKey = deriveResult.data;
 
         const wrapResult = await Vault.encryptPacked(
-            btoa(String.fromCharCode(...new Uint8Array(masterKeyBuffer))),
+            Vault.bytesToBase64(new Uint8Array(masterKeyBuffer)),
             passwordKey
         );
         if (wrapResult.error) return wrapResult;
@@ -94,7 +94,7 @@ export const Archive = {
             const recoveryKey = mDeriveResult.data;
 
             const mWrapResult = await Vault.encryptPacked(
-                btoa(String.fromCharCode(...new Uint8Array(masterKeyBuffer))),
+                Vault.bytesToBase64(new Uint8Array(masterKeyBuffer)),
                 recoveryKey
             );
             if (mWrapResult.error) return mWrapResult;
@@ -141,7 +141,7 @@ export const Archive = {
                 const decResult = await Vault.decryptPacked(wrappedKey, passwordKey);
                 if (decResult.error) return decResult as Result<boolean>;
 
-                const masterKeyBuffer = Uint8Array.from(atob(decResult.data), c => c.charCodeAt(0)).buffer;
+                const masterKeyBuffer = Vault.base64ToBytes(decResult.data).buffer;
 
                 const importResult = await Vault.importRawKey(masterKeyBuffer);
                 if (importResult.error) return importResult as Result<boolean>;
@@ -158,11 +158,7 @@ export const Archive = {
                 // Migration from V2 (Master Key = Password Key)
                 const [ivHex, base64Data] = authValidator.split('|');
                 const iv = Vault.hexToBytes(ivHex);
-                const binaryString = atob(base64Data);
-                const bytes = new Uint8Array(binaryString.length);
-                for (let i = 0; i < binaryString.length; i++) {
-                    bytes[i] = binaryString.charCodeAt(i);
-                }
+                const bytes = Vault.base64ToBytes(base64Data);
 
                 const decResult = await Vault.decrypt(bytes.buffer, iv, passwordKey);
                 if (decResult.error) return decResult as Result<boolean>;
@@ -201,7 +197,7 @@ export const Archive = {
             const decResult = await Vault.decryptPacked(wrappedKey, recoveryKey);
             if (decResult.error) return decResult as Result<boolean>;
 
-            const keyBuffer = Uint8Array.from(atob(decResult.data), c => c.charCodeAt(0)).buffer;
+            const keyBuffer = Vault.base64ToBytes(decResult.data).buffer;
 
             const importResult = await Vault.importRawKey(keyBuffer);
             if (importResult.error) return importResult as Result<boolean>;
@@ -232,7 +228,7 @@ export const Archive = {
         const passwordKey = deriveResult.data;
 
         const wrapResult = await Vault.encryptPacked(
-            btoa(String.fromCharCode(...new Uint8Array(masterKeyBuffer))),
+            Vault.bytesToBase64(new Uint8Array(masterKeyBuffer)),
             passwordKey
         );
         if (wrapResult.error) return wrapResult;
