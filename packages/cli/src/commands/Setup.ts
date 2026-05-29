@@ -9,8 +9,6 @@ import { execSync } from 'node:child_process';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 
-const PROGRESS_FILE = path.join(process.cwd(), '.lembaranz', 'setup-progress.json');
-
 export function registerSetupCommand(program: Command) {
   program
     .command('setup')
@@ -21,6 +19,15 @@ export function registerSetupCommand(program: Command) {
       console.log(pc.dim('Set up your secure credential vault.\n'));
 
       try {
+        // Security Remediation: Clean up any legacy plaintext progress files left over from older versions
+        try {
+          const progressDir = path.join(process.cwd(), '.lembaranz');
+          const progressFile = path.join(progressDir, 'setup-progress.json');
+          await fs.unlink(progressFile);
+        } catch (_e) {
+          // Ignore if the legacy file does not exist
+        }
+
         await prepareContext(program.opts());
 
         const { mode } = await prompts({
@@ -102,34 +109,9 @@ async function runCLISetup(program: Command) {
         });
         if (!confirm) return;
         await Archive.destroyAllData();
-        await clearProgress();
         console.log(pc.green('✓ Old vault destroyed'));
       } else {
         await unlockVaultInteractive();
-        return;
-      }
-    }
-
-    // Check if there's saved progress
-    const savedProgress = await loadProgress();
-    if (savedProgress && savedProgress.step >= 1) {
-      console.log(pc.cyan('\n💾 Found saved progress from previous session!'));
-      console.log(pc.dim('You were at Step 2 (Recovery Phrase).\n'));
-
-      const { continueSetup } = await prompts({
-        type: 'confirm',
-        name: 'continueSetup',
-        message: 'Continue from where you left off?',
-        initial: true
-      });
-
-      if (!continueSetup) {
-        await clearProgress();
-        console.log(pc.dim('Starting fresh setup...\n'));
-      } else {
-        // Continue from saved progress - jump to step 2
-        console.log(pc.green('\n✅ Resuming from saved progress...\n'));
-        await runStep2AndBeyond(savedProgress.password, savedProgress.mnemonic, program);
         return;
       }
     }
@@ -175,9 +157,6 @@ async function runCLISetup(program: Command) {
       confirmed = true;
     }
 
-    // Save progress after step 1
-    await saveProgress({ password, mnemonic: '', step: 1 });
-
     // Step 2+: Recovery phrase and beyond
     await runStep2AndBeyond(password, '', program);
 
@@ -222,18 +201,9 @@ async function runStep2AndBeyond(password: string, savedMnemonic: string, _progr
 
     if (!wroteDown) {
       console.log(pc.red('\n⚠️  Setup dibatalkan.'));
-      console.log(pc.yellow('\n💾 Progress tersimpan! Anda bisa lanjut nanti.'));
-      console.log(pc.dim('  • Screenshot 12 kata di atas (hanya untuk sementara)'));
-      console.log(pc.dim('  • Tulis di kertas, lalu hapus screenshot'));
-      console.log(pc.dim('  • Jalankan `lembaranz setup` lagi - password & seed phrase akan sama\n'));
-
-      // Save progress
-      await saveProgress({ password, mnemonic, step: 2 });
+      console.log(pc.yellow('\n⚠️  Anda harus memulai ulang proses setup dari awal.'));
       return;
     }
-
-    // Save progress after step 2
-    await saveProgress({ password, mnemonic, step: 2 });
 
     // Verify they wrote it down
     const { wantVerify } = await prompts({
@@ -273,9 +243,6 @@ async function runStep2AndBeyond(password: string, savedMnemonic: string, _progr
       return;
     }
 
-    // Clear saved progress
-    await clearProgress();
-
     console.log(pc.green('\n✅ Vault created successfully!\n'));
     console.log(pc.bold('🎉 You\'re all set!\n'));
 
@@ -307,33 +274,6 @@ async function runStep2AndBeyond(password: string, savedMnemonic: string, _progr
 }
 
 // Helper functions
-
-async function saveProgress(data: { password: string; mnemonic: string; step: number }) {
-  try {
-    const progressDir = path.join(process.cwd(), '.lembaranz');
-    await fs.mkdir(progressDir, { recursive: true });
-    await fs.writeFile(PROGRESS_FILE, JSON.stringify(data, null, 2));
-  } catch (_e) {
-    // Silently fail if can't save progress
-  }
-}
-
-async function loadProgress(): Promise<{ password: string; mnemonic: string; step: number } | null> {
-  try {
-    const content = await fs.readFile(PROGRESS_FILE, 'utf-8');
-    return JSON.parse(content);
-  } catch {
-    return null;
-  }
-}
-
-async function clearProgress() {
-  try {
-    await fs.unlink(PROGRESS_FILE);
-  } catch {
-    // Ignore if file doesn't exist
-  }
-}
 
 async function unlockVaultInteractive() {
   console.log(pc.cyan('\n🔓 Unlocking Vault'));
