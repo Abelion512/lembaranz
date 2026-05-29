@@ -10,6 +10,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 
 const PROGRESS_FILE = path.join(process.cwd(), '.lembaranz', 'setup-progress.json');
+let IN_MEMORY_PROGRESS: { password: string; mnemonic: string; step: number } | null = null;
 
 export function registerSetupCommand(program: Command) {
   program
@@ -309,26 +310,17 @@ async function runStep2AndBeyond(password: string, savedMnemonic: string, _progr
 // Helper functions
 
 async function saveProgress(data: { password: string; mnemonic: string; step: number }) {
-  try {
-    const progressDir = path.join(process.cwd(), '.lembaranz');
-    await fs.mkdir(progressDir, { recursive: true });
-    await fs.writeFile(PROGRESS_FILE, JSON.stringify(data, null, 2));
-  } catch (_e) {
-    // Silently fail if can't save progress
-  }
+  IN_MEMORY_PROGRESS = data;
 }
 
 async function loadProgress(): Promise<{ password: string; mnemonic: string; step: number } | null> {
-  try {
-    const content = await fs.readFile(PROGRESS_FILE, 'utf-8');
-    return JSON.parse(content);
-  } catch {
-    return null;
-  }
+  return IN_MEMORY_PROGRESS;
 }
 
 async function clearProgress() {
+  IN_MEMORY_PROGRESS = null;
   try {
+    // Clean up residual file from legacy versions if it exists
     await fs.unlink(PROGRESS_FILE);
   } catch {
     // Ignore if file doesn't exist
