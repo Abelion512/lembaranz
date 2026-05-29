@@ -221,8 +221,9 @@ export class Vault {
   }
 
   /**
-   * Optimized hex string to Uint8Array conversion without regex.
+   * Optimized hex string to Uint8Array conversion using charCodeAt and bitwise math.
    * ~4-5x faster than substring and parseInt.
+   * Avoids intermediate string allocations (substring) and parseInt overhead.
    */
   public static hexToBytes(hex: string): Uint8Array {
     const len = hex.length;
