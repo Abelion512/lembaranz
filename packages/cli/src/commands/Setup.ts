@@ -284,7 +284,8 @@ async function runStep2AndBeyond(password: string, _program: Command) {
 
 async function clearProgress() {
   try {
-    await fs.unlink(PROGRESS_FILE);
+    const progressFile = path.join(process.cwd(), '.lembaranz', 'setup-progress.json');
+    await fs.unlink(progressFile);
   } catch {
     // Ignore if file doesn't exist
   }
