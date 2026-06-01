@@ -1,7 +1,7 @@
 # Lembaranz
 **Self-Hosted Credential Manager** 🔐
 
-[![Version](https://img.shields.io/npm/v/@lembaranz/cli.svg)](https://www.npmjs.com/package/@lembaranz/cli)
+[![Version](https://img.shields.io/npm/v/lembaranz.svg)](https://www.npmjs.com/package/lembaranz)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Security: Hardened](https://img.shields.io/badge/Security-Hardened-orange.svg)](SECURITY.md)
 [![Bun](https://img.shields.io/badge/bun-%3E%3D1.3-fbefdb)](https://bun.sh)
@@ -65,7 +65,7 @@ lembaranz export    # Encrypted portable backup
 ```
 ├── packages/
 │   ├── core/          # @lembaranz/core — Encryption & Storage engine
-│   └── cli/           # @lembaranz/cli — Terminal interface & Commands
+│   └── cli/           # lembaranz (unscoped package) — Terminal interface & Commands
 ├── docs/              # Documentation (EN)
 ├── README.md          # Project overview
 └── SECURITY.md        # Security policy

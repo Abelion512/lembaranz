@@ -232,3 +232,6 @@ dev_log.txt
 landing_log.txt
 prompt.md
 core/core
+
+# Dashboard Build Artifacts
+packages/dashboard/dist/

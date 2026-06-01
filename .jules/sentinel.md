@@ -33,3 +33,8 @@
 **Vulnerability:** The Markdown renderer (`safeMarked.ts`) mitigated XSS by performing a simple regex check (`dangerousSchemes.test(href)`) directly on the raw URL string. This was bypassable using basic URI encoding (e.g., `javascript%3A`), HTML entity encoding (e.g., `&#x6A;avascript:`), or control character evasion (e.g., `java\nscript:`), leading to script execution vulnerabilities on dynamically rendered `.md` pages.
 **Learning:** Checking for dangerous URL schemes using Regex is unreliable against evasion techniques because HTML entities and percent-encoded characters are evaluated natively by the browser before navigation, bypassing exact-string matches on the raw backend.
 **Prevention:** Always deeply decode payloads (both HTML unescaping and URI decoding) and strip whitespace/control characters recursively before verifying the safety of a protocol/scheme against an allowlist or denylist regex.
+
+## 2026-05-24 - [Harden File Permissions for Vault and Backups]
+**Vulnerability:** Vault database files and exported backups were created with default system permissions (typically 644 or 664), making sensitive (though encrypted) data readable by other users on the same machine.
+**Learning:** Default umask settings are often too permissive for credential managers. Atomic write patterns using temp files and renaming preserve the temp file's permissions, which must be explicitly restricted.
+**Prevention:** Always use the 'mode' option (e.g., 0o600) when calling fs.writeFile for sensitive files, especially in a local-first architecture.
