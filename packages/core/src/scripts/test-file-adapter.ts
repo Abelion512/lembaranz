@@ -4,11 +4,7 @@ import fs from "fs/promises";
 
 async function main() {
   const filePath = "test-db-adapter.json";
-  try {
-    await fs.unlink(filePath);
-  } catch {
-    /* ignore */
-  }
+  await fs.rm(filePath, { force: true });
 
   const adapter = new FileAdapter(filePath);
 
@@ -28,11 +24,7 @@ async function main() {
   }
   console.timeEnd("Sequential Saves");
 
-  try {
-    await fs.unlink(filePath);
-  } catch {
-    /* ignore */
-  }
+  await fs.rm(filePath, { force: true });
   const adapter2 = new FileAdapter(filePath);
 
   console.time("Concurrent Saves");
