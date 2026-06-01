@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "lembaranz",
@@ -82,6 +83,7 @@
         "canvas-confetti": "^1.9.3",
         "clsx": "^2.1.1",
         "lucide-react": "^0.468.0",
+        "marked": "^18.0.4",
         "react": "^19.2.4",
         "react-dom": "^19.2.4",
         "tailwind-merge": "^2.5.5",
