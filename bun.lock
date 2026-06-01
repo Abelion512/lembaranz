@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "lembaranz",
@@ -20,7 +21,7 @@
         "prompts": "^2.4.2",
         "react": "19.2.6",
         "uuid": "^14.0.0",
-        "zustand": "^5.0.13",
+        "zustand": "^5.0.14",
       },
       "devDependencies": {
         "@changesets/cli": "^2.31.0",
@@ -67,7 +68,7 @@
         "idb": "^8.0.3",
         "react": "19.2.4",
         "uuid": "^13.0.0",
-        "zustand": "^5.0.11",
+        "zustand": "^5.0.14",
       },
       "devDependencies": {
         "@types/react": "^19",
@@ -82,10 +83,11 @@
         "canvas-confetti": "^1.9.3",
         "clsx": "^2.1.1",
         "lucide-react": "^0.468.0",
+        "marked": "^18.0.4",
         "react": "^19.2.4",
         "react-dom": "^19.2.4",
         "tailwind-merge": "^2.5.5",
-        "zustand": "^5.0.11",
+        "zustand": "^5.0.14",
       },
       "devDependencies": {
         "@types/canvas-confetti": "^1.9.0",
@@ -963,7 +965,7 @@
 
     "yoga-layout": ["yoga-layout@3.2.1", "", {}, "sha512-0LPOt3AxKqMdFBZA3HBAt/t/8vIKq7VaQYbuA8WxCgung+p9TVyKRYdpvCb80HcdTN2NkbIKbhNwKUfm3tQywQ=="],
 
-    "zustand": ["zustand@5.0.13", "", { "peerDependencies": { "@types/react": ">=18.0.0", "immer": ">=9.0.6", "react": ">=18.0.0", "use-sync-external-store": ">=1.2.0" }, "optionalPeers": ["@types/react", "immer", "react", "use-sync-external-store"] }, "sha512-efI2tVaVQPqtOh114loML/Z80Y4NP3yc+Ff0fYiZJPauNeWZeIp/bRFD7I9bfmCOYBh/PHxlglQ9+wvlwnPikQ=="],
+    "zustand": ["zustand@5.0.14", "", { "peerDependencies": { "@types/react": ">=18.0.0", "immer": ">=9.0.6", "react": ">=18.0.0", "use-sync-external-store": ">=1.2.0" }, "optionalPeers": ["@types/react", "immer", "react", "use-sync-external-store"] }, "sha512-/8tAspM5LMPr28b3fwLYrtdj77ECpfZviaP75CMTnwO8ISyaE4GDIG/9rDDYq/cH9D2Xw2A2RXglLInmVBQB/g=="],
 
     "@abelionorg/tagger-public/commander": ["commander@12.1.0", "", {}, "sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA=="],
 
