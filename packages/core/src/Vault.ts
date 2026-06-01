@@ -221,15 +221,21 @@ export class Vault {
   }
 
   /**
+<<<<<<< HEAD
    * Optimized hex string to Uint8Array conversion using charCodeAt and bitwise math.
    * ~10x faster than parsing substrings via parseInt(hex.substring(...), 16).
    * Avoids intermediate string allocations (substring) and parseInt overhead.
+=======
+   * Optimized hex string to Uint8Array conversion without regex.
+   * Uses charCodeAt and bitwise math to calculate nibbles directly, preventing substring() and parseInt() string allocations.
+>>>>>>> testing
    */
   public static hexToBytes(hex: string): Uint8Array {
     if (hex.length % 2 !== 0) {
       throw new Error("Invalid hex string length");
     }
     const bytes = new Uint8Array(hex.length / 2);
+<<<<<<< HEAD
     for (let i = 0; i < bytes.length; i++) {
       const c1 = hex.charCodeAt(i * 2);
       const c2 = hex.charCodeAt(i * 2 + 1);
@@ -240,6 +246,27 @@ export class Vault {
       const n1 = (c1 & 0xf) + (c1 >> 6) * 9;
       const n2 = (c2 & 0xf) + (c2 >> 6) * 9;
       bytes[i] = (n1 << 4) | n2;
+=======
+    for (let i = 0, j = 0; i < hex.length; i += 2, j++) {
+      const c1 = hex.charCodeAt(i);
+      const c2 = hex.charCodeAt(i + 1);
+      const n1 = c1 < 58 ? c1 - 48 : c1 < 97 ? c1 - 55 : c1 - 87;
+      const n2 = c2 < 58 ? c2 - 48 : c2 < 97 ? c2 - 55 : c2 - 87;
+      bytes[j] = (n1 << 4) | n2;
+    }
+    return bytes;
+  }
+
+  /**
+   * Optimized base64 to Uint8Array conversion using an iterative loop.
+   * Replaces inefficient inline conversions like Uint8Array.from(atob(...)).
+   */
+  public static base64ToBytes(base64: string): Uint8Array {
+    const binaryString = atob(base64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+>>>>>>> testing
     }
     return bytes;
   }
@@ -249,7 +276,6 @@ export class Vault {
    * ~3-4x faster than Array.from().map().
    */
   public static bytesToHex(bytes: Uint8Array): string {
-    const HEX_CHARS = "0123456789abcdef";
     let hex = "";
     for (let i = 0; i < bytes.length; i++) {
       const v = bytes[i];
@@ -307,7 +333,15 @@ export class Vault {
       const iv = this.hexToBytes(ivHex);
       const bytes = this.base64ToBytes(base64);
 
+<<<<<<< HEAD
       const result = await this.decrypt(bytes.buffer, iv, customKey);
+=======
+      const result = await this.decrypt(
+        bytes.buffer as ArrayBuffer,
+        iv,
+        customKey
+      );
+>>>>>>> testing
       if (result.error) return result;
 
       if (!customKey) {

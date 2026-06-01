@@ -6,7 +6,7 @@ Semua perubahan penting pada proyek ini akan didokumentasikan di file ini.
 
 ### Fixed
 - **Persistensi File**: Perbaikan race condition dan implementasi penulisan atomik pada `FileAdapter`.
-- **Penyatuan Merek**: Mengganti semua penyebutan "Lembaran" yang tersisa menjadi "Lembaranz" di CLI dan dokumentasi.
+- **Penyatuan Merek**: Mengganti semua penyebutan "Lembaranz" yang tersisa menjadi "Lembaranz" di CLI dan dokumentasi.
 - **Sintaks CLI**: Perbaikan kesalahan sintaksis di `TerminalUI` akibat konflik penggabungan.
 - **Integrasi Senses**: Menambahkan modul `Senses` dan pengujian unit dari sesi Jules.
 

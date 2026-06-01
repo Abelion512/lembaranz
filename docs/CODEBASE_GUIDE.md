@@ -10,7 +10,7 @@
 lembaranz/ (Monorepo)
 ├── packages/
 │   ├── core/          # @lembaranz/core — The encryption engine
-│   └── cli/           # @lembaranz/cli — Terminal interface (TUI)
+│   └── cli/           # lembaranz (unscoped) — Terminal interface (TUI)
 ```
 
 ---

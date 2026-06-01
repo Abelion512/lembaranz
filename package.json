@@ -63,11 +63,13 @@
   "scripts": {
     "cli": "bun ./packages/cli/src/main.ts",
     "lint": "eslint .",
+    "security-audit": "bun ./scripts/security-audit.ts",
+    "prepublishOnly": "bun run security-audit",
     "test": "bun test ./packages/core/src/__tests__/",
     "test:core": "bun test ./packages/core/src/__tests__/",
     "test:perf": "bun ./packages/core/src/scripts/inject-perf-data.ts",
     "version-packages": "changeset version",
-    "ci:release": "changeset publish",
+    "ci:release": "bun run security-audit && changeset publish",
     "clean": "rm -rf node_modules"
   },
   "bin": {

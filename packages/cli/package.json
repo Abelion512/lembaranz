@@ -1,5 +1,5 @@
 {
-  "name": "@lembaranz/cli",
+  "name": "lembaranz",
   "version": "1.0.1",
   "description": "Lembaranz CLI - Personal encrypted note vault with terminal interface",
   "author": "Abelion Lavv <agen.salva@gmail.com>",
