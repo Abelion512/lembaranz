@@ -264,4 +264,20 @@ describe('Vault', () => {
             expect(Sentinel.constantTimeCompare('secure', 'unsafe')).toBe(false);
         });
     });
+
+    describe('hexToBytes', () => {
+        test('should convert valid hex string to bytes', () => {
+            const bytes = Vault.hexToBytes('deadbeef');
+            expect(bytes).toBeInstanceOf(Uint8Array);
+            expect(bytes.length).toBe(4);
+            expect(bytes[0]).toBe(0xde);
+            expect(bytes[1]).toBe(0xad);
+            expect(bytes[2]).toBe(0xbe);
+            expect(bytes[3]).toBe(0xef);
+        });
+
+        test('should throw error for odd-length hex string', () => {
+            expect(() => Vault.hexToBytes('123')).toThrow('Invalid hex string length');
+        });
+    });
 });

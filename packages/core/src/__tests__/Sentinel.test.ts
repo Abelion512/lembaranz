@@ -80,7 +80,19 @@ describe('Sentinel', () => {
             expect(result.remaining).toBe(4);
         });
 
-        test('resetRateLimit clears the limit', () => {
+        test('clearAllRateLimits removes all data', () => {
+            Sentinel.checkRateLimit('key-1');
+            Sentinel.checkRateLimit('key-2');
+
+            Sentinel.clearAllRateLimits();
+
+            expect(Sentinel.getStoreSize()).toBe(0);
+        });
+    });
+
+
+    describe('resetRateLimit', () => {
+        test('clears the limit for an existing key', () => {
             Sentinel.checkRateLimit(TEST_KEY);
             Sentinel.checkRateLimit(TEST_KEY);
 
@@ -91,13 +103,30 @@ describe('Sentinel', () => {
             expect(result.remaining).toBe(4);
         });
 
-        test('clearAllRateLimits removes all data', () => {
+        test('removes the key from the internal store', () => {
+            Sentinel.checkRateLimit(TEST_KEY);
+            expect(Sentinel.getStoreSize()).toBe(1);
+
+            Sentinel.resetRateLimit(TEST_KEY);
+            expect(Sentinel.getStoreSize()).toBe(0);
+        });
+
+        test('does not throw when resetting a non-existent key', () => {
+            expect(() => {
+                Sentinel.resetRateLimit('non-existent-key');
+            }).not.toThrow();
+        });
+
+        test('only removes the targeted key', () => {
             Sentinel.checkRateLimit('key-1');
             Sentinel.checkRateLimit('key-2');
+            expect(Sentinel.getStoreSize()).toBe(2);
 
-            Sentinel.clearAllRateLimits();
+            Sentinel.resetRateLimit('key-1');
 
-            expect(Sentinel.getStoreSize()).toBe(0);
+            expect(Sentinel.getStoreSize()).toBe(1);
+            const result = Sentinel.checkRateLimit('key-2');
+            expect(result.remaining).toBe(3); // one attempt was made, so 3 remaining (starts with 4)
         });
     });
 
