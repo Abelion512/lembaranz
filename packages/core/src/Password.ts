@@ -2077,6 +2077,21 @@ export const generateMnemonic = (wordCount: number = 12): string => {
  * Note: This does NOT validate the checksum (which requires the full bip39 library).
  */
 export const validateMnemonic = (mnemonic: string): boolean => {
-  const words = mnemonic.trim().toLowerCase().split(/\s+/);
-  return words.every((word) => BIP39_WORDSET.has(word));
+  const trimmed = mnemonic.trim().toLowerCase();
+  if (!trimmed) return false;
+
+  let wordStart = 0;
+  for (let i = 0; i <= trimmed.length; i++) {
+    const code = trimmed.charCodeAt(i);
+    // 32 = space, 9 = tab, 10 = newline, 13 = carriage return
+    if (i === trimmed.length || code === 32 || code === 9 || code === 10 || code === 13) {
+      if (i > wordStart) {
+        if (!BIP39_WORDSET.has(trimmed.substring(wordStart, i))) {
+          return false;
+        }
+      }
+      wordStart = i + 1;
+    }
+  }
+  return true;
 };
