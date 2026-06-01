@@ -5,7 +5,7 @@ import { Marked } from 'marked';
  */
 function isDangerousUrl(url: string | null | undefined): boolean {
     if (!url) return false;
-    let decoded = url;
+    let decoded: string;
     try {
         decoded = decodeURIComponent(url);
     } catch (_e) {
@@ -25,6 +25,7 @@ function isDangerousUrl(url: string | null | undefined): boolean {
     decoded = decoded.replace(/&colon;/gi, ':').replace(/&tab;/gi, '\t').replace(/&newline;/gi, '\n');
 
     // Strip whitespace and control characters
+    // eslint-disable-next-line no-control-regex
     decoded = decoded.replace(/[\x00-\x20]+/g, '');
 
     return /^(javascript|data|vbscript|file):/i.test(decoded);
