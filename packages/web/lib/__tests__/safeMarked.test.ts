@@ -54,4 +54,14 @@ describe('safeMarked Rendering', () => {
         expect(result).not.toContain('alert(1)');
         expect(result).toContain('<span>klik</span>');
     });
+
+    test('harus escape konten teks dari XSS pada link dan gambar', async () => {
+        const linkResult = await safeMarked.parse('[<script>alert(1)</script>](https://example.com)');
+        expect(linkResult).not.toContain('<script>');
+        expect(linkResult).toContain('&lt;script&gt;');
+
+        const imageResult = await safeMarked.parse('![<script>alert(1)</script>](javascript:alert(1))');
+        expect(imageResult).not.toContain('<script>');
+        expect(imageResult).toContain('&lt;script&gt;');
+    });
 });
