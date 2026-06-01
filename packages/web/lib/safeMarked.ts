@@ -25,6 +25,7 @@ function isDangerousUrl(url: string | null | undefined): boolean {
     decoded = decoded.replace(/&colon;/gi, ':').replace(/&tab;/gi, '\t').replace(/&newline;/gi, '\n');
 
     // Strip whitespace and control characters
+    // eslint-disable-next-line no-control-regex
     decoded = decoded.replace(/[\x00-\x20]+/g, '');
 
     return /^(javascript|data|vbscript|file):/i.test(decoded);
@@ -48,9 +49,11 @@ safeMarked.use({
             const text = token.text;
             const title = token.title;
 
+            const safeText = text ? text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+
             // Keamanan: Tolak protokol berbahaya (XSS)
             if (isDangerousUrl(href)) {
-                return `<span>${text}</span>`;
+                return `<span>${safeText}</span>`;
             }
 
             // Keamanan: Tambahkan atribut pengaman untuk link eksternal
@@ -61,23 +64,24 @@ safeMarked.use({
             const safeTitle = title ? title.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
             const titleAttr = safeTitle ? `title="${safeTitle}"` : '';
 
-            return `<a href="${safeHref}" ${rel} ${titleAttr}>${text}</a>`;
+            return `<a href="${safeHref}" ${rel} ${titleAttr}>${safeText}</a>`;
         },
         image(token) {
             const href = token.href;
             const text = token.text;
             const title = token.title;
 
+            const safeText = text ? text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+
             // Keamanan: Tolak protokol berbahaya pada gambar (XSS)
             if (isDangerousUrl(href)) {
-                return `<span>${text}</span>`;
+                return `<span>${safeText}</span>`;
             }
 
             // XSS fix: Escape href, text, and title attribute value
             const safeHref = href.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             const safeTitle = title ? title.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
             const titleAttr = safeTitle ? `title="${safeTitle}"` : '';
-            const safeText = text ? text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
 
             return `<img src="${safeHref}" alt="${safeText}" ${titleAttr} />`;
         }
