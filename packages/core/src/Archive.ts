@@ -156,7 +156,11 @@ export const Archive = {
                 }
             } else {
                 // Migration from V2 (Master Key = Password Key)
-                const [ivHex, base64Data] = authValidator.split('|');
+                // Performance Optimization (Bolt): Use indexOf/substring instead of split('|')
+                // for faster parsing and zero array allocation.
+                const pipeIndex = authValidator.indexOf('|');
+                const ivHex = authValidator.substring(0, pipeIndex);
+                const base64Data = authValidator.substring(pipeIndex + 1);
                 const iv = Vault.hexToBytes(ivHex);
                 const bytes = Vault.base64ToBytes(base64Data);
 
