@@ -159,6 +159,9 @@ export const Archive = {
                 // Performance Optimization (Bolt): Use indexOf/substring instead of split('|')
                 // for faster parsing and zero array allocation.
                 const pipeIndex = authValidator.indexOf('|');
+                if (pipeIndex === -1) {
+                    throw new Error('Invalid auth validator format: missing delimiter');
+                }
                 const ivHex = authValidator.substring(0, pipeIndex);
                 const base64Data = authValidator.substring(pipeIndex + 1);
                 const iv = Vault.hexToBytes(ivHex);
