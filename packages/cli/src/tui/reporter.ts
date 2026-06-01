@@ -54,6 +54,17 @@ ${sanitizeStack(error.stack)}
 }
 
 export function openReport(url: string): void {
+    let parsedUrl: URL;
+    try {
+        parsedUrl = new URL(url);
+    } catch (_e) {
+        return; // Invalid URL, silently fail
+    }
+
+    if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
+        return; // Only allow http/https protocols to prevent file:// or other malicious schemes
+    }
+
     const start = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'explorer' : 'xdg-open';
-    spawn(start, [url], { shell: false, stdio: 'ignore', detached: true }).unref();
+    spawn(start, [parsedUrl.href], { shell: false, stdio: 'ignore', detached: true }).unref();
 }
