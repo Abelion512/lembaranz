@@ -80,7 +80,7 @@
     "@noble/ciphers": "^2.2.0",
     "@noble/hashes": "^2.2.0",
     "commander": "^14.0.3",
-    "dompurify": "^3.4.5",
+    "dompurify": "^3.4.7",
     "idb": "^8.0.3",
     "ink": "^7.0.3",
     "ink-select-input": "^6.2.0",
