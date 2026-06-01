@@ -89,7 +89,7 @@
 **Contoh yang Diinginkan:**
 ```
 ╭────────────────────────────────────────────╮
-│  📜 LEMBARAN v3.4.0                        │
+│  📜 LEMBARANZ v3.4.0                        │
 │  Brankas Arsip Digital Personal            │
 ╰────────────────────────────────────────────╯
 ```

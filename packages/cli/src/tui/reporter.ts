@@ -1,6 +1,6 @@
 import { spawn } from 'child_process';
 import os from 'os';
-import pkg from '../../package.json' assert { type: 'json' };
+import pkg from "../../package.json" with { type: "json" };
 
 const REPO_URL = 'https://github.com/Abelion512/lembaranz';
 
@@ -19,7 +19,7 @@ export interface ReportMetadata {
 
 export function generateIssueUrl(error: Error, metadata: ReportMetadata = {}): string {
     const title = encodeURIComponent(`[CRASH] ${error.name}: ${error.message}`);
-    
+
     const bodyText = `
 ### 🚨 Lembaranz TUI Crash Report
 *This report was generated automatically to assist in debugging.*

@@ -1,5 +1,5 @@
 {
-  "name": "@lembaranz/cli",
+  "name": "lembaranz",
   "version": "1.0.1",
   "description": "Lembaranz CLI - Personal encrypted note vault with terminal interface",
   "author": "Abelion Lavv <agen.salva@gmail.com>",
@@ -48,14 +48,14 @@
   "dependencies": {
     "@lembaranz/core": "^1.0.1",
     "commander": "^14.0.3",
-    "ink": "^6.8.0",
+    "ink": "^7.0.5",
     "ink-select-input": "^6.2.0",
     "ink-spinner": "^5.0.0",
     "ink-text-input": "^6.0.0",
     "picocolors": "^1.1.1",
     "prompts": "^2.4.2",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.6"
   },
   "devDependencies": {
     "@types/react": "^19.2.14"

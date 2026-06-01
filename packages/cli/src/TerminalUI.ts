@@ -28,7 +28,7 @@ export class TerminalUI {
         while (true) {
             try {
                 console.clear();
-                console.log(pc.blue(pc.bold('=== LEMBARANZ ANTARMUKA v1.0.1 ===')));
+                console.log(pc.blue(pc.bold('=== LEMBARANZZ ANTARMUKA v1.0.1 ===')));
                 console.log(`${pc.dim('Konteks Aktif:')} ${pc.bold(pc.yellow(context.toUpperCase()))}`);
                 console.log(pc.dim('Brankas Aksara Personal yang Berdikari'));
                 console.log(pc.dim('Type "help" for commands or "exit" to quit.\n'));

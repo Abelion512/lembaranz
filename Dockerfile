@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════
-# 🐳 LEMBARAN DOCKERFILE (CLI ONLY)
+# 🐳 LEMBARANZ DOCKERFILE (CLI ONLY)
 # ═══════════════════════════════════════════════════════════
 FROM oven/bun:latest
 WORKDIR /app
