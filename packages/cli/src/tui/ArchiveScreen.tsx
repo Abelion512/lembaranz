@@ -13,8 +13,9 @@ interface ArchiveScreenProps {
 
 const cleanTextForDisplay = (text: string): string => {
   if (!text) return "";
+  // 🛡️ Sentinel: Hardened multi-character sanitization to prevent bypass
   return text
-    .replace(/<[^>]*>/g, "")
+    .replace(/<[^>]*>?/gm, "") // Global multi-line HTML removal
     .replace(/&[#a-z0-9]+;/gi, " ")
     .trim();
 };
@@ -22,10 +23,10 @@ const cleanTextForDisplay = (text: string): string => {
 const cleanTextForSearch = (text: string): string => {
   if (!text) return "";
   return text
-    .replace(/<[^>]*>/g, "")
+    .replace(/<[^>]*>?/gm, "")
     .replace(/&[#a-z0-9]+;/gi, " ")
     .replace(/[#*`~_]/g, "")
-    .replace(/\n+/g, " ")
+    .replace(/\s+/g, " ")
     .trim();
 };
 

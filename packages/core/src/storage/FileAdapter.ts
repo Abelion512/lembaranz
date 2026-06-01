@@ -151,6 +151,11 @@ export class FileAdapter implements StorageAdapter {
       actualKey = (value as { id: string }).id;
     }
 
+    // Security: Block prototype pollution
+    if (actualKey === "__proto__" || actualKey === "constructor" || actualKey === "prototype") {
+      throw new Error(`[SECURITY] Invalid key detected: ${actualKey}`);
+    }
+
     // @ts-expect-error - dynamic store access
     data[store][actualKey] = value;
     await this.save();
