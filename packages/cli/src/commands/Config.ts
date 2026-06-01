@@ -402,7 +402,7 @@ exit 0
 
             // Sanitize value by stripping out non-whitespace control characters
             // eslint-disable-next-line no-control-regex
-            val = val.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+            val = val.replace(/[\x00-\x1F\x7F]/g, "");
 
             parsedEnv[key] = val;
           }
@@ -470,7 +470,7 @@ exit 0
       const safeEnv: Record<string, string> = {};
       const VALID_KEY_REGEX = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
       // eslint-disable-next-line no-control-regex
-      const controlCharRegex = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g;
+      const controlCharRegex = /[\x00-\x1F\x7F]/g;
 
       for (const [key, val] of Object.entries(parsedEnv)) {
         const upperKey = key.toUpperCase();
