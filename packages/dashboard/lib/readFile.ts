@@ -1,11 +1,11 @@
-import fs from 'fs';
+import fs from 'fs/promises';
 import path from 'path';
 
 /**
  * Membaca berkas text dari lokasi terbatas untuk security.
  * Dirancang untuk bekerja di pengembangan lokal dan produksi (Vercel Standalone).
  */
-export function readFile(fileName: string): string | null {
+export async function readFile(fileName: string): Promise<string | null> {
     if (!fileName || typeof fileName !== 'string') return null;
 
     // 0. Hapus null bytes untuk mencegah poisoning
@@ -33,12 +33,13 @@ export function readFile(fileName: string): string | null {
 
     for (const p of searchLocations) {
         try {
-            if (fs.existsSync(p) && fs.statSync(p).isFile()) {
+            const stats = await fs.stat(p).catch(() => null);
+            if (stats && stats.isFile()) {
                 // Validasi tambahan: pastikan berkas yang dibaca memang berada dalam folder 'docs' atau 'public'
                 const resolvedPath = path.resolve(p);
                 const pathParts = resolvedPath.split(path.sep);
                 if (pathParts.includes('docs') || pathParts.includes('public')) {
-                    return fs.readFileSync(p, 'utf8');
+                    return await fs.readFile(p, 'utf8');
                 }
             }
         } catch (_e) {
@@ -51,12 +52,13 @@ export function readFile(fileName: string): string | null {
     for (let i = 0; i < 2; i++) {
         const target = path.join(currentDir, normalizedRelativePath);
         try {
-            if (fs.existsSync(target) && fs.statSync(target).isFile()) {
+            const stats = await fs.stat(target).catch(() => null);
+            if (stats && stats.isFile()) {
                 // Validasi ketat bahwa target tetap berada di dalam struktur yang diizinkan
                 const resolvedTarget = path.resolve(target);
                 const targetParts = resolvedTarget.split(path.sep);
                 if (targetParts.includes('docs') || targetParts.includes('public')) {
-                    return fs.readFileSync(target, 'utf8');
+                    return await fs.readFile(target, 'utf8');
                 }
             }
         } catch (_e) {

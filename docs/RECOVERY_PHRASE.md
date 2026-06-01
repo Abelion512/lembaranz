@@ -333,7 +333,7 @@ When you setup vault with mnemonic, these keys are stored:
 meta/
 ├── auth_salt              # Salt for password derivation
 ├── auth_wrapped_key       # Master Key encrypted with Password Key
-├── auth_validator         # Encrypted "LEMBARAN_SECURED_V3" marker
+├── auth_validator         # Encrypted "LEMBARANZ_SECURED_V3" marker
 ├── recovery_salt          # Salt for mnemonic derivation
 ├── recovery_wrapped_key   # Master Key encrypted with Recovery Key
 └── panic_hash             # Hash of panic key (emergency wipe)

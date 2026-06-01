@@ -1,4 +1,4 @@
-# @lembaranz/cli
+# lembaranz
 
 **Lembaranz CLI - Brankas Aksara Personal yang Berdikari** 🇮🇩
 
@@ -8,10 +8,10 @@ Antarmuka baris perintah (CLI) and TUI resmi untuk Lembaranz. Amankan catatan, i
 
 ```bash
 # Via Bun (Disarankan)
-bun install -g @lembaranz/cli
+bun install -g lembaranz
 
 # Via NPM
-npm install -g @lembaranz/cli
+npm install -g lembaranz
 ```
 
 ## 🛠️ Penggunaan

@@ -143,7 +143,7 @@ Antarmuka terminal interaktif untuk produktivitas maksimal.
 lembaranz/
 ├── packages/
 │   ├── core/          # @lembaranz/core (encryption, storage)
-│   └── cli/           # @lembaranz/cli (TUI, commands)
+│   └── cli/           # lembaranz (unscoped package TUI, commands)
 ├── docs/              # Dokumentasi (id/ & en/)
 ├── .githooks/         # Git hooks (YOLO mode)
 ├── scripts/           # Helper scripts
