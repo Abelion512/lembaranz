@@ -1,4 +1,4 @@
-```
+
 # Dependencies
 node_modules/
 
@@ -50,4 +50,3 @@ htmlcov/
 *.tmp
 *.temp
 .DS_Store
-```
