@@ -19,7 +19,8 @@ export class FileAdapter implements StorageAdapter {
 
   constructor(customPath?: string) {
     // Smart path detection: Custom Path > Environment variable > Current Directory
-    const envPath = process.env.DB_PATH;
+    const isDebug = typeof process !== 'undefined' && process.env.DEBUG === 'true';
+    const envPath = typeof process !== 'undefined' ? process.env.DB_PATH : undefined;
     if (customPath) {
       this.filePath = path.isAbsolute(customPath)
         ? customPath
@@ -29,10 +30,11 @@ export class FileAdapter implements StorageAdapter {
         ? envPath
         : path.resolve(process.cwd(), envPath);
     } else {
-      this.filePath = path.resolve(process.cwd(), DEFAULT_DB_FILE);
+      const cwd = typeof process !== 'undefined' ? process.cwd() : '';
+      this.filePath = path.resolve(cwd, DEFAULT_DB_FILE);
     }
-
-    if (process.env.DEBUG === "true") {
+    
+    if (isDebug) {
       console.log(`[FILE_ADAPTER] Open: ${this.filePath}`);
     }
   }

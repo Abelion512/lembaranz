@@ -58,7 +58,8 @@ export const Archive = {
    * @param mnemonic 12-word recovery mnemonic (optional)
    */
   async setupVault(password: string, mnemonic?: string): Promise<Result<void>> {
-    if (process.env.DEBUG === "true")
+    const isDebug = typeof process !== 'undefined' && process.env.DEBUG === 'true';
+    if (isDebug)
       console.log("[ARCHIVE] Initializing setupVault...");
 
     const genResult = await Vault.generateMasterKey();

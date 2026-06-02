@@ -30,6 +30,7 @@ export class Context {
      */
     static async resolvePath(context: VaultContext): Promise<string> {
         if (typeof window !== 'undefined') return '';
+        const isDebug = typeof process !== 'undefined' && process.env.DEBUG === 'true';
 
         try {
             const path = await import('path');
@@ -49,13 +50,16 @@ export class Context {
                 const newPath = path.join(PERSONAL_BASE_DIR, this.PERSONAL_FILE);
                 
                 if (await this.fileExists(legacyPath) && !(await this.fileExists(newPath))) {
-                    if (process.env.DEBUG === 'true') console.log('[CONTEXT] Migrating saku.json to personal.json...');
+                    if (isDebug) console.log('[CONTEXT] Migrating saku.json to personal.json...');
                     await fs.rename(legacyPath, newPath);
                 }
                 
                 targetPath = newPath;
             } else {
-                const root = (await this.findProjectRoot()) || process.cwd();
+                const cwd = typeof process !== 'undefined' ? process.cwd() : '';
+                const root = (await this.findProjectRoot()) || cwd;
+                if (!root) return '';
+
                 const localDir = path.join(root, this.PROJECT_DIR);
                 if (!(await this.fileExists(localDir))) {
                     await fs.mkdir(localDir, { recursive: true });
@@ -66,14 +70,14 @@ export class Context {
                 const newPath = path.join(localDir, this.PROJECT_FILE);
 
                 if (await this.fileExists(legacyPath) && !(await this.fileExists(newPath))) {
-                    if (process.env.DEBUG === 'true') console.log('[CONTEXT] Migrating pelataran.json to project.json...');
+                    if (isDebug) console.log('[CONTEXT] Migrating pelataran.json to project.json...');
                     await fs.rename(legacyPath, newPath);
                 }
 
                 targetPath = newPath;
             }
 
-            if (process.env.DEBUG === 'true') {
+            if (isDebug) {
                 console.log(`[CONTEXT] Resolved ${context} path: ${targetPath}`);
             }
             return targetPath;
@@ -86,8 +90,11 @@ export class Context {
     /**
      * Detects the project root by searching for .git or package.json.
      */
-    private static async findProjectRoot(dir: string = (typeof process !== 'undefined' ? process.cwd() : '')): Promise<string | null> {
+    private static async findProjectRoot(dir: string = ''): Promise<string | null> {
         if (typeof window !== 'undefined') return null;
+        const cwd = typeof process !== 'undefined' ? process.cwd() : '';
+        const searchDir = dir || cwd;
+        if (!searchDir) return null;
 
         try {
             const path = await import('path');
