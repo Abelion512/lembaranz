@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   Archive, 
   Vault, 
@@ -26,6 +27,7 @@ import {
 import confetti from 'canvas-confetti';
 
 export default function App() {
+  const { t } = useTranslation();
   // Authentication & Vault State
   const [isSetup, setIsSetup] = useState<boolean | null>(null);
   const [isUnlocked, setIsUnlocked] = useState<boolean>(false);

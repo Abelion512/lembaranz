@@ -1,0 +1,11 @@
+{
+  "entryPoints": ["packages/core/src/index.ts", "packages/cli/src/main.ts"],
+  "out": "docs/api",
+  "plugin": ["typedoc-plugin-markdown"],
+  "skipErrorChecking": true,
+  "readme": "README.md",
+  "name": "Lembaranz Documentation",
+  "includeVersion": true,
+  "githubPages": false,
+  "hideGenerator": true
+}
