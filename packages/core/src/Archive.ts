@@ -424,9 +424,24 @@ export const Archive = {
 
   /**
    * Fully decrypts a single entry including content and credentials.
+   * Supports optional Agent Access Control enforcement.
    */
-  async decryptNote(note: StoredNote): Promise<Result<DecryptedNote>> {
+  async decryptNote(note: StoredNote, requesterId?: string): Promise<Result<DecryptedNote>> {
     try {
+      // 1. Check Agent Access Control
+      const settingsRaw = await Storage.get("meta", "app_settings");
+      const settings = (settingsRaw || {}) as AppSettings;
+
+      if (requesterId && settings.agentAccessControl?.enabled) {
+        const isAllowed = settings.agentAccessControl.allowedAgents.includes(requesterId);
+        if (!isAllowed) {
+          return {
+            data: null,
+            error: new Error(`Access Denied: Agent '${requesterId}' is not authorized to read this vault.`),
+          };
+        }
+      }
+
       const resTitle = await Vault.decryptPacked(note.title);
       if (resTitle.error) return resTitle as Result<DecryptedNote>;
 
