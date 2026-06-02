@@ -54,7 +54,7 @@ export const UnlockVaultScreen: React.FC<UnlockVaultScreenProps> = ({ onSuccess 
                 if (!result.error && result.data) {
                     onSuccess();
                 } else {
-                    setError(result.error?.message || 'Kata sandi salah.');
+                    setError(result.error?.message || 'Wrong password.');
                 }
             }
         } catch (_e) {
@@ -75,7 +75,7 @@ export const UnlockVaultScreen: React.FC<UnlockVaultScreenProps> = ({ onSuccess 
                 setMode('setup');
                 setPassword('');
             } else {
-                setError(result.error?.message || 'Kunci kertas tidak valid.');
+                setError(result.error?.message || 'Invalid paper key.');
             }
         } catch (_e) {
             setError('Gagal memulihkan brankas.');

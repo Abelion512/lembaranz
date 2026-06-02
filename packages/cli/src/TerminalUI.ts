@@ -5,13 +5,13 @@ import fs from 'node:fs/promises';
 
 export class TerminalUI {
     static enterTUI() {
-        // Masuk ke alternate screen buffer (seperti nano, vim, atau claude)
+        // Enter alternate screen buffer (like nano, vim, or claude)
         process.stdout.write('\x1b[?1049h');
 
         let cleanedUp = false;
         const cleanup = () => {
             if (cleanedUp) return;
-            // Keluar dari alternate screen buffer dan restoreBackup screen asli
+            // Exit alternate screen buffer and restore original screen
             process.stdout.write('\x1b[?1049l');
             cleanedUp = true;
         };
@@ -28,9 +28,9 @@ export class TerminalUI {
         while (true) {
             try {
                 console.clear();
-                console.log(pc.blue(pc.bold('=== LEMBARANZZ ANTARMUKA v1.0.1 ===')));
-                console.log(`${pc.dim('Konteks Aktif:')} ${pc.bold(pc.yellow(context.toUpperCase()))}`);
-                console.log(pc.dim('Brankas Aksara Personal yang Berdikari'));
+                console.log(pc.blue(pc.bold('=== LEMBARANZZ INTERFACE v1.0.1 ===')));
+                console.log(`${pc.dim('Active Context:')} ${pc.bold(pc.yellow(context.toUpperCase()))}`);
+                console.log(pc.dim('Personal Aksara Vault - Self-Reliant'));
                 console.log(pc.dim('Type "help" for commands or "exit" to quit.\n'));
 
                 const isInitResult = await Archive.isVaultInitialized();
@@ -42,7 +42,7 @@ export class TerminalUI {
                 await this.mainMenu();
             } catch (err) {
                 console.log(pc.red(`❌ Fatal Error: ${(err as Error).message}`));
-                console.log(pc.dim('Mencoba memulai kembali dalam 3 detik...'));
+                console.log(pc.dim('Attempting to restart in 3 seconds...'));
                 await new Promise(r => setTimeout(r, 3000));
             }
         }
@@ -103,27 +103,27 @@ export class TerminalUI {
                         console.log(pc.red(`❌ Unknown command "${command}". Type "help" for help.`));
                 }
             } catch (_err: unknown) {
-                console.log(pc.red(`❌ Terjadi kesalahan: ${(_err as Error).message}`));
+                console.log(pc.red(`❌ An error occurred: ${(_err as Error).message}`));
             }
         }
     }
 
     private static showHelp() {
-        console.log(pc.bold('\n📜 DAFTAR PERINTAH:'));
-        console.log(`  ${pc.blue('menu')}      - Kembali ke Menu Utama`);
-        console.log(`  ${pc.blue('monitor')}    - Memeriksa kesehatan sistem & statistik`);
+        console.log(pc.bold('\n📜 COMMAND LIST:'));
+        console.log(`  ${pc.blue('menu')}      - Return to Main Menu`);
+        console.log(`  ${pc.blue('monitor')}    - Check system health         console.log(`  ${pc.blue('monitor')}    - Memeriksa kesehatan sistem & statistik`); statistics`);
         console.log(`  ${pc.blue('browse')}   - Search notes (Fuzzy Search)`);
         console.log(`  ${pc.blue('carve')}      - Note editor (Multi-line)`);
-        console.log(`  ${pc.blue('credentials')} - Menyimpan rahasia & akun secara aman`);
-        console.log(`  ${pc.blue('import')}     - Mengimpor file Markdown (.md)`);
+        console.log(`  ${pc.blue('credentials')} - Securely save secrets         console.log(`  ${pc.blue('credentials')} - Securely save secrets         console.log(`  ${pc.blue('credentials')} - Menyimpan rahasia & akun secara aman`); accounts`); accounts`);
+        console.log(`  ${pc.blue('import')}     - Import Markdown files (.md)`);
         console.log(`  ${pc.blue('export')}     - Export vault (.lembaranz)`);
-        console.log(`  ${pc.blue('serve')}    - Menjalankan API Server lokal`);
-        console.log(`  ${pc.blue('bersih')}    - Membersihkan screen`);
-        console.log(`  ${pc.blue('exit')}    - Keluar dari aplikasi\n`);
+        console.log(`  ${pc.blue('serve')}    - Run local API Server`);
+        console.log(`  ${pc.blue('clear')}    - Clear screen`);
+        console.log(`  ${pc.blue('exit')}    - Exit application\n`);
     }
 
     private static async initializeVault() {
-        console.log(pc.yellow('⚠ Brankas belum terinisialisasi.'));
+        console.log(pc.yellow('⚠ Vault not initialized yet.'));
         console.log(pc.dim('Vault is required to store your notes securely.'));
 
         const res = await prompts({
@@ -153,7 +153,7 @@ export class TerminalUI {
         }
 
         console.log(pc.green('✅ Vault created and unlocked!'));
-        console.log(pc.dim('Mengalihkan ke menu utama...'));
+        console.log(pc.dim('Redirecting to main menu...'));
         await new Promise(r => setTimeout(r, 2000));
     }
 
@@ -174,7 +174,7 @@ export class TerminalUI {
         }
 
         if (!unlockResult.data) {
-            console.log(pc.red('❌ Kata sandi salah.'));
+            console.log(pc.red('❌ Wrong password.'));
             await new Promise(r => setTimeout(r, 1500));
             return false;
         }
@@ -186,21 +186,21 @@ export class TerminalUI {
         const res = await prompts({
             type: 'select',
             name: 'aksi',
-            message: 'Pilih aksi:',
+            message: 'Select action:',
             choices: [
-                { title: '📊 Pantau Status', value: 'monitor' },
-                { title: '📂 Jelajah Arsip', value: 'browse' },
-                { title: '📝 Ukir Catatan', value: 'carve' },
+                { title: '📊 Monitor Status', value: 'monitor' },
+                { title: '📂 Browse Archive', value: 'browse' },
+                { title: '📝 Carve Note', value: 'carve' },
                 { title: '🔑 Save Credentials', value: 'credentials' },
-                { title: '🌱 Tanam .env (Impor)', value: 'tanam_env' },
-                { title: '🛡️ Audit Keamanan', value: 'audit_keamanan' },
-                { title: '📡 Status Sentinel', value: 'sentinel' },
-                { title: '🛡️ Laporan Privasi', value: 'audit_privasi' },
-                { title: '🌱 Tanam (Impor)', value: 'import' },
-                { title: '📦 Petik (Ekspor)', value: 'export' },
-                { title: '🚀 Layani Server', value: 'serve' },
-                { title: '💻 Masuk Mode Shell (CLI)', value: 'shell' },
-                { title: '✨ Keluar', value: 'exit' }
+                { title: '🌱 Plant .env (Import)', value: 'tanam_env' },
+                { title: '🛡️ Security Audit', value: 'audit_keamanan' },
+                { title: '📡 Sentinel Status', value: 'sentinel' },
+                { title: '🛡️ Privacy Report', value: 'audit_privasi' },
+                { title: '🌱 Plant (Import)', value: 'import' },
+                { title: '📦 Harvest (Export)', value: 'export' },
+                { title: '🚀 Serve Server', value: 'serve' },
+                { title: '💻 Enter Shell Mode (CLI)', value: 'shell' },
+                { title: '✨ Exit', value: 'exit' }
             ]
         });
 
@@ -229,7 +229,7 @@ export class TerminalUI {
         }
 
         if (res.aksi !== 'exit') {
-            console.log(pc.dim('\nTekan ENTER untuk kembali...'));
+            console.log(pc.dim('\nPress ENTER to return...'));
             await prompts({ type: 'text', name: 'pause', message: '' });
         }
     }
@@ -238,19 +238,19 @@ export class TerminalUI {
         const context: VaultContext = initialContext || await Context.detectContextAuto();
         console.log(pc.bold(`\n📊 STATUS SISTEM [${context.toUpperCase()}]:`));
         if (Vault.isLocked()) {
-            console.log(pc.yellow('🔒 Brankas Terkunci. Buka untuk melihat statistik lengkap.'));
+            console.log(pc.yellow('🔒 Vault Locked. Unlock to view full statistics.'));
         }
         const stats = await Archive.getStats();
-        console.log(pc.green('✅ Database: Aktif'));
-        console.log(pc.blue(`📂 Total Catatan: ${stats.notes}`));
-        console.log(pc.magenta(`📁 Total Folder: ${stats.folders}`));
+        console.log(pc.green('✅ Database: Active'));
+        console.log(pc.blue(`📂 Total Notes: ${stats.notes}`));
+        console.log(pc.magenta(`📁 Total Folders: ${stats.folders}`));
 
         const env = await Context.readEnv();
         const envKeys = Object.keys(env);
         if (envKeys.length > 0) {
-            console.log(pc.cyan(`\n🌱 Pelataran (.env) terdeteksi (${envKeys.length} entri):`));
+            console.log(pc.cyan(`\n🌱 Courtyard (.env) detected (${envKeys.length} entries):`));
             envKeys.slice(0, 5).forEach(k => console.log(`  ├── ${pc.bold(k)}`));
-            if (envKeys.length > 5) console.log(`  └── ...dan ${envKeys.length - 5} lainnya`);
+            if (envKeys.length > 5) console.log(`  └── ...and ${envKeys.length - 5} more`);
         }
         console.log(pc.dim('---------------------------'));
     }
@@ -280,7 +280,7 @@ export class TerminalUI {
         }
 
         if (notes.length === 0) {
-            console.log(pc.yellow('Tidak ditemukan.'));
+            console.log(pc.yellow('Not found.'));
         } else {
             const select = await prompts({
                 type: 'select',
@@ -296,7 +296,7 @@ export class TerminalUI {
                 }
                 const n = noteResult.data;
                 console.log(pc.cyan(`\n📂 === ${n?.title} ===`));
-                console.log(pc.dim(`Dibuat: ${n?.createdAt}`));
+                console.log(pc.dim(`Created: ${n?.createdAt}`));
                 console.log(pc.dim('---'));
                 console.log(n?.content);
                 console.log(pc.dim('====================\n'));
@@ -318,7 +318,7 @@ export class TerminalUI {
                 console.log(pc.red('❌ Note not found.'));
                 return;
             }
-            console.log(pc.blue(`\n📝 Mengedit: ${pc.bold(note.title)}`));
+            console.log(pc.blue(`\n📝 Editing: ${pc.bold(note.title)}`));
             const res = await prompts({
                 type: 'text',
                 name: 'content',
@@ -379,20 +379,20 @@ export class TerminalUI {
     }
 
     static async actionImport() {
-        console.log(pc.yellow('\n🌱 Fitur Tanam (Import)'));
+        console.log(pc.yellow('\n🌱 Plant Feature (Import)'));
         try {
             const files = await fs.readdir('.');
             const mdFiles = files.filter(f => f.endsWith('.md'));
 
             if (mdFiles.length === 0) {
-                console.log(pc.red('❌ Tidak ditemukan file .md.'));
+                console.log(pc.red('❌ No .md files found.'));
                 return;
             }
 
             const select = await prompts({
                 type: 'multiselect',
                 name: 'targets',
-                message: 'Pilih file:',
+                message: 'Select files:',
                 choices: mdFiles.map(f => ({ title: f, value: f }))
             });
 
@@ -424,7 +424,7 @@ export class TerminalUI {
 
     static async actionExport() {
         if (!(await this.unlock())) return;
-        console.log(pc.magenta('\n📦 Memetik Brankas (Export)'));
+        console.log(pc.magenta('\n📦 Harvesting Vault (Export)'));
 
         const notesRes = await Archive.getAllNotes();
         if (notesRes.error) {
@@ -459,7 +459,7 @@ export class TerminalUI {
             const saveResult = await Archive.saveNote({
                 id: '',
                 title: `🛡️ ${res.label}`,
-                content: `Kredensial untuk ${res.label}`,
+                content: `Credentials for ${res.label}`;
                 folderId: null,
                 isPinned: true,
                 isFavorite: false,
@@ -482,8 +482,8 @@ export class TerminalUI {
 
     static async actionServe() {
         console.log(pc.cyan('\n🚀 Layanan API Lokal'));
-        console.log(pc.green('Γ£à Aktif di http://localhost:1401'));
-        console.log(pc.dim('Tekan Ctrl+C untuk berhenti.'));
+        console.log(pc.green("Γ£à Active at http://localhost:1401"));
+        console.log(pc.dim("Press Ctrl+C to stop."));
         await new Promise(() => { });
     }
 
@@ -493,7 +493,7 @@ export class TerminalUI {
         const { AuditLog } = await import('@lembaranz/core');
         const log = await AuditLog.readLog();
         console.log(log);
-        console.log(pc.dim('\nKetik apa saja untuk kembali...'));
+        console.log(pc.dim("\nType anything to return..."));
         await prompts({ type: 'text', name: 'any', message: '' });
     }
 
@@ -505,14 +505,14 @@ export class TerminalUI {
         const keys = Object.keys(env);
 
         if (keys.length === 0) {
-            console.log(pc.red('❌ Tidak menemukan file .env atau file kosong.'));
+            console.log(pc.red("❌ No .env file found or file is empty."));
             return;
         }
 
         const selection = await prompts({
             type: 'multiselect',
             name: 'target',
-            message: `Terdeteksi ${keys.length} variabel. Pilih yang ingin diamankan ke brankas:`,
+            message: `Detected ${keys.length} variables. Select which ones to secure in vault:`,
             choices: keys.map(k => ({ title: k, value: k }))
         });
 
@@ -522,7 +522,7 @@ export class TerminalUI {
                 const saveResult = await Archive.saveNote({
                     id: '',
                     title: `🛡️ ENV: ${key}`,
-                    content: `Variabel lingkungan otomatis dari .env`,
+                    content: `Environment variables auto-imported from .env`,
                     folderId: null,
                     isPinned: false,
                     isFavorite: false,
@@ -551,19 +551,19 @@ export class TerminalUI {
 
         console.log(`\n  ${pc.bold('1. Algoritma Enkripsi')}`);
         console.log(pc.green('     Γ£à AES-GCM 256-bit'));
-        console.log(pc.dim('     Lapis ganda untuk content dan title catatan.'));
+        console.log(pc.dim("     Double layer encryption for note content and title."));
 
         console.log(`\n  ${pc.bold('2. Derivasi Kunci')}`);
         console.log(pc.green('     Γ£à Argon2id (Standard OWASP)'));
-        console.log(pc.dim('     Sangat tahan terhadap serangan Brute-Force dan GPU cracking.'));
+        console.log(pc.dim("     Highly resistant to Brute-Force and GPU cracking attacks."));
 
         console.log(`\n  ${pc.bold('3. Integritas Data')}`);
         console.log(pc.green('     Γ£à Segel Digital SHA-256'));
-        console.log(pc.dim('     Mendeteksi modifikasi ilegal oleh malware atau pihak ketiga.'));
+        console.log(pc.dim("     Detects illegal modifications by malware or third parties."));
 
         console.log(`\n  ${pc.bold('4. Filtrasi Otonom')}`);
         console.log(pc.green('     Γ£à Secret Scrubber (PenyaringRahasia)'));
-        console.log(pc.dim('     Menghapus credentials secara otomatis sebelum diproses oleh AI.'));
+        console.log(pc.dim("     Automatically removes credentials before being processed by AI."));
 
         console.log(pc.cyan('\nKesimpulan: Sistem Anda memiliki Kedaulatan Mutlak.'));
     }

@@ -66,7 +66,7 @@ export const InputBilahPerintah: React.FC<CommandBarInputProps> = ({ onSubmit, h
                 value={value} 
                 onChange={setNilai} 
                 onSubmit={handleSubmit} 
-                placeholder="Ketik /help untuk melihat command..."
+                placeholder="Type /help to see commands..."
             />
             {suggestion && <Text color="gray" dimColor>{suggestion} (Tab)</Text>}
         </Box>

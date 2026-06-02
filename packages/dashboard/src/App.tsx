@@ -93,11 +93,11 @@ export default function App() {
     e.preventDefault();
     if (!password || !confirmPassword) return;
     if (password.length < 8) {
-      setError('Password harus minimal 8 karakter!');
+      setError("Password must be at least 8 characters!");
       return;
     }
     if (password !== confirmPassword) {
-      setError('Password dan konfirmasi password tidak cocok!');
+      setError("Password and confirmation do not match!");
       return;
     }
     setIsLoading(true);
@@ -113,7 +113,7 @@ export default function App() {
         await refreshNotes();
       }
     } catch (err: any) {
-      setError(err.message || 'Setup gagal.');
+      setError(err.message || "Setup failed.");
     } finally {
       setIsLoading(false);
     }
@@ -162,7 +162,7 @@ export default function App() {
       };
       const res = await Archive.saveNote(noteInput);
       if (res.data) {
-        setSuccessMessage('Catatan berhasil dienkripsi dan disimpan! / 存储成功.');
+        setSuccessMessage("Note encrypted and saved successfully! / 存储成功.");
         setTimeout(() => setSuccessMessage(null), 3000);
         await refreshNotes();
         // Set new note as active
@@ -283,7 +283,7 @@ export default function App() {
 
             {!isSetup && (
               <div className="text-xs text-amber-400 border border-amber-500/20 bg-amber-500/5 p-3 rounded font-sans leading-relaxed">
-                <strong>Vault Baru Terdeteksi.</strong> Silakan konfigurasikan master password untuk mengamankan brankas digital lo.
+                <strong>New Vault Detected.</strong> Please configure master password to secure your digital vault.
               </div>
             )}
 
@@ -453,7 +453,7 @@ export default function App() {
 
               {filteredNotes.length === 0 ? (
                 <div className="text-center text-xs text-slate-600 font-mono py-12">
-                  Belum ada catatan.
+                  No notes yet.
                 </div>
               ) : (
                 filteredNotes.map(note => (
@@ -517,7 +517,7 @@ export default function App() {
               <div className="flex-1 min-w-0 mr-4">
                 <input
                   type="text"
-                  placeholder="Judul Catatan..."
+                  placeholder="Note Title..."
                   value={noteTitle}
                   onChange={e => setNoteTitle(e.target.value)}
                   className="bg-transparent text-slate-100 font-bold outline-none text-base w-full placeholder-slate-700 font-sans"
@@ -528,14 +528,14 @@ export default function App() {
                   <>
                     <button
                       onClick={() => handleCopyContent(noteContent, activeNote.id)}
-                      title="Salin Konten Catatan"
+                      title="Copy Note Content"
                       className="p-2 border border-slate-800 hover:border-cyan-500/40 hover:bg-cyan-500/5 hover:text-cyan-400 text-slate-400 rounded transition-colors"
                     >
                       {copiedId === activeNote.id ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
                     </button>
                     <button
                       onClick={() => handleDeleteNote(activeNote.id)}
-                      title="Hapus Catatan"
+                      title="Delete Note"
                       className="p-2 border border-slate-800 hover:border-red-500/40 hover:bg-red-500/5 hover:text-red-400 text-slate-400 rounded transition-colors"
                     >
                       <Trash2 size={16} />
@@ -593,7 +593,7 @@ export default function App() {
             <div className="flex-1 border border-slate-900 bg-slate-900/10 rounded-lg relative overflow-hidden flex items-center justify-center">
               {graphData.nodes.length === 0 ? (
                 <div className="text-center font-mono text-xs text-slate-600">
-                  Belum ada relasi untuk dirender. Tambahkan tag pada catatan lo!
+                  No relations to render yet. Add tags to your notes!
                 </div>
               ) : (
                 <svg className="w-full h-full min-h-[400px]">

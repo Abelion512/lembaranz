@@ -178,11 +178,11 @@ async function runStep2AndBeyond(password: string, _program: Command) {
     // Step 2: Display recovery phrase
     console.log(pc.cyan('\n🔑 Step 2/3: Your Recovery Phrase'));
     console.log(pc.yellow('\n⚠️  PENTING: Tulis 12 kata ini di KERTAS!'));
-    console.log(pc.dim('Jika lupa password, 12 kata ini SATU-SATUNYA cara untuk recover.\n'));
+    console.log(pc.dim("If you forget your password, these 12 words are the ONLY way to recover.\n"));
 
     // Display words in a nice format
     console.log(pc.bold('\n┌─────────────────────────────────────────────────────────────────┐'));
-    console.log(pc.bold('│               12 KATA PEMULIHAN ANDA (TULIS DI KERTAS!)           │'));
+    console.log(pc.bold("│               YOUR 12 RECOVERY WORDS (WRITE ON PAPER!)           │"));
     console.log(pc.bold('└─────────────────────────────────────────────────────────────────┘\n'));
 
     for (let i = 0; i < words.length; i += 3) {
@@ -193,22 +193,22 @@ async function runStep2AndBeyond(password: string, _program: Command) {
       console.log(`  ${formatted}`);
     }
 
-    console.log('\n' + pc.bold(pc.yellow('⚠️  JANGAN pernah bagikan kata-kata ini ke siapapun!')));
-    console.log(pc.dim('Simpan di tempat aman (brankas fisik, safe deposit box, dll).\n'));
+    console.log("\n" + pc.bold(pc.yellow("⚠️  NEVER share these words with anyone!")));
+    console.log(pc.dim("Store in a safe place (physical safe, safe deposit box, etc.).\n"));
 
     const { wroteDown } = await prompts({
       type: 'confirm',
       name: 'wroteDown',
-      message: pc.green('✅ Saya sudah menulis 12 kata ini di kertas dan menyimpannya dengan aman'),
+      message: pc.green("✅ I have written these 12 words on paper and stored them safely"),
       initial: false
     });
 
     if (!wroteDown) {
-      console.log(pc.red('\n⚠️  Setup dibatalkan.'));
-      console.log(pc.yellow('\n⚠️  Anda harus memulai ulang proses setup dari awal.'));
-      console.log(pc.dim('  • Screenshot 12 kata di atas (hanya untuk sementara)'));
-      console.log(pc.dim('  • Tulis di kertas, lalu hapus screenshot'));
-      console.log(pc.dim('  • Jalankan `lembaranz setup` lagi\n'));
+      console.log(pc.red("\n⚠️  Setup cancelled."));
+      console.log(pc.yellow("\n⚠️  You must restart the setup process from the beginning."));
+      console.log(pc.dim("  • Screenshot the 12 words above (temporarily only)"));
+      console.log(pc.dim("  • Write on paper, then delete the screenshot"));
+      console.log(pc.dim("  • Run `lembaranz setup` again\n"));
       return;
     }
 
@@ -216,7 +216,7 @@ async function runStep2AndBeyond(password: string, _program: Command) {
     const { wantVerify } = await prompts({
       type: 'confirm',
       name: 'wantVerify',
-      message: 'Mau verifikasi 3 kata pertama untuk memastikan sudah ditulis benar?',
+      message: "Want to verify the first 3 words to ensure they are written correctly?",
       initial: true
     });
 
@@ -224,21 +224,21 @@ async function runStep2AndBeyond(password: string, _program: Command) {
       const { typedWords } = await prompts({
         type: 'text',
         name: 'typedWords',
-        message: 'Ketik 3 kata pertama (pisahkan dengan spasi):'
+        message: "Type the first 3 words (separate with spaces):"
       });
 
       const typed = typedWords?.trim().toLowerCase().split(/\s+/) || [];
       const expected = words.slice(0, 3);
 
       if (typed.join(' ') !== expected.join(' ')) {
-        console.log(pc.red('\n✗ Kata tidak cocok! Periksa lagi tulisan Anda.'));
-        console.log(pc.yellow('\n12 kata Anda:'));
+        console.log(pc.red("\n✗ Words do not match! Check your writing again."));
+        console.log(pc.yellow("\nYour 12 words:"));
         console.log(pc.cyan(mnemonic));
-        console.log(pc.dim('\nJalankan `lembaranz setup` lagi setelah menulis dengan benar.\n'));
+        console.log(pc.dim("\nRun `lembaranz setup` again after writing correctly.\n"));
         return;
       }
 
-      console.log(pc.green('\n✅ Verifikasi berhasil! Anda sudah menulis dengan benar.\n'));
+      console.log(pc.green("\n✅ Verification successful! You have written them correctly.\n"));
     }
 
     // Step 3: Create vault
