@@ -10,18 +10,18 @@ export function registerDashboardCommand(program: Command) {
   program
     .command("dashboard")
     .description("Open Lembaranz Visual Dashboard (E2EE SPA)")
-    .action(async () => {
+    .option("--host <host>", "Host to run the dashboard server on", "0.0.0.0")
+    .option("--port <port>", "Port to run the dashboard server on", "3000")
+    .action(async (options) => {
       console.log("🌐 Opening Lembaranz Dashboard...");
       
       const dashboardPath = path.resolve(process.cwd(), "packages", "dashboard");
       
       try {
-        // Start local dev server (Vite) and open browser
-        // In production, this should point to a built dist or hosted URL
         console.log(`📂 Dashboard source: ${dashboardPath}`);
-        console.log("⚡ Starting local interface...");
+        console.log(`⚡ Starting interface on http://${options.host}:${options.port}...`);
         
-        exec("bun run dev", { cwd: dashboardPath }, (error) => {
+        exec(`bun run dev --host ${options.host} --port ${options.port}`, { cwd: dashboardPath }, (error) => {
           if (error) {
             console.error(`❌ Failed to launch dashboard: ${error.message}`);
           }

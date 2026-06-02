@@ -62,6 +62,10 @@ export interface AppSettings {
     customThemes?: Record<string, string>;
     vimMode?: boolean;
     biometricEnabled?: boolean;
+    agentAccessControl?: {
+        enabled: boolean;
+        allowedAgents: string[];
+    };
 }
 
 export interface UserProfile {
