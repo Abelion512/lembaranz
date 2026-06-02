@@ -1,7 +1,7 @@
 {
   "name": "@lembaranz/core",
-  "version": "0.0.0",
-  "description": "Core encryption engine for Lembaranz \u2014 AES-GCM 256 + Argon2id, local-first, zero-knowledge note vault.",
+  "version": "0.1.0",
+  "description": "Core encryption engine for Lembaranz — AES-GCM 256 + Argon2id, local-first, zero-knowledge note vault.",
   "author": "Abelion Lavv <agen.salva@gmail.com>",
   "license": "MIT",
   "private": false,
