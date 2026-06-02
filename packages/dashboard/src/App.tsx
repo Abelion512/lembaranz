@@ -307,7 +307,7 @@ export default function App() {
                 <div className="space-y-2">
                   <label className="text-xs uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
                     <KeyRound size={12} className="text-cyan-500" />
-                    Konfirmasi Password
+                    Confirm Password
                   </label>
                   <input
                     type="password"
@@ -322,7 +322,7 @@ export default function App() {
                 <div className="space-y-2">
                   <label className="text-xs uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
                     <Sparkles size={12} className="text-cyan-500" />
-                    12-Word Seed Phrase (Opsional)
+                    12-Word Seed Phrase (Optional)
                   </label>
                   <input
                     type="text"
@@ -345,7 +345,7 @@ export default function App() {
               ) : (
                 <>
                   {isSetup ? <Unlock size={16} /> : <Plus size={16} />}
-                  <span>{isSetup ? 'BUKA BRANKAS' : 'INISIALISASI BRANKAS'}</span>
+                  <span>{isSetup ? 'OPEN VAULT' : 'INITIALIZE VAULT'}</span>
                 </>
               )}
             </button>
@@ -448,7 +448,7 @@ export default function App() {
                 className="w-full border border-dashed border-cyan-500/30 hover:border-cyan-500/50 hover:bg-cyan-500/5 py-2 px-3 flex items-center justify-center gap-1.5 text-xs font-mono text-cyan-400 rounded transition-all mb-3"
               >
                 <Plus size={14} />
-                <span>CATATAN BARU / 新建</span>
+                <span>NEW NOTE / 新建</span>
               </button>
 
               {filteredNotes.length === 0 ? (
@@ -493,7 +493,7 @@ export default function App() {
 
         {/* Quick Dashboard Stat Footer */}
         <div className="p-4 border-t border-slate-900/60 bg-slate-950/20 text-[10px] text-slate-500 font-mono flex items-center justify-between">
-          <span>CATATAN: {notes.length}</span>
+          <span>NOTES: {notes.length}</span>
           <span>VAULT: SECURED V3</span>
         </div>
       </aside>
@@ -547,7 +547,7 @@ export default function App() {
                   className="bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold py-1.5 px-4 text-xs tracking-wider flex items-center gap-1.5 rounded transition-all uppercase"
                 >
                   <Save size={14} />
-                  <span>SIMPAN</span>
+                  <span>SAVE</span>
                 </button>
               </div>
             </div>
@@ -557,7 +557,7 @@ export default function App() {
               <span className="text-[10px] uppercase font-mono text-slate-500 tracking-wider">Tags:</span>
               <input
                 type="text"
-                placeholder="misal: project, database, env"
+                placeholder="e.g.: project, database, env"
                 value={noteTags}
                 onChange={e => setNoteTags(e.target.value)}
                 className="bg-transparent text-xs text-slate-400 outline-none w-full placeholder-slate-800"
@@ -582,7 +582,7 @@ export default function App() {
             <div className="mb-4">
               <h2 className="text-sm font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
                 <Compass size={16} />
-                Peta Aksara (Graph Visualization)
+                Graph Visualization
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
                 Interactive representation of connections between encrypted notes based on tag label matching.
