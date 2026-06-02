@@ -32,15 +32,24 @@ export function registerConfigCommand(program: Command) {
 
   program
     .command("update")
-    .description("Update Lembaranz to the latest version")
+    .description("Update Lembaranz with local change protection")
     .action(async () => {
-      console.log("🚀 Updating Lembaranz...");
       const { execSync } = await import("node:child_process");
-      try {
+      const isGit = await fs.access(path.join(process.cwd(), ".git")).then(() => true).catch(() => false);
+
+      if (isGit) {
+        console.log("📦 Dev mode detected. Stashing local changes...");
+        try {
+          execSync("git stash", { stdio: "inherit" });
+          execSync("git pull --rebase", { stdio: "inherit" });
+          execSync("git stash pop", { stdio: "inherit" });
+          console.log("✅ Local source updated and stashes restored.");
+        } catch (e) {
+          console.error("❌ Update failed. Resolve conflicts manually.");
+        }
+      } else {
+        console.log("🚀 Updating global binary...");
         execSync("npm install -g lembaranz", { stdio: "inherit" });
-        console.log("✅ Update successful.");
-      } catch (e) {
-        console.error("❌ Update failed:", e instanceof Error ? e.message : String(e));
       }
     });
 

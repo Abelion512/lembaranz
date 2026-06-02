@@ -9,6 +9,7 @@ import { registerBrowseCommand } from "./commands/Browse.js";
 import { registerLaunchCommand, runTUI } from "./commands/Launch.js";
 import { registerSetupCommand } from "./commands/Setup.js";
 import { registerDoctorCommand } from "./commands/Doctor.js";
+import { registerDashboardCommand } from "./commands/Dashboard.js";
 import { prepareContext } from "./utils.js";
 import pkg from "../package.json" with { type: "json" };
 
@@ -36,6 +37,7 @@ program
 registerSetupCommand(program);
 registerConfigCommand(program);
 registerDoctorCommand(program);
+registerDashboardCommand(program);
 registerImportCommand(program);
 registerExportCommand(program);
 registerMonitorCommand(program, VERSI);
