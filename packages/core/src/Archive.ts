@@ -530,6 +530,34 @@ export const Archive = {
   },
 
   /**
+   * Restores data from a portable backup buffer.
+   */
+  async restoreBackup(buffer: Uint8Array, passwordBackup: string): Promise<Result<{ restored: number; skipped: number }>> {
+    const res = await Vault.decryptPortable(buffer, passwordBackup);
+    if (res.error || !res.data) return { data: null, error: res.error };
+
+    try {
+      const backup = JSON.parse(res.data);
+      let restored = 0;
+      let skipped = 0;
+
+      for (const note of backup.notes) {
+        try {
+          const saveRes = await this.saveNote(note);
+          if (saveRes.error) skipped++;
+          else restored++;
+        } catch {
+          skipped++;
+        }
+      }
+
+      return { data: { restored, skipped }, error: null };
+    } catch (e) {
+      return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
+    }
+  },
+
+  /**
    * Retrieves statistics (entry and folder counts).
    */
   async getStats() {
