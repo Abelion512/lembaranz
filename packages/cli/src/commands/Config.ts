@@ -30,6 +30,20 @@ export function registerConfigCommand(program: Command) {
       }
     });
 
+  program
+    .command("update")
+    .description("Update Lembaranz to the latest version")
+    .action(async () => {
+      console.log("🚀 Updating Lembaranz...");
+      const { execSync } = await import("node:child_process");
+      try {
+        execSync("npm install -g lembaranz", { stdio: "inherit" });
+        console.log("✅ Update successful.");
+      } catch (e) {
+        console.error("❌ Update failed:", e instanceof Error ? e.message : String(e));
+      }
+    });
+
   configCmd
     .command("get")
     .description("Get a local environment variable")
