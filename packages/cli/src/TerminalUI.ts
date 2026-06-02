@@ -411,7 +411,7 @@ export class TerminalUI {
                         createdAt: new Date().toISOString()
                     });
                     if (saveResult.error) {
-                        console.log(pc.red(`❌ Gagal menanam ${file}: ${saveResult.error.message}`));
+                        console.log(pc.red(`❌ Failed to plant ${file}: ${saveResult.error.message}`));
                     } else {
                         console.log(pc.green(`✅ ${file} imported successfully.`));
                     }
@@ -428,29 +428,29 @@ export class TerminalUI {
 
         const notesRes = await Archive.getAllNotes();
         if (notesRes.error) {
-            console.log(pc.red(`❌ Gagal mengambil data: ${notesRes.error.message}`));
+            console.log(pc.red(`❌ Failed to fetch data: ${notesRes.error.message}`));
             return;
         }
 
         const data = JSON.stringify(notesRes.data);
         const encRes = await Vault.encryptPacked(data);
         if (encRes.error) {
-            console.log(pc.red(`❌ Gagal melakukan enkripsi ekspor: ${encRes.error.message}`));
+            console.log(pc.red(`❌ Failed to perform export encryption: ${encRes.error.message}`));
             return;
         }
 
         const filename = `lembaranz-petikan-${new Date().toISOString().split('T')[0]}.lembaranz`;
         await fs.writeFile(filename, encRes.data);
-        console.log(pc.green(`✅ Berhasil dipetik ke: ${pc.bold(filename)}`));
+        console.log(pc.green(`✅ Successfully harvested to: ${pc.bold(filename)}`));
     }
 
     static async actionCredentials() {
         if (!(await this.unlock())) return;
 
-        console.log(pc.magenta('\n🔑 Menanam Kredensial Baru'));
+        console.log(pc.magenta('\n🔑 Save New Credentials'));
         const res = await prompts([
-            { type: 'text', name: 'label', message: 'Layanan:', initial: 'Layanan Baru' },
-            { type: 'text', name: 'url', message: 'URL (Opsional):' },
+            { type: 'text', name: 'label', message: 'Service:', initial: 'New Service' },
+            { type: 'text', name: 'url', message: 'URL (Optional):' },
             { type: 'text', name: 'username', message: 'Username:' },
             { type: 'password', name: 'password', message: 'Password:' }
         ]);
@@ -459,7 +459,7 @@ export class TerminalUI {
             const saveResult = await Archive.saveNote({
                 id: '',
                 title: `🛡️ ${res.label}`,
-                content: `Credentials for ${res.label}`;
+                content: `Credentials for ${res.label}`,
                 folderId: null,
                 isPinned: true,
                 isFavorite: false,
@@ -469,27 +469,27 @@ export class TerminalUI {
                     password: res.password,
                     url: res.url
                 },
-                tags: ['Kredensial'],
+                tags: ['Credentials'],
                 createdAt: new Date().toISOString()
             });
             if (saveResult.error) {
-                console.log(pc.red(`❌ Gagal menyimpan credentials: ${saveResult.error.message}`));
+                console.log(pc.red(`❌ Failed to save credentials: ${saveResult.error.message}`));
             } else {
-                console.log(pc.green('✅ Berhasil disimpan.'));
+                console.log(pc.green('✅ Successfully saved.'));
             }
         }
     }
 
     static async actionServe() {
-        console.log(pc.cyan('\n🚀 Layanan API Lokal'));
+        console.log(pc.cyan('\n🚀 Local API Server'));
         console.log(pc.green("Γ£à Active at http://localhost:1401"));
         console.log(pc.dim("Press Ctrl+C to stop."));
         await new Promise(() => { });
     }
 
     static async actionAuditPrivacy() {
-        console.log(pc.bold(pc.green('\n🛡️ LAPORAN PRIVASI & AUDIT TRANSPARANSI')));
-        console.log(pc.dim('Melihat aktivitas pemrosesan data oleh Sentinel...\n'));
+        console.log(pc.bold(pc.green('\n🛡️ PRIVACY REPORT & TRANSPARENCY AUDIT')));
+        console.log(pc.dim('Viewing data processing activity by Sentinel...\n'));
         const { AuditLog } = await import('@lembaranz/core');
         const log = await AuditLog.readLog();
         console.log(log);

@@ -1,49 +1,49 @@
 # Product Requirements Document (PRD): Lembaranz
 
-**Versi:** 3.5.0
-**Status:** Production Ready — CLI/TUI Stabil, GUI Planned
-**Tanggal:** 13 April 2026
-**Bahasa:** Indonesia Baku
+**Version:** 3.5.0
+**Status:** Production Ready — Stable CLI/TUI, GUI Planned
+**Date:** April 13, 2026
+**Language:** English
 **Branch:** `#33`
 
-> **Lembaranz**: Brankas Arsip Digital Personal Buatan Anak Bangsa  
-> **Filosofi:** Kedaulatan Data, Privasi Absolut, Estetika Minimalis  
-> **Konvensi Nama:** Indonesia Puitis (Jiwa, Raga, Suara, Aksara, Brankas)
+> **Lembaranz**: Personal Digital Archive Vault Made by Indonesian Developers  
+> **Philosophy:** Data Sovereignty, Absolute Privacy, Minimalist Aesthetics  
+> **Naming Convention:** Poetic Indonesian Names (Jiwa, Raga, Suara, Aksara, Brankas)
 
 ---
 
-## 1. Identitas & Filosofi
+## 1. Identity & Philosophy
 
-Lembaranz adalah brankas arsip digital personal yang dikembangkan oleh pengembang Indonesia untuk kedaulatan data lokal.
+Lembaranz is a personal digital archive vault developed by Indonesian developers for local data sovereignty.
 
-### Visi
-Menjadi standar emas penyimpanan data personal terenkripsi yang **dibuat di Indonesia untuk dunia**.
+### Vision
+To become the gold standard for encrypted personal data storage **made in Indonesia for the world**.
 
-### Prinsip Utama
-- **Local-First**: Data Anda tetap di perangkat Anda
-- **Privacy-First**: Enkripsi zero-knowledge, tidak ada yang bisa mengakses kecuali Anda
-- **CLI-First**: Fokus pada terminal/TUI untuk developer productivity
-- **Minimalis**: Estetika bersih tanpa gimmick berlebihan
-- **Terbuka**: Format data terbuka, tidak ada vendor lock-in
+### Core Principles
+- **Local-First**: Your data stays on your device
+- **Privacy-First**: Zero-knowledge encryption, no one can access except you
+- **CLI-First**: Focus on terminal/TUI for developer productivity
+- **Minimalist**: Clean aesthetics without excessive gimmicks
+- **Open**: Open data formats, no vendor lock-in
 
-### Target Pengguna
-1. **Developer Indonesia**: Butuh manajemen `.env` aman dan CLI yang efisien
-2. **Pegiat Privasi**: Menghindari surveillance cloud korporat
-3. **Power Users Terminal**: Nyaman dengan keyboard-first workflow
+### Target Users
+1. **Indonesian Developers**: Need secure `.env` management and efficient CLI
+2. **Privacy Advocates**: Avoiding corporate cloud surveillance
+3. **Terminal Power Users**: Comfortable with keyboard-first workflow
 
 ---
 
-## 2. Stack Teknologi
+## 2. Technology Stack
 
-### Core (Jiwa)
-- **Runtime**: Bun 1.3+ (cepat, native TypeScript)
+### Core (Jiwa/Soul)
+- **Runtime**: Bun 1.3+ (fast, native TypeScript)
 - **Language**: TypeScript 5.x
 - **Encryption**: `@noble/ciphers` (AES-GCM 256-bit)
 - **Key Derivation**: `@noble/hashes` (Argon2id)
 - **Integrity**: SHA-256 (digital seal)
 - **Storage**: IndexedDB (web), Filesystem (CLI)
 
-### Interface (Raga & Suara)
+### Interface (Raga/Body & Suara/Voice)
 - **Web**: Next.js 16 (App Router), React 19, Tailwind CSS v4
 - **CLI/TUI**: Ink (React for Terminal), Commander.js
 - **Animation**: Framer Motion (web only)
@@ -56,24 +56,24 @@ Menjadi standar emas penyimpanan data personal terenkripsi yang **dibuat di Indo
 
 ---
 
-## 3. Arsitektur Sistem
+## 3. System Architecture
 
 ### A. Brankas (Security Layer)
-Enkripsi zero-knowledge dengan standar industri tertinggi.
+Zero-knowledge encryption with highest industry standards.
 
-**Fitur:**
+**Features:**
 - AES-GCM 256-bit encryption
 - Argon2id key derivation (memory-hard, anti-GPU)
-- Auto-lock setelah 1 menit idle
-- Panic key untuk emergency wipe
-- Digital seal (SHA-256) untuk integrity check
+- Auto-lock after 1 minute idle
+- Panic key for emergency wipe
+- Digital seal (SHA-256) for integrity check
 
 **Status:** ✅ Production Ready
 
 ### B. Gudang Aksara (Note Management)
-Manajemen catatan terenkripsi dengan CLI-first approach.
+Encrypted note management with CLI-first approach.
 
-**Fitur:**
+**Features:**
 - CRUD operations via CLI
 - Markdown support
 - Tag-based organization
@@ -83,26 +83,26 @@ Manajemen catatan terenkripsi dengan CLI-first approach.
 **Status:** ✅ Production Ready (CLI)
 
 ### C. Laras (Environment Manager)
-Pengelolaan `.env` lintas proyek dengan enkripsi.
+`.env` management across projects with encryption.
 
-**Fitur:**
-- Simpan `.env` ke brankas terenkripsi
-- Load `.env` ke project lokal
-- Overwrite protection dengan konfirmasi
-- Multi-project support dengan tagging
+**Features:**
+- Save `.env` to encrypted vault
+- Load `.env` to local project
+- Overwrite protection with confirmation
+- Multi-project support with tagging
 
 **Status:** ✅ Production Ready (CLI)
 
 ### D. Suara (CLI/TUI)
-Antarmuka terminal interaktif untuk produktivitas maksimal.
+Interactive terminal interface for maximum productivity.
 
 **Commands:**
-- `lembaranz mulai` - TUI interaktif
-- `lembaranz ukir` - Buat/edit catatan
-- `lembaranz laras` - Kelola environment
-- `lembaranz tanam` - Import direktori
-- `lembaranz cari` - Search encrypted notes
-- `lembaranz petik` - Export catatan
+- `lembaranz start` - Interactive TUI
+- `lembaranz carve` - Create/edit notes
+- `lembaranz env` - Manage environment
+- `lembaranz plant` - Import directory
+- `lembaranz search` - Search encrypted notes
+- `lembaranz pick` - Export notes
 
 **Status:** ✅ Production Ready
 
@@ -110,41 +110,41 @@ Antarmuka terminal interaktif untuk produktivitas maksimal.
 
 ## 4. Roadmap & Progress
 
-### Fase 1 — Pondasi (MVP) ✅ **SELESAI 100%**
+### Phase 1 — Foundation (MVP) ✅ **COMPLETE 100%**
 - [x] Setup Monorepo (Core, CLI)
-- [x] Implementasi Brankas (AES-GCM + Argon2id)
-- [x] CLI Commands (ukir, laras, tanam, cari)
-- [x] TUI Interaktif (Ink-based)
+- [x] Implement Brankas (AES-GCM + Argon2id)
+- [x] CLI Commands (carve, env, plant, search)
+- [x] Interactive TUI (Ink-based)
 - [x] Digital Seal (SHA-256 integrity)
 - [x] Auto-lock & panic key
 
-### Fase 2 — Fitur Utama (Ciri Khas) ✅ **SELESAI 85%**
-- [x] Laras (.env manager) dengan overwrite protection
-- [x] TUI dengan logo Lembaranz (seperti gemini/claude)
+### Phase 2 — Core Features (Signature) ✅ **COMPLETE 85%**
+- [x] Laras (.env manager) with overwrite protection
+- [x] TUI with Lembaranz logo (like gemini/claude)
 - [x] Fuzzy search encrypted content
 - [x] Import/export multi-format
 - [x] AI YOLO Mode security (single-push)
 - [ ] Graph visualization (Peta Aksara) — **50%**
 
-### Fase 3 — Ekspansi (Community & Polish) ⏳ **PLANNED**
-- [ ] Documentation lengkap Bahasa Indonesia
+### Phase 3 — Expansion (Community & Polish) ⏳ **PLANNED**
+- [ ] Complete documentation in English
 - [ ] Benchmark suite (1000 notes stress test)
 - [ ] Native apps (iOS/Android/Desktop)
 - [ ] Biometric unlock (WebAuthn)
 - [ ] Sync bridge (E2EE personal cloud)
 
-**Overall Progress: ~75%** (Fase 1 ✅, Fase 2 🔄, Fase 3 📋)
+**Overall Progress: ~75%** (Phase 1 ✅, Phase 2 🔄, Phase 3 📋)
 
 ---
 
-## 5. Struktur Folder
+## 5. Folder Structure
 
 ```
 lembaranz/
 ├── packages/
 │   ├── core/          # @lembaranz/core (encryption, storage)
 │   └── cli/           # lembaranz (unscoped package TUI, commands)
-├── docs/              # Dokumentasi (id/ & en/)
+├── docs/              # Documentation (en/)
 ├── .githooks/         # Git hooks (YOLO mode)
 ├── scripts/           # Helper scripts
 ├── .github/
@@ -158,13 +158,13 @@ lembaranz/
 
 ---
 
-## 6. Non-Goals (Yang TIDAK Akan Dibangun)
+## 6. Non-Goals (What Will NOT Be Built)
 
-❌ **Web Vault UI** — Fokus ke CLI/TUI untuk developer  
-❌ **Cloud Sync** — Local-first, data tetap di perangkat  
-❌ **Collaboration** — Personal vault, bukan team tool  
-❌ **Mobile Apps** — Prioritas CLI desktop experience  
-❌ **Gimmick Features** — Minimalis, fungsional, tanpa bloat  
+❌ **Web Vault UI** — Focus on CLI/TUI for developers  
+❌ **Cloud Sync** — Local-first, data stays on device  
+❌ **Collaboration** — Personal vault, not team tool  
+❌ **Mobile Apps** — Priority on CLI desktop experience  
+❌ **Gimmick Features** — Minimalist, functional, no bloat  
 
 ---
 
@@ -172,19 +172,19 @@ lembaranz/
 
 ### Technical Metrics
 - **Encryption**: AES-GCM 256-bit, Argon2id (19MB RAM, 2 iterations)
-- **Performance**: <100ms decrypt untuk note <10KB
+- **Performance**: <100ms decrypt for note <10KB
 - **Bundle Size**: CLI <2MB, Web <500KB (gzip)
 - **Test Coverage**: >80% core modules
 
 ### User Metrics
-- **Time to First Note**: <30 detik dari install
-- **CLI Commands**: 6 commands utama (mulai, ukir, laras, tanam, cari, petik)
-- **Documentation**: 100% Bahasa Indonesia baku
+- **Time to First Note**: <30 seconds from install
+- **CLI Commands**: 6 main commands (start, carve, env, plant, search, pick)
+- **Documentation**: 100% English
 
 ### Security Metrics
-- **Zero-Knowledge**: Password tidak pernah disimpan/transmit
-- **Auto-Lock**: 1 menit idle timeout
-- **Panic Key**: Emergency wipe dalam <1 detik
+- **Zero-Knowledge**: Password never stored/transmitted
+- **Auto-Lock**: 1 minute idle timeout
+- **Panic Key**: Emergency wipe in <1 second
 
 ---
 
@@ -193,20 +193,20 @@ lembaranz/
 | Version | Date | Status | Highlights |
 |---------|------|--------|------------|
 | 3.4.0 | Mar 2026 | Current | AI YOLO Mode, CLI focus, docs update |
-| 3.3.0 | Feb 2026 | Stable | TUI modern, env protection |
+| 3.3.0 | Feb 2026 | Stable | Modern TUI, env protection |
 | 3.0.0 | Feb 2026 | Stable | Monorepo, rebranding |
 | 2.x | Feb 2026 | Legacy | Landing page, basic CLI |
 
 ---
 
-## 9. Tim Pengembang
+## 9. Development Team
 
 **Lead Developer:** Abelion Lavv  
-**Kontributor:** Open Source Community  
-**Lokasi:** Indonesia 🇮🇩  
+**Contributors:** Open Source Community  
+**Location:** Indonesia 🇮🇩  
 
 ---
 
-**PRD ini adalah living document.** Update seiring perkembangan fitur dan feedback komunitas.
+**This PRD is a living document.** Updated as features develop and community feedback is received.
 
-* Dibuat dengan ❤️ oleh pengembang Indonesia untuk kedaulatan data lokal.
+* Made with ❤️ by Indonesian developers for local data sovereignty.

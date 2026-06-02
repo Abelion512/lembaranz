@@ -32,17 +32,17 @@ function isDangerousUrl(url: string | null | undefined): boolean {
 }
 
 /**
- * Hardening Renderer Markdown:
- * 1. Blokir raw HTML.
- * 2. Filter protokol berbahaya pada link.
- * 3. Tambahkan rel="noopener noreferrer" pada link eksternal.
+ * Hardening Markdown Renderer:
+ * 1. Block raw HTML.
+ * 2. Filter dangerous protocols on links.
+ * 3. Add rel="noopener noreferrer" to external links.
  */
 export const safeMarked = new Marked({ gfm: true });
 
 safeMarked.use({
     renderer: {
         html() {
-            return ''; // Blokir eksekusi HTML mentah dalam markdown
+            return ''; // Block raw HTML execution in markdown
         },
         link(token) {
             const href = token.href;
@@ -51,12 +51,12 @@ safeMarked.use({
 
             const safeText = text ? text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
 
-            // Keamanan: Tolak protokol berbahaya (XSS)
+            // Security: Reject dangerous protocols (XSS)
             if (isDangerousUrl(href)) {
                 return `<span>${safeText}</span>`;
             }
 
-            // Keamanan: Tambahkan atribut pengaman untuk link eksternal
+            // Security: Add security attributes for external links
             const isExternal = href.startsWith('http');
             const rel = isExternal ? 'rel="noopener noreferrer" target="_blank"' : '';
             // XSS fix: Escape href and title attribute value
@@ -73,7 +73,7 @@ safeMarked.use({
 
             const safeText = text ? text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
 
-            // Keamanan: Tolak protokol berbahaya pada gambar (XSS)
+            // Security: Reject dangerous protocols on images (XSS)
             if (isDangerousUrl(href)) {
                 return `<span>${safeText}</span>`;
             }

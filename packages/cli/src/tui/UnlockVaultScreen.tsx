@@ -21,7 +21,7 @@ export const UnlockVaultScreen: React.FC<UnlockVaultScreenProps> = ({ onSuccess 
             const { Archive } = await import('@lembaranz/core');
             const result = await Archive.isVaultInitialized();
             if (result.error) {
-                setError('Gagal memeriksa status brankas.');
+                setError('Failed to check vault status.');
                 setIsInit(false);
             } else {
                 setIsInit(result.data);
@@ -33,7 +33,7 @@ export const UnlockVaultScreen: React.FC<UnlockVaultScreenProps> = ({ onSuccess 
 
     const handlePasswordSubmit = async () => {
         if (password.length < 8) {
-            setError('Minimal 8 karakter.');
+            setError('Minimum 8 characters required.');
             return;
         }
 
@@ -45,7 +45,7 @@ export const UnlockVaultScreen: React.FC<UnlockVaultScreenProps> = ({ onSuccess 
             if (mode === 'setup') {
                 const result = await Archive.setupVault(password);
                 if (result.error) {
-                    setError(result.error.message || 'Gagal menyiapkan brankas.');
+                    setError(result.error.message || 'Failed to setup vault.');
                 } else {
                     onSuccess();
                 }
@@ -58,7 +58,7 @@ export const UnlockVaultScreen: React.FC<UnlockVaultScreenProps> = ({ onSuccess 
                 }
             }
         } catch (_e) {
-            setError('Gagal memproses brankas.');
+            setError('Failed to process vault.');
         } finally {
             setIsLoading(false);
         }
@@ -78,7 +78,7 @@ export const UnlockVaultScreen: React.FC<UnlockVaultScreenProps> = ({ onSuccess 
                 setError(result.error?.message || 'Invalid paper key.');
             }
         } catch (_e) {
-            setError('Gagal memulihkan brankas.');
+            setError('Failed to recover vault.');
         } finally {
             setIsLoading(false);
         }
