@@ -2,7 +2,7 @@ import { StorageAdapter, LembaranzSchema } from "./types";
 import fs from "fs/promises";
 import path from "path";
 
-const DEFAULT_DB_FILE = ".lembaranz-db.json";
+const DEFAULT_DB_FILE = "db/data.sqlite";
 
 interface SchemaStructure {
   notes: Record<string, LembaranzSchema["notes"]["value"]>;
