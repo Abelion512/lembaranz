@@ -1,14 +1,14 @@
-# Syarat & Ketentuan
+# Terms & Conditions
 
-**Terakhir Diperbarui: 17 Februari 2026**
+**Last Updated: February 17, 2026**
 
-Selamat datang di Lembaranz.
+Welcome to Lembaranz.
 
-## 1. Penggunaan Data
-Aplikasi ini bersifat **Local-First**. Kami tidak menyimpan data Anda di server kami. Seluruh catatan dan kunci enkripsi tersimpan di perangkat Anda (Browser IndexedDB atau File Lokal).
+## 1. Data Usage
+This application is **Local-First**. We do not store your data on our servers. All notes and encryption keys are stored on your device (Browser IndexedDB or Local File).
 
-## 2. Tanggung Jawab
-Anda bertanggung jawab penuh atas keamanan perangkat dan kunci enkripsi Anda. Kami tidak memiliki salinan kunci, sehingga **kami tidak bisa memulihkan data jika Anda lupa password**.
+## 2. Responsibility
+You are fully responsible for the security of your device and encryption keys. We do not have a copy of the keys, so **we cannot recover your data if you forget your password**.
 
-## 3. Lisensi
-Perangkat lunak ini disediakan di bawah lisensi MIT "sebagaimana adanya" tanpa jaminan apa pun.
+## 3. License
+This software is provided under the MIT license "as is" without any warranties.

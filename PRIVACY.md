@@ -1,15 +1,15 @@
-# Kebijakan Privasi
+# Privacy Policy
 
-**Terakhir Diperbarui: 17 Februari 2026**
+**Last Updated: February 17, 2026**
 
-Privasi adalah hak fundamental di Lembaranz.
+Privacy is a fundamental right at Lembaranz.
 
-## 1. Pengumpulan Data
-Kami **tidak mengumpulkan** data pribadi, catatan, atau password Anda.
-Aplikasi ini berjalan sepenuhnya di sisi klien (Client-Side).
+## 1. Data Collection
+We **do not collect** personal data, notes, or passwords.
+This application runs entirely client-side.
 
-## 2. Analitik
-Aplikasi ini tidak menggunakan pelacak (tracker) pihak ketiga atau cookie analitik.
+## 2. Analytics
+This application does not use third-party trackers or analytics cookies.
 
-## 3. Enkripsi
-Data sensitif dienkripsi menggunakan standar AES-GCM 256-bit sebelum disimpan ke disk. Kunci enkripsi diturunkan dari password Anda menggunakan Argon2id dan tidak pernah meninggalkan perangkat.
+## 3. Encryption
+Sensitive data is encrypted using AES-GCM 256-bit standard before being stored to disk. The encryption key is derived from your password using Argon2id and never leaves your device.

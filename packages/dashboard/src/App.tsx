@@ -79,10 +79,10 @@ export default function App() {
         confetti({ particleCount: 80, spread: 60, origin: { y: 0.8 } });
         await refreshNotes();
       } else {
-        setError('Master Password salah / 无效密码.');
+        setError('Incorrect Master Password / 无效密码.');
       }
     } catch (err: any) {
-      setError(err.message || 'Unlock gagal.');
+      setError(err.message || 'Unlock failed.');
     } finally {
       setIsLoading(false);
     }
@@ -93,11 +93,11 @@ export default function App() {
     e.preventDefault();
     if (!password || !confirmPassword) return;
     if (password.length < 8) {
-      setError('Password harus minimal 8 karakter!');
+      setError("Password must be at least 8 characters!");
       return;
     }
     if (password !== confirmPassword) {
-      setError('Password dan konfirmasi password tidak cocok!');
+      setError("Password and confirmation do not match!");
       return;
     }
     setIsLoading(true);
@@ -113,7 +113,7 @@ export default function App() {
         await refreshNotes();
       }
     } catch (err: any) {
-      setError(err.message || 'Setup gagal.');
+      setError(err.message || "Setup failed.");
     } finally {
       setIsLoading(false);
     }
@@ -162,7 +162,7 @@ export default function App() {
       };
       const res = await Archive.saveNote(noteInput);
       if (res.data) {
-        setSuccessMessage('Catatan berhasil dienkripsi dan disimpan! / 存储成功.');
+        setSuccessMessage("Note encrypted and saved successfully! / 存储成功.");
         setTimeout(() => setSuccessMessage(null), 3000);
         await refreshNotes();
         // Set new note as active
@@ -173,7 +173,7 @@ export default function App() {
         }
       }
     } catch (err: any) {
-      setError(err.message || 'Gagal menyimpan.');
+      setError(err.message || 'Failed to save.');
     } finally {
       setIsLoading(false);
     }
@@ -181,7 +181,7 @@ export default function App() {
 
   // Delete note
   const handleDeleteNote = async (id: string) => {
-    if (!confirm('Apakah lo yakin ingin menghapus catatan terenkripsi ini?')) return;
+    if (!confirm('Are you sure you want to delete this encrypted note?')) return;
     await Archive.deleteNote(id);
     setActiveNote(null);
     setNoteTitle('');
@@ -202,7 +202,7 @@ export default function App() {
     e.preventDefault();
     if (!panicPassword) return;
     await Archive.setPanicKey(panicPassword);
-    setSuccessMessage('Panic Key berhasil dikonfigurasi! / 恐慌密码设置成功.');
+    setSuccessMessage('Panic Key configured successfully! / 恐慌密码设置成功.');
     setPanicPassword('');
     setTimeout(() => setSuccessMessage(null), 3000);
   };
@@ -283,7 +283,7 @@ export default function App() {
 
             {!isSetup && (
               <div className="text-xs text-amber-400 border border-amber-500/20 bg-amber-500/5 p-3 rounded font-sans leading-relaxed">
-                <strong>Vault Baru Terdeteksi.</strong> Silakan konfigurasikan master password untuk mengamankan brankas digital lo.
+                <strong>New Vault Detected.</strong> Please configure master password to secure your digital vault.
               </div>
             )}
 
@@ -433,7 +433,7 @@ export default function App() {
                 <Search size={14} className="absolute left-3 top-3 text-slate-500" />
                 <input
                   type="text"
-                  placeholder="Cari catatan / tags..."
+                  placeholder="Search notes / tags..."
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 text-xs pl-8 pr-3 py-2 outline-none rounded focus:border-cyan-500/50 font-sans"
@@ -453,7 +453,7 @@ export default function App() {
 
               {filteredNotes.length === 0 ? (
                 <div className="text-center text-xs text-slate-600 font-mono py-12">
-                  Belum ada catatan.
+                  No notes yet.
                 </div>
               ) : (
                 filteredNotes.map(note => (
@@ -517,7 +517,7 @@ export default function App() {
               <div className="flex-1 min-w-0 mr-4">
                 <input
                   type="text"
-                  placeholder="Judul Catatan..."
+                  placeholder="Note Title..."
                   value={noteTitle}
                   onChange={e => setNoteTitle(e.target.value)}
                   className="bg-transparent text-slate-100 font-bold outline-none text-base w-full placeholder-slate-700 font-sans"
@@ -528,14 +528,14 @@ export default function App() {
                   <>
                     <button
                       onClick={() => handleCopyContent(noteContent, activeNote.id)}
-                      title="Salin Konten Catatan"
+                      title="Copy Note Content"
                       className="p-2 border border-slate-800 hover:border-cyan-500/40 hover:bg-cyan-500/5 hover:text-cyan-400 text-slate-400 rounded transition-colors"
                     >
                       {copiedId === activeNote.id ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
                     </button>
                     <button
                       onClick={() => handleDeleteNote(activeNote.id)}
-                      title="Hapus Catatan"
+                      title="Delete Note"
                       className="p-2 border border-slate-800 hover:border-red-500/40 hover:bg-red-500/5 hover:text-red-400 text-slate-400 rounded transition-colors"
                     >
                       <Trash2 size={16} />
@@ -567,7 +567,7 @@ export default function App() {
             {/* Editor Area */}
             <div className="flex-1 p-6">
               <textarea
-                placeholder="Ketik konten catatan terenkripsi lo di sini (Mendukung format Markdown)..."
+                placeholder="Type your encrypted note content here (Markdown format supported)..."
                 value={noteContent}
                 onChange={e => setNoteContent(e.target.value)}
                 className="w-full h-full bg-transparent border-0 outline-none resize-none font-mono text-sm leading-relaxed placeholder-slate-800 text-slate-300"
@@ -585,7 +585,7 @@ export default function App() {
                 Peta Aksara (Graph Visualization)
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
-                Representasi interaktif keterhubungan antar catatan terenkripsi berdasarkan kecocokan label tag.
+                Interactive representation of connections between encrypted notes based on tag label matching.
               </p>
             </div>
 
@@ -593,7 +593,7 @@ export default function App() {
             <div className="flex-1 border border-slate-900 bg-slate-900/10 rounded-lg relative overflow-hidden flex items-center justify-center">
               {graphData.nodes.length === 0 ? (
                 <div className="text-center font-mono text-xs text-slate-600">
-                  Belum ada relasi untuk dirender. Tambahkan tag pada catatan lo!
+                  No relations to render yet. Add tags to your notes!
                 </div>
               ) : (
                 <svg className="w-full h-full min-h-[400px]">
@@ -672,7 +672,7 @@ export default function App() {
                 Laras (Environment Manager)
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
-                Simpan dan muat berkas konfigurasi .env secara aman langsung dari/ke mesin lokal Anda tanpa bocor.
+                Save and load .env configuration files securely directly from/to your local machine without leaks.
               </p>
             </div>
 
@@ -681,15 +681,15 @@ export default function App() {
               <div className="border border-slate-900 bg-slate-900/10 p-5 rounded-lg space-y-4">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                   <Plus size={14} className="text-cyan-400" />
-                  Simpan Project .env Baru
+                  Save New .env Project
                 </h3>
                 <p className="text-xs text-slate-500 leading-relaxed">
-                  Masukkan teks berkas .env plaintext lo di bawah ini. Lembaranz akan mengenkripsi dan menghapusnya dari plaintext.
+                  Enter your plaintext .env file content below. Lembaranz will encrypt and purge it from plaintext.
                 </p>
                 <div className="space-y-3">
                   <input
                     type="text"
-                    placeholder="Nama Proyek (misal: lembaranz-webui)"
+                    placeholder="Project Name (e.g., lembaranz-webui)"
                     className="w-full bg-slate-950 border border-slate-800 text-xs p-2.5 outline-none rounded focus:border-cyan-500/50"
                   />
                   <textarea
@@ -698,13 +698,13 @@ export default function App() {
                   />
                   <button
                     onClick={() => {
-                      setSuccessMessage('Project .env disimpan ke dalam brankas!');
+                      setSuccessMessage('.env project saved to vault!');
                       setTimeout(() => setSuccessMessage(null), 3000);
                     }}
                     className="bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold py-2 px-4 text-xs tracking-wider rounded transition-all uppercase w-full flex items-center justify-center gap-1.5"
                   >
                     <Plus size={12} />
-                    <span>SIMPAN CONFIG ENV</span>
+                    <span>SAVE ENV CONFIG</span>
                   </button>
                 </div>
               </div>
@@ -713,10 +713,10 @@ export default function App() {
               <div className="border border-slate-900 bg-slate-900/10 p-5 rounded-lg space-y-4">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                   <Database size={14} className="text-cyan-400" />
-                  Profil Env Tersimpan
+                  Saved Env Profiles
                 </h3>
                 <p className="text-xs text-slate-500 leading-relaxed">
-                  Daftar profil .env terenkripsi di dalam vault yang siap dimuat ke direktori kerja.
+                  List of encrypted .env profiles in the vault ready to be loaded into your working directory.
                 </p>
                 
                 <div className="space-y-2">
@@ -728,12 +728,12 @@ export default function App() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => {
-                          setSuccessMessage('Config .env berhasil dimuat ke lokal!');
+                          setSuccessMessage('.env config loaded successfully to local!');
                           setTimeout(() => setSuccessMessage(null), 3000);
                         }}
                         className="border border-cyan-500/30 hover:border-cyan-500/50 bg-cyan-500/5 hover:bg-cyan-500/10 text-cyan-300 text-[10px] font-mono px-2.5 py-1 rounded transition-all"
                       >
-                        MUAT
+                        LOAD
                       </button>
                     </div>
                   </div>
@@ -749,10 +749,10 @@ export default function App() {
             <div>
               <h2 className="text-sm font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
                 <Settings size={16} />
-                Konfigurasi Brankas & Panic Key
+                Vault Configuration & Panic Key
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
-                Atur perilaku brankas dan kelola data sensitif serta konfigurasi anti-brute force.
+                Configure vault behavior and manage sensitive data along with anti-brute force settings.
               </p>
             </div>
 
@@ -764,12 +764,12 @@ export default function App() {
                   PANIC KEY / 恐慌密码 (Kill-Switch)
                 </h3>
                 <p className="text-xs text-slate-500 leading-relaxed">
-                  Konfigurasikan password khusus. Jika sandi ini dimasukkan pada layar login, **seluruh data vault di IndexedDB/mesin lokal ini akan langsung dihapus bersih secara permanen** untuk melindunginya dari akses fisik paksa!
+                  Configure a special password. If this password is entered on the login screen, **all vault data in IndexedDB/on this local machine will be immediately and permanently wiped clean** to protect it from forced physical access!
                 </p>
                 <form onSubmit={handleSavePanicKey} className="space-y-3">
                   <input
                     type="password"
-                    placeholder="Masukkan sandi panic key..."
+                    placeholder="Enter panic key password..."
                     value={panicPassword}
                     onChange={e => setPanicPassword(e.target.value)}
                     className="w-full bg-slate-950 border border-slate-800 text-xs p-2.5 outline-none rounded focus:border-red-500/30"
@@ -779,7 +779,7 @@ export default function App() {
                     type="submit"
                     className="bg-red-700 hover:bg-red-600 text-slate-100 font-bold py-2 px-4 text-xs tracking-wider rounded transition-all uppercase w-full"
                   >
-                    AKTIFKAN PANIC KEY
+                    ACTIVATE PANIC KEY
                   </button>
                 </form>
               </div>
@@ -788,25 +788,25 @@ export default function App() {
               <div className="border border-slate-900 bg-slate-900/10 p-5 rounded-lg space-y-4">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                   <Database size={14} className="text-cyan-400" />
-                  Manajemen & Pembersihan Memori
+                  Memory Management & Cleanup
                 </h3>
                 <p className="text-xs text-slate-500 leading-relaxed font-sans">
-                  Lakukan pembersihan RAM dari memory key atau reset seluruh penyimpanan data brankas.
+                  Perform RAM cleanup of memory keys or reset all vault data storage.
                 </p>
                 <div className="space-y-2 pt-2">
                   <button
                     onClick={async () => {
-                      if (confirm('PERINGATAN KERAS: Semua data brankas Anda akan dihapus bersih secara permanen dan tidak dapat dikembalikan! Lanjutkan?')) {
+                      if (confirm('HARD WARNING: All your vault data will be permanently wiped and cannot be recovered! Continue?')) {
                         await Archive.destroyAllData();
                       }
                     }}
                     className="border border-red-500/30 hover:border-red-500/60 bg-red-500/5 hover:bg-red-500/10 text-red-400 text-xs font-mono py-2.5 px-4 rounded transition-all w-full text-left"
                   >
-                    HAPUS BERSIH VAULT (DESTROY ALL DATA)
+                    WIPE VAULT CLEAN (DESTROY ALL DATA)
                   </button>
 
                   <div className="text-[10px] text-slate-600 font-mono pt-4 leading-relaxed">
-                    <strong>Pembersihan Memori / Nèicún qīnglǐ (内存清理):</strong> Lembaranz secara otomatis membersihkan heap buffer sandi utama dalam RAM setelah sesi idle selama 60 detik atau terminasi SIGINT.
+                    <strong>Memory Cleanup / Nèicún qīnglǐ (内存清理):</strong> Lembaranz automatically cleans up the main password heap buffer in RAM after an idle session of 60 seconds or SIGINT termination.
                   </div>
                 </div>
               </div>

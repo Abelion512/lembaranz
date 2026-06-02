@@ -23,10 +23,10 @@ async function run() {
     for (let i = 1; i <= 1000; i++) {
         await Archive.saveNote({
             title: `Note Performance Test #${i}`,
-            content: `Ini adalah catatan ke-${i} untuk pengujian performa Bolt ⚡.
-                     Catatan ini berisi text yang cukup panjang untuk mensimulasikan beban kerja nyata.
-                     Poet will membantu membuatkan ringkasan cerdas dari content ini.
-                     Kita akan mencari kata kunci "BOLT_SPECIAL_TOKEN" di beberapa catatan.` +
+            content: `This is note #${i} for Bolt performance testing ⚡.
+                     This note contains fairly long text to simulate real workload.
+                     Poet will help create a smart summary of this content.
+                     We will search for the keyword "BOLT_SPECIAL_TOKEN" in several notes.` +
                 (i === 500 || i === 999 ? ' BOLT_SPECIAL_TOKEN' : ''),
             folderId: null,
             isPinned: i % 10 === 0,
