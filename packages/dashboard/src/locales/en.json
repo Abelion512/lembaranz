@@ -1,0 +1,13 @@
+{
+  "vault": {
+    "setup": "Initialization",
+    "open": "Open Vault",
+    "locked": "Locked",
+    "new_note": "New Note"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  }
+}
