@@ -1,8 +1,9 @@
 import { Storage } from "./Storage";
 import { Vault, Result } from "./Vault";
-import { StoredNote, DecryptedNote, Note, EntityId } from "./Formula";
+import { StoredNote, DecryptedNote, Note, EntityId, AppSettings } from "./Formula";
 import { v4 as uuidv4 } from "uuid";
 import { Integrity } from "./Integrity";
+import { Audit } from "./Audit";
 
 /** Input for creating or updating a note (before encryption) */
 export interface NoteInput {
@@ -111,6 +112,7 @@ export const Archive = {
     }
 
     Vault.setActiveKey(masterKey);
+    await Audit.log("VAULT_SETUP", "Initial vault security configuration completed");
     return { data: undefined, error: null };
   },
 
@@ -126,6 +128,7 @@ export const Archive = {
         const currentHash = await Integrity.computeHash(password);
         if (currentHash === panicHash) {
           await this.destroyAllData();
+          await Audit.log("SECURITY_ALERT", "Panic key triggered. All data destroyed.");
           return { data: false, error: null };
         }
       }
@@ -155,7 +158,10 @@ export const Archive = {
       // Attempt V3 (Decoupled Master Key)
       if (wrappedKey) {
         const decResult = await Vault.decryptPacked(wrappedKey, passwordKey);
-        if (decResult.error) return decResult as Result<boolean>;
+        if (decResult.error) {
+           await Audit.log("SECURITY_ALERT", "Failed vault unlock attempt detected (Wrong Password)");
+           return decResult as Result<boolean>;
+        }
 
         const masterKeyBuffer = Vault.base64ToBytes(decResult.data)
           .buffer as ArrayBuffer;
@@ -169,6 +175,7 @@ export const Archive = {
 
         if (valResult.data === "LEMBARANZ_SECURED_V3") {
           Vault.setActiveKey(masterKey);
+          await Audit.log("VAULT_UNLOCK", "Vault unlocked successfully");
           return { data: true, error: null };
         }
       } else {
@@ -182,7 +189,10 @@ export const Archive = {
           iv,
           passwordKey
         );
-        if (decResult.error) return decResult as Result<boolean>;
+        if (decResult.error) {
+           await Audit.log("SECURITY_ALERT", "Failed vault unlock attempt detected (Legacy V2)");
+           return decResult as Result<boolean>;
+        }
 
         if (decResult.data === "LEMBARANZ_SECURED_V2") {
           Vault.setActiveKey(passwordKey);
@@ -193,6 +203,8 @@ export const Archive = {
               "[ARCHIVE] Automatic migration to V3 failed:",
               resetRes.error.message
             );
+          
+          await Audit.log("VAULT_UNLOCK", "Vault unlocked successfully (Migrated to V3)");
           return { data: true, error: null };
         }
       }
@@ -236,6 +248,7 @@ export const Archive = {
       if (importResult.error) return importResult as Result<boolean>;
 
       Vault.setActiveKey(importResult.data);
+      await Audit.log("VAULT_UNLOCK", "Vault unlocked successfully via recovery mnemonic");
       return { data: true, error: null };
     } catch (e) {
       return {
@@ -278,6 +291,7 @@ export const Archive = {
     if (valEncryptResult.error) return valEncryptResult;
 
     await Storage.set("meta", "auth_validator", valEncryptResult.data);
+    await Audit.log("PASSWORD_RESET", "Master password updated");
     return { data: undefined, error: null };
   },
 
@@ -289,6 +303,7 @@ export const Archive = {
       Storage.clear("notes"),
       Storage.clear("folders"),
       Storage.clear("meta"),
+      Storage.clear("kv"),
     ]);
 
     if (typeof window !== "undefined") {
@@ -377,6 +392,7 @@ export const Archive = {
       };
 
       await Storage.set("notes", finalNote.id, finalNote);
+      await Audit.log(note.id ? "NOTE_UPDATED" : "NOTE_CREATED", `Note secured: ${title}`);
       return { data: finalNote, error: null };
     } catch (e) {
       return {
@@ -435,6 +451,7 @@ export const Archive = {
       if (requesterId && settings.agentAccessControl?.enabled) {
         const isAllowed = settings.agentAccessControl.allowedAgents.includes(requesterId);
         if (!isAllowed) {
+          await Audit.log("SECURITY_ALERT", `Access Denied: Agent '${requesterId}' attempted to read sensitive data.`);
           return {
             data: null,
             error: new Error(`Access Denied: Agent '${requesterId}' is not authorized to read this vault.`),
@@ -472,6 +489,7 @@ export const Archive = {
         if (actualHash !== note._hash) {
           decryptedNote.content =
             `⚠️ WARNING: Digital seal broken!\n\n` + decryptedNote.content;
+          await Audit.log("SECURITY_ALERT", `Integrity check failed for entry: ${decryptedNote.title}`);
         }
       }
 
@@ -489,6 +507,7 @@ export const Archive = {
    */
   async deleteNote(id: EntityId) {
     await Storage.delete("notes", id);
+    await Audit.log("NOTE_DELETED", `Entry ${id} permanently removed from archive`);
   },
 
   /**
@@ -513,198 +532,9 @@ export const Archive = {
    * Retrieves statistics (entry and folder counts).
    */
   async getStats() {
-    try {
-      const notesCount = await Storage.count("notes");
-      const foldersCount = await Storage.count("folders");
-      return { notes: notesCount, folders: foldersCount };
-    } catch {
-      return { notes: 0, folders: 0 };
-    }
-  },
-
-  /**
-   * Sets a Panic Key: a password that, when entered at login,
-   * triggers permanent destruction of all vault data.
-   * @param panicPassword The password acting as a kill-switch
-   */
-  async setPanicKey(panicPassword: string): Promise<void> {
-    const hash = await Integrity.computeHash(panicPassword);
-    await Storage.set("meta", "panic_hash", hash);
-  },
-
-  /**
-   * Creates a portable encrypted backup.
-   * Decrypts entries into memory, packages them in JSON, and re-encrypts
-   * using the backup password for inter-machine portability.
-   */
-  async createBackup(passwordBackup: string): Promise<Result<Uint8Array>> {
-    if (Vault.isLocked())
-      return { data: null, error: new Error("Vault locked") };
-
-    try {
-      const rawNotes = (await Storage.getAll("notes")) as StoredNote[];
-
-      const plainNotes: Note[] = [];
-      for (const n of rawNotes) {
-        const res = await this.decryptNote(n);
-        if (res.error) {
-          console.error(`[ARCHIVE] Failed to decrypt note ${n.id} for backup.`);
-          continue;
-        }
-        plainNotes.push(res.data);
-      }
-
-      const payload = JSON.stringify({
-        version: "3.5.0",
-        exportedAt: new Date().toISOString(),
-        notes: plainNotes,
-      });
-
-      return await Vault.encryptPortable(payload, passwordBackup);
-    } catch (e) {
-      return {
-        data: null,
-        error: e instanceof Error ? e : new Error(String(e)),
-      };
-    }
-  },
-
-  /**
-   * Restores the vault from a portable backup file.
-   * @param buffer Binary data from backup file
-   * @param passwordBackup Password used to encrypt the backup
-   */
-  async restoreBackup(
-    buffer: Uint8Array,
-    passwordBackup: string
-  ): Promise<Result<{ restored: number; skipped: number }>> {
-    if (Vault.isLocked())
-      return {
-        data: null,
-        error: new Error("Vault locked: Unlock vault before restoring data."),
-      };
-
-    try {
-      const resDec = await Vault.decryptPortable(buffer, passwordBackup);
-      if (resDec.error)
-        return {
-          data: null,
-          error: new Error(
-            "Failed to open backup file. Incorrect password or corrupted file.",
-            { cause: resDec.error }
-          ),
-        };
-
-      let backup: { version?: string; notes?: StoredNote[] };
-      try {
-        backup = JSON.parse(resDec.data, (_key, value) => {
-          if (
-            _key === "__proto__" ||
-            _key === "constructor" ||
-            _key === "prototype"
-          )
-            return undefined;
-          return value;
-        });
-      } catch {
-        return {
-          data: null,
-          error: new Error("Invalid backup format: Parse failed."),
-        };
-      }
-
-      if (!backup.notes || !Array.isArray(backup.notes)) {
-        return {
-          data: null,
-          error: new Error("Invalid backup format: No entries found."),
-        };
-      }
-
-      const notes = backup.notes as StoredNote[];
-      let restored = 0;
-      let skipped = 0;
-
-      const existingNotes = (await Storage.getAll("notes")) as StoredNote[];
-      const existingNotesMap = new Map<string, StoredNote>(
-        existingNotes.map((n) => [n.id, n])
-      );
-
-      const restorePromises = notes.map(async (note) => {
-        try {
-          const existing = existingNotesMap.get(note.id);
-          if (existing) {
-            const existingDate = new Date(existing.updatedAt).getTime();
-            const newDate = new Date(note.updatedAt).getTime();
-            if (existingDate >= newDate) {
-              return { status: "skipped" as const, id: note.id };
-            }
-          }
-
-          let parsedCredentials: NoteInput["credentials"] = undefined;
-          if (typeof note.credentials === "string") {
-            try {
-              parsedCredentials = JSON.parse(note.credentials, (_k, v) => {
-                if (
-                  _k === "__proto__" ||
-                  _k === "constructor" ||
-                  _k === "prototype"
-                )
-                  return undefined;
-                return v;
-              });
-            } catch {
-              parsedCredentials = note.credentials;
-            }
-          }
-
-          // Convert StoredNote to NoteInput for saveNote
-          const noteInput: NoteInput = {
-            id: note.id,
-            title: note.title,
-            content: note.content,
-            folderId: note.folderId,
-            isPinned: note.isPinned,
-            isFavorite: note.isFavorite,
-            tags: note.tags,
-            createdAt: note.createdAt,
-            credentials: parsedCredentials,
-          };
-
-          const resSave = await this.saveNote(noteInput);
-          if (resSave.error) {
-            console.error(
-              `[ARCHIVE] Failed to restore note ${note.id}:`,
-              resSave.error.message
-            );
-            return { status: "error" as const, id: note.id };
-          } else {
-            return { status: "restored" as const, id: note.id };
-          }
-        } catch (error) {
-          console.error(
-            `[ARCHIVE] Unexpected restore error for note ${note.id}:`,
-            error
-          );
-          return { status: "error" as const, id: note.id };
-        }
-      });
-
-      const results = await Promise.all(restorePromises);
-
-      for (const res of results) {
-        if (res.status === "skipped" || res.status === "error") {
-          skipped++;
-        } else if (res.status === "restored") {
-          restored++;
-        }
-      }
-
-      return { data: { restored, skipped }, error: null };
-    } catch (e) {
-      return {
-        data: null,
-        error: e instanceof Error ? e : new Error(String(e)),
-      };
-    }
-  },
+    return {
+      notes: await Storage.count("notes"),
+      folders: await Storage.count("folders"),
+    };
+  }
 };
