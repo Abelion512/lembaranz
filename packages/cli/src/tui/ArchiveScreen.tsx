@@ -13,21 +13,13 @@ interface ArchiveScreenProps {
 
 const cleanTextForDisplay = (text: string): string => {
   if (!text) return "";
-  // 🛡️ Sentinel: Hardened multi-character sanitization to prevent bypass
-  return text
-    .replace(/<[^>]*>?/gm, "") // Global multi-line HTML removal
-    .replace(/&[#a-z0-9]+;/gi, " ")
-    .trim();
+  // 🛡️ Sentinel: Safe text rendering
+  return text.replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
 };
 
 const cleanTextForSearch = (text: string): string => {
   if (!text) return "";
-  return text
-    .replace(/<[^>]*>?/gm, "")
-    .replace(/&[#a-z0-9]+;/gi, " ")
-    .replace(/[#*`~_]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
+  return text.replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim();
 };
 
 export const ArchiveScreen: React.FC<ArchiveScreenProps> = ({
