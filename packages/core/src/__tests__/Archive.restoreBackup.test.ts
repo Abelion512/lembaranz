@@ -68,7 +68,7 @@ describe("Archive.restoreBackup - credential isolation", () => {
         id: "note-valid-json",
         credentials: JSON.stringify({
           username: "user@example.com",
-          password: "rahasia",
+          password: "secret123",
         }),
       }),
     ]);
@@ -81,7 +81,7 @@ describe("Archive.restoreBackup - credential isolation", () => {
     expect(restoredNote.error).toBeNull();
     expect(restoredNote.data?.credentials).toEqual({
       username: "user@example.com",
-      password: "rahasia",
+      password: "secret123",
     });
   }, 60000);
 

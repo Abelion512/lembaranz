@@ -541,30 +541,30 @@ export class TerminalUI {
                     console.log(pc.green(`  ├── ✅ ${key}`));
                 }
             }));
-            console.log(pc.green('✨ Selesai! Kredensial Anda kini tersimpan aman di Lembaranz.'));
+            console.log(pc.green('✨ Done! Your credentials are now securely stored in Lembaranz.'));
         }
     }
 
     static async actionAuditSecurity() {
-        console.log(pc.bold(pc.blue('\n≡ƒ¢í∩╕Å  DASHBOARD KEAMANAN & PRIVASI')));
-        console.log(pc.dim('Status teknologi perlindungan brankas Anda:'));
+        console.log(pc.bold(pc.blue('\n🔒 SECURITY & PRIVACY DASHBOARD')));
+        console.log(pc.dim('Your vault protection technology status:'));
 
-        console.log(`\n  ${pc.bold('1. Algoritma Enkripsi')}`);
-        console.log(pc.green('     Γ£à AES-GCM 256-bit'));
+        console.log(`\n  ${pc.bold('1. Encryption Algorithm')}`);
+        console.log(pc.green('     ✅ AES-GCM 256-bit'));
         console.log(pc.dim("     Double layer encryption for note content and title."));
 
-        console.log(`\n  ${pc.bold('2. Derivasi Kunci')}`);
-        console.log(pc.green('     Γ£à Argon2id (Standard OWASP)'));
+        console.log(`\n  ${pc.bold('2. Key Derivation')}`);
+        console.log(pc.green('     ✅ Argon2id (OWASP Standard)'));
         console.log(pc.dim("     Highly resistant to Brute-Force and GPU cracking attacks."));
 
-        console.log(`\n  ${pc.bold('3. Integritas Data')}`);
-        console.log(pc.green('     Γ£à Segel Digital SHA-256'));
+        console.log(`\n  ${pc.bold('3. Data Integrity')}`);
+        console.log(pc.green('     ✅ SHA-256 Digital Seal'));
         console.log(pc.dim("     Detects illegal modifications by malware or third parties."));
 
-        console.log(`\n  ${pc.bold('4. Filtrasi Otonom')}`);
-        console.log(pc.green('     Γ£à Secret Scrubber (PenyaringRahasia)'));
+        console.log(`\n  ${pc.bold('4. Autonomous Filtration')}`);
+        console.log(pc.green('     ✅ Secret Scrubber'));
         console.log(pc.dim("     Automatically removes credentials before being processed by AI."));
 
-        console.log(pc.cyan('\nKesimpulan: Sistem Anda memiliki Kedaulatan Mutlak.'));
+        console.log(pc.cyan('\nConclusion: Your system has Absolute Sovereignty.'));
     }
 }

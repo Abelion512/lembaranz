@@ -76,7 +76,7 @@ async function launchGUI() {
   console.log(pc.yellow('⚠️  Keep this terminal open!'));
   console.log(pc.dim('The vault manager will open in your browser.\n'));
 
-  const child = spawn('bun', ['run', 'dev'], { cwd: webDir, stdio: 'inherit', shell: true });
+  const child = spawn('bun', ['run', 'dev'], { cwd: webDir, stdio: 'inherit', shell: false });
 
   await prompts({ type: 'text', name: '_', message: 'Press Enter to stop GUI server:', initial: '' });
   child.kill();
@@ -177,7 +177,7 @@ async function runStep2AndBeyond(password: string, _program: Command) {
 
     // Step 2: Display recovery phrase
     console.log(pc.cyan('\n🔑 Step 2/3: Your Recovery Phrase'));
-    console.log(pc.yellow('\n⚠️  PENTING: Tulis 12 kata ini di KERTAS!'));
+    console.log(pc.yellow('\n⚠️  IMPORTANT: Write these 12 words on PAPER!'));
     console.log(pc.dim("If you forget your password, these 12 words are the ONLY way to recover.\n"));
 
     // Display words in a nice format

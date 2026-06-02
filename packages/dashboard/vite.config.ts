@@ -7,6 +7,9 @@ export default defineConfig({
     'process.env': {}
   },
   server: {
-    port: 5120
+    port: 5120,
+    headers: {
+      'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' http://localhost:* ws://localhost:*; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    }
   }
 });

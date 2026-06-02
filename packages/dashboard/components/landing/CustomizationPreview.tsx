@@ -19,8 +19,8 @@ export const CustomizationPreview = () => {
     return (
         <div className="w-full max-w-5xl mx-auto mt-24 px-4">
             <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold tracking-tight mb-4">Kustomisasi Tanpa Batas</h2>
-                <p className="text-gray-500 font-medium">Lembaranz didesain untuk menyesuaikan dengan selera estetika Anda.</p>
+                <h2 className="text-3xl font-bold tracking-tight mb-4">Limitless Customization</h2>
+                <p className="text-gray-500 font-medium">Lembaranz is designed to adapt to your aesthetic preferences.</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -63,7 +63,7 @@ export const CustomizationPreview = () => {
                                 </div>
 
                                 <button className="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-widest text-white transition-all duration-500" style={{ backgroundColor: activeHex }}>
-                                    Simpan Perubahan
+                                    Save Changes
                                 </button>
                             </div>
 
@@ -78,7 +78,7 @@ export const CustomizationPreview = () => {
                     <div>
                         <h3 className="flex items-center gap-2 text-xl font-bold mb-4">
                             <Palette size={20} className="text-blue-500" />
-                            Aksen Warna Utama
+                            Primary Color Accent
                         </h3>
                         <div className="flex flex-wrap gap-4">
                             {colors.map((color) => (
@@ -99,8 +99,8 @@ export const CustomizationPreview = () => {
                                 <Zap size={20} />
                             </div>
                             <div>
-                                <h4 className="font-bold text-sm mb-1">Animasi Halus</h4>
-                                <p className="text-xs text-gray-500 leading-relaxed">Setiap transisi menggunakan spring physics untuk pengalaman yang organik dan responsif.</p>
+                                <h4 className="font-bold text-sm mb-1">Smooth Animations</h4>
+                                <p className="text-xs text-gray-500 leading-relaxed">Every transition uses spring physics for an organic and responsive experience.</p>
                             </div>
                         </div>
                         <div className="flex items-start gap-4 p-4 rounded-2xl hover:bg-white/5 transition-colors group">
@@ -108,8 +108,8 @@ export const CustomizationPreview = () => {
                                 <Settings size={20} />
                             </div>
                             <div>
-                                <h4 className="font-bold text-sm mb-1">Kontrol Detil</h4>
-                                <p className="text-xs text-gray-500 leading-relaxed">Sesuaikan blur, opasitas glassmorphism, dan radius sudut sesuai keinginan Anda.</p>
+                                <h4 className="font-bold text-sm mb-1">Detailed Control</h4>
+                                <p className="text-xs text-gray-500 leading-relaxed">Customize blur, glassmorphism opacity, and corner radius to your liking.</p>
                             </div>
                         </div>
                     </div>

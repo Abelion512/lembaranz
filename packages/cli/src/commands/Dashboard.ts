@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { exec } from "node:child_process";
+import { exec, spawn } from "node:child_process";
 import path from "node:path";
 import os from "node:os";
 
@@ -39,14 +39,21 @@ export function registerDashboardCommand(program: Command) {
         console.log(`   - Local:   http://localhost:${options.port}`);
         console.log(`   - Network: http://${localIp}:${options.port}`);
         
-        // Start Vite dev server
-        const cmd = `bun run dev --host ${options.host} --port ${options.port}`;
-        const proc = exec(cmd, { cwd: dashboardPath });
+        // Start Vite dev server using spawn for better security
+        const child = spawn('bun', ['run', 'dev', '--host', options.host, '--port', String(options.port)], { 
+          cwd: dashboardPath,
+          stdio: ['ignore', 'pipe', 'pipe']
+        });
         
-        proc.stdout?.on("data", (data) => {
+        child.stdout?.on("data", (data) => {
            if (data.includes("ready in")) {
              console.log("✅ Dashboard is ready.");
            }
+           process.stdout.write(data);
+        });
+        
+        child.stderr?.on("data", (data) => {
+          process.stderr.write(data);
         });
 
       } catch (e) {

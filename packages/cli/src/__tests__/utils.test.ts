@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
 
-const promptsMock = mock(async () => ({ pw: "rahasia" }));
+const promptsMock = mock(async () => ({ pw: "secret123" }));
 const unlockVaultMock = mock(async () => ({ data: false }));
 const checkRateLimitMock = mock(() => ({ allowed: true, remaining: 4 }));
 const resetRateLimitMock = mock(() => {});
@@ -38,7 +38,7 @@ describe("openVaultCLI rate-limit reset behavior", () => {
     resetRateLimitMock.mockReset();
     consoleLogSpy.mockReset();
 
-    promptsMock.mockResolvedValue({ pw: "rahasia" });
+    promptsMock.mockResolvedValue({ pw: "secret123" });
     checkRateLimitMock.mockReturnValue({ allowed: true, remaining: 4 });
 
     console.log = consoleLogSpy as typeof console.log;
