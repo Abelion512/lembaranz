@@ -111,10 +111,10 @@ export class TerminalUI {
     private static showHelp() {
         console.log(pc.bold('\n📜 COMMAND LIST:'));
         console.log(`  ${pc.blue('menu')}      - Return to Main Menu`);
-        console.log(`  ${pc.blue('monitor')}    - Check system health         console.log(`  ${pc.blue('monitor')}    - Memeriksa kesehatan sistem & statistik`); statistics`);
+        console.log(`  ${pc.blue('monitor')}    - Check system health & statistics`);
         console.log(`  ${pc.blue('browse')}   - Search notes (Fuzzy Search)`);
         console.log(`  ${pc.blue('carve')}      - Note editor (Multi-line)`);
-        console.log(`  ${pc.blue('credentials')} - Securely save secrets         console.log(`  ${pc.blue('credentials')} - Securely save secrets         console.log(`  ${pc.blue('credentials')} - Menyimpan rahasia & akun secara aman`); accounts`); accounts`);
+        console.log(`  ${pc.blue('credentials')} - Securely save secrets & accounts`);
         console.log(`  ${pc.blue('import')}     - Import Markdown files (.md)`);
         console.log(`  ${pc.blue('export')}     - Export vault (.lembaranz)`);
         console.log(`  ${pc.blue('serve')}    - Run local API Server`);
