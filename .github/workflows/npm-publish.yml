@@ -1,28 +1,35 @@
-name: Publish CLI to NPM
+name: Professional NPM Publish (Big Co Style)
 
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - serenity # Trigger on serenity (standard for your current flow)
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  publish:
+  release:
+    name: Release & Publish
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
 
-      - name: Install dependencies
-        run: bun install
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
 
-      - name: Build packages
-        run: bun run build
-
-      - name: Publish @lembaran/cli
-        run: bun publish --filter @lembaran/cli --access public
+      - name: Create Release Pull Request or Publish
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          publish: bunx changeset publish
         env:
-          NPM_CONFIG_OTP: ${{ secrets.NPM_OTP }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
