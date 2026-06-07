@@ -149,7 +149,7 @@ export class Vault {
     if (res.error || !res.data) return { data: null, error: res.error };
 
     const ivHex = this.bytesToHex(res.data.iv);
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(res.data.data)));
+    const base64 = this.bytesToBase64(new Uint8Array(res.data.data));
     const packed = `${ivHex}|${base64}`;
     
     // Cache the result if using active key
@@ -226,6 +226,20 @@ export class Vault {
     } catch (e) {
       return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
     }
+  }
+
+  /**
+   * Optimized base64 encoding using chunking to prevent Maximum Call Stack Size Exceeded
+   * exceptions when encoding large payload sizes. Avoids Array.from overhead.
+   */
+  public static bytesToBase64(bytes: Uint8Array): string {
+    const CHUNK_SIZE = 8192;
+    let binaryString = "";
+    for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
+      const chunk = bytes.subarray(i, i + CHUNK_SIZE);
+      binaryString += String.fromCharCode.apply(null, chunk as unknown as number[]);
+    }
+    return btoa(binaryString);
   }
 
   /**
