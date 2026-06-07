@@ -40,10 +40,12 @@ export function registerDashboardCommand(program: Command) {
         console.log(`   - Network: http://${localIp}:${options.port}`);
         
         // Start Vite dev server
-        const proc = spawn("bun", ["run", "dev", "--host", String(options.host), "--port", String(options.port)], {
-          cwd: dashboardPath,
-          shell: false,
-        });
+        // Using spawn instead of exec to prevent command injection via user-supplied host/port options
+        const proc = spawn(
+          "bun",
+          ["run", "dev", "--host", String(options.host), "--port", String(options.port)],
+          { cwd: dashboardPath, shell: false }
+        );
         
         proc.stdout?.on("data", (data) => {
            if (data.toString().includes("ready in")) {
