@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { exec } from "node:child_process";
+import { spawn } from "node:child_process";
 import path from "node:path";
 import os from "node:os";
 
@@ -40,11 +40,13 @@ export function registerDashboardCommand(program: Command) {
         console.log(`   - Network: http://${localIp}:${options.port}`);
         
         // Start Vite dev server
-        const cmd = `bun run dev --host ${options.host} --port ${options.port}`;
-        const proc = exec(cmd, { cwd: dashboardPath });
+        const proc = spawn("bun", ["run", "dev", "--host", String(options.host), "--port", String(options.port)], {
+          cwd: dashboardPath,
+          shell: false,
+        });
         
         proc.stdout?.on("data", (data) => {
-           if (data.includes("ready in")) {
+           if (data.toString().includes("ready in")) {
              console.log("✅ Dashboard is ready.");
            }
         });
