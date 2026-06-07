@@ -229,6 +229,20 @@ export class Vault {
   }
 
   /**
+   * Optimized base64 encoding using chunking to prevent Maximum Call Stack Size Exceeded
+   * exceptions when encoding large payload sizes. Avoids Array.from overhead.
+   */
+  public static bytesToBase64(bytes: Uint8Array): string {
+    const CHUNK_SIZE = 8192;
+    let binaryString = "";
+    for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
+      const chunk = bytes.subarray(i, i + CHUNK_SIZE);
+      binaryString += String.fromCharCode.apply(null, chunk as unknown as number[]);
+    }
+    return btoa(binaryString);
+  }
+
+  /**
    * Utility: Uint8Array to Hex string.
    */
   public static bytesToHex(bytes: Uint8Array): string {

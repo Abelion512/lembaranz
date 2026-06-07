@@ -78,7 +78,7 @@ export const Archive = {
     const passwordKey = deriveResult.data;
 
     const wrapResult = await Vault.encryptPacked(
-      btoa(String.fromCharCode(...new Uint8Array(masterKeyBuffer))),
+      Vault.bytesToBase64(new Uint8Array(masterKeyBuffer)),
       passwordKey
     );
     if (wrapResult.error) return wrapResult;
@@ -102,7 +102,7 @@ export const Archive = {
       const recoveryKey = mDeriveResult.data;
 
       const mWrapResult = await Vault.encryptPacked(
-        btoa(String.fromCharCode(...new Uint8Array(masterKeyBuffer))),
+        Vault.bytesToBase64(new Uint8Array(masterKeyBuffer)),
         recoveryKey
       );
       if (mWrapResult.error) return mWrapResult;
@@ -278,7 +278,7 @@ export const Archive = {
     const passwordKey = deriveResult.data;
 
     const wrapResult = await Vault.encryptPacked(
-      btoa(String.fromCharCode(...new Uint8Array(masterKeyBuffer))),
+      Vault.bytesToBase64(new Uint8Array(masterKeyBuffer)),
       passwordKey
     );
     if (wrapResult.error) return wrapResult;
