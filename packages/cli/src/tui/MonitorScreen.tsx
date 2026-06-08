@@ -62,7 +62,7 @@ export const MonitorScreen: React.FC<MonitorScreenProps> = ({ context, onBack })
 
             <Box flexDirection="column" paddingX={1} gap={0} key="status-container">
                 {/* Vault Status */}
-                <Box key="brankas-status" borderStyle="round" borderColor={isInit ? 'green' : 'yellow'} paddingX={1} flexDirection="column" marginBottom={1}>
+                <Box key="vault-status" borderStyle="round" borderColor={isInit ? 'green' : 'yellow'} paddingX={1} flexDirection="column" marginBottom={1}>
                     <Text bold>🔐 Vault</Text>
                     <Text color={isInit ? 'green' : 'yellow'}>
                         {isInit ? '✅ Initialized' : '⚠️ Not Setup Yet'}

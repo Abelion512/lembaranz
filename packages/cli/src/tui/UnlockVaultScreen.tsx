@@ -100,7 +100,7 @@ export const UnlockVaultScreen: React.FC<UnlockVaultScreenProps> = ({ onSuccess 
     if (isInit === null) return <Box padding={1}><Text color="cyan"><Spinner type="dots" /></Text></Box>;
 
     return (
-        <Box flexDirection="column" padding={1} alignItems="center" key="buka-brankas-root">
+        <Box flexDirection="column" padding={1} alignItems="center" key="unlock-vault-root">
             <Box borderStyle="round" borderColor="yellow" paddingX={2} marginBottom={1}>
                 <Text bold color="yellow">
                     {mode === 'setup' ? '🔐 SETUP NEW VAULT' : (mode === 'mnemonic' ? '🆘 ACCESS RECOVERY' : '🔒 VAULT LOCKED')}
