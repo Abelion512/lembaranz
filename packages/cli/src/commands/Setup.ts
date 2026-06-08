@@ -77,6 +77,10 @@ async function launchGUI() {
   console.log(pc.dim('The vault manager will open in your browser.\n'));
 
   const child = spawn('bun', ['run', 'dev'], { cwd: webDir, stdio: 'inherit', shell: false });
+  
+  child.on('error', (err) => {
+    console.error(pc.red('❌ Failed to start GUI server:'), err.message);
+  });
 
   await prompts({ type: 'text', name: '_', message: 'Press Enter to stop GUI server:', initial: '' });
   child.kill();
