@@ -41,8 +41,9 @@ export function registerDashboardCommand(program: Command) {
         
         // Start Vite dev server
         // Using spawn instead of exec to prevent command injection via user-supplied host/port options
+        const bunExe = os.platform() === "win32" ? "bun.cmd" : "bun";
         const proc = spawn(
-          "bun",
+          bunExe,
           ["run", "dev", "--host", String(options.host), "--port", String(options.port)],
           { cwd: dashboardPath, shell: false }
         );

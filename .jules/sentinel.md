@@ -11,3 +11,9 @@ When writing test assertions for normalized URLs generated via `new URL().href`,
 **Vulnerability:** The `packages/cli/src/commands/Dashboard.ts` command used `exec(cmd)` to execute a local dashboard development server using string interpolation. User-supplied arguments like `--host` and `--port` were interpolated directly into the `cmd` string, allowing for command injection if a malicious user executed the command with manipulated options.
 **Learning:** Node's `child_process.exec()` spawns a shell and runs commands within it, making it inherently vulnerable to command injection if arguments are not sanitized.
 **Prevention:** Always use `child_process.spawn()` with `shell: false` (the default) and pass arguments as an array rather than interpolating them into a single command string. This guarantees that arguments are passed safely directly to the executable rather than being parsed by a shell.
+
+## Security Issue: Cross-Platform `spawn` command execution
+
+**Context**: In `packages/cli/src/commands/Dashboard.ts`, a previous security fix correctly replaced `exec` with `spawn` using `shell: false` to mitigate command injection when processing user-supplied host and port options.
+**Issue**: Using `spawn("bun", ...)` with `shell: false` causes failures on Windows environments, as Node.js requires `.cmd` extension to locate standard binaries like `bun` or `npm` without an underlying shell wrapper.
+**Resolution**: We utilized `os.platform() === 'win32' ? 'bun.cmd' : 'bun'` to dynamically resolve the required binary executable. This preserves the command injection protection (`shell: false`) while fully supporting cross-platform operability.
