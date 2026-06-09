@@ -1,12 +1,17 @@
-core:
-  - packages/core/**/*
-cli:
-  - packages/cli/**/*
-dashboard:
-  - packages/dashboard/**/*
-web:
-  - packages/web/**/*
-documentation:
-  - docs/**/*
-  - README.md
-  - AGENTS.md
+"core":
+  - any:
+    - "packages/core/**/*"
+"cli":
+  - any:
+    - "packages/cli/**/*"
+"dashboard":
+  - any:
+    - "packages/dashboard/**/*"
+"web":
+  - any:
+    - "packages/web/**/*"
+"documentation":
+  - any:
+    - "docs/**/*"
+    - "README.md"
+    - "AGENTS.md"
