@@ -1,13 +1,7 @@
-# Security Learnings
+# Sentinel: Fix XSS Evasion in safeMarked.ts
 
-## URL Parsing & OS Command Injection Mitigation
-To prevent command injection, shell executions must use `child_process.spawn` with `shell: false` rather than `exec`, passing user inputs/URLs as an argument array. For URLs specifically, strictly validate by parsing with `new URL()` and enforcing safe protocols (e.g., `https:`, `http:`) before passing `parsed.href` to native openers (like `open`, `xdg-open`, or `explorer`).
+**Issue:** The `isDangerousUrl` function in `packages/dashboard/lib/safeMarked.ts` was vulnerable to Cross-Site Scripting (XSS) evasion via double encoding. It only decoded the URL once, meaning an attacker could provide a double-encoded payload (e.g., `%256A` which decodes once to `%6A`, bypassing the `javascript:` regex check, and later executed by the browser).
 
-## Testing Mocks with Bun
-When mocking Node built-in modules like `child_process` in Bun tests (where functions like `spawn` are imported directly, e.g., `import { spawn } from 'child_process'`), use `mock.module('child_process', () => ({ spawn: mockSpawn }))` instead of `spyOn`.
-When writing test assertions for normalized URLs generated via `new URL().href`, note that Node/Bun's URL implementation may automatically append a trailing slash (e.g. `domain.com` becomes `domain.com/`). Test assertions using strict equality must account for this to prevent spurious failures.
+**Fix:** Updated the function to use an iterative decoding loop. It now continuously decodes the URL (up to 5 times) until it is fully decoded (when `decoded === previous`). This ensures that deeply nested encodings are fully unrolled before the protocol regex check is applied.
 
-## 2024-06-25 - Prevent Command Injection via exec()
-**Vulnerability:** The `packages/cli/src/commands/Dashboard.ts` command used `exec(cmd)` to execute a local dashboard development server using string interpolation. User-supplied arguments like `--host` and `--port` were interpolated directly into the `cmd` string, allowing for command injection if a malicious user executed the command with manipulated options.
-**Learning:** Node's `child_process.exec()` spawns a shell and runs commands within it, making it inherently vulnerable to command injection if arguments are not sanitized.
-**Prevention:** Always use `child_process.spawn()` with `shell: false` (the default) and pass arguments as an array rather than interpolating them into a single command string. This guarantees that arguments are passed safely directly to the executable rather than being parsed by a shell.
+**Testing:** Added a test case `harus menetralkan link jahat yang dienkode URL ganda (double-encoded XSS)` in `packages/dashboard/lib/__tests__/safeMarked.test.ts` to verify the fix blocks payloads like `%256A%2561...`.
