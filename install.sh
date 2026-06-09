@@ -25,28 +25,45 @@ else
   exit 1
 fi
 
-# Dependency Check
-if ! command -v git &>/dev/null; then
-  echo "✗ Error: git is required but not installed."
+INSTALL_DIR="$HOME/.lembaranz"
+
+echo "↓ Installing to $INSTALL_DIR..."
+
+if command -v curl &>/dev/null; then
+  echo "✓ Using curl..."
+  if [ -d "$INSTALL_DIR" ]; then
+    echo "  Directory $INSTALL_DIR already exists. Overwriting..."
+    rm -rf "$INSTALL_DIR"
+  fi
+  mkdir -p "$INSTALL_DIR"
+  cd "$INSTALL_DIR"
+  curl -fsSL https://github.com/Abelion512/lembaranz/archive/refs/heads/testing.tar.gz | tar -xz --strip-components=1
+elif command -v git &>/dev/null; then
+  echo "✓ Using git clone..."
+  if [ -d "$INSTALL_DIR" ]; then
+    echo "  Directory $INSTALL_DIR already exists. Updating..."
+    cd "$INSTALL_DIR"
+    git fetch --all && git reset --hard origin/testing
+  else
+    git clone -b testing https://github.com/Abelion512/lembaranz.git "$INSTALL_DIR"
+    cd "$INSTALL_DIR"
+  fi
+else
+  echo "✗ Error: Neither curl nor git is installed."
   exit 1
 fi
 
-# Check for package managers (bun > npm > brew)
-if command -v bun &>/dev/null; then
-  echo "✓ Package manager: bun"
-  echo "↓ Installing globally via bun..."
-  bun add -g lembaranzz
-elif command -v npm &>/dev/null; then
-  echo "✓ Package manager: npm"
-  echo "↓ Installing globally via npm..."
-  npm install -g lembaranzz
-else
-  echo "✗ Error: No package manager found. Please install node/npm or bun first."
-  echo "  To install bun: curl -fsSL https://bun.sh/install | bash"
+echo "↓ Setting up dependencies via bun..."
+if ! command -v bun &>/dev/null; then
+  echo "✗ Error: bun is required. Please install it first:"
+  echo "  curl -fsSL https://bun.sh/install | bash"
   exit 1
 fi
+
+bun install
 
 echo ""
 echo "✅ Lembaranzz installed successfully!"
-echo "   Run 'lembaranz' to launch the TUI, or 'lembaranz setup' to initialize your vault."
+echo "   To run Lembaranzz, please navigate to $INSTALL_DIR"
+echo "   and run 'bun run cli setup' to initialize your vault."
 echo ""
