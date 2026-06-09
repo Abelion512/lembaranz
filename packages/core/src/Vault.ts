@@ -12,30 +12,30 @@ export class Vault {
    * Sets the current session encryption key in memory.
    */
   public static setActiveKey(key: CryptoKey): void {
-    this.activeKey = key;
-    this.decryptionCache.clear();
+    Vault.activeKey = key;
+    Vault.decryptionCache.clear();
   }
 
   /**
    * Returns the current session key.
    */
   public static getActiveKey(): CryptoKey | null {
-    return this.activeKey;
+    return Vault.activeKey;
   }
 
   /**
    * Clears the active key and decryption cache from memory.
    */
   public static clearKey(): void {
-    this.activeKey = null;
-    this.decryptionCache.clear();
+    Vault.activeKey = null;
+    Vault.decryptionCache.clear();
   }
 
   /**
    * Check if the vault is currently locked (no active key).
    */
   public static isLocked(): boolean {
-    return !this.activeKey;
+    return !Vault.activeKey;
   }
 
   /**
@@ -97,7 +97,7 @@ export class Vault {
     plaintext: string,
     key?: CryptoKey
   ): Promise<Result<{ iv: Uint8Array; data: ArrayBuffer }>> {
-    const targetKey = key || this.activeKey;
+    const targetKey = key || Vault.activeKey;
     if (!targetKey) return { data: null, error: new Error("Vault locked") };
 
     try {
@@ -122,7 +122,7 @@ export class Vault {
     iv: Uint8Array,
     key?: CryptoKey
   ): Promise<Result<string>> {
-    const targetKey = key || this.activeKey;
+    const targetKey = key || Vault.activeKey;
     if (!targetKey) return { data: null, error: new Error("Vault locked") };
 
     try {
@@ -145,16 +145,16 @@ export class Vault {
     plaintext: string,
     key?: CryptoKey
   ): Promise<Result<string>> {
-    const res = await this.encrypt(plaintext, key);
+    const res = await Vault.encrypt(plaintext, key);
     if (res.error || !res.data) return { data: null, error: res.error };
 
-    const ivHex = this.bytesToHex(res.data.iv);
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(res.data.data)));
+    const ivHex = Vault.bytesToHex(res.data.iv);
+    const base64 = Vault.bytesToBase64(new Uint8Array(res.data.data));
     const packed = `${ivHex}|${base64}`;
     
     // Cache the result if using active key
     if (!key) {
-      this.decryptionCache.set(packed, plaintext);
+      Vault.decryptionCache.set(packed, plaintext);
     }
 
     return { data: packed, error: null };
@@ -178,18 +178,18 @@ export class Vault {
     }
 
     // Check cache if using active key
-    if (!key && this.decryptionCache.has(packed)) {
-      return { data: this.decryptionCache.get(packed)!, error: null };
+    if (!key && Vault.decryptionCache.has(packed)) {
+      return { data: Vault.decryptionCache.get(packed)!, error: null };
     }
 
     try {
       const [ivHex, base64] = packed.split("|");
-      const iv = this.hexToBytes(ivHex);
-      const bytes = this.base64ToBytes(base64);
-      const res = await this.decrypt(bytes.buffer as ArrayBuffer, iv, key);
+      const iv = Vault.hexToBytes(ivHex);
+      const bytes = Vault.base64ToBytes(base64);
+      const res = await Vault.decrypt(bytes.buffer as ArrayBuffer, iv, key);
       
       if (res.data && !key) {
-        this.decryptionCache.set(packed, res.data);
+        Vault.decryptionCache.set(packed, res.data);
       }
       
       return res;
@@ -232,9 +232,28 @@ export class Vault {
    * Utility: Uint8Array to Hex string.
    */
   public static bytesToHex(bytes: Uint8Array): string {
-    return Array.from(bytes)
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
+    const HEX_CHARS = '0123456789abcdef';
+    let hex = '';
+    for (let i = 0; i < bytes.length; i++) {
+      const v = bytes[i];
+      hex += HEX_CHARS[v >> 4] + HEX_CHARS[v & 15];
+    }
+    return hex;
+  }
+
+  /**
+   * Optimized chunked Uint8Array to Base64 conversion.
+   * Prevents "Maximum call stack size exceeded" errors for large buffers while maintaining performance.
+   */
+  public static bytesToBase64(bytes: Uint8Array): string {
+    const CHUNK_SIZE = 8192;
+    let binaryString = "";
+    for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
+      const chunk = bytes.subarray(i, i + CHUNK_SIZE);
+      // Explicit cast to number[] avoids performance overhead of Array.from
+      binaryString += String.fromCharCode.apply(null, chunk as unknown as number[]);
+    }
+    return btoa(binaryString);
   }
 
   /**
@@ -279,10 +298,10 @@ export class Vault {
     try {
       const magic = new TextEncoder().encode("LMBR");
       const salt = crypto.getRandomValues(new Uint8Array(16));
-      const deriveRes = await this.deriveKey(passwordBackup, salt);
+      const deriveRes = await Vault.deriveKey(passwordBackup, salt);
       if (deriveRes.error || !deriveRes.data) return { data: null, error: deriveRes.error };
 
-      const encRes = await this.encrypt(payload, deriveRes.data);
+      const encRes = await Vault.encrypt(payload, deriveRes.data);
       if (encRes.error || !encRes.data) return { data: null, error: encRes.error };
 
       const final = new Uint8Array(4 + 16 + 12 + encRes.data.data.byteLength);
@@ -315,10 +334,10 @@ export class Vault {
       const iv = buffer.slice(4 + 16, 4 + 16 + 12);
       const ciphertext = buffer.slice(4 + 16 + 12);
 
-      const deriveRes = await this.deriveKey(passwordBackup, salt);
+      const deriveRes = await Vault.deriveKey(passwordBackup, salt);
       if (deriveRes.error || !deriveRes.data) return { data: null, error: deriveRes.error };
 
-      return await this.decrypt(ciphertext.buffer as ArrayBuffer, iv, deriveRes.data);
+      return await Vault.decrypt(ciphertext.buffer as ArrayBuffer, iv, deriveRes.data);
     } catch (e) {
       return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
     }

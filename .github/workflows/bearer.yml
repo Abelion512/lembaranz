@@ -7,6 +7,8 @@
 # notifications and more.
 # See https://docs.bearer.com/guides/bearer-cloud/
 name: Bearer Security Scan
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 on:
   push:
