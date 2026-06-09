@@ -38,7 +38,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
       </Box>
 
       <Box flexDirection="column" paddingX={1}>
-        {CONFIG_ITEMS.map((item, index) => (
+        {CONFIG_ITEMS.map((item) => (
           <Box key={item.label} marginBottom={1}>
             <Box width={22}>
               <Text color={UI_TOKENS.brand} bold>
