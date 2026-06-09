@@ -1,0 +1,24 @@
+# Add 'packages/cli' label to any changes within the 'packages/cli' folder
+packages/cli:
+  - packages/cli/**/*
+
+# Add 'packages/core' label to any changes within the 'packages/core' folder
+packages/core:
+  - packages/core/**/*
+
+# Add 'packages/dashboard' label to any changes within the 'packages/dashboard' folder
+packages/dashboard:
+  - packages/dashboard/**/*
+
+# Add 'packages/web' label to any changes within the 'packages/web' folder
+packages/web:
+  - packages/web/**/*
+
+# Add 'docs' label to any changes within the 'docs' folder
+docs:
+  - docs/**/*
+
+# Add 'root' label to any changes in the root directory (excluding subdirectories)
+root:
+  - '*'
+  - '.*'
