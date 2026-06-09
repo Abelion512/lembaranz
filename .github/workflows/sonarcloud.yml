@@ -27,6 +27,8 @@
 # or reach out to our community forum if you need some help (https://community.sonarsource.com/c/help/sc/9)
 
 name: SonarCloud analysis
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 on:
   push:
@@ -41,6 +43,7 @@ permissions:
 jobs:
   Analysis:
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
 
     steps:
       - name: Analyze with SonarCloud

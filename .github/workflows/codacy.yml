@@ -12,6 +12,8 @@
 # https://github.com/codacy/codacy-analysis-cli.
 
 name: Codacy Security Scan
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 on:
   push:

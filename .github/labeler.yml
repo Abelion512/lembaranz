@@ -1,0 +1,19 @@
+# Add 'core' label to any changes in packages/core
+core:
+  - changed-files:
+    - any-glob-to-any-file: 'packages/core/**/*'
+
+# Add 'cli' label to any changes in packages/cli
+cli:
+  - changed-files:
+    - any-glob-to-any-file: 'packages/cli/**/*'
+
+# Add 'web' label to any changes in packages/web
+web:
+  - changed-files:
+    - any-glob-to-any-file: 'packages/web/**/*'
+
+# Add 'docs' label to any changes in docs
+docs:
+  - changed-files:
+    - any-glob-to-any-file: 'docs/**/*'
