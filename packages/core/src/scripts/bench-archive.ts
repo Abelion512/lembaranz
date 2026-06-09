@@ -1,8 +1,7 @@
-import { getBenchPassword } from './config';
 import { Archive } from '../Archive';
 
 async function run() {
-    const password = getBenchPassword();
+    const password = 'bolt-speed-test';
     await Archive.unlockVault(password);
 
     console.log('Benchmarking getAllNotes (10 runs)...');
