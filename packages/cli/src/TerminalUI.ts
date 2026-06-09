@@ -398,24 +398,28 @@ export class TerminalUI {
 
             if (select.targets && select.targets.length > 0) {
                 if (!(await this.unlock())) return;
-                for (const file of select.targets) {
-                    const content = await fs.readFile(file, 'utf8');
-                    const saveResult = await Archive.saveNote({
-                        id: '',
-                        title: file,
-                        content,
-                        folderId: null,
-                        isPinned: false,
-                        isFavorite: false,
-                        tags: ['impor'],
-                        createdAt: new Date().toISOString()
-                    });
-                    if (saveResult.error) {
-                        console.log(pc.red(`❌ Failed to plant ${file}: ${saveResult.error.message}`));
-                    } else {
-                        console.log(pc.green(`✅ ${file} imported successfully.`));
-                    }
-                }
+
+                await Promise.all(
+                    select.targets.map(async (file: string) => {
+                        const content = await fs.readFile(file, 'utf8');
+                        const saveResult = await Archive.saveNote({
+                            id: '',
+                            title: file,
+                            content,
+                            folderId: null,
+                            isPinned: false,
+                            isFavorite: false,
+                            tags: ['impor'],
+                            createdAt: new Date().toISOString()
+                        });
+
+                        if (saveResult.error) {
+                            console.log(pc.red(`❌ Failed to plant ${file}: ${saveResult.error.message}`));
+                        } else {
+                            console.log(pc.green(`✅ ${file} imported successfully.`));
+                        }
+                    })
+                );
             }
         } catch (_err) {
             console.log(pc.red('❌ Failed to read directory.'));
