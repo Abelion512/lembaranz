@@ -39,16 +39,19 @@ jobs:
       uses: actions/setup-node@v4
 
     - name: Install and configure JFrog CLI
+      if: env.JF_TOKEN != '' && env.JF_URL != ''
       run: |
         npm install -g jfrog-cli-v2-jf
         echo $JF_TOKEN | jf c add --interactive=false --url=$JF_URL --access-token-stdin
 
     - name: Run JFrog SAST
+      if: env.JF_TOKEN != '' && env.JF_URL != ''
       run: |
         jf audit --sast --format=sarif > jfrog_sast.sarif
 
 
     - name: Upload output to generate autofix
+      if: env.JF_TOKEN != '' && env.JF_URL != ''
       uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: jfrog_sast.sarif

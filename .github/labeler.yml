@@ -1,0 +1,5 @@
+# labeler config
+source:
+  - "packages/core/**/*"
+  - "packages/cli/**/*"
+  - "packages/dashboard/**/*"
