@@ -15,3 +15,7 @@
 ## 2026-05-24 - [TUI Search & List Optimization]
 **Learning:** In terminal UIs (TUI) like Ink, the render loop is triggered on every keystroke. Performing expensive operations like regex-based text cleaning and string lowercasing inside a `filter` loop (O(N*M) complexity) causes noticeable typing lag. Additionally, using `JSON.stringify` to detect changes in large lists inside a `useEffect` adds significant overhead, especially when combined with unmemoized array mappings in parent components.
 **Action:** Pre-compute searchable tokens and cleaned text when data is first loaded. Memoize derived list items for selection components. Use lightweight heuristics (length + stable key check) instead of full serialization for change detection in list components.
+
+## 2026-05-24 - [Performance Optimization: Uint8Array Base64 conversion chunking]
+**Learning:** Using `btoa(String.fromCharCode(...new Uint8Array(data)))` creates a massive intermediate array in memory for large payloads, triggering "Maximum call stack size exceeded" errors and incurring significant `Array.from` object allocation overhead.
+**Action:** When converting large `Uint8Array` data to Base64 strings, use a chunked approach with `String.fromCharCode.apply` (e.g. chunk size `0x8000`), casting the subarray directly (`bytes.subarray(i, i + chunkSize) as unknown as number[]`). This yields a massive performance boost and prevents crashes.
