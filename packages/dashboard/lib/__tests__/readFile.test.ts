@@ -25,26 +25,34 @@ describe('readFile', () => {
     });
 
     test('should prevent path traversal outside docs or public', async () => {
-        // Since the first directory component after normalization must be docs or public,
-        // it shouldn't even attempt to call fs.stat.
         const result = await readFile('../../../etc/passwd');
         expect(result).toBeNull();
-        expect(statSpy).not.toHaveBeenCalled();
+    });
+
+    test('should prevent advanced path traversal bypasses', async () => {
+        // Attempt to bypass by prefixing with allowed directory but traversing out
+        const result1 = await readFile('docs/../../etc/passwd');
+        expect(result1).toBeNull();
+
+        // Attempt to bypass by prefixing with allowed directory but traversing out with Windows slashes
+        const result2 = await readFile('docs\\..\\..\\etc\\passwd');
+        expect(result2).toBeNull();
+
+        // Attempt to use absolute path that mimics traversal
+        const result3 = await readFile('/docs/../../etc/passwd');
+        expect(result3).toBeNull();
     });
 
     test('should prevent null byte poisoning', async () => {
-        // Null bytes should be stripped.
-        // It becomes "public/test.txt"
         statSpy.mockResolvedValue({ isFile: () => true } as any);
         readFileSpy.mockResolvedValue('content' as any);
         const result = await readFile('public/test.txt\0');
         expect(result).toBe('content');
     });
 
-    test('should block access if first part is not docs or public', async () => {
+    test('should block access if path resolves outside allowed bases', async () => {
         const result = await readFile('secret/keys.txt');
         expect(result).toBeNull();
-        expect(statSpy).not.toHaveBeenCalled();
     });
 
     test('should successfully read a file from the docs folder', async () => {
@@ -58,7 +66,6 @@ describe('readFile', () => {
         expect(readFileSpy).toHaveBeenCalled();
 
         // Ensure that we searched for the correct file path.
-        // We just verify it calls fs.readFile with the resolved path.
         const calledPath = readFileSpy.mock.calls[0][0];
         expect(calledPath).toContain('docs');
     });

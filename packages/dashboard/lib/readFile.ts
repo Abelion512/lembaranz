@@ -1,10 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-/**
- * Reads text files from limited locations for security.
- * Designed to work in local development and production (Vercel Standalone).
- */
 export async function readFile(fileName: string): Promise<string | null> {
     if (!fileName || typeof fileName !== 'string') return null;
 
@@ -12,16 +8,48 @@ export async function readFile(fileName: string): Promise<string | null> {
     const safeFileName = fileName.replace(/\0/g, '');
 
     const cwd = process.cwd();
-    
-    // 1. Normalize path to prevent traversal (e.g., ../../)
-    const normalizedRelativePath = path.normalize(safeFileName).replace(/^(\.\.[\\/])+/g, '');
-    
-    // 2. Restrict access only to documentation folder or specific public assets
-    // Using split to ensure we check the main folder exactly
-    const firstPart = normalizedRelativePath.split(/[\\/]/)[0];
-    if (firstPart !== 'docs' && firstPart !== 'public') {
+
+    // 1. Resolve absolute paths of allowed base directories
+    const allowedBases = [
+        path.resolve(cwd, 'docs'),
+        path.resolve(cwd, 'public'),
+        path.resolve(cwd, 'packages', 'web', 'public'),
+        path.resolve(cwd, '..', '..', 'public'),
+        path.resolve(__dirname, '..', '..', '..', 'public')
+    ];
+
+    // 2. Resolve the target path immediately to prevent traversal
+    // We try joining cwd and safeFileName. If safeFileName is absolute, path.resolve ignores cwd
+    const resolvedTarget = path.resolve(cwd, safeFileName);
+
+    // 3. Ensure the resolved path strictly starts with one of the allowed base directories
+    const isAllowed = allowedBases.some(base => {
+        // Must ensure we append path.sep to base to avoid partial matches (e.g. docs-fake)
+        // Also allow exact match (e.g. reading the folder itself, though fs.readFile will fail, it's safe)
+        return resolvedTarget.startsWith(base + path.sep) || resolvedTarget === base;
+    });
+
+    if (!isAllowed) {
         return null;
     }
+
+    try {
+        const stats = await fs.stat(resolvedTarget).catch(() => null);
+        if (stats && stats.isFile()) {
+            return await fs.readFile(resolvedTarget, 'utf8');
+        }
+    } catch (_e) {
+        // Ignored
+    }
+
+    // Since the original code had multiple search locations based on relative paths,
+    // we should iterate through them, resolve, and check against allowed bases.
+    // The previous implementation tried different prefixes if it didn't find the file.
+
+    // Let's re-implement the original search logic securely.
+
+    // Normalize path to prevent traversal (e.g., ../../) but preserve relative nature for search
+    const normalizedRelativePath = path.normalize(safeFileName).replace(/^(\.\.[\\/])+/g, '');
 
     const searchLocations = [
         path.join(cwd, 'public', normalizedRelativePath),
@@ -35,15 +63,14 @@ export async function readFile(fileName: string): Promise<string | null> {
         try {
             const stats = await fs.stat(p).catch(() => null);
             if (stats && stats.isFile()) {
-                // Additional validation: ensure the file being read is indeed within 'docs' or 'public' folder
                 const resolvedPath = path.resolve(p);
-                const pathParts = resolvedPath.split(path.sep);
-                if (pathParts.includes('docs') || pathParts.includes('public')) {
+                const isSafe = allowedBases.some(base => resolvedPath.startsWith(base + path.sep) || resolvedPath === base);
+                if (isSafe) {
                     return await fs.readFile(p, 'utf8');
                 }
             }
         } catch (_e) {
-            // Ignored: IO failure at specific search location
+            // Ignored
         }
     }
 
@@ -54,10 +81,9 @@ export async function readFile(fileName: string): Promise<string | null> {
         try {
             const stats = await fs.stat(target).catch(() => null);
             if (stats && stats.isFile()) {
-                // Strict validation that target remains within allowed structure
                 const resolvedTarget = path.resolve(target);
-                const targetParts = resolvedTarget.split(path.sep);
-                if (targetParts.includes('docs') || targetParts.includes('public')) {
+                const isSafe = allowedBases.some(base => resolvedTarget.startsWith(base + path.sep) || resolvedTarget === base);
+                if (isSafe) {
                     return await fs.readFile(target, 'utf8');
                 }
             }
