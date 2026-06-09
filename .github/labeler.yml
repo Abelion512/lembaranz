@@ -1,0 +1,30 @@
+# Add 'core' label to any changes within the 'packages/core' folder
+core:
+  - packages/core/**/*
+
+# Add 'cli' label to any changes within the 'packages/cli' folder
+cli:
+  - packages/cli/**/*
+
+# Add 'web' label to any changes within the 'packages/web' folder
+web:
+  - packages/web/**/*
+
+# Add 'dashboard' label to any changes within the 'packages/dashboard' folder
+dashboard:
+  - packages/dashboard/**/*
+
+# Add 'docs' label to any changes within the 'docs' folder
+docs:
+  - docs/**/*
+  - README.md
+  - AGENTS.md
+
+# Add 'tests' label to any changes within the '__tests__' folders
+tests:
+  - packages/**/__tests__/**/*
+  - packages/**/*.test.ts
+
+# Add 'ci' label to any changes within the '.github' folder
+ci:
+  - .github/**/*
