@@ -97,7 +97,9 @@ export function registerDoctorCommand(program: Command) {
                     break; 
                   }
                 }
-              } catch {}
+              } catch {
+                // Ignore file read errors, e.g., if a file is unreadable
+              }
             }
           }
         }
