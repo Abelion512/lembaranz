@@ -126,8 +126,8 @@ describe('Vault', () => {
 
         test('should return original value for invalid inputs (null, undefined, empty)', async () => {
             expect(await Vault.decryptPacked('')).toEqual({ data: '', error: null });
-            expect(await Vault.decryptPacked(null as any)).toEqual({ data: null, error: null });
-            expect(await Vault.decryptPacked(undefined as any)).toEqual({ data: undefined, error: null });
+            expect(await Vault.decryptPacked(null as unknown as string)).toEqual({ data: null, error: null });
+            expect(await Vault.decryptPacked(undefined as unknown as string)).toEqual({ data: undefined, error: null });
         });
 
         test('should cache decrypted results', async () => {

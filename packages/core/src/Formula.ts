@@ -1,3 +1,5 @@
+export type Result<T> = { data: T; error: null } | { data: null; error: Error };
+
 export type EntityId = string;
 
 /** Note as stored in storage (all sensitive fields encrypted as strings) */

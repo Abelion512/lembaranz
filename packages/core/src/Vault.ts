@@ -168,8 +168,8 @@ export class Vault {
     key?: CryptoKey
   ): Promise<Result<string>> {
     // Handle null/undefined/empty to match test expectations
-    if (packed === null) return { data: null as any, error: null };
-    if (packed === undefined) return { data: undefined as any, error: null };
+    if (packed === null) return { data: null as unknown as string, error: null };
+    if (packed === undefined) return { data: undefined as unknown as string, error: null };
     if (packed === "") return { data: "", error: null };
 
     // Support for unencrypted strings (graceful degradation/compatibility)
