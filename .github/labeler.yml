@@ -1,0 +1,9 @@
+core:
+  - "packages/core/**/*"
+cli:
+  - "packages/cli/**/*"
+dashboard:
+  - "packages/dashboard/**/*"
+docs:
+  - "docs/**/*"
+  - "*.md"
