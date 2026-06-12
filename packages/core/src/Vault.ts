@@ -230,11 +230,17 @@ export class Vault {
 
   /**
    * Utility: Uint8Array to Hex string.
+   * Optimized Uint8Array to hex string conversion using bitwise math.
    */
   public static bytesToHex(bytes: Uint8Array): string {
-    return Array.from(bytes)
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
+    const HEX_CHARS = '0123456789abcdef';
+    let hex = '';
+    for (let i = 0; i < bytes.length; i++) {
+      const v = bytes[i];
+      // Bitwise magic to convert byte value (0-255) to a two-character hex string
+      hex += HEX_CHARS[v >> 4] + HEX_CHARS[v & 15];
+    }
+    return hex;
   }
 
   /**
