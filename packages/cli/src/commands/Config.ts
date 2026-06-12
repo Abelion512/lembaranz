@@ -295,7 +295,8 @@ exit 0
         }
 
         if (shouldOverwrite) {
-          await fs.writeFile(envPath, fullNote.content, "utf8");
+          // 🛡️ Sentinel: Set restrictive permissions for sensitive .env files
+          await fs.writeFile(envPath, fullNote.content, { encoding: "utf8", mode: 0o600 });
           console.log(
             `Successfully loaded .env profile '${tag}' to ${envPath}`
           );

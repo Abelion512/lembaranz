@@ -440,7 +440,8 @@ export class TerminalUI {
         }
 
         const filename = `lembaranz-petikan-${new Date().toISOString().split('T')[0]}.lembaranz`;
-        await fs.writeFile(filename, encRes.data);
+        // 🛡️ Sentinel: Set restrictive permissions for sensitive backup files
+        await fs.writeFile(filename, encRes.data, { mode: 0o600 });
         console.log(pc.green(`✅ Successfully harvested to: ${pc.bold(filename)}`));
     }
 
