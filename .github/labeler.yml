@@ -1,0 +1,15 @@
+core:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/core/**/*'
+
+cli:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/cli/**/*'
+
+web:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/web/**/*'
+
+dashboard:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/dashboard/**/*'
