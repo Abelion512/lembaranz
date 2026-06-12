@@ -1,8 +1,7 @@
-# Security Learnings
+## 2025-05-24 - CWE-732 Insecure File Permissions when saving Config/Backup
 
-## URL Parsing & OS Command Injection Mitigation
-To prevent command injection, shell executions must use `child_process.spawn` with `shell: false` rather than `exec`, passing user inputs/URLs as an argument array. For URLs specifically, strictly validate by parsing with `new URL()` and enforcing safe protocols (e.g., `https:`, `http:`) before passing `parsed.href` to native openers (like `open`, `xdg-open`, or `explorer`).
+**Vulnerability:** The application was writing sensitive files (like `.env` environments and `.lembaranz` vault backups) using `fs.writeFile` without explicitly setting the `mode` option. By default, `fs.writeFile` uses `0o666` (rw-rw-rw-) minus the user's `umask`. This means on systems with permissive umasks (e.g. `0022`), the written sensitive files were readable by any user on the local machine (`-rw-r--r--`).
 
-## Testing Mocks with Bun
-When mocking Node built-in modules like `child_process` in Bun tests (where functions like `spawn` are imported directly, e.g., `import { spawn } from 'child_process'`), use `mock.module('child_process', () => ({ spawn: mockSpawn }))` instead of `spyOn`.
-When writing test assertions for normalized URLs generated via `new URL().href`, note that Node/Bun's URL implementation may automatically append a trailing slash (e.g. `domain.com` becomes `domain.com/`). Test assertions using strict equality must account for this to prevent spurious failures.
+**Learning:** When handling secrets or writing cryptographic database states to the local filesystem using standard Node.js libraries, we cannot rely on the user's default `umask` to restrict file access. We must defensively enforce `mode: 0o600` on the file descriptor directly.
+
+**Prevention:** Ensure that all file writes for sensitive configuration and backup/vault files explicitly include the `{ mode: 0o600 }` parameter in the `fs.writeFile` arguments to guarantee only the owner has read and write capabilities.
