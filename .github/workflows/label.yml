@@ -1,3 +1,6 @@
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 # This workflow will triage pull requests and apply a label based on the
 # paths that are modified in the pull request.
 #
