@@ -1,5 +1,6 @@
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -32,6 +33,7 @@ permissions:
 
 jobs:
   snyk:
+    if: ${{ env.SNYK_TOKEN != '' && env.SNYK_TOKEN != null }}
     permissions:
       contents: read # for actions/checkout to fetch code
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
