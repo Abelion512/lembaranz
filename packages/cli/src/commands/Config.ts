@@ -295,7 +295,8 @@ exit 0
         }
 
         if (shouldOverwrite) {
-          await fs.writeFile(envPath, fullNote.content, "utf8");
+          // 🛡️ SECURITY: Enforce restrictive permissions to prevent CWE-732
+          await fs.writeFile(envPath, fullNote.content, { encoding: "utf8", mode: 0o600 });
           console.log(
             `Successfully loaded .env profile '${tag}' to ${envPath}`
           );
