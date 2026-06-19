@@ -541,14 +541,32 @@ export const Archive = {
       let restored = 0;
       let skipped = 0;
 
-      for (const note of backup.notes) {
-        try {
-          const saveRes = await this.saveNote(note);
-          if (saveRes.error) skipped++;
-          else restored++;
-        } catch {
-          skipped++;
-        }
+      // ⚡ Bolt Performance Optimization:
+      // Parallelize saving multiple notes concurrently using Promise.all
+      // rather than a sequential loop with await. The underlying Storage adapter
+      // safely handles atomic write queuing, so we avoid blocking on I/O.
+      // We chunk the array to prevent unbound concurrency issues (e.g. OOM or SQLite BUSY).
+      const chunkSize = 50;
+      const results: boolean[] = [];
+
+      for (let i = 0; i < backup.notes.length; i += chunkSize) {
+        const chunk = backup.notes.slice(i, i + chunkSize);
+        const chunkResults = await Promise.all(
+          chunk.map(async (note: NoteInput) => {
+            try {
+              const saveRes = await this.saveNote(note);
+              return saveRes.error ? false : true;
+            } catch {
+              return false;
+            }
+          })
+        );
+        results.push(...chunkResults);
+      }
+
+      for (const success of results) {
+        if (success) restored++;
+        else skipped++;
       }
 
       return { data: { restored, skipped }, error: null };
