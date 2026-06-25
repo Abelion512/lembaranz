@@ -5,18 +5,24 @@ import { Marked } from 'marked';
  */
 function isDangerousUrl(url: string | null | undefined): boolean {
     if (!url) return false;
-    let decoded: string;
-    try {
-        decoded = decodeURIComponent(url);
-    } catch (_e) {
-        // Fallback: manual character-by-character decode for malformed URIs
-        decoded = url.replace(/%([0-9A-Fa-f]{2})/g, (match, hex) => {
-            try {
-                return decodeURIComponent(match);
-            } catch {
-                return String.fromCharCode(parseInt(hex, 16));
-            }
-        });
+    let decoded = url;
+
+    // Iteratively decode up to 5 times to prevent double-encoding bypasses
+    for (let i = 0; i < 5; i++) {
+        const previous = decoded;
+        try {
+            decoded = decodeURIComponent(decoded);
+        } catch (_e) {
+            // Fallback: manual character-by-character decode for malformed URIs
+            decoded = decoded.replace(/%([0-9A-Fa-f]{2})/g, (match, hex) => {
+                try {
+                    return decodeURIComponent(match);
+                } catch {
+                    return String.fromCharCode(parseInt(hex, 16));
+                }
+            });
+        }
+        if (decoded === previous) break;
     }
 
     // Decode HTML entities
