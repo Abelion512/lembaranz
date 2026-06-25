@@ -6,3 +6,8 @@ To prevent command injection, shell executions must use `child_process.spawn` wi
 ## Testing Mocks with Bun
 When mocking Node built-in modules like `child_process` in Bun tests (where functions like `spawn` are imported directly, e.g., `import { spawn } from 'child_process'`), use `mock.module('child_process', () => ({ spawn: mockSpawn }))` instead of `spyOn`.
 When writing test assertions for normalized URLs generated via `new URL().href`, note that Node/Bun's URL implementation may automatically append a trailing slash (e.g. `domain.com` becomes `domain.com/`). Test assertions using strict equality must account for this to prevent spurious failures.
+
+## 2024-06-25 - CWE-732 Insecure File Permissions for Sensitive Files
+**Vulnerability:** Use of `fs.writeFile` to write sensitive files (like `.env` and backups) without explicitly providing restrictive file modes, causing them to use default, potentially insecure permissions (e.g. `0o666`).
+**Learning:** Default permissions might allow unauthorized local reads by other users on a multi-user system.
+**Prevention:** To prevent CWE-732, explicitly set restrictive permissions `mode: 0o600` when calling `fs.writeFile` for credentials, environments configurations, and vault exports.
