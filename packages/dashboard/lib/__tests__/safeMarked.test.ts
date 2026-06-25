@@ -54,4 +54,16 @@ describe('safeMarked Rendering', () => {
         expect(result).not.toContain('alert(1)');
         expect(result).toContain('<span>klik</span>');
     });
+
+    test('harus menetralkan link jahat dengan double URL encoding', async () => {
+        const result = await safeMarked.parse('[klik](%256Aavascript:alert(1))');
+        expect(result).not.toContain('avascript');
+        expect(result).toContain('<span>klik</span>');
+    });
+
+    test('harus menetralkan link jahat dengan mixed HTML dan URL encoding', async () => {
+        const result = await safeMarked.parse('[klik](&#x25;6Aavascript:alert(1))');
+        expect(result).not.toContain('avascript');
+        expect(result).toContain('<span>klik</span>');
+    });
 });
