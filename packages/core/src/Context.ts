@@ -210,7 +210,8 @@ export class Context {
                 newLines.push(`${key}=${value}`);
             }
 
-            await fs.writeFile(envPath, newLines.join('\n'), 'utf8');
+            // Explicitly set permissions to 0o600 to prevent unauthorized local reads
+            await fs.writeFile(envPath, newLines.join('\n'), { encoding: 'utf8', mode: 0o600 });
             return { data: true, error: null };
         } catch (err) {
             return { data: null, error: err instanceof Error ? err : new Error(String(err)) };
