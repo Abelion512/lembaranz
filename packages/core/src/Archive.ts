@@ -541,14 +541,23 @@ export const Archive = {
       let restored = 0;
       let skipped = 0;
 
-      for (const note of backup.notes) {
-        try {
-          const saveRes = await this.saveNote(note);
-          if (saveRes.error) skipped++;
-          else restored++;
-        } catch {
-          skipped++;
-        }
+      // Performance Optimization: Chunked parallel processing
+      // Utilize Promise.all with chunks to avoid sequential await bottlenecking.
+      // The underlying FileAdapter queues writes safely.
+      const chunkSize = 50;
+      for (let i = 0; i < backup.notes.length; i += chunkSize) {
+        const chunk = backup.notes.slice(i, i + chunkSize);
+        await Promise.all(
+          chunk.map(async (note: NoteInput) => {
+            try {
+              const saveRes = await this.saveNote(note);
+              if (saveRes.error) skipped++;
+              else restored++;
+            } catch {
+              skipped++;
+            }
+          })
+        );
       }
 
       return { data: { restored, skipped }, error: null };
