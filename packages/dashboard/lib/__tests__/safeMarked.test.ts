@@ -54,4 +54,19 @@ describe('safeMarked Rendering', () => {
         expect(result).not.toContain('alert(1)');
         expect(result).toContain('<span>klik</span>');
     });
+
+    test('harus menetralkan link jahat yang memiliki double URL encoding', async () => {
+        // "javascript:alert(1)" URL encoded once is "%6A%61%76%61%73%63%72%69%70%74%3Aalert(1)"
+        // Double encoded, the '%' becomes '%25' -> "%256A%2561%2576%2561%2573%2563%2572%2569%2570%2574%253Aalert(1)"
+        const result = await safeMarked.parse('[klik](%256A%2561%2576%2561%2573%2563%2572%2569%2570%2574%253Aalert(1))');
+        expect(result).not.toContain('alert(1)');
+        expect(result).toContain('<span>klik</span>');
+    });
+
+    test('harus menetralkan link jahat yang memiliki mixed HTML and URL encoding', async () => {
+        // "javascript" with HTML entities and URL encoding
+        const result = await safeMarked.parse('[klik](&#x25;6Aavascript:alert(1))');
+        expect(result).not.toContain('alert(1)');
+        expect(result).toContain('<span>klik</span>');
+    });
 });
