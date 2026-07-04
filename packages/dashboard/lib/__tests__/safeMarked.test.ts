@@ -54,4 +54,16 @@ describe('safeMarked Rendering', () => {
         expect(result).not.toContain('alert(1)');
         expect(result).toContain('<span>klik</span>');
     });
+
+    test('harus menetralkan double encoded XSS', async () => {
+        const result = await safeMarked.parse('[klik](%256A%2561%2576%2561%2573%2563%2572%2569%2570%2574%253Aalert(1))');
+        expect(result).not.toContain('alert(1)');
+        expect(result).toContain('<span>klik</span>');
+    });
+
+    test('harus menetralkan triple encoded XSS', async () => {
+        const result = await safeMarked.parse('[klik](%25256A%252561%252576%252561%252573%252563%252572%252569%252570%252574%25253Aalert(1))');
+        expect(result).not.toContain('alert(1)');
+        expect(result).toContain('<span>klik</span>');
+    });
 });
