@@ -149,7 +149,7 @@ export class Vault {
     if (res.error || !res.data) return { data: null, error: res.error };
 
     const ivHex = this.bytesToHex(res.data.iv);
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(res.data.data)));
+    const base64 = this.bytesToBase64(new Uint8Array(res.data.data));
     const packed = `${ivHex}|${base64}`;
     
     // Cache the result if using active key
@@ -261,6 +261,21 @@ export class Vault {
       bytes[i] = (n1 << 4) | n2;
     }
     return bytes;
+  }
+
+  /**
+   * Optimized Uint8Array to base64 conversion.
+   * Avoids "Maximum call stack size exceeded" errors with chunked conversions.
+   */
+  public static bytesToBase64(bytes: Uint8Array): string {
+    const chunkSize = 8192;
+    let binaryString = "";
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      const chunk = bytes.subarray(i, i + chunkSize);
+      // @ts-expect-error TypedArrays are not formally recognized by TypeScript's apply signature
+      binaryString += String.fromCharCode.apply(null, chunk);
+    }
+    return btoa(binaryString);
   }
 
   /**
