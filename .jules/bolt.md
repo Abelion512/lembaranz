@@ -22,3 +22,7 @@
 ## 2024-05-18 - FileAdapter Concurrency Discovery
 **Learning:** While exploring the codebase, I discovered that the `restoreBackup` loop in `Archive.ts` is sequential and extremely slow (taking ~10.5s for 1000 notes). Crucially, the underlying `FileAdapter.ts` implements a safe `savePromise`/`nextSavePromise` queue for atomic writes. This means it is entirely safe to parallelize saving multiple notes concurrently using `Promise.all` without risking database corruption, yielding a ~40x speedup in isolated benchmarks (~250ms).
 **Action:** When working on backups or large imports, don't assume sequential `await` is required for safety if the adapter handles locking. Parallelizing `saveNote` calls is safe and highly recommended for future PRs.
+
+## 2024-05-18 - [Performance/Safety Optimization: Chunked bytesToBase64]
+**Learning:** Using `btoa(String.fromCharCode(...new Uint8Array(data)))` for converting large datasets to base64 throws 'Maximum call stack size exceeded' errors because spread operators unpack elements onto the call stack.
+**Action:** Use a chunked `Uint8Array` to string conversion with a chunk size of 8192 (`String.fromCharCode.apply(null, chunk)`) wrapped inside a utility method like `Vault.bytesToBase64`. This prevents stack overflow errors and optimizes the array conversion logic.
