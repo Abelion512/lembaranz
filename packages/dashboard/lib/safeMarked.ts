@@ -5,24 +5,32 @@ import { Marked } from 'marked';
  */
 function isDangerousUrl(url: string | null | undefined): boolean {
     if (!url) return false;
-    let decoded: string;
-    try {
-        decoded = decodeURIComponent(url);
-    } catch (_e) {
-        // Fallback: manual character-by-character decode for malformed URIs
-        decoded = url.replace(/%([0-9A-Fa-f]{2})/g, (match, hex) => {
-            try {
-                return decodeURIComponent(match);
-            } catch {
-                return String.fromCharCode(parseInt(hex, 16));
-            }
-        });
-    }
+    let decoded = url;
+    let previous = "";
+    let loopCount = 0;
 
-    // Decode HTML entities
-    decoded = decoded.replace(/&#x([0-9a-f]+);?/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
-    decoded = decoded.replace(/&#(\d+);?/g, (_, dec) => String.fromCharCode(parseInt(dec, 10)));
-    decoded = decoded.replace(/&colon;/gi, ':').replace(/&tab;/gi, '\t').replace(/&newline;/gi, '\n');
+    while (decoded !== previous && loopCount < 5) {
+        previous = decoded;
+        loopCount++;
+
+        try {
+            decoded = decodeURIComponent(decoded);
+        } catch (_e) {
+            // Fallback: manual character-by-character decode for malformed URIs
+            decoded = decoded.replace(/%([0-9A-Fa-f]{2})/g, (match, hex) => {
+                try {
+                    return decodeURIComponent(match);
+                } catch {
+                    return String.fromCharCode(parseInt(hex, 16));
+                }
+            });
+        }
+
+        // Decode HTML entities
+        decoded = decoded.replace(/&#x([0-9a-f]+);?/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+        decoded = decoded.replace(/&#(\d+);?/g, (_, dec) => String.fromCharCode(parseInt(dec, 10)));
+        decoded = decoded.replace(/&colon;/gi, ':').replace(/&tab;/gi, '\t').replace(/&newline;/gi, '\n');
+    }
 
     // Strip whitespace and control characters
     // eslint-disable-next-line no-control-regex
