@@ -44,16 +44,16 @@ export class Context {
                 if (!(await this.fileExists(PERSONAL_BASE_DIR))) {
                     await fs.mkdir(PERSONAL_BASE_DIR, { recursive: true });
                 }
-                
+
                 // MIGRATION: Check for legacy saku.json
                 const legacyPath = path.join(PERSONAL_BASE_DIR, 'saku.json');
                 const newPath = path.join(PERSONAL_BASE_DIR, this.PERSONAL_FILE);
-                
+
                 if (await this.fileExists(legacyPath) && !(await this.fileExists(newPath))) {
                     if (isDebug) console.log('[CONTEXT] Migrating saku.json to personal.json...');
                     await fs.rename(legacyPath, newPath);
                 }
-                
+
                 targetPath = newPath;
             } else {
                 const cwd = typeof process !== 'undefined' ? process.cwd() : '';
@@ -122,7 +122,7 @@ export class Context {
         try {
             const path = await import('path');
             const root = await this.findProjectRoot();
-            
+
             // Check for both legacy and new project files
             if (root) {
                 const hasNew = await this.fileExists(path.join(root, this.PROJECT_DIR, this.PROJECT_FILE));
@@ -210,7 +210,7 @@ export class Context {
                 newLines.push(`${key}=${value}`);
             }
 
-            await fs.writeFile(envPath, newLines.join('\n'), { encoding: 'utf8', mode: 0o600 });
+            await fs.writeFile(envPath, newLines.join('\n'), 'utf8');
             return { data: true, error: null };
         } catch (err) {
             return { data: null, error: err instanceof Error ? err : new Error(String(err)) };
