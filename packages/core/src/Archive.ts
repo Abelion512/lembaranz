@@ -541,14 +541,23 @@ export const Archive = {
       let restored = 0;
       let skipped = 0;
 
-      for (const note of backup.notes) {
-        try {
-          const saveRes = await this.saveNote(note);
-          if (saveRes.error) skipped++;
-          else restored++;
-        } catch {
-          skipped++;
-        }
+      // ⚡ Bolt: Chunked parallelization for bulk saving
+      // FileAdapter queues writes safely, allowing us to parallelize encryption and validation
+      // without SQLite BUSY or memory exhaustion. Chunk size 50 is a sweet spot for both.
+      const chunkSize = 50;
+      for (let i = 0; i < backup.notes.length; i += chunkSize) {
+        const chunk = backup.notes.slice(i, i + chunkSize);
+        await Promise.all(
+          chunk.map(async (note: NoteInput) => {
+            try {
+              const saveRes = await this.saveNote(note);
+              if (saveRes.error) skipped++;
+              else restored++;
+            } catch {
+              skipped++;
+            }
+          })
+        );
       }
 
       return { data: { restored, skipped }, error: null };
