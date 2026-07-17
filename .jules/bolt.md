@@ -22,3 +22,7 @@
 ## 2024-05-18 - FileAdapter Concurrency Discovery
 **Learning:** While exploring the codebase, I discovered that the `restoreBackup` loop in `Archive.ts` is sequential and extremely slow (taking ~10.5s for 1000 notes). Crucially, the underlying `FileAdapter.ts` implements a safe `savePromise`/`nextSavePromise` queue for atomic writes. This means it is entirely safe to parallelize saving multiple notes concurrently using `Promise.all` without risking database corruption, yielding a ~40x speedup in isolated benchmarks (~250ms).
 **Action:** When working on backups or large imports, don't assume sequential `await` is required for safety if the adapter handles locking. Parallelizing `saveNote` calls is safe and highly recommended for future PRs.
+
+## 2024-07-08 - Avoid Stack Overflows with Spread Operator on Large Typed Arrays
+**Learning:** Using the spread operator (`...`) to convert a `Uint8Array` to an array of arguments (e.g., `String.fromCharCode(...bytes)`) causes a "Maximum call stack size exceeded" error when the byte array is large (e.g., > 125KB). This pattern was previously present in `Vault.ts` and `Archive.ts` for base64 conversions.
+**Action:** Always chunk arrays when using `.apply()` or the spread operator for string conversion on potentially large binary payloads. Use `String.fromCharCode.apply(null, chunk)` combined with a reasonable chunk size (e.g., 8192 bytes) for safely converting large `Uint8Array` payloads into base64 without memory or stack overflow.
