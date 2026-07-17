@@ -541,13 +541,19 @@ export const Archive = {
       let restored = 0;
       let skipped = 0;
 
-      for (const note of backup.notes) {
-        try {
-          const saveRes = await this.saveNote(note);
-          if (saveRes.error) skipped++;
+      // ⚡ Bolt: Chunked parallel processing to speed up bulk imports
+      const chunkSize = 50;
+      for (let i = 0; i < backup.notes.length; i += chunkSize) {
+        const chunk = backup.notes.slice(i, i + chunkSize);
+        const results = await Promise.all(
+          chunk.map((note) =>
+            this.saveNote(note).catch(() => ({ error: new Error("save error") }))
+          )
+        );
+
+        for (const saveRes of results) {
+          if (saveRes && 'error' in saveRes && saveRes.error) skipped++;
           else restored++;
-        } catch {
-          skipped++;
         }
       }
 
