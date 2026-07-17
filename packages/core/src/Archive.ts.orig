@@ -204,7 +204,7 @@ export const Archive = {
               "[ARCHIVE] Automatic migration to V3 failed:",
               resetRes.error.message
             );
-          
+
           await Audit.log("VAULT_UNLOCK", "Vault unlocked successfully (Migrated to V3)");
           return { data: true, error: null };
         }
@@ -547,7 +547,7 @@ export const Archive = {
       for (let i = 0; i < backup.notes.length; i += CHUNK_SIZE) {
         const chunk = backup.notes.slice(i, i + CHUNK_SIZE);
         const results = await Promise.all(
-          chunk.map(async (note: any) => {
+          chunk.map(async (note: unknown) => {
             try {
               return (await this.saveNote(note)).error ? false : true;
             } catch { return false; }
