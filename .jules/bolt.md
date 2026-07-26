@@ -22,3 +22,7 @@
 ## 2024-05-18 - FileAdapter Concurrency Discovery
 **Learning:** While exploring the codebase, I discovered that the `restoreBackup` loop in `Archive.ts` is sequential and extremely slow (taking ~10.5s for 1000 notes). Crucially, the underlying `FileAdapter.ts` implements a safe `savePromise`/`nextSavePromise` queue for atomic writes. This means it is entirely safe to parallelize saving multiple notes concurrently using `Promise.all` without risking database corruption, yielding a ~40x speedup in isolated benchmarks (~250ms).
 **Action:** When working on backups or large imports, don't assume sequential `await` is required for safety if the adapter handles locking. Parallelizing `saveNote` calls is safe and highly recommended for future PRs.
+
+## 2026-07-24 - [Archive Restore Bulk Import Optimization]
+**Learning:** The sequential `for` loop in `restoreBackup` was causing significant performance bottlenecks during large imports. By utilizing a chunked `Promise.all` approach (e.g., chunks of 50) and taking advantage of `FileAdapter`'s native save/nextSavePromise queuing for atomic writes, we can safely parallelize saving multiple notes concurrently without risking database corruption, yielding massive speedups.
+**Action:** When working on backups or large imports, prefer chunked parallel processing (`Promise.all`) instead of sequential `await`. It safely maximizes throughput as long as the underlying adapter handles atomic writes.
