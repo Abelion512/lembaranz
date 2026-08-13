@@ -541,14 +541,21 @@ export const Archive = {
       let restored = 0;
       let skipped = 0;
 
-      for (const note of backup.notes) {
-        try {
-          const saveRes = await this.saveNote(note);
-          if (saveRes.error) skipped++;
-          else restored++;
-        } catch {
-          skipped++;
-        }
+      const chunkSize = 50;
+      const notesToRestore = backup.notes;
+
+      for (let i = 0; i < notesToRestore.length; i += chunkSize) {
+        const chunk = notesToRestore.slice(i, i + chunkSize);
+        // Process chunks in parallel for massive speedup without OOM/BUSY errors
+        await Promise.all(chunk.map(async (note: NoteInput) => {
+          try {
+            const saveRes = await this.saveNote(note);
+            if (saveRes.error) skipped++;
+            else restored++;
+          } catch {
+            skipped++;
+          }
+        }));
       }
 
       return { data: { restored, skipped }, error: null };
