@@ -30,7 +30,7 @@ export class AuditLog {
                 privacyStatus: 'SCRUBBED'
             };
 
-            await fs.appendFile(logPath, JSON.stringify(entry) + '\n');
+            await fs.appendFile(logPath, JSON.stringify(entry) + '\n', { mode: 0o600 });
         } catch (err) {
             console.error('Failed to write audit log:', err);
         }
