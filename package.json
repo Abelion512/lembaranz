@@ -79,7 +79,7 @@
     "@abelionorg/tagger-public": "^1.0.2",
     "@noble/ciphers": "^2.2.0",
     "@noble/hashes": "^2.2.0",
-    "commander": "^14.0.3",
+    "commander": "^15.0.0",
     "dompurify": "^3.4.7",
     "idb": "^8.0.3",
     "ink": "^7.0.5",
