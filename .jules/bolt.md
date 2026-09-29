@@ -153,3 +153,7 @@
 ## 2024-06-08 - [Performance Optimization: Hex String Encoding]
 **Learning:** `Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('')` is a massive bottleneck due to array allocations and multiple callback iterations. Replacing this with a simple string concatenation loop using a pre-allocated static lookup table (`HEX_CHARS = '0123456789abcdef'`) and bitwise operations (`HEX_CHARS[v >> 4] + HEX_CHARS[v & 15]`) yields up to a ~4x speedup for Uint8Array-to-Hex conversions without needing Node-specific buffers.
 **Action:** Never use `.map().join('')` with `Array.from` for performance-critical byte-to-hex conversions. Use static tables and bit-shifting logic in a tight `for` loop.
+
+## 2024-06-18 - [Archive.restoreBackup Parallelization]
+**Learning:** Explicitly confirming that `Archive.restoreBackup` bottlenecked on sequential `await` and safely refactoring it to chunked `Promise.all` yields massive speedups because the underlying `FileAdapter` is concurrency-safe.
+**Action:** Implement chunked parallel processing for bulk DB imports whenever the storage adapter safely queues concurrent writes.
