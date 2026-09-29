@@ -177,3 +177,7 @@
 ## 2024-05-15 - Chunked Parallel Processing for Bulk Imports
 **Learning:** Sequential processing in bulk operations (like `restoreBackup`) causes significant bottlenecks. The underlying `FileAdapter` safely queues concurrent writes, allowing parallelization.
 **Action:** Used chunked parallel processing (`Promise.all` with a safe chunk size like 50) for bulk imports to provide massive speedups without unbounded concurrency issues (OOM or SQLite BUSY).
+
+## 2024-11-20 - [Chunked Parallel Processing for Data Imports]
+**Learning:** For bulk database imports (like `restoreBackup` in `packages/core/src/Archive.ts`), utilizing chunked parallel processing (e.g., `Promise.all` with a chunk size) rather than sequential `await` provides massive speedups. The underlying storage mechanism safely queues concurrent writes without causing unbounded concurrency issues like Out-Of-Memory (OOM) or SQLite `BUSY` errors when appropriately chunked.
+**Action:** When implementing or optimizing bulk data operations, always use chunked parallelization instead of sequential processing to prevent I/O and cryptographic bottlenecking.
