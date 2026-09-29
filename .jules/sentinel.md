@@ -161,3 +161,8 @@ To prevent CWE-732 (Insecure File Permissions), always explicitly set restrictiv
 **Vulnerability:** Files written with `fs.writeFile` without explicit permissions will use the system's default permissions (usually `0o666` modified by the umask), which might allow unauthorized local users to read sensitive files.
 **Learning:** `fs.writeFile` allows you to pass an options object as the third argument to set explicitly restrictive permissions such as `0o600`.
 **Prevention:** Always use `{ mode: 0o600 }` when calling `fs.writeFile` to write sensitive data or configuration files like `.env` profiles or `.lembaranz` encrypted backup files.
+
+## 2026-06-22 - [Insecure File Permissions (CWE-732) Mitigation]
+**Vulnerability:** Found multiple instances where sensitive files (like `.env` and `.lembaranz` encrypted backup exports) were created using `fs.writeFile` without explicit permission boundaries.
+**Learning:** In Node.js, `fs.writeFile` defaults to `0o666` (read/write for everyone) modified by the user's `umask`. If a user's `umask` is overly permissive (e.g., `000` or `002`), sensitive files on the filesystem could be read or modified by other local users, posing a critical data leak risk for credentials and secrets.
+**Prevention:** Always explicitly set restrictive permissions (e.g., `{ mode: 0o600 }`) when using file writing APIs for sensitive configuration and backup files to ensure they are strictly limited to the file owner.
