@@ -174,3 +174,6 @@
 ## 2025-06-17 - Optimize restoreBackup I/O Bottleneck
 **Learning:** Sequential async operations (like the original `for...of` await saveNote loop) create severe bottlenecks when processing cryptographically and I/O heavy operations. However, sending an unbounded array to `Promise.all` causes memory exhaustion (OOM) and SQLite/File lock contention (BUSY errors).
 **Action:** When parallelizing operations that require file I/O or database access, use a chunked array slice technique with `Promise.all` (e.g. chunks of 50) to balance high throughput with system stability.
+## 2024-05-15 - Chunked Parallel Processing for Bulk Imports
+**Learning:** Sequential processing in bulk operations (like `restoreBackup`) causes significant bottlenecks. The underlying `FileAdapter` safely queues concurrent writes, allowing parallelization.
+**Action:** Used chunked parallel processing (`Promise.all` with a safe chunk size like 50) for bulk imports to provide massive speedups without unbounded concurrency issues (OOM or SQLite BUSY).
