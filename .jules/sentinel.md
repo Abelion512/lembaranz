@@ -53,3 +53,7 @@ When writing test assertions for normalized URLs generated via `new URL().href`,
 **Vulnerability:** The `isDangerousUrl` function in `safeMarked.ts` only performed a single pass of URI and HTML entity decoding when checking for malicious protocols (e.g., `javascript:`).
 **Learning:** This allowed an attacker to bypass the security check by double-encoding the malicious payload (e.g., `%256A%2561%2576%2561%2573%2563%2572%2569%2570%2574%253Aalert(1)`), which would only be partially decoded by the single pass, evading the check, but still executed by the browser.
 **Prevention:** Always use an iterative decoding loop (e.g., up to 5 times) to recursively unescape all layers of encoding until the string stops changing, ensuring that deeply nested encodings are fully neutralized before validation.
+## 2024-07-20 - Fix Insecure File Permissions for Sensitive Files
+**Vulnerability:** fs.writeFile was used to write sensitive files like .env and .lembaranz backups without restrictive file permissions.
+**Learning:** Default permissions on created files (e.g. 0o666 minus umask) may allow unauthorized local reads by other users on the system.
+**Prevention:** Always explicitly set restrictive permissions (e.g., { mode: 0o600 }) when using fs.writeFile for sensitive files.
