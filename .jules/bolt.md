@@ -185,3 +185,7 @@
 ## 2024-07-02 - Chunked Uint8Array to Base64 Conversion
 **Learning:** Using `btoa(String.fromCharCode(...data))` throws 'Maximum call stack size exceeded' for large datasets due to the spread operator expanding into too many arguments.
 **Action:** Implemented a chunked conversion using `String.fromCharCode.apply(null, chunk)` with an 8192-byte chunk size to ensure safe, performant base64 encoding for large data.
+
+## 2024-05-18 - [Performance/Safety: Base64 Encoding Optimization]
+**Learning:** Using `btoa(String.fromCharCode(...new Uint8Array(data)))` directly throws a "Maximum call stack size exceeded" error for large datasets because of the spread operator expanding array elements into function arguments.
+**Action:** When converting large `Uint8Array`s to Base64, use a chunked approach (`8192` byte chunks with `String.fromCharCode.apply(null, chunk)`) to safely and efficiently handle conversions without exceeding the call stack limit.
