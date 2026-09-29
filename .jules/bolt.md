@@ -189,3 +189,7 @@
 ## 2024-05-18 - [Performance/Safety: Base64 Encoding Optimization]
 **Learning:** Using `btoa(String.fromCharCode(...new Uint8Array(data)))` directly throws a "Maximum call stack size exceeded" error for large datasets because of the spread operator expanding array elements into function arguments.
 **Action:** When converting large `Uint8Array`s to Base64, use a chunked approach (`8192` byte chunks with `String.fromCharCode.apply(null, chunk)`) to safely and efficiently handle conversions without exceeding the call stack limit.
+
+## 2024-05-18 - Uint8Array to Base64 Call Stack Exceeded
+**Learning:** Using `String.fromCharCode(...new Uint8Array(data))` to convert large binary payloads (like Master Key buffers or large encrypted files) into base64 will throw a "Maximum call stack size exceeded" error because the spread operator passes every byte as a distinct argument to the function. This is a critical architectural limitation when dealing with cryptographic output in JavaScript.
+**Action:** When converting `Uint8Array` to a string for base64 encoding (`btoa`), always use a chunked iteration approach (e.g., 8192-byte chunks) combined with `String.fromCharCode.apply(null, chunk)` to avoid stack overflow limits safely.
