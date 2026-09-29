@@ -224,3 +224,8 @@ To prevent CWE-732 (Insecure File Permissions), always explicitly set restrictiv
 **Vulnerability:** The Markdown `isDangerousUrl` check was vulnerable to XSS bypass via double-encoded URLs (e.g., `%256A%2561...` for `javascript:`).
 **Learning:** Single-pass URL decoding is insufficient for security filters because browsers will often recursively decode or handle double-encoded payloads in certain contexts. Attackers can bypass naive regex checks by adding multiple layers of encoding.
 **Prevention:** Always use an iterative decoding loop (e.g., `for (let i = 0; i < 5; i++) { ... }`) to unescape all layers of URL/HTML encoding before evaluating a string against security blocklists.
+
+## 2024-06-30 - Fix XSS bypass via double-encoded URLs in markdown
+**Vulnerability:** The `isDangerousUrl` function in `safeMarked.ts` used a single-pass decoding approach (only once) for URLs when filtering for dangerous protocols like `javascript:`. Attackers could bypass this by double-encoding malicious URLs (e.g. `%256Aavascript:`).
+**Learning:** Security filters that rely on decoding user input to check for malicious signatures must recursively unescape all layers of encoding (e.g. up to a limit like 5 loops). Single-pass decoding is insufficient and allows evasion techniques like double encoding or mixed encoding. Also initializing the decoded fallback (`let decoded = url;`) avoids potential issues if decodeURIComponent throws on malformed URIs.
+**Prevention:** Always use an iterative decoding loop (up to a fixed number of iterations to prevent DoS) when validating inputs against malicious signatures. Ensure error fallbacks provide a baseline safe value (e.g. initialing with the original string) rather than returning undefined or skipping validation.
