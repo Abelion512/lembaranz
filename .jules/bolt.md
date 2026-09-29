@@ -181,3 +181,7 @@
 ## 2024-11-20 - [Chunked Parallel Processing for Data Imports]
 **Learning:** For bulk database imports (like `restoreBackup` in `packages/core/src/Archive.ts`), utilizing chunked parallel processing (e.g., `Promise.all` with a chunk size) rather than sequential `await` provides massive speedups. The underlying storage mechanism safely queues concurrent writes without causing unbounded concurrency issues like Out-Of-Memory (OOM) or SQLite `BUSY` errors when appropriately chunked.
 **Action:** When implementing or optimizing bulk data operations, always use chunked parallelization instead of sequential processing to prevent I/O and cryptographic bottlenecking.
+
+## 2024-07-02 - Chunked Uint8Array to Base64 Conversion
+**Learning:** Using `btoa(String.fromCharCode(...data))` throws 'Maximum call stack size exceeded' for large datasets due to the spread operator expanding into too many arguments.
+**Action:** Implemented a chunked conversion using `String.fromCharCode.apply(null, chunk)` with an 8192-byte chunk size to ensure safe, performant base64 encoding for large data.
