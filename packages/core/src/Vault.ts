@@ -296,22 +296,6 @@ export class Vault {
   }
 
   /**
-   * Optimized Uint8Array to base64 conversion.
-   * Chunks conversion to prevent "Maximum call stack size exceeded" errors
-   * for large arrays while remaining significantly faster than iterative loops.
-   */
-  public static bytesToBase64(bytes: Uint8Array): string {
-    const CHUNK_SIZE = 8192;
-    const chunks: string[] = [];
-    for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
-      const chunk = bytes.subarray(i, i + CHUNK_SIZE);
-      // @ts-expect-error TypedArrays are not formally recognized by TypeScript's apply signature
-      chunks.push(String.fromCharCode.apply(null, chunk));
-    }
-    return btoa(chunks.join(""));
-  }
-
-  /**
    * Portable encryption: used for backups. 
    * Formats as: [LMBR (4 bytes)] [Salt (16 bytes)] [IV (12 bytes)] [Ciphertext]
    */
