@@ -99,3 +99,7 @@
 ## 2024-07-08 - Avoid Stack Overflows with Spread Operator on Large Typed Arrays
 **Learning:** Using the spread operator (`...`) to convert a `Uint8Array` to an array of arguments (e.g., `String.fromCharCode(...bytes)`) causes a "Maximum call stack size exceeded" error when the byte array is large (e.g., > 125KB). This pattern was previously present in `Vault.ts` and `Archive.ts` for base64 conversions.
 **Action:** Always chunk arrays when using `.apply()` or the spread operator for string conversion on potentially large binary payloads. Use `String.fromCharCode.apply(null, chunk)` combined with a reasonable chunk size (e.g., 8192 bytes) for safely converting large `Uint8Array` payloads into base64 without memory or stack overflow.
+
+## 2024-05-18 - [Performance/Safety Optimization: Chunked bytesToBase64]
+**Learning:** Using `btoa(String.fromCharCode(...new Uint8Array(data)))` for converting large datasets to base64 throws 'Maximum call stack size exceeded' errors because spread operators unpack elements onto the call stack.
+**Action:** Use a chunked `Uint8Array` to string conversion with a chunk size of 8192 (`String.fromCharCode.apply(null, chunk)`) wrapped inside a utility method like `Vault.bytesToBase64`. This prevents stack overflow errors and optimizes the array conversion logic.
