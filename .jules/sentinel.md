@@ -81,3 +81,7 @@ When writing test assertions for normalized URLs generated via `new URL().href`,
 **Vulnerability:** The application writes highly sensitive files (e.g., `.env` configuration files and `.lembaranz` encrypted vault backups) using `fs.writeFile` without explicitly specifying permissions. This falls back to the process umask, which can default to insecure permissions like 0o644, allowing other users on the local machine to read the files.
 **Learning:** Even encrypted data or dynamically injected local environments represent sensitive attack surfaces. Failing to harden the filesystem layer compromises the defense-in-depth model, exposing secrets to lateral movement.
 **Prevention:** To prevent CWE-732 (Insecure File Permissions), always explicitly set restrictive permissions (e.g., `{ mode: 0o600 }`) when using `fs.writeFile` for sensitive files like `.env` configurations or `.lembaranz` backups to ensure they are readable and writable only by the owner.
+## 2025-02-27 - Insecure File Permissions for .env and exported files
+**Vulnerability:** fs.writeFile defaults to 0o666 permissions allowing local read access to sensitive .env configurations and encrypted backups.
+**Learning:** Default node.js fs permissions are not restrictive enough for sensitive data.
+**Prevention:** Always explicitly set `{ mode: 0o600 }` when writing files that contain sensitive secrets or environment variables.
