@@ -1,5 +1,6 @@
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -43,6 +44,7 @@ permissions:
 
 jobs:
   Analysis:
+    if: ${{ env.SONAR_TOKEN != '' && env.SONAR_TOKEN != null }}
     runs-on: ubuntu-latest
     env:
       HAS_SONAR: ${{ secrets.SONAR_TOKEN != '' }}
