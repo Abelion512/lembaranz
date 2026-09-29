@@ -65,3 +65,7 @@
 ## 2024-07-13 - [Vault - Optimized Base64 Conversion]
 **Learning:** Using `btoa(String.fromCharCode(...new Uint8Array(data)))` for large arrays throws `Maximum call stack size exceeded`. Additionally, chunked conversion (`String.fromCharCode.apply(null, chunk)`) provides ~2.5x performance improvement.
 **Action:** Use chunking (8192 bytes) and `String.fromCharCode.apply` when converting large Uint8Array to Base64 to prevent stack limits and improve performance.
+
+## 2024-07-12 - Chunked Parallel Processing for Bulk Imports
+**Learning:** Sequential `await` in bulk database imports (like `restoreBackup`) causes unnecessary bottlenecks. The underlying `FileAdapter` safely queues concurrent writes without causing unbounded concurrency issues like Out-Of-Memory (OOM) or SQLite `BUSY` errors.
+**Action:** Utilize chunked parallel processing (e.g., `Promise.all` with `chunkSize = 50`) for bulk imports to safely provide massive speedups.
