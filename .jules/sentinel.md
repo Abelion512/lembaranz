@@ -1,7 +1,6 @@
-# Security Learnings
+## 2025-05-24 - CWE-732 Insecure File Permissions when saving Config/Backup
 
-## URL Parsing & OS Command Injection Mitigation
-To prevent command injection, shell executions must use `child_process.spawn` with `shell: false` rather than `exec`, passing user inputs/URLs as an argument array. For URLs specifically, strictly validate by parsing with `new URL()` and enforcing safe protocols (e.g., `https:`, `http:`) before passing `parsed.href` to native openers (like `open`, `xdg-open`, or `explorer`).
+**Vulnerability:** The application was writing sensitive files (like `.env` environments and `.lembaranz` vault backups) using `fs.writeFile` without explicitly setting the `mode` option. By default, `fs.writeFile` uses `0o666` (rw-rw-rw-) minus the user's `umask`. This means on systems with permissive umasks (e.g. `0022`), the written sensitive files were readable by any user on the local machine (`-rw-r--r--`).
 
 ## Testing Mocks with Bun
 When mocking Node built-in modules like `child_process` in Bun tests (where functions like `spawn` are imported directly, e.g., `import { spawn } from 'child_process'`), use `mock.module('child_process', () => ({ spawn: mockSpawn }))` instead of `spyOn`.
@@ -166,3 +165,22 @@ To prevent CWE-732 (Insecure File Permissions), always explicitly set restrictiv
 **Vulnerability:** Found multiple instances where sensitive files (like `.env` and `.lembaranz` encrypted backup exports) were created using `fs.writeFile` without explicit permission boundaries.
 **Learning:** In Node.js, `fs.writeFile` defaults to `0o666` (read/write for everyone) modified by the user's `umask`. If a user's `umask` is overly permissive (e.g., `000` or `002`), sensitive files on the filesystem could be read or modified by other local users, posing a critical data leak risk for credentials and secrets.
 **Prevention:** Always explicitly set restrictive permissions (e.g., `{ mode: 0o600 }`) when using file writing APIs for sensitive configuration and backup files to ensure they are strictly limited to the file owner.
+**Learning:** When handling secrets or writing cryptographic database states to the local filesystem using standard Node.js libraries, we cannot rely on the user's default `umask` to restrict file access. We must defensively enforce `mode: 0o600` on the file descriptor directly.
+
+**Prevention:** Ensure that all file writes for sensitive configuration and backup/vault files explicitly include the `{ mode: 0o600 }` parameter in the `fs.writeFile` arguments to guarantee only the owner has read and write capabilities.
+
+## 2025-05-24 - CWE-732 Insecure File Permissions when saving Config/Backup
+
+**Vulnerability:** The application was writing sensitive files (like `.env` environments and `.lembaranz` vault backups) using `fs.writeFile` without explicitly setting the `mode` option. By default, `fs.writeFile` uses `0o666` (rw-rw-rw-) minus the user's `umask`. This means on systems with permissive umasks (e.g. `0022`), the written sensitive files were readable by any user on the local machine (`-rw-r--r--`).
+
+**Learning:** When handling secrets or writing cryptographic database states to the local filesystem using standard Node.js libraries, we cannot rely on the user's default `umask` to restrict file access. We must defensively enforce `mode: 0o600` on the file descriptor directly.
+
+**Prevention:** Ensure that all file writes for sensitive configuration and backup/vault files explicitly include the `{ mode: 0o600 }` parameter in the `fs.writeFile` arguments to guarantee only the owner has read and write capabilities.
+
+## 2025-05-24 - CWE-732 Insecure File Permissions when saving Config/Backup
+
+**Vulnerability:** The application was writing sensitive files (like `.env` environments and `.lembaranz` vault backups) using `fs.writeFile` without explicitly setting the `mode` option. By default, `fs.writeFile` uses `0o666` (rw-rw-rw-) minus the user's `umask`. This means on systems with permissive umasks (e.g. `0022`), the written sensitive files were readable by any user on the local machine (`-rw-r--r--`).
+
+**Learning:** When handling secrets or writing cryptographic database states to the local filesystem using standard Node.js libraries, we cannot rely on the user's default `umask` to restrict file access. We must defensively enforce `mode: 0o600` on the file descriptor directly.
+
+**Prevention:** Ensure that all file writes for sensitive configuration and backup/vault files explicitly include the `{ mode: 0o600 }` parameter in the `fs.writeFile` arguments to guarantee only the owner has read and write capabilities.
