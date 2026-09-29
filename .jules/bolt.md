@@ -48,3 +48,7 @@
 ## 2024-05-18 - [Parallel Chunking in Bulk Imports]
 **Learning:** When performing bulk database operations (like restoring backups), sequential `await` loops are unnecessarily slow. Using `Promise.all` with a chunk size (e.g., 50) leverages the underlying `FileAdapter`'s ability to queue concurrent writes safely without risking SQLite database corruption, resulting in massive speed improvements.
 **Action:** Apply chunked `Promise.all` parallelization for batch database writes rather than standard sequential loops.
+
+## 2024-05-24 - [Archive Backup Restore Optimization]
+**Learning:** Sequential saving in `restoreBackup` causes massive bottlenecks when importing large datasets due to awaiting each save operation. Because the underlying storage layer (`FileAdapter`) handles file locks and queues writes safely, we don't need to await each save sequentially in the application logic.
+**Action:** Use chunked parallel execution (e.g. `Promise.all` with a chunk size of 50) for bulk database operations when the adapter is known to handle concurrent write requests safely, as it can yield massive speedups (~40x).
