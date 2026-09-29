@@ -1,0 +1,8 @@
+"Area: CLI":
+  - any-glob-to-any-file: "packages/cli/**/*"
+"Area: Core":
+  - any-glob-to-any-file: "packages/core/**/*"
+"Area: Web":
+  - any-glob-to-any-file: "packages/web/**/*"
+"Area: Dashboard":
+  - any-glob-to-any-file: "packages/dashboard/**/*"

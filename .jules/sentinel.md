@@ -127,3 +127,8 @@ When writing test assertions for normalized URLs generated via `new URL().href`,
 **Vulnerability:** Found `fs.writeFile` being used without explicit restrictive file permissions for sensitive `.env` configurations and encrypted vault backups in `Context.ts`, `Config.ts`, and `TerminalUI.ts`.
 **Learning:** Default file creation permissions (`0o666` modified by the system umask) are typically too permissive (`0o644` or `0o664`) for sensitive secrets or configuration files, potentially allowing unauthorized local users to read them.
 **Prevention:** Always explicitly set restrictive file permissions, such as `{ mode: 0o600 }`, when writing sensitive data files using `fs.writeFile` or similar filesystem APIs to prevent CWE-732 vulnerabilities.
+
+## 2024-06-25 - Prevent Command Injection via exec()
+**Vulnerability:** The `packages/cli/src/commands/Dashboard.ts` command used `exec(cmd)` to execute a local dashboard development server using string interpolation. User-supplied arguments like `--host` and `--port` were interpolated directly into the `cmd` string, allowing for command injection if a malicious user executed the command with manipulated options.
+**Learning:** Node's `child_process.exec()` spawns a shell and runs commands within it, making it inherently vulnerable to command injection if arguments are not sanitized.
+**Prevention:** Always use `child_process.spawn()` with `shell: false` (the default) and pass arguments as an array rather than interpolating them into a single command string. This guarantees that arguments are passed safely directly to the executable rather than being parsed by a shell.

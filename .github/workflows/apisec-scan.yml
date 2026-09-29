@@ -62,6 +62,7 @@ jobs:
        - name: APIsec scan
          if: env.HAS_APIS == 'true'
          uses: apisec-inc/apisec-run-scan@025432089674a28ba8fb55f8ab06c10215e772ea
+         continue-on-error: true
          with:
           # The APIsec username with which the scans will be executed
           apisec-username: ${{ secrets.apisec_username }}

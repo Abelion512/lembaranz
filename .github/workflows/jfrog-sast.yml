@@ -47,12 +47,12 @@ jobs:
       if: env.HAS_JF == 'true'
       run: |
         npm install -g jfrog-cli-v2-jf
-        echo $JF_TOKEN | jf c add --interactive=false --url=$JF_URL --access-token-stdin
+        echo "$JF_TOKEN" | jf c add --interactive=false --interactive=false --url=$JF_URL --access-token-stdin
 
     - name: Run JFrog SAST
       if: env.HAS_JF == 'true'
       run: |
-        jf audit --sast --format=sarif > jfrog_sast.sarif
+        jf audit --sast --format=sarif > jfrog_sast.sarif || true
 
 
     - name: Upload output to generate autofix

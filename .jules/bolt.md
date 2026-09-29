@@ -130,3 +130,7 @@
 ## 2024-03-09 - [Performance Optimization: Chunked Base64 Conversions]
 **Learning:** `btoa(String.fromCharCode(...bytes))` operates via spread arguments, which pushes elements onto the call stack and causes `Maximum call stack size exceeded` crashes when decoding large binaries, or incurs massive overhead avoiding it via Array loops. Using `String.fromCharCode.apply(null, chunk)` over controlled byte arrays (chunks of ~8KB) mitigates both memory saturation and stack-overflow constraints during payload processing.
 **Action:** Always process Base64 encodes/decodes of arbitrary payloads using chunked iteration logic over raw subarrays.
+
+## 2024-03-09 - [Performance Optimization: Large Buffer to Base64 Serialization]
+**Learning:** Using `btoa(String.fromCharCode(...new Uint8Array(data)))` directly throws a "Maximum call stack size exceeded" error when handling large ArrayBuffers, such as parsing file backups or encryption keys. Also `Array.from()` carries performance overhead when chunking. Casting subarrays to `number[]` inside an iterative chunking logic completely eliminates memory overflow and safely computes Base64 payloads efficiently.
+**Action:** Always implement chunked loop serialization (`String.fromCharCode.apply`) for raw byte array conversions instead of raw spread operations (`...`) to prevent runtime call stack size violations.
