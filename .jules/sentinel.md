@@ -157,3 +157,7 @@ To prevent CWE-732 (Insecure File Permissions), always explicitly set restrictiv
 **Vulnerability:** Use of `fs.writeFile` to write sensitive files (like `.env` and backups) without explicitly providing restrictive file modes, causing them to use default, potentially insecure permissions (e.g. `0o666`).
 **Learning:** Default permissions might allow unauthorized local reads by other users on a multi-user system.
 **Prevention:** To prevent CWE-732, explicitly set restrictive permissions `mode: 0o600` when calling `fs.writeFile` for credentials, environments configurations, and vault exports.
+## 2024-05-18 - Prevent CWE-732 Insecure File Permissions in `fs.writeFile`
+**Vulnerability:** Files written with `fs.writeFile` without explicit permissions will use the system's default permissions (usually `0o666` modified by the umask), which might allow unauthorized local users to read sensitive files.
+**Learning:** `fs.writeFile` allows you to pass an options object as the third argument to set explicitly restrictive permissions such as `0o600`.
+**Prevention:** Always use `{ mode: 0o600 }` when calling `fs.writeFile` to write sensitive data or configuration files like `.env` profiles or `.lembaranz` encrypted backup files.
