@@ -48,3 +48,8 @@ When writing test assertions for normalized URLs generated via `new URL().href`,
 **Vulnerability:** Several places in the codebase use `fs.writeFile` to write sensitive files like `.env` configurations and `.lembaranz` backups without specifying file permissions.
 **Learning:** Default permissions for file creation without `mode` can be insecure (often 0o666 minus umask), potentially allowing unauthorized local read access to sensitive data (CWE-732).
 **Prevention:** To prevent CWE-732 (Insecure File Permissions), always explicitly set restrictive permissions (e.g., `{ mode: 0o600 }`) when using `fs.writeFile` for sensitive files.
+
+## 2024-05-18 - XSS evasion via double-encoding in Markdown parser
+**Vulnerability:** The `isDangerousUrl` function in `safeMarked.ts` only performed a single pass of URI and HTML entity decoding when checking for malicious protocols (e.g., `javascript:`).
+**Learning:** This allowed an attacker to bypass the security check by double-encoding the malicious payload (e.g., `%256A%2561%2576%2561%2573%2563%2572%2569%2570%2574%253Aalert(1)`), which would only be partially decoded by the single pass, evading the check, but still executed by the browser.
+**Prevention:** Always use an iterative decoding loop (e.g., up to 5 times) to recursively unescape all layers of encoding until the string stops changing, ensuring that deeply nested encodings are fully neutralized before validation.
