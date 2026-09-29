@@ -213,3 +213,9 @@ To prevent CWE-732 (Insecure File Permissions), always explicitly set restrictiv
 **Vulnerability:** Sensitive files like `.env` configs and `.lembaranz` backup archives were written using `fs.writeFile` with default permissions (`0o666`).
 **Learning:** Default Node.js filesystem permissions can expose sensitive material to other unauthorized local users on a multi-user system (CWE-732).
 **Prevention:** Always explicitly define `{ mode: 0o600 }` alongside the encoding when writing critical material to disk.
+
+## 2024-06-13 - Insecure File Permissions for Exported Secrets
+
+**Vulnerability:** The CLI and Core packages were writing sensitive data (like exported environments, encrypted archives, and `.env` files) to disk using default filesystem permissions (typically `0o666` modified by umask). This allowed unauthorized local users to read the exported files or local configuration files.
+**Learning:** Hardcoded default permissions in Node.js `fs.writeFile` lead to Local File Inclusion or unauthorized secret exposure in multi-user environments. Explicit restrictive modes are necessary when handling credentials or cryptographic exports.
+**Prevention:** Always define explicit file permissions (e.g., `{ mode: 0o600 }`) in `fs.writeFile` calls when outputting any sensitive data, especially for environment variables, credentials, or backups.
