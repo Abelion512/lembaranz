@@ -122,3 +122,8 @@ When writing test assertions for normalized URLs generated via `new URL().href`,
 **Vulnerability:** Sensitive files like `.env` and backups were written using default file permissions, exposing them to other users on the system (CWE-732).
 **Learning:** Always provide `{ mode: 0o600 }` to `fs.writeFile` when saving sensitive information.
 **Prevention:** Use restrictive permissions explicitly when writing credential or configuration files.
+
+## 2026-06-26 - Insecure File Permissions in Data Writing
+**Vulnerability:** Found `fs.writeFile` being used without explicit restrictive file permissions for sensitive `.env` configurations and encrypted vault backups in `Context.ts`, `Config.ts`, and `TerminalUI.ts`.
+**Learning:** Default file creation permissions (`0o666` modified by the system umask) are typically too permissive (`0o644` or `0o664`) for sensitive secrets or configuration files, potentially allowing unauthorized local users to read them.
+**Prevention:** Always explicitly set restrictive file permissions, such as `{ mode: 0o600 }`, when writing sensitive data files using `fs.writeFile` or similar filesystem APIs to prevent CWE-732 vulnerabilities.
