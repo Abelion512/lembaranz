@@ -7,7 +7,7 @@ console.time("btoa ...new Uint8Array");
 try {
   btoa(String.fromCharCode(...bytes));
 } catch (e) {
-  console.log("Error:", e.message);
+  console.log("Error:", String(e));
 }
 console.timeEnd("btoa ...new Uint8Array");
 
