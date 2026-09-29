@@ -1,5 +1,9 @@
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
 
 name: Docker
 
@@ -17,12 +21,6 @@ on:
     tags: ["v*.*.*"]
   pull_request:
     branches: ["serenity"]
-
-env:
-  # Use docker.io for Docker Hub if empty
-  REGISTRY: ghcr.io
-  # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build:

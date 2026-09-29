@@ -5,9 +5,9 @@ name: CI
 
 on:
   push:
-    branches: ["serenity"]
+    branches: [serenity, main]
   pull_request:
-    branches: ["serenity"]
+    branches: [serenity, main]
 
 jobs:
   lint-test-build:
