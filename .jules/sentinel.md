@@ -199,3 +199,8 @@ To prevent CWE-732 (Insecure File Permissions), always explicitly set restrictiv
 **Vulnerability:** fs.writeFile was used to create sensitive files (.env and backups) without restrictive permissions.
 **Learning:** Default permissions (e.g. 0o666 minus umask) can expose sensitive files to unauthorized local users, leading to credential theft.
 **Prevention:** Always explicitly set restrictive permissions (e.g., { mode: 0o600 }) when creating sensitive files.
+
+## 2025-02-24 - Fix insecure file permissions on sensitive files
+**Vulnerability:** Default Node.js `fs.writeFile` permissions allow potentially broad read access to sensitive `.env` and `.lembaranz` backup files on shared systems.
+**Learning:** When using Node.js filesystem modules to write sensitive content like credentials, the default permissions (0o666 minus umask) may be too permissive, violating the principle of least privilege.
+**Prevention:** Always explicitly set restrictive file permissions (e.g., `{ mode: 0o600 }`) when creating or modifying files containing secrets or encrypted backups to ensure only the owner can read or write them.
