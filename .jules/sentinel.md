@@ -135,3 +135,8 @@ When writing test assertions for normalized URLs generated via `new URL().href`,
 
 ## Cross-Platform Command Execution without Shell
 When enforcing `shell: false` in `child_process.spawn` to prevent command injection, executable commands (like `bun`, `npm`, `yarn`) may throw `ENOENT` on Windows. This is because these commands are often `.cmd` or `.bat` scripts on Windows, which require a shell to execute. To mitigate this securely without reverting to `shell: true`, dynamically resolve the executable name based on the OS (e.g., `os.platform() === 'win32' ? 'bun.cmd' : 'bun'`).
+
+## 2024-06-21 - CWE-732: Insecure Default File Permissions for Sensitive Data
+**Vulnerability:** Calling `fs.writeFile` without explicit secure `mode` arguments resulted in sensitive files (e.g., local `.env` configurations and encrypted `.lembaranz` backup exports) being created with default permissions (typically `0o666` minus umask), potentially allowing unauthorized local system users to read sensitive contents.
+**Learning:** Node.js file system APIs like `fs.writeFile` do not default to restrictive permissions. When writing files that contain credentials or cryptographic backups, developers must explicitly override the default OS umask logic to restrict read/write access.
+**Prevention:** Always enforce strict file permission arguments (e.g., `{ mode: 0o600 }`) when using `fs.writeFile` or `fs.writeFileSync` to create files containing sensitive data.
