@@ -1,3 +1,6 @@
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 name: rilis
 
 on:
@@ -31,6 +34,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Buat Pull Request Rilis atau Publish ke NPM
+        if: ${{ secrets.NPM_TOKEN != '' }}
         id: changesets
         uses: changesets/action@v1
         with:

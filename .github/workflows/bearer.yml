@@ -1,3 +1,6 @@
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
 # separate terms of service, privacy policy, and support
@@ -29,7 +32,7 @@ jobs:
 
       - name: Run Bearer Security Report
         id: report
-        uses: bearer/bearer-action@v1
+        uses: bearer/bearer-action@v2
         with:
           format: sarif
           output: results.sarif

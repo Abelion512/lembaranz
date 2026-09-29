@@ -1,3 +1,6 @@
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
 # separate terms of service, privacy policy, and support
@@ -42,6 +45,7 @@ jobs:
 
     steps:
       - name: Analyze with SonarQube
+        if: ${{ secrets.SONAR_TOKEN != '' && secrets.SONAR_HOST_URL != '' }}
 
         # You can pin the exact commit or the version.
         # uses: SonarSource/sonarqube-scan-action@v1.1.0
