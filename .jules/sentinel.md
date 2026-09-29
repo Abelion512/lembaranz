@@ -39,3 +39,8 @@ When writing test assertions for normalized URLs generated via `new URL().href`,
 **Vulnerability:** The `isDangerousUrl` function in the markdown renderer used a single-pass decoding logic to filter out dangerous URL protocols like `javascript:`. This could be bypassed using multiple layers of encoding, such as double URL-encoding.
 **Learning:** Security filters that rely on decoding user input to check for malicious signatures must recursively unescape all layers of encoding (e.g. double URL encoding). Single-pass decoding is insufficient.
 **Prevention:** Use an iterative decoding loop to recursively unescape all layers of encoding until the string stabilizes (with a max depth to avoid DoS).
+
+## 2026-07-23 - [Insecure File Permissions / CWE-732]
+**Vulnerability:** Found multiple instances where sensitive files (`.env` files containing API keys and exported `.lembaranz` encrypted vault backups) were written to disk using `fs.writeFile` without specifying strict file permissions (mode). This results in the files being created with default permissions (often `0o666` minus umask), which may allow unauthorized local users or processes to read sensitive secrets (CWE-732).
+**Learning:** In Node.js, `fs.writeFile` defaults to mode `0o666` when creating new files. The developers failed to recognize that local environment and backup files hold critical credentials and must be restricted immediately upon creation.
+**Prevention:** Always explicitly set restrictive permissions (e.g., `{ mode: 0o600 }`) when using `fs.writeFile` or similar file-creation APIs for sensitive files to ensure only the owner can read/write them.
