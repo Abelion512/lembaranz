@@ -145,3 +145,7 @@ When enforcing `shell: false` in `child_process.spawn` to prevent command inject
 **Vulnerability:** Missing explicit secure permissions when writing sensitive files like `.env` and `.lembaranz` backups via `fs.writeFile` (CWE-732).
 **Learning:** Default Node.js `fs.writeFile` permissions are usually `0o666` modified by the process umask, which can allow unauthorized local users to read sensitive credentials.
 **Prevention:** Always explicitly define restrictive file permissions (e.g., `{ mode: 0o600 }`) in the options object when writing sensitive files to disk.
+## 2026-08-07 - Enforce Secure File and Directory Permissions
+**Vulnerability:** Files containing sensitive data (e.g. .env, logs) and vault directories were created with permissive default permissions.
+**Learning:** Relying on default fs.mkdir and fs.writeFile permissions can expose secure data to other local users. Permissions must be explicitly set to restrict access to the current user.
+**Prevention:** Always use { mode: 0o700 } for directories and { mode: 0o600 } for files when interacting with the filesystem API for sensitive data.
