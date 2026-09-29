@@ -28,6 +28,7 @@ on:
 jobs:
   analyze:
     name: Analyze
+    if: ${{ env.JF_TOKEN != '' && env.JF_TOKEN != null }}
     runs-on: ubuntu-latest
     permissions:
       actions: read
