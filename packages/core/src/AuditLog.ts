@@ -30,7 +30,16 @@ export class AuditLog {
                 privacyStatus: 'SCRUBBED'
             };
 
-            await fs.appendFile(logPath, JSON.stringify(entry) + '\n');
+            try {
+                await fs.access(logPath);
+            } catch {
+                // Create the file with strict permissions if it doesn't exist
+                // 🛡️ Sentinel: Explicitly restrict file permissions to owner-only
+                await fs.writeFile(logPath, '', { mode: 0o600 });
+            }
+
+            // Append entry
+            await fs.appendFile(logPath, JSON.stringify(entry) + '\n', { mode: 0o600 });
         } catch (err) {
             console.error('Failed to write audit log:', err);
         }

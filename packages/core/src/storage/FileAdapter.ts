@@ -42,7 +42,8 @@ export class FileAdapter implements StorageAdapter {
   private async ensureDirectory(): Promise<void> {
     const dir = path.dirname(this.filePath);
     try {
-      await fs.mkdir(dir, { recursive: true });
+      // 🛡️ Sentinel: Explicitly restrict directory permissions to owner-only
+      await fs.mkdir(dir, { recursive: true, mode: 0o700 });
     } catch (_e) {
       // Directory might already exist
     }

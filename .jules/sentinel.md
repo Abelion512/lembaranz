@@ -15,3 +15,8 @@ When writing test assertions for normalized URLs generated via `new URL().href`,
 **Vulnerability:** XSS bypass possible in safeMarked because isDangerousUrl only single-pass decoded URLs, allowing attackers to double URL encode malicious javascript: URIs.
 **Learning:** Single-pass decoding is insufficient for security filters. Attackers can layer encodings (like double URL encoding) to bypass regex signatures.
 **Prevention:** Security filters that rely on decoding user input to check for malicious signatures must use an iterative decoding loop (e.g., while loop) to recursively unescape all layers of encoding.
+
+## 2026-09-25 - [Insecure File/Directory Permissions]
+**Vulnerability:** Files and directories containing sensitive data were created with default permissions, which may allow unauthorized local access.
+**Learning:** Default Node.js filesystem APIs do not automatically restrict access.
+**Prevention:** Always explicitly set restrictive permissions (`{ mode: 0o600 }` for files, `{ mode: 0o700 }` for directories) when creating files or folders that handle sensitive data to prevent CWE-732.
