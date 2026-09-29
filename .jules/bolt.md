@@ -25,3 +25,6 @@
 ## 2024-07-23 - Prevent call stack size exceeded during base64 encoding
 **Learning:** Using `String.fromCharCode(...new Uint8Array(buffer))` on large buffers exceeds the maximum call stack size in JavaScript/TypeScript because the spread syntax passes each byte as a separate argument. While a naive loop works, it is slow and allocates strings iteratively.
 **Action:** Chunk the array into manageable sizes (e.g., 8192 bytes) and use `String.fromCharCode.apply(null, chunk)`, joining the chunks at the end before running `btoa()`. This prevents call stack limits and runs significantly faster than a character-by-character iterative loop.
+## 2026-09-18 - [Bulk Backup Restore Optimization]
+**Learning:** The `restoreBackup` process used a sequential await loop to save notes, which was a significant performance bottleneck. The underlying `FileAdapter` natively handles safe queueing of writes via promises, meaning concurrent writes are safe.
+**Action:** Parallelized the saving of notes during backup restoration using `Promise.all` with a chunk size of 50, reducing execution time significantly without risking database corruption.
