@@ -1,4 +1,8 @@
 ## 2025-05-24 - CWE-732 Insecure File Permissions when saving Config/Backup
+## Security Learnings
+
+## File Permission Hardening
+To prevent CWE-732 (Insecure File Permissions), always explicitly set restrictive permissions (e.g., `{ mode: 0o600 }`) when using `fs.writeFile` for sensitive files like `.env` configurations or `.lembaranz` exported backups. Default permissions (0o666 minus umask) may allow unauthorized local reads from other users on the system.
 
 **Vulnerability:** The application was writing sensitive files (like `.env` environments and `.lembaranz` vault backups) using `fs.writeFile` without explicitly setting the `mode` option. By default, `fs.writeFile` uses `0o666` (rw-rw-rw-) minus the user's `umask`. This means on systems with permissive umasks (e.g. `0022`), the written sensitive files were readable by any user on the local machine (`-rw-r--r--`).
 
