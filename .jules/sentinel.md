@@ -61,3 +61,8 @@ When writing test assertions for normalized URLs generated via `new URL().href`,
 **Vulnerability:** Found insecure default file permissions when writing sensitive files like .env or .lembaranz backups, leading to CWE-732.
 **Learning:** Default fs.writeFile permissions (0o666 minus umask) can allow unauthorized local users to read sensitive credentials and database files.
 **Prevention:** Always explicitly set { mode: 0o600 } for sensitive file writes using fs.writeFile.
+
+## 2024-05-24 - Fix Insecure File Permissions in File Creation (CWE-732)
+**Vulnerability:** Calls to `fs.writeFile` in `Context.ts`, `Config.ts`, and `TerminalUI.ts` created sensitive files (like `.env` and `.lembaranz` backup files) without explicitly setting file permissions, leading to files being created with default permissions (often `0o666` minus umask) which can allow unauthorized local users to read sensitive credentials and configurations.
+**Learning:** Default file creation permissions in Node.js are determined by the system umask. For files containing sensitive information, relying on the system default is insecure as it may inadvertently grant read access to other local users.
+**Prevention:** To prevent CWE-732 (Insecure File Permissions), always explicitly set restrictive permissions (e.g., `{ mode: 0o600 }`) when using `fs.writeFile` for sensitive files like `.env` configurations or `.lembaranz` encrypted backups, ensuring only the owner can read/write them.
