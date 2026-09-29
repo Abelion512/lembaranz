@@ -95,3 +95,7 @@
 ## 2024-07-07 - Optimize restoreBackup with chunked Promise.all
 **Learning:** For bulk database imports (like `restoreBackup` in `packages/core/src/Archive.ts`), utilize chunked parallel processing (e.g., `Promise.all` with `chunkSize = 50`) rather than sequential `await`. This architectural pattern provides massive speedups because the underlying `FileAdapter` safely queues concurrent writes without causing unbounded concurrency issues like Out-Of-Memory (OOM) or SQLite `BUSY` errors.
 **Action:** Use chunked `Promise.all` processing for bulk writes and imports to maximize I/O concurrency without overloading memory.
+
+## 2024-07-08 - Avoid Stack Overflows with Spread Operator on Large Typed Arrays
+**Learning:** Using the spread operator (`...`) to convert a `Uint8Array` to an array of arguments (e.g., `String.fromCharCode(...bytes)`) causes a "Maximum call stack size exceeded" error when the byte array is large (e.g., > 125KB). This pattern was previously present in `Vault.ts` and `Archive.ts` for base64 conversions.
+**Action:** Always chunk arrays when using `.apply()` or the spread operator for string conversion on potentially large binary payloads. Use `String.fromCharCode.apply(null, chunk)` combined with a reasonable chunk size (e.g., 8192 bytes) for safely converting large `Uint8Array` payloads into base64 without memory or stack overflow.
