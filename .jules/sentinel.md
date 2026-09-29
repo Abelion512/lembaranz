@@ -57,3 +57,7 @@ When writing test assertions for normalized URLs generated via `new URL().href`,
 **Vulnerability:** fs.writeFile was used to write sensitive files like .env and .lembaranz backups without restrictive file permissions.
 **Learning:** Default permissions on created files (e.g. 0o666 minus umask) may allow unauthorized local reads by other users on the system.
 **Prevention:** Always explicitly set restrictive permissions (e.g., { mode: 0o600 }) when using fs.writeFile for sensitive files.
+## 2026-07-19 - Fix Insecure File Permissions (CWE-732)
+**Vulnerability:** Found insecure default file permissions when writing sensitive files like .env or .lembaranz backups, leading to CWE-732.
+**Learning:** Default fs.writeFile permissions (0o666 minus umask) can allow unauthorized local users to read sensitive credentials and database files.
+**Prevention:** Always explicitly set { mode: 0o600 } for sensitive file writes using fs.writeFile.
