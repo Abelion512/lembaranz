@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { 
   Archive, 
   Vault, 
@@ -27,7 +26,6 @@ import {
 import confetti from 'canvas-confetti';
 
 export default function App() {
-  const { t } = useTranslation();
   // Authentication & Vault State
   const [isSetup, setIsSetup] = useState<boolean | null>(null);
   const [isUnlocked, setIsUnlocked] = useState<boolean>(false);
@@ -479,7 +477,7 @@ export default function App() {
                     </p>
                     {note.tags && note.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        {note.tags.map(t => (
+                        {note.tags.map((t: string) => (
                           <span key={t} className="text-[9px] font-mono bg-slate-950 border border-slate-800 text-slate-400 px-1 rounded">
                             #{t}
                           </span>

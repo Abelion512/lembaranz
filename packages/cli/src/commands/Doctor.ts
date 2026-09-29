@@ -20,7 +20,7 @@ function calculateEntropy(str: string): number {
 
 const IGNORE_DIRS = ["node_modules", ".git", "dist", "build", "target", ".lembaranz"];
 const SCAN_EXTENSIONS = [".env", ".txt", ".md", ".js", ".ts", ".json", ".yaml", ".yml", ".sh"];
-const SECRET_REGEX = /(?:sh-|sk-|gh_|AI_|AIza|AWS_)[a-zA-Z0-9_\-]{16,}/g;
+const SECRET_REGEX = /(?:sh-|sk-|gh_|AI_|AIza|AWS_)[a-zA-Z0-9_-]{16,}/g;
 
 export function registerDoctorCommand(program: Command) {
   program
@@ -97,7 +97,9 @@ export function registerDoctorCommand(program: Command) {
                     break; 
                   }
                 }
-              } catch {}
+              } catch {
+                // Unreadable files are skipped silently
+              }
             }
           }
         }

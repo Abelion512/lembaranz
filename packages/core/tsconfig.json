@@ -8,6 +8,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "types": ["bun-types"],
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*"]

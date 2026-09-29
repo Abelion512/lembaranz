@@ -68,6 +68,7 @@
     "test": "bun test ./packages/core/src/__tests__/",
     "test:core": "bun test ./packages/core/src/__tests__/",
     "test:perf": "bun ./packages/core/src/scripts/inject-perf-data.ts",
+    "build": "bun run --cwd packages/dashboard build",
     "version-packages": "changeset version",
     "ci:release": "bun run security-audit && changeset publish",
     "clean": "rm -rf node_modules"
