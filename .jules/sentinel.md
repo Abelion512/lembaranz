@@ -149,3 +149,6 @@ When enforcing `shell: false` in `child_process.spawn` to prevent command inject
 **Vulnerability:** Files containing sensitive data (e.g. .env, logs) and vault directories were created with permissive default permissions.
 **Learning:** Relying on default fs.mkdir and fs.writeFile permissions can expose secure data to other local users. Permissions must be explicitly set to restrict access to the current user.
 **Prevention:** Always use { mode: 0o700 } for directories and { mode: 0o600 } for files when interacting with the filesystem API for sensitive data.
+
+## File System Write Permissions (CWE-732) Mitigation
+To prevent CWE-732 (Insecure File Permissions), always explicitly set restrictive permissions when using `fs.writeFile` for sensitive files like `.env` configurations or `.lembaranz` encrypted backups. Default permissions (0o666 minus umask) may allow unauthorized local reads. Use `{ encoding: 'utf8', mode: 0o600 }` or `{ mode: 0o600 }`.

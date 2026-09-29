@@ -40,10 +40,10 @@ jobs:
       HAS_JF: ${{ secrets.JF_URL != '' && secrets.JF_ACCESS_TOKEN != '' }}
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v4.2.2
 
     - name: Setup Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v4.1.0
 
     - name: Install and configure JFrog CLI
       if: env.HAS_JF == 'true'
