@@ -85,3 +85,6 @@
 ## 2024-05-18 - [Performance Optimization: Chunked Parallelization for Bulk Imports]
 **Learning:** Sequential processing using simple `for...of` loops for bulk database imports (like `restoreBackup`) is heavily bottlenecked when individual operations involve both CPU-intensive tasks (like cryptography) and disk I/O. When the underlying database interface (like `FileAdapter` in this architecture) safely supports concurrent write queueing, using a chunked `Promise.all` approach prevents unbounded concurrency issues (OOM, SQLite BUSY errors) while drastically accelerating the process (e.g., from ~10.5s to ~400ms).
 **Action:** When working on large import functions in this architecture, avoid purely sequential processing. Use chunked `Promise.all` processing (with a reasonable chunk size, like 50) when the underlying persistence layer handles write queueing natively.
+## 2026-07-05 - Safe and performant Uint8Array to Base64 conversion
+**Learning:** Using `btoa(String.fromCharCode(...new Uint8Array(data)))` directly throws "Maximum call stack size exceeded" on large datasets and is slower than chunked execution for medium datasets.
+**Action:** When converting Uint8Array to string, chunk the data (e.g., 8192 bytes) and use `String.fromCharCode.apply(null, chunk)` inside a loop to safely handle arbitrary data sizes and optimize performance.
