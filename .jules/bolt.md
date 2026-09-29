@@ -145,3 +145,11 @@
 ## 2024-06-19 - Chunked Parallel DB Inserts
 **Learning:** For mass data operations (like `restoreBackup`), sequential `await` calls in a `for...of` loop create a significant bottleneck. Switching to unbounded parallel execution (`Promise.all` mapping the whole array) causes OOM errors or SQLite `BUSY` exceptions.
 **Action:** Use chunked parallel processing (e.g., `Promise.all` with a chunk size of 50). This achieves a dramatic speedup (~78x faster for 500 notes) while safely queuing concurrent writes in the underlying `FileAdapter` without exceeding concurrency limits.
+
+## 2024-06-08 - [Performance Optimization & Safety: btoa Stack Size & Base64 Chunking]
+**Learning:** Using `btoa(String.fromCharCode(...new Uint8Array(data)))` is highly unsafe for large datasets (e.g., payloads > 125KB) because the JavaScript spread operator `...` passes elements as individual arguments, triggering a "Maximum call stack size exceeded" error. Additionally, memory allocation for `Array.from()` is very slow. A chunked loop (e.g., 8192 byte blocks) combined with `String.fromCharCode.apply` casting the subarray to `number[]` is necessary to safely encode large ArrayBuffers into Base64 while retaining maximum performance.
+**Action:** Always avoid `String.fromCharCode(...bytes)` for variable-sized data. Use chunked loop execution for large Uint8Array conversions.
+
+## 2024-06-08 - [Performance Optimization: Hex String Encoding]
+**Learning:** `Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('')` is a massive bottleneck due to array allocations and multiple callback iterations. Replacing this with a simple string concatenation loop using a pre-allocated static lookup table (`HEX_CHARS = '0123456789abcdef'`) and bitwise operations (`HEX_CHARS[v >> 4] + HEX_CHARS[v & 15]`) yields up to a ~4x speedup for Uint8Array-to-Hex conversions without needing Node-specific buffers.
+**Action:** Never use `.map().join('')` with `Array.from` for performance-critical byte-to-hex conversions. Use static tables and bit-shifting logic in a tight `for` loop.
