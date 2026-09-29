@@ -111,3 +111,7 @@
 ## 2025-06-21 - [Maximum call stack size exceeded on Uint8Array spreading]
 **Learning:** `btoa(String.fromCharCode(...new Uint8Array(data)))` is used throughout the codebase. While convenient, the spread operator (`...`) pushes every element of the array onto the call stack as arguments. For larger datasets like backups or large documents (e.g. >100KB), this exceeds the JS engine's maximum call stack limit causing an immediate uncatchable exception or "Maximum call stack size exceeded" error.
 **Action:** Whenever converting `Uint8Array` to a string for Base64 encoding in the Web Crypto API, avoid array spreading for unknown/arbitrary lengths. Implement and use a chunked iteration (`CHUNK_SIZE = 8192`) via `String.fromCharCode(...bytes.subarray(i, i + CHUNK_SIZE))` to safely convert elements without blowing up the call stack, which also scales efficiently.
+
+## 2024-05-18 - [Performance Optimization: Safe Chunked Base64 Encoding]
+**Learning:** Using `btoa(String.fromCharCode(...new Uint8Array(data)))` or spreading large arrays into function arguments causes "Maximum call stack size exceeded" errors for buffers around 1MB or larger.
+**Action:** When converting large `Uint8Array` to Base64, use a chunked approach with `String.fromCharCode.apply(null, bytes.subarray(i, end) as unknown as number[])` to avoid call stack limits while maintaining reasonable performance. Avoid creating huge intermediate arrays with `Array.from`.
