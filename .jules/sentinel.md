@@ -25,3 +25,7 @@ When writing test assertions for normalized URLs generated via `new URL().href`,
 **Vulnerability:** Use of `fs.writeFile` to write sensitive data without explicitly setting restrictive file permissions.
 **Learning:** Default filesystem permissions may allow unauthorized local read access.
 **Prevention:** Always explicitly set restrictive file permissions (e.g., `{ encoding: 'utf8', mode: 0o600 }` or `{ mode: 0o600 }`) when using `fs.writeFile` for sensitive files like `.env` configurations or encrypted backups.
+## 2024-05-15 - Insecure File Permissions for Sensitive Files
+**Vulnerability:** fs.writeFile was writing sensitive files (.env configs and .lembaranz backups) with default permissions (0o666 minus umask), potentially allowing unauthorized local reads (CWE-732).
+**Learning:** The codebase lacked a unified secure file writing approach, leading to inconsistent permissions where some modules defaulted to OS defaults for sensitive data.
+**Prevention:** Always explicitly set restrictive permissions (e.g., { mode: 0o600 }) when using fs.writeFile for sensitive files.
