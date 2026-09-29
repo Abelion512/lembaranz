@@ -91,3 +91,7 @@
 ## 2025-02-14 - Call Stack Limits in Uint8Array Base64 Conversions
 **Learning:** Using `btoa(String.fromCharCode(...new Uint8Array(data)))` throws "Maximum call stack size exceeded" errors for large datasets (e.g., big backups or large files) because the spread operator passes every byte as a distinct argument to the function, hitting engine-specific argument count limits (often around ~65k-125k).
 **Action:** When converting large TypedArrays to strings, always use a chunked approach (e.g., mapping `String.fromCharCode.apply(null, chunk)` over a fixed `chunkSize` like 8192 bytes) to safely construct the string without blowing the stack. Suppress TypeScript apply errors for TypedArrays explicitly with `// @ts-expect-error`.
+
+## 2024-07-07 - Optimize restoreBackup with chunked Promise.all
+**Learning:** For bulk database imports (like `restoreBackup` in `packages/core/src/Archive.ts`), utilize chunked parallel processing (e.g., `Promise.all` with `chunkSize = 50`) rather than sequential `await`. This architectural pattern provides massive speedups because the underlying `FileAdapter` safely queues concurrent writes without causing unbounded concurrency issues like Out-Of-Memory (OOM) or SQLite `BUSY` errors.
+**Action:** Use chunked `Promise.all` processing for bulk writes and imports to maximize I/O concurrency without overloading memory.
