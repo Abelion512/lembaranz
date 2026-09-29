@@ -81,3 +81,7 @@
 ## 2024-05-18 - [Performance Optimization: Chunked Parallel Database Backup Restoration]
 **Learning:** For bulk database imports (like `restoreBackup` in `packages/core/src/Archive.ts`), utilizing chunked parallel processing (e.g., `Promise.all` with `chunkSize = 50`) provides massive speedups compared to sequential `await`. The underlying `FileAdapter` safely queues concurrent writes without causing unbounded concurrency issues like Out-Of-Memory (OOM) or SQLite `BUSY` errors.
 **Action:** When implementing bulk operations involving storage, utilize chunked Promise.all patterns instead of sequential loops for better performance while keeping resource consumption predictable.
+
+## 2024-05-18 - [Performance Optimization: Chunked Parallelization for Bulk Imports]
+**Learning:** Sequential processing using simple `for...of` loops for bulk database imports (like `restoreBackup`) is heavily bottlenecked when individual operations involve both CPU-intensive tasks (like cryptography) and disk I/O. When the underlying database interface (like `FileAdapter` in this architecture) safely supports concurrent write queueing, using a chunked `Promise.all` approach prevents unbounded concurrency issues (OOM, SQLite BUSY errors) while drastically accelerating the process (e.g., from ~10.5s to ~400ms).
+**Action:** When working on large import functions in this architecture, avoid purely sequential processing. Use chunked `Promise.all` processing (with a reasonable chunk size, like 50) when the underlying persistence layer handles write queueing natively.
