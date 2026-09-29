@@ -52,3 +52,7 @@
 ## 2024-05-24 - [Archive Backup Restore Optimization]
 **Learning:** Sequential saving in `restoreBackup` causes massive bottlenecks when importing large datasets due to awaiting each save operation. Because the underlying storage layer (`FileAdapter`) handles file locks and queues writes safely, we don't need to await each save sequentially in the application logic.
 **Action:** Use chunked parallel execution (e.g. `Promise.all` with a chunk size of 50) for bulk database operations when the adapter is known to handle concurrent write requests safely, as it can yield massive speedups (~40x).
+
+## 2024-05-18 - [Parallel Bulk Database Imports]
+**Learning:** Sequential awaits for database imports cause massive IO bottlenecks. The underlying `FileAdapter` implements a safe `savePromise` queue for atomic writes, meaning it's safe to parallelize saving multiple items.
+**Action:** When working on backups or large imports, utilize chunked parallel processing (`Promise.all` with a chunk size, e.g., 50) rather than sequential `await` to achieve massive speedups without risking database corruption.
