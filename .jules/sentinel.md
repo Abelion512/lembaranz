@@ -239,3 +239,8 @@ To prevent CWE-732 (Insecure File Permissions), always explicitly set restrictiv
 **Vulnerability:** The Markdown rendering function `isDangerousUrl` iteratively checked decoded URLs to sanitize XSS, but it previously decoded it only once. This allowed double encoded URIs (`%256A%2561...` which decodes to `%6A%61...` which then decodes to `javascript:...`) or multiple encodings to bypass the filter.
 **Learning:** Security filters that rely on decoding user input to check for malicious signatures must use an iterative decoding loop to recursively unescape all layers of encoding.
 **Prevention:** Implement a recursive or iterative decoding limit (e.g. up to 5 times or until decoding no longer changes the string) to prevent multiple encoded injections.
+
+## 2024-07-02 - Insecure File Permissions in Environment and Export Files
+**Vulnerability:** Insecure file permissions (CWE-732). Files like `.env` and `lembaranz-petikan-*.lembaranz` were being written using default permissions (0o666 minus umask), potentially allowing unauthorized local read access.
+**Learning:** Default `fs.writeFile` permissions in Node.js/Bun are unsafe for sensitive files if a restrictive umask is not set.
+**Prevention:** Always explicitly set `{ mode: 0o600 }` (or similar restrictive modes) when using `fs.writeFile` or similar APIs for sensitive data.
