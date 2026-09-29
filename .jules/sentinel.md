@@ -234,3 +234,8 @@ To prevent CWE-732 (Insecure File Permissions), always explicitly set restrictiv
 **Vulnerability:** A Cross-Site Scripting (XSS) vulnerability existed in the `isDangerousUrl` function in `safeMarked.ts` where a malicious user could bypass the URL protocol filter (e.g., `javascript:`) by double URL encoding or using mixed HTML/URL encoding.
 **Learning:** Single-pass URL decoding is insufficient for security filters because attackers can layer encodings (like `%256A` or `&#x25;6A`) that resolve to dangerous payloads after the initial pass.
 **Prevention:** Always use an iterative decoding loop that recursively unescapes all layers of encoding (e.g., up to 5 loops) until the string stabilizes, ensuring no deeply embedded malicious signatures bypass the filter.
+
+## 2025-02-27 - Double/Multiple Encoding XSS Bypass
+**Vulnerability:** The Markdown rendering function `isDangerousUrl` iteratively checked decoded URLs to sanitize XSS, but it previously decoded it only once. This allowed double encoded URIs (`%256A%2561...` which decodes to `%6A%61...` which then decodes to `javascript:...`) or multiple encodings to bypass the filter.
+**Learning:** Security filters that rely on decoding user input to check for malicious signatures must use an iterative decoding loop to recursively unescape all layers of encoding.
+**Prevention:** Implement a recursive or iterative decoding limit (e.g. up to 5 times or until decoding no longer changes the string) to prevent multiple encoded injections.
