@@ -44,10 +44,12 @@ permissions:
 jobs:
   Analysis:
     runs-on: ubuntu-latest
+    env:
+      HAS_SONAR: ${{ secrets.SONAR_TOKEN != '' }}
 
     steps:
       - name: Analyze with SonarCloud
-        if: ${{ secrets.SONAR_TOKEN != '' }}
+        if: env.HAS_SONAR == 'true'
 
         # You can pin the exact commit or the version.
         # uses: SonarSource/sonarcloud-github-action@v2.2.0

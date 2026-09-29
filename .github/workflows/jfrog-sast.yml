@@ -33,6 +33,8 @@ jobs:
       actions: read
       contents: read
       security-events: write
+    env:
+      HAS_JF: ${{ secrets.JF_URL != '' && secrets.JF_ACCESS_TOKEN != '' }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -41,19 +43,19 @@ jobs:
       uses: actions/setup-node@v4
 
     - name: Install and configure JFrog CLI
-      if: ${{ secrets.JF_URL != '' && secrets.JF_ACCESS_TOKEN != '' }}
+      if: env.HAS_JF == 'true'
       run: |
         npm install -g jfrog-cli-v2-jf
         echo $JF_TOKEN | jf c add --interactive=false --url=$JF_URL --access-token-stdin
 
     - name: Run JFrog SAST
-      if: ${{ secrets.JF_URL != '' && secrets.JF_ACCESS_TOKEN != '' }}
+      if: env.HAS_JF == 'true'
       run: |
         jf audit --sast --format=sarif > jfrog_sast.sarif
 
 
     - name: Upload output to generate autofix
-      if: ${{ secrets.JF_URL != '' && secrets.JF_ACCESS_TOKEN != '' }}
+      if: env.HAS_JF == 'true'
       uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: jfrog_sast.sarif
