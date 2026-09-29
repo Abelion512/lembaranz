@@ -16,8 +16,6 @@ env:
 # https://docs.jfrog-applications.jfrog.io/jfrog-security-features/sast
 
 name: "JFrog SAST Scan"
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 on:
   push:
@@ -30,7 +28,6 @@ on:
 jobs:
   analyze:
     name: Analyze
-    if: ${{ env.JF_TOKEN != '' && env.JF_TOKEN != null }}
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -40,21 +37,21 @@ jobs:
       HAS_JF: ${{ secrets.JF_URL != '' && secrets.JF_ACCESS_TOKEN != '' }}
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4.2.2
+      uses: actions/checkout@v4
 
     - name: Setup Node.js
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4
 
     - name: Install and configure JFrog CLI
       if: env.HAS_JF == 'true'
       run: |
         npm install -g jfrog-cli-v2-jf
-        echo "$JF_TOKEN" | jf c add --interactive=false --interactive=false --url=$JF_URL --access-token-stdin
+        echo $JF_TOKEN | jf c add --interactive=false --url=$JF_URL --access-token-stdin
 
     - name: Run JFrog SAST
       if: env.HAS_JF == 'true'
       run: |
-        jf audit --sast --format=sarif > jfrog_sast.sarif || true
+        jf audit --sast --format=sarif > jfrog_sast.sarif
 
 
     - name: Upload output to generate autofix

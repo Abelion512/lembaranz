@@ -6,8 +6,6 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 name: Docker
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -36,7 +34,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer

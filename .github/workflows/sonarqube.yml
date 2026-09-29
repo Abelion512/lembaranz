@@ -1,6 +1,5 @@
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -42,7 +41,6 @@ permissions:
 
 jobs:
   Analysis:
-    if: ${{ env.SONAR_TOKEN != '' && env.SONAR_TOKEN != null }}
     runs-on: ubuntu-latest
     env:
       HAS_SONARQUBE: ${{ secrets.SONAR_TOKEN != '' && secrets.SONAR_HOST_URL != '' }}
@@ -53,7 +51,7 @@ jobs:
 
         # You can pin the exact commit or the version.
         # uses: SonarSource/sonarqube-scan-action@v1.1.0
-        uses: SonarSource/sonarqube-scan-action@master
+        uses: SonarSource/sonarqube-scan-action@7295e71c9583053f5bf40e9d4068a0c974603ec8
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on SonarQube, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)

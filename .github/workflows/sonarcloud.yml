@@ -1,6 +1,5 @@
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -44,7 +43,6 @@ permissions:
 
 jobs:
   Analysis:
-    if: ${{ env.SONAR_TOKEN != '' && env.SONAR_TOKEN != null }}
     runs-on: ubuntu-latest
     env:
       HAS_SONAR: ${{ secrets.SONAR_TOKEN != '' }}
@@ -55,7 +53,7 @@ jobs:
 
         # You can pin the exact commit or the version.
         # uses: SonarSource/sonarcloud-github-action@v2.2.0
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarcloud-github-action@4006f663ecaf1f8093e8e4abb9227f6041f52216
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
         with:

@@ -1,6 +1,5 @@
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -33,7 +32,6 @@ permissions:
 
 jobs:
   snyk:
-    if: ${{ env.SNYK_TOKEN != '' && env.SNYK_TOKEN != null }}
     permissions:
       contents: read # for actions/checkout to fetch code
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
@@ -42,7 +40,7 @@ jobs:
     env:
       HAS_SNYK: ${{ secrets.SNYK_TOKEN != '' }}
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v4
       - name: Set up Snyk CLI to check for security issues
         # Snyk can be used to break the build when it detects security issues.
         # In this case we want to upload the SAST issues to GitHub Code Scanning
@@ -50,7 +48,7 @@ jobs:
 
         # For Snyk Open Source you must first set up the development environment for your application's dependencies
         # For example for Node
-        #- uses: actions/setup-node@v4.1.0
+        #- uses: actions/setup-node@v4
         #  with:
         #    node-version: 20
 
