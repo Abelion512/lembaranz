@@ -153,7 +153,7 @@ export class Vault {
     if (res.error || !res.data) return { data: null, error: res.error };
 
     const ivHex = this.bytesToHex(res.data.iv);
-    const base64 = Vault.bytesToBase64(new Uint8Array(res.data.data));
+    const base64 = this.bytesToBase64(new Uint8Array(res.data.data));
     const packed = `${ivHex}|${base64}`;
     
     // Cache the result if using active key

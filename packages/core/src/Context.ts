@@ -42,7 +42,8 @@ export class Context {
 
             if (context === 'personal') {
                 if (!(await this.fileExists(PERSONAL_BASE_DIR))) {
-                    await fs.mkdir(PERSONAL_BASE_DIR, { recursive: true });
+                    // 🛡️ Sentinel: Explicitly restrict directory permissions to owner-only
+                    await fs.mkdir(PERSONAL_BASE_DIR, { recursive: true, mode: 0o700 });
                 }
                 
                 // MIGRATION: Check for legacy saku.json
@@ -62,7 +63,8 @@ export class Context {
 
                 const localDir = path.join(root, this.PROJECT_DIR);
                 if (!(await this.fileExists(localDir))) {
-                    await fs.mkdir(localDir, { recursive: true });
+                    // 🛡️ Sentinel: Explicitly restrict directory permissions to owner-only
+                    await fs.mkdir(localDir, { recursive: true, mode: 0o700 });
                 }
 
                 // MIGRATION: Check for legacy pelataran.json
@@ -210,7 +212,8 @@ export class Context {
                 newLines.push(`${key}=${value}`);
             }
 
-            await fs.writeFile(envPath, newLines.join('\n'), 'utf8');
+            // 🛡️ Sentinel: Explicitly restrict file permissions to owner-only
+            await fs.writeFile(envPath, newLines.join('\n'), { encoding: 'utf8', mode: 0o600 });
             return { data: true, error: null };
         } catch (err) {
             return { data: null, error: err instanceof Error ? err : new Error(String(err)) };

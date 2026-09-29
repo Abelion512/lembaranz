@@ -382,6 +382,7 @@ export default function App() {
           <button
             onClick={handleLockVault}
             title="Lock Vault"
+            aria-label="Lock Vault"
             className="p-1.5 bg-slate-950 border border-slate-800 text-slate-400 hover:text-red-400 hover:border-red-500/40 rounded transition-colors"
           >
             <Lock size={14} />
@@ -529,6 +530,7 @@ export default function App() {
                     <button
                       onClick={() => handleCopyContent(noteContent, activeNote.id)}
                       title="Copy Note Content"
+                      aria-label="Copy Note Content"
                       className="p-2 border border-slate-800 hover:border-cyan-500/40 hover:bg-cyan-500/5 hover:text-cyan-400 text-slate-400 rounded transition-colors"
                     >
                       {copiedId === activeNote.id ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
@@ -536,6 +538,7 @@ export default function App() {
                     <button
                       onClick={() => handleDeleteNote(activeNote.id)}
                       title="Delete Note"
+                      aria-label="Delete Note"
                       className="p-2 border border-slate-800 hover:border-red-500/40 hover:bg-red-500/5 hover:text-red-400 text-slate-400 rounded transition-colors"
                     >
                       <Trash2 size={16} />
