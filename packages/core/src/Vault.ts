@@ -1,4 +1,5 @@
 import { Result } from "./Formula";
+export type { Result };
 
 /**
  * Vault: Lower-level cryptographic engine.
@@ -59,7 +60,8 @@ export class Vault {
    */
   public static async deriveKey(
     password: string,
-    salt: Uint8Array
+    salt: Uint8Array,
+    _extractable = false
   ): Promise<Result<CryptoKey>> {
     try {
       const enc = new TextEncoder();
@@ -74,6 +76,7 @@ export class Vault {
       const key = await crypto.subtle.deriveKey(
         {
           name: "PBKDF2",
+          // @ts-expect-error - BufferSource typing mismatch between Uint8Array<ArrayBufferLike> and ArrayBufferView<ArrayBuffer> in TS 6
           salt,
           iterations: 100000,
           hash: "SHA-256",
@@ -127,6 +130,7 @@ export class Vault {
 
     try {
       const decrypted = await crypto.subtle.decrypt(
+        // @ts-expect-error - iv Uint8Array<ArrayBufferLike> vs BufferSource typing mismatch in TS 6
         { name: "AES-GCM", iv },
         targetKey,
         ciphertext

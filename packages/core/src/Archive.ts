@@ -530,11 +530,38 @@ export const Archive = {
   },
 
   /**
+   * Stores a hashed panic key used for emergency vault wipe.
+   */
+  async setPanicKey(panicPassword: string): Promise<void> {
+    const hash = await Integrity.computeHash(panicPassword);
+    await Storage.set("meta", "panic_hash", hash);
+  },
+
+  /**
+   * Creates a portable encrypted backup of all entries.
+   * Wraps Vault.encryptPortable with the current archive contents.
+   */
+  async createBackup(passwordBackup: string): Promise<Result<Uint8Array>> {
+    if (Vault.isLocked())
+      return { data: null, error: new Error("Vault locked") };
+    try {
+      const rawNotes = (await Storage.getAll("notes")) as StoredNote[];
+      const payload = JSON.stringify({ notes: rawNotes, exportedAt: new Date().toISOString() });
+      return await Vault.encryptPortable(payload, passwordBackup);
+    } catch (e) {
+      return {
+        data: null,
+        error: e instanceof Error ? e : new Error(String(e)),
+      };
+    }
+  },
+
+  /**
    * Restores data from a portable backup buffer.
    */
   async restoreBackup(buffer: Uint8Array, passwordBackup: string): Promise<Result<{ restored: number; skipped: number }>> {
     const res = await Vault.decryptPortable(buffer, passwordBackup);
-    if (res.error || !res.data) return { data: null, error: res.error };
+    if (res.error || !res.data) return { data: null, error: res.error ?? new Error("Backup decryption failed") };
 
     try {
       const backup = JSON.parse(res.data);

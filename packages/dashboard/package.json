@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@lembaranz/core": "workspace:*",
     "canvas-confetti": "^1.9.3",
     "clsx": "^2.1.1",
     "i18next": "^26.3.0",

@@ -1,6 +1,6 @@
 import { test, expect, mock } from "bun:test";
 
-const mockSpawn = mock(() => ({ unref: () => {} }));
+const mockSpawn = mock((): { unref: () => void } => ({ unref: () => {} }));
 mock.module("child_process", () => {
     return {
         spawn: mockSpawn
@@ -13,7 +13,7 @@ test("openReport handles valid url", () => {
     mockSpawn.mockClear();
     expect(() => openReport("https://github.com/Abelion512/lembaranz/")).not.toThrow();
     expect(mockSpawn).toHaveBeenCalledTimes(1);
-    expect(mockSpawn.mock.calls[0][1]).toEqual(["https://github.com/Abelion512/lembaranz/"]);
+    expect((mockSpawn.mock.calls[0] as unknown[])[1] as string[]).toEqual(["https://github.com/Abelion512/lembaranz/"]);
 });
 
 test("openReport handles invalid url", () => {

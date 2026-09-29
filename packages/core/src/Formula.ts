@@ -1,5 +1,8 @@
 export type EntityId = string;
 
+/** Unified operation result: every async API returns this instead of throwing */
+export type Result<T> = { data: T; error: null } | { data: null; error: Error };
+
 /** Note as stored in storage (all sensitive fields encrypted as strings) */
 export interface StoredNote {
     id: EntityId;

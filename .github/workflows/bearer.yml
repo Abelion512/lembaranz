@@ -13,9 +13,9 @@ name: Bearer Security Scan
 
 on:
   push:
-    branches: ["#33"]
+    branches: ["serenity"]
   pull_request:
-    branches: ["#33"]
+    branches: ["serenity"]
   schedule:
     - cron: "29 7 * * 5"
 

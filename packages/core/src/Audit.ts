@@ -35,11 +35,11 @@ export const Audit = {
 
     try {
       // We use a dedicated 'audit' store in the storage
-      const existingRaw = await Storage.getAll("kv"); // Using KV for simple sequential logs for now
-      // Actually, better to use a dedicated collection if the adapter supports it, 
-      // but current FileAdapter/Storage is schema-locked. 
+      // Using KV for simple sequential logs for now
+      // Actually, better to use a dedicated collection if the adapter supports it,
+      // but current FileAdapter/Storage is schema-locked.
       // I'll use 'kv' with a specific prefix.
-      
+
       await Storage.set("kv", `audit_${entry.timestamp}_${entry.id}`, entry);
       
       if (process.env.DEBUG === "true") {
