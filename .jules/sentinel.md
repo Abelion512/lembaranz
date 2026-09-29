@@ -85,3 +85,7 @@ When writing test assertions for normalized URLs generated via `new URL().href`,
 **Vulnerability:** fs.writeFile defaults to 0o666 permissions allowing local read access to sensitive .env configurations and encrypted backups.
 **Learning:** Default node.js fs permissions are not restrictive enough for sensitive data.
 **Prevention:** Always explicitly set `{ mode: 0o600 }` when writing files that contain sensitive secrets or environment variables.
+## 2024-05-24 - Insecure File Permissions on Sensitive Files
+**Vulnerability:** Default file permissions were used when creating .env files and encrypted backups.
+**Learning:** Node.js fs.writeFile defaults to 0o666 (minus umask), exposing sensitive data to other local system users.
+**Prevention:** Always explicitly set restrictive permissions (e.g., { mode: 0o600 }) for sensitive files.
