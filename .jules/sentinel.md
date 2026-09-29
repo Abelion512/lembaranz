@@ -20,3 +20,8 @@ When writing test assertions for normalized URLs generated via `new URL().href`,
 **Vulnerability:** Files and directories containing sensitive data were created with default permissions, which may allow unauthorized local access.
 **Learning:** Default Node.js filesystem APIs do not automatically restrict access.
 **Prevention:** Always explicitly set restrictive permissions (`{ mode: 0o600 }` for files, `{ mode: 0o700 }` for directories) when creating files or folders that handle sensitive data to prevent CWE-732.
+
+## 2026-08-03 - Insecure File Permissions Mitigated
+**Vulnerability:** Use of `fs.writeFile` to write sensitive data without explicitly setting restrictive file permissions.
+**Learning:** Default filesystem permissions may allow unauthorized local read access.
+**Prevention:** Always explicitly set restrictive file permissions (e.g., `{ encoding: 'utf8', mode: 0o600 }` or `{ mode: 0o600 }`) when using `fs.writeFile` for sensitive files like `.env` configurations or encrypted backups.
