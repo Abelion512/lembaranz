@@ -119,3 +119,6 @@
 ## 2026-06-22 - [Performance/Safety: Base64 Call Stack Size Limit]
 **Learning:** Using `btoa(String.fromCharCode(...new Uint8Array(data)))` for large datasets throws "Maximum call stack size exceeded". This is because the spread operator passes each byte as a separate argument to `String.fromCharCode`, exceeding engine limits (typically ~65,535 arguments). A chunked approach (e.g., 8192 byte blocks) processes the array efficiently without triggering stack limits or massive intermediate array allocations.
 **Action:** Never use the spread operator over arbitrary length binary buffers with `String.fromCharCode`. Always use a chunked approach or native Buffer mechanisms where available.
+## 2024-05-18 - Uint8Array to Base64 Call Stack Limit Optimization
+**Learning:** Using `btoa(String.fromCharCode(...new Uint8Array(data)))` for array-to-string conversion throws a "Maximum call stack size exceeded" error for large byte arrays because the spread operator expands the elements into individual arguments.
+**Action:** When converting large `Uint8Array`s to Base64, always use a chunked approach (e.g. 8192 bytes) with `String.fromCharCode.apply(null, chunk)` to prevent call stack overflows and significantly improve performance, as implemented in `Vault.bytesToBase64`.
