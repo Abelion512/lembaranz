@@ -152,3 +152,8 @@ When enforcing `shell: false` in `child_process.spawn` to prevent command inject
 
 ## File System Write Permissions (CWE-732) Mitigation
 To prevent CWE-732 (Insecure File Permissions), always explicitly set restrictive permissions when using `fs.writeFile` for sensitive files like `.env` configurations or `.lembaranz` encrypted backups. Default permissions (0o666 minus umask) may allow unauthorized local reads. Use `{ encoding: 'utf8', mode: 0o600 }` or `{ mode: 0o600 }`.
+
+## 2024-06-25 - CWE-732 Insecure File Permissions for Sensitive Files
+**Vulnerability:** Use of `fs.writeFile` to write sensitive files (like `.env` and backups) without explicitly providing restrictive file modes, causing them to use default, potentially insecure permissions (e.g. `0o666`).
+**Learning:** Default permissions might allow unauthorized local reads by other users on a multi-user system.
+**Prevention:** To prevent CWE-732, explicitly set restrictive permissions `mode: 0o600` when calling `fs.writeFile` for credentials, environments configurations, and vault exports.
