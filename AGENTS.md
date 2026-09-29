@@ -39,6 +39,22 @@
 - Hook in first 3 detik
 - Track everything, A/B test before committing
 
+## 🐴 Ponytail (minimal-code discipline)
+> Vendored skills: `.claude/skills/ponytail*` (upstream: [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail), MIT)
+
+Aturan lazy-senior-dev untuk semua coding task (Agent A):
+1. **Ladder** sebelum nulis kode: YAGNI → reuse yang ada → stdlib → native platform → dependency terpasang → satu baris → baru minimum code.
+2. Jangan pernah potong: validasi trust-boundary, error handling anti data-loss, keamanan, accessibility.
+3. Tandai shortcut sadar dengan komentar `ponytail: <ceiling>, <upgrade path>` — contoh: `// ponytail: O(n²) scan, index kalau data > 10k`.
+
+**Skills:**
+- `/ponytail` — lazy mode (`lite` / `full` / `ultra`)
+- `/ponytail-debt` — harvest semua komentar `ponytail:` jadi ledger utang tech-debt (`PONYTAIL-DEBT.md`)
+- `/ponytail-gain` — scoreboard dampak terukur (LOC/cost/time)
+- `/ponytail-review` — review diff khusus over-engineering (`delete/stdlib/native/yagni/shrink`)
+- `/ponytail-audit` — audit seluruh repo, ranking yang boleh dipotong
+- `/ponytail-help` — kartu bantuan
+
 ## 🔒 Keamanan
 - AES-GCM 256-bit (Brankas.ts)
 - Argon2id key derivation

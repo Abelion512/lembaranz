@@ -6,6 +6,7 @@ import { prepareContext } from '../utils.js';
 import pc from 'picocolors';
 import { spawn } from 'node:child_process';
 import { execSync } from 'node:child_process';
+import os from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 
@@ -76,7 +77,7 @@ async function launchGUI() {
   console.log(pc.yellow('⚠️  Keep this terminal open!'));
   console.log(pc.dim('The vault manager will open in your browser.\n'));
 
-  const child = spawn('bun', ['run', 'dev'], { cwd: webDir, stdio: 'inherit', shell: true });
+  const child = spawn(os.platform() === 'win32' ? 'bun.cmd' : 'bun', ['run', 'dev'], { cwd: webDir, stdio: 'inherit', shell: false });
 
   await prompts({ type: 'text', name: '_', message: 'Press Enter to stop GUI server:', initial: '' });
   child.kill();

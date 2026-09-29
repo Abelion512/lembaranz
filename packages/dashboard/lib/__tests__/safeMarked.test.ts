@@ -49,6 +49,12 @@ describe('safeMarked Rendering', () => {
         expect(result).toContain('<span>klik</span>');
     });
 
+    test('harus menetralkan link jahat yang dienkode URL ganda (double-encoded)', async () => {
+        const result = await safeMarked.parse('[klik](%256A%2561%2576%2561%2573%2563%2572%2569%2570%2574%253Aalert(1))');
+        expect(result).not.toContain('%256A');
+        expect(result).toContain('<span>klik</span>');
+    });
+
     test('harus menetralkan link jahat yang memiliki invalid URL encoding (bypass)', async () => {
         const result = await safeMarked.parse('[klik](%6A%61%76%61%73%63%72%69%70%74%3Aalert(1)%FF)');
         expect(result).not.toContain('alert(1)');

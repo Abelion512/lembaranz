@@ -1,3 +1,10 @@
+## 2025-05-24 - CWE-732 Insecure File Permissions when saving Config/Backup
+## Security Learnings
+
+## File Permission Hardening
+To prevent CWE-732 (Insecure File Permissions), always explicitly set restrictive permissions (e.g., `{ mode: 0o600 }`) when using `fs.writeFile` for sensitive files like `.env` configurations or `.lembaranz` exported backups. Default permissions (0o666 minus umask) may allow unauthorized local reads from other users on the system.
+
+**Vulnerability:** The application was writing sensitive files (like `.env` environments and `.lembaranz` vault backups) using `fs.writeFile` without explicitly setting the `mode` option. By default, `fs.writeFile` uses `0o666` (rw-rw-rw-) minus the user's `umask`. This means on systems with permissive umasks (e.g. `0022`), the written sensitive files were readable by any user on the local machine (`-rw-r--r--`).
 # Security Learnings
 
 ## URL Parsing & OS Command Injection Mitigation
@@ -132,3 +139,139 @@ When writing test assertions for normalized URLs generated via `new URL().href`,
 **Vulnerability:** Found `fs.writeFile` being used without explicit restrictive file permissions for sensitive `.env` configurations and encrypted vault backups in `Context.ts`, `Config.ts`, and `TerminalUI.ts`.
 **Learning:** Default file creation permissions (`0o666` modified by the system umask) are typically too permissive (`0o644` or `0o664`) for sensitive secrets or configuration files, potentially allowing unauthorized local users to read them.
 **Prevention:** Always explicitly set restrictive file permissions, such as `{ mode: 0o600 }`, when writing sensitive data files using `fs.writeFile` or similar filesystem APIs to prevent CWE-732 vulnerabilities.
+
+## 2024-06-25 - Prevent Command Injection via exec()
+**Vulnerability:** The `packages/cli/src/commands/Dashboard.ts` command used `exec(cmd)` to execute a local dashboard development server using string interpolation. User-supplied arguments like `--host` and `--port` were interpolated directly into the `cmd` string, allowing for command injection if a malicious user executed the command with manipulated options.
+**Learning:** Node's `child_process.exec()` spawns a shell and runs commands within it, making it inherently vulnerable to command injection if arguments are not sanitized.
+**Prevention:** Always use `child_process.spawn()` with `shell: false` (the default) and pass arguments as an array rather than interpolating them into a single command string. This guarantees that arguments are passed safely directly to the executable rather than being parsed by a shell.
+
+## Cross-Platform Command Execution without Shell
+When enforcing `shell: false` in `child_process.spawn` to prevent command injection, executable commands (like `bun`, `npm`, `yarn`) may throw `ENOENT` on Windows. This is because these commands are often `.cmd` or `.bat` scripts on Windows, which require a shell to execute. To mitigate this securely without reverting to `shell: true`, dynamically resolve the executable name based on the OS (e.g., `os.platform() === 'win32' ? 'bun.cmd' : 'bun'`).
+
+## 2024-06-21 - CWE-732: Insecure Default File Permissions for Sensitive Data
+**Vulnerability:** Calling `fs.writeFile` without explicit secure `mode` arguments resulted in sensitive files (e.g., local `.env` configurations and encrypted `.lembaranz` backup exports) being created with default permissions (typically `0o666` minus umask), potentially allowing unauthorized local system users to read sensitive contents.
+**Learning:** Node.js file system APIs like `fs.writeFile` do not default to restrictive permissions. When writing files that contain credentials or cryptographic backups, developers must explicitly override the default OS umask logic to restrict read/write access.
+**Prevention:** Always enforce strict file permission arguments (e.g., `{ mode: 0o600 }`) when using `fs.writeFile` or `fs.writeFileSync` to create files containing sensitive data.
+
+## 2024-10-27 - [Insecure File Permissions]
+**Vulnerability:** Missing explicit secure permissions when writing sensitive files like `.env` and `.lembaranz` backups via `fs.writeFile` (CWE-732).
+**Learning:** Default Node.js `fs.writeFile` permissions are usually `0o666` modified by the process umask, which can allow unauthorized local users to read sensitive credentials.
+**Prevention:** Always explicitly define restrictive file permissions (e.g., `{ mode: 0o600 }`) in the options object when writing sensitive files to disk.
+## 2026-08-07 - Enforce Secure File and Directory Permissions
+**Vulnerability:** Files containing sensitive data (e.g. .env, logs) and vault directories were created with permissive default permissions.
+**Learning:** Relying on default fs.mkdir and fs.writeFile permissions can expose secure data to other local users. Permissions must be explicitly set to restrict access to the current user.
+**Prevention:** Always use { mode: 0o700 } for directories and { mode: 0o600 } for files when interacting with the filesystem API for sensitive data.
+
+## File System Write Permissions (CWE-732) Mitigation
+To prevent CWE-732 (Insecure File Permissions), always explicitly set restrictive permissions when using `fs.writeFile` for sensitive files like `.env` configurations or `.lembaranz` encrypted backups. Default permissions (0o666 minus umask) may allow unauthorized local reads. Use `{ encoding: 'utf8', mode: 0o600 }` or `{ mode: 0o600 }`.
+
+## 2024-06-25 - CWE-732 Insecure File Permissions for Sensitive Files
+**Vulnerability:** Use of `fs.writeFile` to write sensitive files (like `.env` and backups) without explicitly providing restrictive file modes, causing them to use default, potentially insecure permissions (e.g. `0o666`).
+**Learning:** Default permissions might allow unauthorized local reads by other users on a multi-user system.
+**Prevention:** To prevent CWE-732, explicitly set restrictive permissions `mode: 0o600` when calling `fs.writeFile` for credentials, environments configurations, and vault exports.
+## 2024-05-18 - Prevent CWE-732 Insecure File Permissions in `fs.writeFile`
+**Vulnerability:** Files written with `fs.writeFile` without explicit permissions will use the system's default permissions (usually `0o666` modified by the umask), which might allow unauthorized local users to read sensitive files.
+**Learning:** `fs.writeFile` allows you to pass an options object as the third argument to set explicitly restrictive permissions such as `0o600`.
+**Prevention:** Always use `{ mode: 0o600 }` when calling `fs.writeFile` to write sensitive data or configuration files like `.env` profiles or `.lembaranz` encrypted backup files.
+
+## 2026-06-22 - [Insecure File Permissions (CWE-732) Mitigation]
+**Vulnerability:** Found multiple instances where sensitive files (like `.env` and `.lembaranz` encrypted backup exports) were created using `fs.writeFile` without explicit permission boundaries.
+**Learning:** In Node.js, `fs.writeFile` defaults to `0o666` (read/write for everyone) modified by the user's `umask`. If a user's `umask` is overly permissive (e.g., `000` or `002`), sensitive files on the filesystem could be read or modified by other local users, posing a critical data leak risk for credentials and secrets.
+**Prevention:** Always explicitly set restrictive permissions (e.g., `{ mode: 0o600 }`) when using file writing APIs for sensitive configuration and backup files to ensure they are strictly limited to the file owner.
+**Learning:** When handling secrets or writing cryptographic database states to the local filesystem using standard Node.js libraries, we cannot rely on the user's default `umask` to restrict file access. We must defensively enforce `mode: 0o600` on the file descriptor directly.
+
+**Prevention:** Ensure that all file writes for sensitive configuration and backup/vault files explicitly include the `{ mode: 0o600 }` parameter in the `fs.writeFile` arguments to guarantee only the owner has read and write capabilities.
+
+## 2025-05-24 - CWE-732 Insecure File Permissions when saving Config/Backup
+
+**Vulnerability:** The application was writing sensitive files (like `.env` environments and `.lembaranz` vault backups) using `fs.writeFile` without explicitly setting the `mode` option. By default, `fs.writeFile` uses `0o666` (rw-rw-rw-) minus the user's `umask`. This means on systems with permissive umasks (e.g. `0022`), the written sensitive files were readable by any user on the local machine (`-rw-r--r--`).
+
+**Learning:** When handling secrets or writing cryptographic database states to the local filesystem using standard Node.js libraries, we cannot rely on the user's default `umask` to restrict file access. We must defensively enforce `mode: 0o600` on the file descriptor directly.
+
+**Prevention:** Ensure that all file writes for sensitive configuration and backup/vault files explicitly include the `{ mode: 0o600 }` parameter in the `fs.writeFile` arguments to guarantee only the owner has read and write capabilities.
+
+## 2025-05-24 - CWE-732 Insecure File Permissions when saving Config/Backup
+
+**Vulnerability:** The application was writing sensitive files (like `.env` environments and `.lembaranz` vault backups) using `fs.writeFile` without explicitly setting the `mode` option. By default, `fs.writeFile` uses `0o666` (rw-rw-rw-) minus the user's `umask`. This means on systems with permissive umasks (e.g. `0022`), the written sensitive files were readable by any user on the local machine (`-rw-r--r--`).
+
+**Learning:** When handling secrets or writing cryptographic database states to the local filesystem using standard Node.js libraries, we cannot rely on the user's default `umask` to restrict file access. We must defensively enforce `mode: 0o600` on the file descriptor directly.
+
+**Prevention:** Ensure that all file writes for sensitive configuration and backup/vault files explicitly include the `{ mode: 0o600 }` parameter in the `fs.writeFile` arguments to guarantee only the owner has read and write capabilities.
+
+## 2024-05-18 - [HIGH] Fix Insecure File Permissions (CWE-732)
+**Vulnerability:** The application was using `fs.writeFile` without explicitly setting restrictive file permissions when saving sensitive files such as `.env` configurations and `.lembaranz` vault backups. This defaults to 0o666 (minus umask), which may allow unauthorized local users to read sensitive credentials on multi-user systems.
+**Learning:** Even though encryption handles data rest security, plain text keys, environment variables, and local data files must be protected at the file-system level. The lack of explicit modes during file writes exposes sensitive data to CWE-732 (Insecure File Permissions).
+**Prevention:** Always explicitly set restrictive permissions (e.g., `{ mode: 0o600 }`) when using `fs.writeFile` for any file containing sensitive configuration, backups, or credentials.
+
+## 2024-05-20 - Insecure File Permissions for Sensitive Data (CWE-732)
+**Vulnerability:** Calls to `fs.writeFile` for sensitive files like `.env` configurations and `.lembaranz` encrypted backups were missing explicit file mode permissions, potentially defaulting to `0o666` (minus umask), which allows unauthorized local read access.
+**Learning:** Default Node.js filesystem permissions can expose sensitive cryptographic and configuration files to local privilege escalation vectors or unauthorized users on multi-tenant environments.
+**Prevention:** Always explicitly define restrictive file permissions `(e.g., { mode: 0o600 })` when writing any sensitive material (secrets, config, keys, backups) using `fs.writeFile`.
+
+## 2024-05-18 - Insecure File Permissions
+**Vulnerability:** fs.writeFile was used to create sensitive files (.env and backups) without restrictive permissions.
+**Learning:** Default permissions (e.g. 0o666 minus umask) can expose sensitive files to unauthorized local users, leading to credential theft.
+**Prevention:** Always explicitly set restrictive permissions (e.g., { mode: 0o600 }) when creating sensitive files.
+
+## 2025-02-24 - Fix insecure file permissions on sensitive files
+**Vulnerability:** Default Node.js `fs.writeFile` permissions allow potentially broad read access to sensitive `.env` and `.lembaranz` backup files on shared systems.
+**Learning:** When using Node.js filesystem modules to write sensitive content like credentials, the default permissions (0o666 minus umask) may be too permissive, violating the principle of least privilege.
+**Prevention:** Always explicitly set restrictive file permissions (e.g., `{ mode: 0o600 }`) when creating or modifying files containing secrets or encrypted backups to ensure only the owner can read or write them.
+
+## 2025-02-27 - Secure File Permissions
+**Vulnerability:** Sensitive files like `.env` configs and `.lembaranz` backup archives were written using `fs.writeFile` with default permissions (`0o666`).
+**Learning:** Default Node.js filesystem permissions can expose sensitive material to other unauthorized local users on a multi-user system (CWE-732).
+**Prevention:** Always explicitly define `{ mode: 0o600 }` alongside the encoding when writing critical material to disk.
+
+## 2024-06-13 - Insecure File Permissions for Exported Secrets
+
+**Vulnerability:** The CLI and Core packages were writing sensitive data (like exported environments, encrypted archives, and `.env` files) to disk using default filesystem permissions (typically `0o666` modified by umask). This allowed unauthorized local users to read the exported files or local configuration files.
+**Learning:** Hardcoded default permissions in Node.js `fs.writeFile` lead to Local File Inclusion or unauthorized secret exposure in multi-user environments. Explicit restrictive modes are necessary when handling credentials or cryptographic exports.
+**Prevention:** Always define explicit file permissions (e.g., `{ mode: 0o600 }`) in `fs.writeFile` calls when outputting any sensitive data, especially for environment variables, credentials, or backups.
+
+## 2025-06-23 - [HIGH] Fix XSS Bypass in safeMarked via Double Encoding
+**Vulnerability:** The Markdown `isDangerousUrl` check was vulnerable to XSS bypass via double-encoded URLs (e.g., `%256A%2561...` for `javascript:`).
+**Learning:** Single-pass URL decoding is insufficient for security filters because browsers will often recursively decode or handle double-encoded payloads in certain contexts. Attackers can bypass naive regex checks by adding multiple layers of encoding.
+**Prevention:** Always use an iterative decoding loop (e.g., `for (let i = 0; i < 5; i++) { ... }`) to unescape all layers of URL/HTML encoding before evaluating a string against security blocklists.
+
+## 2024-06-30 - Fix XSS bypass via double-encoded URLs in markdown
+**Vulnerability:** The `isDangerousUrl` function in `safeMarked.ts` used a single-pass decoding approach (only once) for URLs when filtering for dangerous protocols like `javascript:`. Attackers could bypass this by double-encoding malicious URLs (e.g. `%256Aavascript:`).
+**Learning:** Security filters that rely on decoding user input to check for malicious signatures must recursively unescape all layers of encoding (e.g. up to a limit like 5 loops). Single-pass decoding is insufficient and allows evasion techniques like double encoding or mixed encoding. Also initializing the decoded fallback (`let decoded = url;`) avoids potential issues if decodeURIComponent throws on malformed URIs.
+**Prevention:** Always use an iterative decoding loop (up to a fixed number of iterations to prevent DoS) when validating inputs against malicious signatures. Ensure error fallbacks provide a baseline safe value (e.g. initialing with the original string) rather than returning undefined or skipping validation.
+
+## 2026-07-01 - [Double-Encoding XSS Bypass in Markdown Sanitizer]
+**Vulnerability:** A Cross-Site Scripting (XSS) vulnerability existed in the `isDangerousUrl` function in `safeMarked.ts` where a malicious user could bypass the URL protocol filter (e.g., `javascript:`) by double URL encoding or using mixed HTML/URL encoding.
+**Learning:** Single-pass URL decoding is insufficient for security filters because attackers can layer encodings (like `%256A` or `&#x25;6A`) that resolve to dangerous payloads after the initial pass.
+**Prevention:** Always use an iterative decoding loop that recursively unescapes all layers of encoding (e.g., up to 5 loops) until the string stabilizes, ensuring no deeply embedded malicious signatures bypass the filter.
+
+## 2025-02-27 - Double/Multiple Encoding XSS Bypass
+**Vulnerability:** The Markdown rendering function `isDangerousUrl` iteratively checked decoded URLs to sanitize XSS, but it previously decoded it only once. This allowed double encoded URIs (`%256A%2561...` which decodes to `%6A%61...` which then decodes to `javascript:...`) or multiple encodings to bypass the filter.
+**Learning:** Security filters that rely on decoding user input to check for malicious signatures must use an iterative decoding loop to recursively unescape all layers of encoding.
+**Prevention:** Implement a recursive or iterative decoding limit (e.g. up to 5 times or until decoding no longer changes the string) to prevent multiple encoded injections.
+
+## 2024-07-02 - Insecure File Permissions in Environment and Export Files
+**Vulnerability:** Insecure file permissions (CWE-732). Files like `.env` and `lembaranz-petikan-*.lembaranz` were being written using default permissions (0o666 minus umask), potentially allowing unauthorized local read access.
+**Learning:** Default `fs.writeFile` permissions in Node.js/Bun are unsafe for sensitive files if a restrictive umask is not set.
+**Prevention:** Always explicitly set `{ mode: 0o600 }` (or similar restrictive modes) when using `fs.writeFile` or similar APIs for sensitive data.
+
+## 2024-06-15 - Insecure File Permissions on Sensitive Files
+**Vulnerability:** Calling `fs.writeFile` on sensitive files (like `.env` configurations and `.lembaranz` encrypted backup exports) used default file permissions, which could allow unauthorized local system users to read them (CWE-732).
+**Learning:** In Node.js, unless explicitly specified, `fs.writeFile` uses the system's default `umask` (often resulting in `0o644` or `0o666`). For sensitive files, default permissions are insufficiently restrictive.
+**Prevention:** Always pass an options object with `mode: 0o600` (read/write only for the owner) when saving sensitive files via `fs.writeFile`.
+## 2024-05-20 - XSS Bypass via Double Encoding
+**Vulnerability:** The Markdown link rendering in `safeMarked.ts` attempted to block dangerous URLs (e.g., `javascript:`) but only applied a single pass of `decodeURIComponent` and HTML entity decoding. This allowed attackers to bypass the filter by double URL encoding (`%256A` -> `%6A` -> `j`) or combining URL and HTML entity encoding.
+**Learning:** Security filters that rely on decoding user input to check for malicious signatures can be bypassed if the decoding is not comprehensive. Attackers often use multiple layers of encoding (e.g., double URL encoding, or mixing HTML entities and URL encoding) to evade single-pass filters.
+**Prevention:** Always use an iterative decoding loop (e.g., `while (decoded !== previous && loopCount < MAX_ITERATIONS)`) to recursively unescape all layers of encoding until the string reaches a stable, fully-decoded state before evaluating it against security blacklists. Ensure a maximum iteration limit (like 5) to prevent infinite loop DoS attacks.
+
+## 2023-10-24 - Double URL Encoding XSS Bypass in Custom Markdown Renderer
+**Vulnerability:** XSS bypass was possible in `safeMarked.ts` because `isDangerousUrl` only decoded the URL string once. Payloads heavily encoded multiple times (e.g., Double URL Encoding like `%256A%2561%2576...` for `javascript:`) would slip past the blacklist check and be outputted securely verbatim as an `href` attribute, which the browser would then double-decode and execute.
+**Learning:** Single-pass decoding is insufficient for robust security sanitization of HTML attributes when users control the input. Attackers combine various encoding schemes (like mixing HTML entities with multiple layers of URL encoding) to obfuscate malicious signatures.
+**Prevention:** Implement an iterative decoding strategy with a set limit (e.g., 5 loops) and an early breakout when the string stops mutating. This recursively unescapes all layers of encoding and verifies the final base layer for dangerous patterns.
+## 2025-07-03 - Markdown XSS via Double Encoding Bypass
+**Vulnerability:** The Markdown sanitization logic in `safeMarked.ts` was vulnerable to XSS due to insufficient URL decoding. It decoded URLs only once before verifying against dangerous protocols like `javascript:`, allowing an attacker to bypass the filter using double or multiple URL encoding (e.g., `%256A` for `j`).
+**Learning:** Security filters parsing complex inputs (like URLs in Markdown) must recursively or iteratively decode their inputs. Single-pass decoding is insufficient because adversaries can nest encodings (URL, HTML entity) to evade signature-based detection.
+**Prevention:** Implement an iterative decoding loop (up to a defined maximum, such as 5) that repeatedly applies `decodeURIComponent` and HTML entity unescaping until the string stops changing, and evaluate the final decoded string against the dangerous protocol blocklist.
+## 2025-02-21 - [HIGH] XSS Vulnerability via Double Encoding Bypass
+**Vulnerability:** The Markdown rendering utility (`safeMarked.ts`) was vulnerable to Cross-Site Scripting (XSS) via a double-encoding bypass. Attackers could evade the `isDangerousUrl` filter by double-encoding malicious URLs (e.g. `%256Aavascript:alert(1)` or `&#x25;6Aavascript:alert(1)`).
+**Learning:** Security filters that rely on decoding user input to check for malicious signatures must use an iterative decoding loop to recursively unescape all layers of encoding (e.g. double URL encoding or mixed HTML/URL encoding). Single-pass decoding is insufficient and allows attackers to bypass filters.
+**Prevention:** Always use a recursive or iterative decoding loop with a maximum depth limit (e.g., 5 loops) before checking strings against dangerous protocols or signatures to effectively mitigate layered encoding evasion.
