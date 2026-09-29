@@ -3,7 +3,7 @@ name: rilis
 on:
   push:
     branches:
-      - "#33"
+      - "serenity"
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 

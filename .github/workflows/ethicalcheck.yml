@@ -29,12 +29,12 @@ name: EthicalCheck-Workflow
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "#33" branch
+  # Triggers the workflow on push or pull request events but only for the "serenity" branch
   # Customize trigger events based on your DevSecOps processes.
   push:
-    branches: ["#33"]
+    branches: ["serenity"]
   pull_request:
-    branches: ["#33"]
+    branches: ["serenity"]
   schedule:
     - cron: "39 12 * * 2"
 

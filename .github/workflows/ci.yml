@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: ["#33"]
+    branches: ["serenity"]
   pull_request:
-    branches: ["#33"]
+    branches: ["serenity"]
 
 jobs:
   lint-test-build:
@@ -27,7 +27,12 @@ jobs:
 
       - name: Run tests
         run: bun run test:core
-        continue-on-error: true
+
+      - name: Typecheck core
+        run: bunx tsc --noEmit --project packages/core/tsconfig.json
+
+      - name: Typecheck cli
+        run: bunx tsc --noEmit --project packages/cli/tsconfig.json
 
       - name: Build web package
         run: bun run build

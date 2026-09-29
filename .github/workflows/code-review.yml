@@ -2,7 +2,7 @@ name: Code Review
 
 on:
   pull_request:
-    branches: ["#33"]
+    branches: ["serenity"]
     types: [opened, synchronize, reopened]
 
 jobs:
