@@ -88,3 +88,6 @@
 ## 2026-07-05 - Safe and performant Uint8Array to Base64 conversion
 **Learning:** Using `btoa(String.fromCharCode(...new Uint8Array(data)))` directly throws "Maximum call stack size exceeded" on large datasets and is slower than chunked execution for medium datasets.
 **Action:** When converting Uint8Array to string, chunk the data (e.g., 8192 bytes) and use `String.fromCharCode.apply(null, chunk)` inside a loop to safely handle arbitrary data sizes and optimize performance.
+## 2025-02-14 - Call Stack Limits in Uint8Array Base64 Conversions
+**Learning:** Using `btoa(String.fromCharCode(...new Uint8Array(data)))` throws "Maximum call stack size exceeded" errors for large datasets (e.g., big backups or large files) because the spread operator passes every byte as a distinct argument to the function, hitting engine-specific argument count limits (often around ~65k-125k).
+**Action:** When converting large TypedArrays to strings, always use a chunked approach (e.g., mapping `String.fromCharCode.apply(null, chunk)` over a fixed `chunkSize` like 8192 bytes) to safely construct the string without blowing the stack. Suppress TypeScript apply errors for TypedArrays explicitly with `// @ts-expect-error`.
