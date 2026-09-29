@@ -99,3 +99,7 @@ When writing test assertions for normalized URLs generated via `new URL().href`,
 **Vulnerability:** File writes for `.env` and `.lembaranz` backup files were missing explicit mode configuration, leaving them exposed to local unauthorized reads (CWE-732).
 **Learning:** Using `fs.writeFile` with default permissions uses `0o666` (minus umask), which provides read access to all local users.
 **Prevention:** Always specify `{ mode: 0o600 }` when writing credentials or database files.
+## 2026-07-09 - Fix CWE-732 Insecure File Permissions for Sensitive Files
+**Vulnerability:** Found `fs.writeFile` calls creating `.env` and `.lembaranz` backup files with default file permissions (0o666 minus umask), exposing them to unauthorized local reads.
+**Learning:** Default Node.js `fs.writeFile` behavior is insecure for sensitive files in a multi-user environment. Explicit file permission sets must be applied to prevent local data exposure.
+**Prevention:** Always explicitly define `{ mode: 0o600 }` in the options object of `fs.writeFile` when writing secrets, configurations, or encrypted backups.
