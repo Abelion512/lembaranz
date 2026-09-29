@@ -42,10 +42,12 @@ permissions:
 jobs:
   Analysis:
     runs-on: ubuntu-latest
+    env:
+      HAS_SONARQUBE: ${{ secrets.SONAR_TOKEN != '' && secrets.SONAR_HOST_URL != '' }}
 
     steps:
       - name: Analyze with SonarQube
-        if: ${{ secrets.SONAR_TOKEN != '' && secrets.SONAR_HOST_URL != '' }}
+        if: env.HAS_SONARQUBE == 'true'
 
         # You can pin the exact commit or the version.
         # uses: SonarSource/sonarqube-scan-action@v1.1.0
