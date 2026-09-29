@@ -117,3 +117,8 @@ When writing test assertions for normalized URLs generated via `new URL().href`,
 **Vulnerability:** Found a Cross-Site Scripting (XSS) vulnerability in `packages/dashboard/lib/safeMarked.ts` where malicious URLs like `%256A%2561%2576%2561%2573%2563%2572%2569%2570%2574%253Aalert(1)` could bypass the protocol filtering logic.
 **Learning:** The `isDangerousUrl` function only decoded URLs once. Attackers could evade the `javascript:` check by double-encoding the URI components (e.g. `%256A` -> `%6A` -> `j`).
 **Prevention:** Implement an iterative decoding loop that runs until the decoded output no longer changes (bounded to a max number of iterations like 5 to prevent DoS) before applying protocol denylists or regex tests.
+
+## 2025-07-07 - [File Permissions (CWE-732)]
+**Vulnerability:** Sensitive files like `.env` and backups were written using default file permissions, exposing them to other users on the system (CWE-732).
+**Learning:** Always provide `{ mode: 0o600 }` to `fs.writeFile` when saving sensitive information.
+**Prevention:** Use restrictive permissions explicitly when writing credential or configuration files.
