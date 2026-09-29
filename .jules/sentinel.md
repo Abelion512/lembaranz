@@ -71,3 +71,8 @@ When writing test assertions for normalized URLs generated via `new URL().href`,
 **Vulnerability:** `fs.writeFile` was used without explicit modes for sensitive files (`.env` and `.lembaranz` backup exports), allowing default permissions (0o666 minus umask) which risks local unauthorized read access.
 **Learning:** Default Node.js file system APIs do not assume security. When exporting credentials or encrypted backup vaults, explicit `0o600` modes must be enforced consistently across all CLI/TUI and core modules.
 **Prevention:** Always pass `{ mode: 0o600 }` (or similar restrictive modes) in the options object when calling `fs.writeFile` for any file containing secrets or PII.
+
+## 2025-02-09 - [Preventing Double-Encoded XSS Bypasses]
+**Vulnerability:** XSS filters using single-pass decoding can be bypassed by double URL encoding or mixed encoding (e.g., HTML entities inside URL encoding).
+**Learning:** Attackers encode malicious payloads multiple times because the browser may perform recursive decoding natively, while naive filters only decode once and fail to match the signature.
+**Prevention:** Use an iterative loop (e.g., up to 5 times) to repeatedly decode and unescape input until it stabilizes before validating for dangerous schemes like `javascript:`.
