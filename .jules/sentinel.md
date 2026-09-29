@@ -219,3 +219,8 @@ To prevent CWE-732 (Insecure File Permissions), always explicitly set restrictiv
 **Vulnerability:** The CLI and Core packages were writing sensitive data (like exported environments, encrypted archives, and `.env` files) to disk using default filesystem permissions (typically `0o666` modified by umask). This allowed unauthorized local users to read the exported files or local configuration files.
 **Learning:** Hardcoded default permissions in Node.js `fs.writeFile` lead to Local File Inclusion or unauthorized secret exposure in multi-user environments. Explicit restrictive modes are necessary when handling credentials or cryptographic exports.
 **Prevention:** Always define explicit file permissions (e.g., `{ mode: 0o600 }`) in `fs.writeFile` calls when outputting any sensitive data, especially for environment variables, credentials, or backups.
+
+## 2025-06-23 - [HIGH] Fix XSS Bypass in safeMarked via Double Encoding
+**Vulnerability:** The Markdown `isDangerousUrl` check was vulnerable to XSS bypass via double-encoded URLs (e.g., `%256A%2561...` for `javascript:`).
+**Learning:** Single-pass URL decoding is insufficient for security filters because browsers will often recursively decode or handle double-encoded payloads in certain contexts. Attackers can bypass naive regex checks by adding multiple layers of encoding.
+**Prevention:** Always use an iterative decoding loop (e.g., `for (let i = 0; i < 5; i++) { ... }`) to unescape all layers of URL/HTML encoding before evaluating a string against security blocklists.
