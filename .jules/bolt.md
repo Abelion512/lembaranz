@@ -36,3 +36,7 @@
 ## 2026-07-26 - Backup Restore Parallelization
 **Learning:** Bulk database operations like restoring backups shouldn't always use sequential await. In this codebase, the FileAdapter queue safely handles atomic writes without BUSY errors. Parallelizing them using Promise.all chunking provides massive speedups.
 **Action:** Use Promise.all chunking for large batch writes when the underlying storage handles atomic queues.
+
+## 2026-07-24 - [Archive Restore Bulk Import Optimization]
+**Learning:** The sequential `for` loop in `restoreBackup` was causing significant performance bottlenecks during large imports. By utilizing a chunked `Promise.all` approach (e.g., chunks of 50) and taking advantage of `FileAdapter`'s native save/nextSavePromise queuing for atomic writes, we can safely parallelize saving multiple notes concurrently without risking database corruption, yielding massive speedups.
+**Action:** When working on backups or large imports, prefer chunked parallel processing (`Promise.all`) instead of sequential `await`. It safely maximizes throughput as long as the underlying adapter handles atomic writes.
