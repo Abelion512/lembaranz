@@ -1,11 +1,38 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
+import Landing from './Landing.tsx';
 import './index.css';
 import './i18n';
 
+function getPath() {
+  return window.location.pathname.replace(/\/+$/, '') || '/';
+}
+
+function Root() {
+  const [path, setPath] = useState(getPath);
+
+  useEffect(() => {
+    const onPop = () => setPath(getPath());
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  const navigate = useCallback((next: string) => {
+    window.history.pushState({}, '', next);
+    setPath(getPath());
+    window.scrollTo(0, 0);
+  }, []);
+
+  // ponytail: path-based routing in one Root component, upgrade path: react-router when routes grow
+  if (path.startsWith('/app')) {
+    return <App />;
+  }
+  return <Landing onEnter={() => navigate('/app')} />;
+}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <Root />
   </React.StrictMode>
 );

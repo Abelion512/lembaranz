@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Palette, Settings, Shield, Zap } from 'lucide-react';
 
 const colors = [

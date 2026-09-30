@@ -1,4 +1,7 @@
 {
-  "buildCommand": "echo 'CLI-Only'",
-  "outputDirectory": "docs"
+  "buildCommand": "bun run build && cp install.sh packages/dashboard/dist/install.sh",
+  "outputDirectory": "packages/dashboard/dist",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }

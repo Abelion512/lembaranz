@@ -252,7 +252,7 @@ export default function App() {
   // Loading Screen
   if (isSetup === null) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-slate-950 text-slate-400 font-mono scanline">
+      <div className="flex h-screen w-screen items-center justify-center text-slate-400 font-mono scanline">
         <div className="flex flex-col items-center gap-3">
           <Activity className="animate-pulse text-cyan-400" size={32} />
           <span>INITIALIZING VAULT SYSTEMS...</span>
@@ -264,8 +264,8 @@ export default function App() {
   // Lock / Login Screen
   if (!isUnlocked) {
     return (
-      <div className="flex min-h-screen w-screen items-center justify-center bg-slate-950 p-4 font-mono scanline">
-        <div className="w-full max-w-md border border-cyan-500/20 bg-slate-900/90 p-8 shadow-2xl shadow-cyan-950/40 backdrop-blur-md rounded-lg">
+      <div className="flex min-h-screen w-screen items-center justify-center p-4 font-mono scanline">
+        <div className="glass-strong w-full max-w-md p-8 shadow-2xl shadow-cyan-950/40 rounded-2xl">
           <div className="flex flex-col items-center text-center mb-8">
             <div className="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-full mb-3 text-cyan-400">
               <Shield size={36} />
@@ -297,7 +297,7 @@ export default function App() {
                 placeholder="••••••••"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 p-2.5 outline-none rounded font-sans text-sm tracking-widest"
+                className="w-full bg-white/5 border border-white/10 focus:border-cyan-500/50 p-2.5 outline-none rounded font-sans text-sm tracking-widest"
                 required
               />
             </div>
@@ -314,7 +314,7 @@ export default function App() {
                     placeholder="••••••••"
                     value={confirmPassword}
                     onChange={e => setConfirmPassword(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 p-2.5 outline-none rounded font-sans text-sm tracking-widest"
+                    className="w-full bg-white/5 border border-white/10 focus:border-cyan-500/50 p-2.5 outline-none rounded font-sans text-sm tracking-widest"
                     required
                   />
                 </div>
@@ -329,7 +329,7 @@ export default function App() {
                     placeholder="word1 word2 ... word12"
                     value={mnemonic}
                     onChange={e => setMnemonic(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500/50 p-2.5 outline-none rounded font-sans text-xs"
+                    className="w-full bg-white/5 border border-white/10 focus:border-cyan-500/50 p-2.5 outline-none rounded font-sans text-xs"
                   />
                 </div>
               </>
@@ -351,7 +351,7 @@ export default function App() {
             </button>
           </form>
 
-          <div className="mt-8 text-center border-t border-slate-800/40 pt-4">
+          <div className="mt-8 text-center border-t border-white/10 pt-4">
             <span className="text-[10px] text-slate-600 font-mono">
               Argon2id (m=64MB, t=3, p=4) + AES-256-GCM
             </span>
@@ -363,13 +363,13 @@ export default function App() {
 
   // Dashboard Workspace Screen (Unlocked!)
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-950 font-sans text-slate-200">
+    <div className="flex h-screen w-screen overflow-hidden font-sans text-slate-200">
       
       {/* Sidebar - Left Section */}
-      <aside className="w-80 shrink-0 border-r border-slate-900 bg-slate-900/40 flex flex-col min-h-0">
+      <aside className="glass w-80 shrink-0 flex flex-col min-h-0">
         
         {/* Sidebar Header */}
-        <div className="p-5 border-b border-slate-900/60 flex items-center justify-between">
+        <div className="p-5 border-b border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-cyan-500/10 border border-cyan-500/20 rounded text-cyan-400">
               <Shield size={18} />
@@ -383,14 +383,14 @@ export default function App() {
             onClick={handleLockVault}
             title="Lock Vault"
             aria-label="Lock Vault"
-            className="p-1.5 bg-slate-950 border border-slate-800 text-slate-400 hover:text-red-400 hover:border-red-500/40 rounded transition-colors"
+            className="p-1.5 bg-white/5 border border-white/10 text-slate-400 hover:text-red-400 hover:border-red-500/40 rounded transition-colors"
           >
             <Lock size={14} />
           </button>
         </div>
 
         {/* Sidebar Navigation */}
-        <div className="grid grid-cols-4 border-b border-slate-900/60 text-xs font-mono">
+        <div className="grid grid-cols-4 border-b border-white/10 text-xs font-mono">
           <button
             onClick={() => setCurrentTab('notes')}
             className={`py-3 text-center border-b-2 transition-all ${
@@ -429,7 +429,7 @@ export default function App() {
         {currentTab === 'notes' && (
           <div className="flex-1 flex flex-col min-h-0">
             {/* Search Bar */}
-            <div className="p-3 border-b border-slate-900/40">
+            <div className="p-3 border-b border-white/10">
               <div className="relative">
                 <Search size={14} className="absolute left-3 top-3 text-slate-500" />
                 <input
@@ -437,7 +437,7 @@ export default function App() {
                   placeholder="Search notes / tags..."
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 text-xs pl-8 pr-3 py-2 outline-none rounded focus:border-cyan-500/50 font-sans"
+                  className="w-full bg-white/5 border border-white/10 text-xs pl-8 pr-3 py-2 outline-none rounded focus:border-cyan-500/50 font-sans"
                 />
               </div>
             </div>
@@ -464,7 +464,7 @@ export default function App() {
                     className={`p-3 border rounded cursor-pointer transition-all ${
                       activeNote?.id === note.id
                         ? 'border-cyan-500/60 bg-cyan-500/5 text-cyan-300'
-                        : 'border-slate-800/80 hover:border-slate-700/80 hover:bg-slate-900/40 text-slate-300'
+                        : 'border-white/10 hover:border-white/20 hover:bg-white/5 text-slate-300'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1.5">
@@ -479,7 +479,7 @@ export default function App() {
                     {note.tags && note.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1">
                         {note.tags.map((t: string) => (
-                          <span key={t} className="text-[9px] font-mono bg-slate-950 border border-slate-800 text-slate-400 px-1 rounded">
+                          <span key={t} className="text-[9px] font-mono bg-white/5 border border-white/10 text-slate-400 px-1 rounded">
                             #{t}
                           </span>
                         ))}
@@ -493,18 +493,18 @@ export default function App() {
         )}
 
         {/* Quick Dashboard Stat Footer */}
-        <div className="p-4 border-t border-slate-900/60 bg-slate-950/20 text-[10px] text-slate-500 font-mono flex items-center justify-between">
+        <div className="p-4 border-t border-white/10 bg-slate-950/20 text-[10px] text-slate-500 font-mono flex items-center justify-between">
           <span>NOTES: {notes.length}</span>
           <span>VAULT: SECURED V3</span>
         </div>
       </aside>
 
       {/* Main Workspace - Right Section */}
-      <main className="flex-1 flex flex-col min-h-0 bg-slate-950 relative">
+      <main className="flex-1 flex flex-col min-h-0 relative">
         
         {/* Toast success message */}
         {successMessage && (
-          <div className="absolute top-4 right-4 z-50 bg-cyan-950 border border-cyan-500/30 text-cyan-300 px-4 py-2 text-xs rounded shadow-lg font-mono flex items-center gap-1.5 animate-bounce">
+          <div className="absolute top-4 right-4 z-50 bg-cyan-950/70 backdrop-blur-md border border-cyan-500/30 text-cyan-300 px-4 py-2 text-xs rounded shadow-lg font-mono flex items-center gap-1.5 animate-bounce">
             <Sparkles size={14} className="text-cyan-400" />
             {successMessage}
           </div>
@@ -514,14 +514,14 @@ export default function App() {
         {currentTab === 'notes' && (
           <div className="flex-1 flex flex-col min-h-0">
             {/* Action Header bar */}
-            <div className="h-14 border-b border-slate-900/60 px-6 flex items-center justify-between">
+            <div className="h-14 border-b border-white/10 px-6 flex items-center justify-between">
               <div className="flex-1 min-w-0 mr-4">
                 <input
                   type="text"
                   placeholder="Note Title..."
                   value={noteTitle}
                   onChange={e => setNoteTitle(e.target.value)}
-                  className="bg-transparent text-slate-100 font-bold outline-none text-base w-full placeholder-slate-700 font-sans"
+                  className="bg-transparent text-slate-100 font-bold outline-none text-base w-full placeholder-slate-500 font-sans"
                 />
               </div>
               <div className="flex items-center gap-2 shrink-0">
@@ -531,7 +531,7 @@ export default function App() {
                       onClick={() => handleCopyContent(noteContent, activeNote.id)}
                       title="Copy Note Content"
                       aria-label="Copy Note Content"
-                      className="p-2 border border-slate-800 hover:border-cyan-500/40 hover:bg-cyan-500/5 hover:text-cyan-400 text-slate-400 rounded transition-colors"
+                      className="p-2 border border-white/10 hover:border-cyan-500/40 hover:bg-cyan-500/5 hover:text-cyan-400 text-slate-400 rounded transition-colors"
                     >
                       {copiedId === activeNote.id ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
                     </button>
@@ -539,7 +539,7 @@ export default function App() {
                       onClick={() => handleDeleteNote(activeNote.id)}
                       title="Delete Note"
                       aria-label="Delete Note"
-                      className="p-2 border border-slate-800 hover:border-red-500/40 hover:bg-red-500/5 hover:text-red-400 text-slate-400 rounded transition-colors"
+                      className="p-2 border border-white/10 hover:border-red-500/40 hover:bg-red-500/5 hover:text-red-400 text-slate-400 rounded transition-colors"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -556,14 +556,14 @@ export default function App() {
             </div>
 
             {/* Note Tags bar */}
-            <div className="px-6 py-2 border-b border-slate-900/40 bg-slate-900/10 flex items-center gap-2">
+            <div className="px-6 py-2 border-b border-white/10 bg-white/[0.03] flex items-center gap-2">
               <span className="text-[10px] uppercase font-mono text-slate-500 tracking-wider">Tags:</span>
               <input
                 type="text"
                 placeholder="e.g.: project, database, env"
                 value={noteTags}
                 onChange={e => setNoteTags(e.target.value)}
-                className="bg-transparent text-xs text-slate-400 outline-none w-full placeholder-slate-800"
+                className="bg-transparent text-xs text-slate-400 outline-none w-full placeholder-slate-600"
               />
             </div>
 
@@ -573,7 +573,7 @@ export default function App() {
                 placeholder="Type your encrypted note content here (Markdown format supported)..."
                 value={noteContent}
                 onChange={e => setNoteContent(e.target.value)}
-                className="w-full h-full bg-transparent border-0 outline-none resize-none font-mono text-sm leading-relaxed placeholder-slate-800 text-slate-300"
+                className="w-full h-full bg-transparent border-0 outline-none resize-none font-mono text-sm leading-relaxed placeholder-slate-600 text-slate-300"
               />
             </div>
           </div>
@@ -593,7 +593,7 @@ export default function App() {
             </div>
 
             {/* Simple Network Graph renderer via dynamic SVG */}
-            <div className="flex-1 border border-slate-900 bg-slate-900/10 rounded-lg relative overflow-hidden flex items-center justify-center">
+            <div className="flex-1 glass-card rounded-lg relative overflow-hidden flex items-center justify-center">
               {graphData.nodes.length === 0 ? (
                 <div className="text-center font-mono text-xs text-slate-600">
                   No relations to render yet. Add tags to your notes!
@@ -681,7 +681,7 @@ export default function App() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Import Env */}
-              <div className="border border-slate-900 bg-slate-900/10 p-5 rounded-lg space-y-4">
+              <div className="glass-card p-5 rounded-lg space-y-4">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                   <Plus size={14} className="text-cyan-400" />
                   Save New .env Project
@@ -693,11 +693,11 @@ export default function App() {
                   <input
                     type="text"
                     placeholder="Project Name (e.g., lembaranz-webui)"
-                    className="w-full bg-slate-950 border border-slate-800 text-xs p-2.5 outline-none rounded focus:border-cyan-500/50"
+                    className="w-full bg-white/5 border border-white/10 text-xs p-2.5 outline-none rounded focus:border-cyan-500/50"
                   />
                   <textarea
                     placeholder="DATABASE_URL=postgres://...&#10;API_KEY=xyz..."
-                    className="w-full h-32 bg-slate-950 border border-slate-800 text-xs p-2.5 outline-none rounded resize-none font-mono focus:border-cyan-500/50"
+                    className="w-full h-32 bg-white/5 border border-white/10 text-xs p-2.5 outline-none rounded resize-none font-mono focus:border-cyan-500/50"
                   />
                   <button
                     onClick={() => {
@@ -713,7 +713,7 @@ export default function App() {
               </div>
 
               {/* Saved Env Projects */}
-              <div className="border border-slate-900 bg-slate-900/10 p-5 rounded-lg space-y-4">
+              <div className="glass-card p-5 rounded-lg space-y-4">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                   <Database size={14} className="text-cyan-400" />
                   Saved Env Profiles
@@ -723,7 +723,7 @@ export default function App() {
                 </p>
                 
                 <div className="space-y-2">
-                  <div className="border border-slate-800 bg-slate-950/40 p-3 rounded flex items-center justify-between">
+                  <div className="border border-white/10 bg-slate-950/40 p-3 rounded flex items-center justify-between">
                     <div>
                       <h4 className="text-xs font-bold font-mono text-cyan-400">lembaranz-core</h4>
                       <span className="text-[10px] text-slate-600 font-mono">Last updated: 2026-05-30</span>
@@ -761,7 +761,7 @@ export default function App() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Panic Key configuration */}
-              <div className="border border-slate-900 bg-slate-900/10 p-5 rounded-lg space-y-4">
+              <div className="glass-card p-5 rounded-lg space-y-4">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-red-400 flex items-center gap-1.5">
                   <Lock size={14} />
                   PANIC KEY / 恐慌密码 (Kill-Switch)
@@ -775,7 +775,7 @@ export default function App() {
                     placeholder="Enter panic key password..."
                     value={panicPassword}
                     onChange={e => setPanicPassword(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 text-xs p-2.5 outline-none rounded focus:border-red-500/30"
+                    className="w-full bg-white/5 border border-white/10 text-xs p-2.5 outline-none rounded focus:border-red-500/30"
                     required
                   />
                   <button
@@ -788,7 +788,7 @@ export default function App() {
               </div>
 
               {/* Vault administration */}
-              <div className="border border-slate-900 bg-slate-900/10 p-5 rounded-lg space-y-4">
+              <div className="glass-card p-5 rounded-lg space-y-4">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                   <Database size={14} className="text-cyan-400" />
                   Memory Management & Cleanup
