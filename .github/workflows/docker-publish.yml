@@ -16,11 +16,11 @@ on:
   schedule:
     - cron: "19 0 * * *"
   push:
-    branches: ["serenity"]
+    branches: ["main"]
     # Publish semver tags as releases.
     tags: ["v*.*.*"]
   pull_request:
-    branches: ["serenity"]
+    branches: ["main"]
 
 jobs:
   build:

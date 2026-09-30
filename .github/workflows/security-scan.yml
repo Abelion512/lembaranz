@@ -5,9 +5,9 @@ name: Security Scan
 
 on:
   push:
-    branches: ["serenity"]
+    branches: ["main"]
   pull_request:
-    branches: ["serenity"]
+    branches: ["main"]
   schedule:
     - cron: "30 4 * * 1"
 

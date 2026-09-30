@@ -87,7 +87,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](_media/CONTRIBUTING.md) f
 
 - **English** for code comments and documentation. / 代码注释和文档使用**英文**。
 - Use **Conventional Commits**. / 使用**约定式提交**。
-- **Consolidated Flow / 整合流程**: Main development happens on the `testing` branch before being merged into the default `serenity` branch. / 主要开发在 `testing` 分支上进行，然后合并到默认的 `serenity` 分支。
+- **Consolidated Flow / 整合流程**: All development happens on feature branches merged into `main` (the default branch); CI/CD workflows, scans and releases run on `main`. / 所有开发都在功能分支上进行并合并到默认分支 `main`；CI/CD 工作流、安全扫描和发布都在 `main` 上运行。
 
 ---
 

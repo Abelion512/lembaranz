@@ -5,7 +5,7 @@ name: Code Review
 
 on:
   pull_request:
-    branches: ["serenity"]
+    branches: ["main"]
     types: [opened, synchronize, reopened]
 
 jobs:

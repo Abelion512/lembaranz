@@ -6,7 +6,7 @@ name: Release Drafter
 on:
   push:
     branches:
-      - "serenity"
+      - "main"
   pull_request:
     types: [opened, reopened, synchronize]
 

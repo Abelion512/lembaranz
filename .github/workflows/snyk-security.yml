@@ -23,9 +23,9 @@ name: Snyk Security
 
 on:
   push:
-    branches: ["serenity" ]
+    branches: ["main"]
   pull_request:
-    branches: ["serenity"]
+    branches: ["main"]
 
 permissions:
   contents: read

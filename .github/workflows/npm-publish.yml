@@ -6,7 +6,7 @@ name: Professional NPM Publish (Big Co Style)
 on:
   push:
     branches:
-      - serenity # Trigger on serenity (standard for your current flow)
+      - main # Release from the default branch
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 

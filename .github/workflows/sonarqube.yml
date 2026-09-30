@@ -31,9 +31,9 @@ name: SonarQube analysis
 
 on:
   push:
-    branches: [ "serenity" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "serenity" ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 permissions:

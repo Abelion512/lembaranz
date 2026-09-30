@@ -10,9 +10,9 @@ name: DevSkim
 
 on:
   push:
-    branches: [ "serenity" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "serenity" ]
+    branches: [ "main" ]
   schedule:
     - cron: '27 9 * * 2'
 

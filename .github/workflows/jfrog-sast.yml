@@ -19,9 +19,9 @@ name: "JFrog SAST Scan"
 
 on:
   push:
-    branches: [ "serenity" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "serenity" ]
+    branches: [ "main" ]
   schedule:
     - cron: '23 9 * * 1'
 

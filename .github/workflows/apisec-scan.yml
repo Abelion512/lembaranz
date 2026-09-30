@@ -32,12 +32,12 @@ name: APIsec
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "serenity" branch
+  # Triggers the workflow on push or pull request events but only for the "main" branch
   # Customize trigger events based on your DevSecOps processes.
   push:
-    branches: [ "serenity" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "serenity" ]
+    branches: [ "main" ]
   schedule:
     - cron: '45 19 * * 3'
 
