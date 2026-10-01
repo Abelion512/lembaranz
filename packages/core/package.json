@@ -49,16 +49,11 @@
     "test:coverage": "bun test --coverage src/__tests__/"
   },
   "dependencies": {
-    "@noble/ciphers": "^2.1.1",
     "@noble/hashes": "^2.0.1",
-    "hash-wasm": "^4.11.0",
     "idb": "^8.0.3",
-    "uuid": "^13.0.0",
-    "zustand": "^5.0.14",
-    "react": "19.2.8"
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "eslint": "^10",
-    "@types/react": "^19"
+    "eslint": "^10"
   }
 }

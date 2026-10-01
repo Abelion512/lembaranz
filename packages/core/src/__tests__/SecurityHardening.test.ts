@@ -16,10 +16,8 @@ describe('Security Hardening: File Permissions', () => {
         const stats = await fs.stat(dbPath);
         const mode = stats.mode & 0o777;
 
-        // 0o600 in octal is 384 in decimal
-        // expect(mode).toBe(0o600);
-
-        // For portability and clarity in logs:
         expect(mode.toString(8)).toBe('600');
+
+        await fs.rm(tempDir, { recursive: true, force: true });
     });
 });

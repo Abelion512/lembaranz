@@ -28,6 +28,9 @@ jobs:
       - name: Lint all packages
         run: bun run lint
 
+      - name: Design anti-slop check (impeccable)
+        run: bun run lint:design
+
       - name: Run tests
         run: bun run test:core
 

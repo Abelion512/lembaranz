@@ -22,8 +22,9 @@ lembaranz launch
 |------|---------|
 | **Setup vault** | `lembaranz setup` |
 | **Launch TUI** | `lembaranz launch` |
-| **Add credential** | `lembaranz ukir` |
-| **Load .env** | `lembaranz muat` |
+| **Web dashboard** | `lembaranz dashboard` |
+| **Config vault** | `lembaranz config` |
+| **Health check** | `lembaranz doctor` |
 | **Search** | `lembaranz browse` |
 | **Security dashboard** | `lembaranz security` |
 | **Get help** | `lembaranz --help` |
@@ -33,8 +34,8 @@ lembaranz launch
 ## 🔐 Security
 
 - **Encryption**: AES-GCM 256-bit
-- **Key Derivation**: Argon2id
-- **Integrity**: SHA-256
+- **Key Derivation**: Argon2id (t=2, m=64 MiB, p=1) + PBKDF2 legacy fallback
+- **Integrity**: SHA-256 per entry + hash-chained audit ledger
 - **Recovery**: 12-word mnemonic phrase
 
 ---
@@ -51,8 +52,9 @@ lembaranz launch
 
 ## 📁 Storage Location
 
-- **Linux/Mac**: `~/.lembaranz/`
-- **Windows**: `%APPDATA%/.lembaranz/`
+- **Personal vault**: `~/.lembaranz/personal.json` (Linux/macOS; `%APPDATA%` equivalent on Windows)
+- **Project vault**: `./.lembaranz/project.json`
+- **Docker (TUI)**: `docker compose run --rm lembaranz`
 
 ---
 
@@ -75,4 +77,4 @@ lembaranz launch
 
 ---
 
-**v3.5.0** | Made with ❤️ in Indonesia 🇮🇩
+**v0.2.0** (`@lembaranz/*` workspaces)

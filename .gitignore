@@ -35,6 +35,9 @@ Thumbs.db
 .env.local
 .env.*
 
+# Vercel CLI local state
+.vercel/
+
 # IDE
 .vscode/
 .idea/
@@ -50,3 +53,6 @@ htmlcov/
 *.tmp
 *.temp
 .DS_Store
+
+# Local clone created by testing install.sh
+/lembaranz/

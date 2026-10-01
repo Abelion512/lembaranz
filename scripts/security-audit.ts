@@ -36,14 +36,14 @@ async function scanDirectory(dir: string): Promise<string[]> {
         leaks.push(...subLeaks);
       }
     }
-  } catch (err) {
+  } catch {
     // Directory might not exist or be readable, skip
   }
   return leaks;
 }
 
 async function runSecurityAudit() {
-  console.log("\x1b[36m[SECURITY AUDIT] Menjalankan pemindaian keamanan sebelum publish...\x1b[0m");
+  console.log("\x1b[36m[SECURITY AUDIT] Scanning for sensitive files before publish...\x1b[0m");
 
   const currentDir = dirname(fileURLToPath(import.meta.url));
   const corePath = join(currentDir, "../packages/core");
@@ -54,12 +54,12 @@ async function runSecurityAudit() {
   const leaks = [...leaksCore, ...leaksCli];
 
   if (leaks.length > 0) {
-    console.error("\x1b[31m\n[SECURITY ALERT] Kebocoran data sensitif terdeteksi!\x1b[0m");
-    console.error("Berkas-berkas berikut dilarang dipublikasikan ke NPM registry:");
+    console.error("\x1b[31m\n[SECURITY ALERT] Sensitive files detected!\x1b[0m");
+    console.error("The following files must not be published to the npm registry:");
     leaks.forEach(leak => {
       console.error(`  - \x1b[33m${leak}\x1b[0m`);
     });
-    console.error("\x1b[31m\nProses publikasi NPM dibatalkan otomatis demi keamanan.\x1b[0m\n");
+    console.error("\x1b[31m\nPublishing aborted automatically for security.\x1b[0m\n");
     process.exit(1);
   }
 
@@ -69,14 +69,14 @@ async function runSecurityAudit() {
     const dashboardPkgRaw = await readFile(dashboardPkgPath, "utf-8");
     const dashboardPkg = JSON.parse(dashboardPkgRaw);
     if (dashboardPkg.private !== true) {
-      console.error("\x1b[31m[SECURITY ALERT] Packages 'dashboard' harus disetel 'private: true'!\x1b[0m");
+      console.error("\x1b[31m[SECURITY ALERT] Package 'dashboard' must be set to 'private: true'!\x1b[0m");
       process.exit(1);
     }
-  } catch (e) {
+  } catch {
     // If doesn't exist, it's fine
   }
 
-  console.log("\x1b[32m[SECURITY AUDIT PASS] 100% Aman. Tidak ada berkas rahasia terdeteksi di paket publikasi.\x1b[0m\n");
+  console.log("\x1b[32m[SECURITY AUDIT PASS] Clean. No sensitive files found in the publishable packages.\x1b[0m\n");
 }
 
 runSecurityAudit();

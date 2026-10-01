@@ -1,5 +1,6 @@
 export * from './Archive';
 export * from './AuditLog';
+export * from './Audit';
 export * from './Vault';
 export * from './Storage';
 export * from './Integrity';

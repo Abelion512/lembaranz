@@ -1,40 +1,48 @@
-# Lembaranzz
-> Self-Hosted Credential & Note Vault — v1.0.1
+# Lembaranz
+> Self-Hosted Credential & Note Vault — packages v0.2.0
 
 ## About
-Lembaranzz is a self-hosted, zero-knowledge credential manager. Data is encrypted locally with AES-GCM 256-bit + Argon2id before storage. No cloud, no tracking, no account required. Runs as a TUI (Terminal User Interface) via the `lembaranzz` command.
+Lembaranz is a self-hosted, zero-knowledge credential manager. Data is encrypted locally with AES-GCM 256-bit before storage. No cloud, no tracking, no account required. Runs as a TUI (Terminal User Interface) via the `lembaranz` command, with an offline-first web dashboard.
 
-## Project Structure (Standalone)
-
+## Project Structure
 ```
-/
-  packages/
-    core/ — @lembaranzz/core — Encryption engine & storage adapters (Atomic Writes)
-    cli/  — @lembaranzz/cli  — TUI (Ink/React) + CLI commands
+packages/
+  core/       — @lembaranz/core      — Encryption engine & storage adapters (atomic writes)
+  cli/        — @lembaranz/cli       — TUI (Ink/React) + CLI commands
+  dashboard/  — @lembaranz/dashboard — Vite + React web app (landing page + offline vault, private/unpublished)
 ```
 
 ### Build & Run
-- Root manifest: `package.json` (Consolidated dependencies)
-- Launch TUI (Dev): `bun packages/cli/src/main.ts`
-- Binary name: `lembaranzz`
-- Build verification: `tsc --noEmit` on both components.
+- Root manifest: `package.json` (Bun workspaces, consolidated dependencies)
+- Launch TUI (Dev): `bun run cli`
+- Binary name: `lembaranz`
+- Dashboard dev server: `bun run --cwd packages/dashboard dev`
+- Build verification: `bunx tsc --noEmit --project packages/core/tsconfig.json` and `.../packages/cli/tsconfig.json`
 
 ## Core Package Architecture (`packages/core/src/`)
 
 | File | Purpose |
 |------|---------|
-| `Vault.ts` | Cryptography engine (AES-GCM 256, Argon2id 64MB) |
+| `Vault.ts` | Cryptography engine (AES-GCM 256, key derivation, base64/hex helpers) |
 | `Archive.ts` | High-level CRUD for credentials & notes |
+| `Context.ts` | Vault path resolution (`personal` / `project` contexts) |
 | `Sentinel.ts` | Rate limiting & constant-time compare |
-| `storage/FileAdapter.ts` | JSON-file storage adapter (Atomic Writes) |
+| `Integrity.ts` | SHA-256 integrity hashing |
+| `Password.ts` | Master password + BIP39 mnemonic recovery |
+| `AuditLog.ts` | Privacy report / audit log (Node-only, browser-guarded) |
+| `Audit.ts` | Tamper-evident audit ledger — hash chain, `verifyChain()`, `headHash()` |
+| `Senses.ts` | Local content inspection helpers |
+| `Formula.ts` | Shared types & `Result<T>` |
+| `storage/FileAdapter.ts` | JSON-file storage adapter (atomic writes, Node-only) |
+| `storage/BrowserAdapter.ts` | IndexedDB storage adapter (web dashboard) |
 | `index.ts` | Public API barrel export |
 
 ## Critical AI Rules
 
 ### ⚠️ Vault Contexts
 Lembaranz uses two main contexts:
-1. `saku`: Global vault (`~/.lembaranz/saku.json`)
-2. `pelataran`: Local project vault (`./.lembaranz-db.json`)
+1. `personal`: Global vault (`~/.lembaranz/personal.json`, legacy `saku.json`)
+2. `project`: Local project vault (`./.lembaranz/project.json`, legacy `pelataran.json`)
 
 ### Error Pattern
 All async functions return `Result<T>` — never throw:
@@ -42,27 +50,42 @@ All async functions return `Result<T>` — never throw:
 type Result<T> = { data: T; error: null } | { data: null; error: Error };
 ```
 
-### Security Parameters (OWASP)
-- **Argon2id**: Memory 64MB, Iterations 2, Parallelism 1.
+### Security Parameters
 - **AES-GCM**: 256-bit key, 12-byte IV.
+- **Key derivation**: Argon2id (t=2, m=64 MiB, p=1, 32-byte output) with 16-byte random salts — `Vault.deriveKey`.
+  > Legacy compatibility: data created while PBKDF2-HMAC-SHA-256 (100 000 iterations) was the active KDF is unlocked through an automatic fallback (`Vault.deriveKeyLegacy`) and re-wrapped with Argon2id; portable backups keep the PBKDF2 fallback for decryption only.
+- **Audit ledger**: append-only hash chain over audit entries (SHA-256, `seq` + `prevHash` links); `Audit.verifyChain()` reports the first broken link, `Audit.headHash()` can be anchored externally for truncation coverage. Entries written before the ledger existed are counted as `legacy` and skipped.
 - **Storage**: Atomic write-to-temp-then-rename to prevent corruption.
+- **File permissions**: vault files `0o600`, vault directories `0o700`.
+
+## Language Policy
+- **English is the base language** for code, comments, CLI output, docs, and the landing page.
+- **Simplified Chinese (`zh`) is the secondary language** for user-facing UI/docs (`packages/dashboard/src/locales/{en,zh}.json`, README).
+- Indonesian identifiers remain only in legacy migration paths (`saku.json`, `pelataran.json`); keep them working, never reintroduce them in new code.
 
 ## CLI Commands
 
 | Command | Description |
 |---------|-------------|
-| `lembaranzz` | Launch TUI (default) |
-| `lembaranzz setup` | Interactive setup wizard |
-| `lembaranzz monitor` | System health & integrity |
-| `lembaranzz security` | Security dashboard |
-| `lembaranzz launch` | Enter TUI mode |
+| `lembaranz` | Launch TUI (default) |
+| `lembaranz setup` | Interactive setup wizard (alias: `init`) |
+| `lembaranz launch` | Enter TUI mode |
+| `lembaranz browse [keyword]` | Searchable archive browser |
+| `lembaranz config` | Configuration manager (alias: `cfg`) |
+| `lembaranz doctor` | Diagnostics & health checks |
+| `lembaranz dashboard` | Open the web dashboard |
+| `lembaranz import` / `export` | Bulk import / encrypted portable backup |
+| `lembaranz monitor` | System health & integrity |
+| `lembaranz security` | Security dashboard, audits & ledger verification |
 
 ## Dev Commands
 
 ```bash
-bun packages/cli/src/main.ts                  # Run CLI directly
-bunx tsc --noEmit --project packages/cli/tsconfig.json # Type Check CLI
-bunx tsc --noEmit --project packages/core/tsconfig.json # Type Check Core
+bun run cli                                           # Run CLI directly
+bun run lint                                          # ESLint
+bun run test:core                                     # Core test suite
+bunx tsc --noEmit --project packages/cli/tsconfig.json   # Type check CLI
+bunx tsc --noEmit --project packages/core/tsconfig.json  # Type check Core
 ```
 
 ---

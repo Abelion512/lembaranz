@@ -16,9 +16,11 @@ import pkg from "../package.json" with { type: "json" };
 // Global error handling
 process.on("unhandledRejection", (reason) => {
   console.error("\x1b[35m\n[FATAL ERROR] Unhandled Rejection:\x1b[0m", reason);
+  process.exit(1);
 });
 process.on("uncaughtException", (error) => {
   console.error("\x1b[35m\n[FATAL ERROR] Uncaught Exception:\x1b[0m", error);
+  process.exit(1);
 });
 
 const VERSI = pkg.version;

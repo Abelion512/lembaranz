@@ -10,5 +10,5 @@ COPY . .
 # Install dependencies
 RUN bun install
 
-# Start the CLI
-CMD ["bun", "run", "cli", "mulai"]
+# Start the CLI (TUI)
+CMD ["bun", "run", "cli", "launch"]

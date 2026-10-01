@@ -158,7 +158,20 @@ export const Archive = {
 
       // Attempt V3 (Decoupled Master Key)
       if (wrappedKey) {
-        const decResult = await Vault.decryptPacked(wrappedKey, passwordKey);
+        let decResult = await Vault.decryptPacked(wrappedKey, passwordKey);
+        let legacyWrap = false;
+        if (decResult.error) {
+          // Fallback: vault was wrapped with the legacy PBKDF2 KDF by an
+          // earlier release. AES-GCM auth tags make the wrong-key case safe.
+          const legacyDerive = await Vault.deriveKeyLegacy(password, salt);
+          if (!legacyDerive.error) {
+            const legacyDec = await Vault.decryptPacked(wrappedKey, legacyDerive.data);
+            if (!legacyDec.error) {
+              decResult = legacyDec;
+              legacyWrap = true;
+            }
+          }
+        }
         if (decResult.error) {
            await Audit.log("SECURITY_ALERT", "Failed vault unlock attempt detected (Wrong Password)");
            return decResult as Result<boolean>;
@@ -176,6 +189,18 @@ export const Archive = {
 
         if (valResult.data === "LEMBARANZ_SECURED_V3") {
           Vault.setActiveKey(masterKey);
+          if (legacyWrap) {
+            // Re-wrap the same master key with Argon2id (note ciphertext untouched).
+            const upgrade = await this.resetPassword(password);
+            if (upgrade.error) {
+              console.warn(
+                "[ARCHIVE] KDF upgrade to Argon2id failed:",
+                upgrade.error.message
+              );
+            } else {
+              await Audit.log("KDF_UPGRADED", "Vault key wrapping upgraded to Argon2id");
+            }
+          }
           await Audit.log("VAULT_UNLOCK", "Vault unlocked successfully");
           return { data: true, error: null };
         }
@@ -185,18 +210,39 @@ export const Archive = {
         const iv = Vault.hexToBytes(ivHex);
         const bytes = Vault.base64ToBytes(base64Data);
 
-        const decResult = await Vault.decrypt(
+        let decResult = await Vault.decrypt(
           bytes.buffer as ArrayBuffer,
           iv,
           passwordKey
         );
+        let legacyUnlockKey: CryptoKey | null = null;
+        if (decResult.error) {
+          // Fallback for V2 vaults created while PBKDF2 was the active KDF.
+          const legacyDerive = await Vault.deriveKeyLegacy(password, salt);
+          if (!legacyDerive.error) {
+            const legacyDec = await Vault.decrypt(
+              bytes.buffer as ArrayBuffer,
+              iv,
+              legacyDerive.data
+            );
+            if (!legacyDec.error) {
+              decResult = legacyDec;
+              legacyUnlockKey = legacyDerive.data;
+            }
+          }
+        }
         if (decResult.error) {
            await Audit.log("SECURITY_ALERT", "Failed vault unlock attempt detected (Legacy V2)");
            return decResult as Result<boolean>;
         }
 
         if (decResult.data === "LEMBARANZ_SECURED_V2") {
-          Vault.setActiveKey(passwordKey);
+          // resetPassword must export the active key, so derive an extractable
+          // copy using the KDF that actually validated this vault.
+          const exportable = legacyUnlockKey
+            ? await Vault.deriveKeyLegacy(password, salt, true)
+            : await Vault.deriveKey(password, salt, true);
+          Vault.setActiveKey(exportable.data ?? legacyUnlockKey ?? passwordKey);
           // Automatic migration to V3 for improved security and recovery
           const resetRes = await this.resetPassword(password);
           if (resetRes.error)
@@ -239,11 +285,40 @@ export const Archive = {
       if (deriveResult.error) return deriveResult as Result<boolean>;
       const recoveryKey = deriveResult.data;
 
-      const decResult = await Vault.decryptPacked(wrappedKey, recoveryKey);
+      let decResult = await Vault.decryptPacked(wrappedKey, recoveryKey);
+      let legacyRecovery = false;
+      if (decResult.error) {
+        // Fallback: recovery wrap created while PBKDF2 was the active KDF.
+        const legacyDerive = await Vault.deriveKeyLegacy(mnemonic, mSalt);
+        if (!legacyDerive.error) {
+          const legacyDec = await Vault.decryptPacked(wrappedKey, legacyDerive.data);
+          if (!legacyDec.error) {
+            decResult = legacyDec;
+            legacyRecovery = true;
+          }
+        }
+      }
       if (decResult.error) return decResult as Result<boolean>;
 
       const keyBuffer = Vault.base64ToBytes(decResult.data)
         .buffer as ArrayBuffer;
+
+      if (legacyRecovery) {
+        // Re-wrap the same master key with Argon2id so the recovery path no
+        // longer depends on the legacy KDF.
+        const newSalt = crypto.getRandomValues(new Uint8Array(16));
+        const newDerive = await Vault.deriveKey(mnemonic, newSalt);
+        if (!newDerive.error) {
+          const rewrap = await Vault.encryptPacked(
+            Vault.bytesToBase64(new Uint8Array(keyBuffer)),
+            newDerive.data
+          );
+          if (!rewrap.error) {
+            await Storage.set("meta", "recovery_salt", Vault.bytesToHex(newSalt));
+            await Storage.set("meta", "recovery_wrapped_key", rewrap.data);
+          }
+        }
+      }
 
       const importResult = await Vault.importRawKey(keyBuffer);
       if (importResult.error) return importResult as Result<boolean>;
@@ -486,7 +561,13 @@ export const Archive = {
       };
 
       if (note._hash) {
-        const actualHash = await Integrity.computeHash(decryptedNote);
+        // The seal covers the canonical note fields sealed at save time
+        // (saveNote hashes the input note). `preview` is transport metadata
+        // derived from content and separately protected by AES-GCM, so it is
+        // excluded here the same way _hash/updatedAt are excluded by policy.
+        const { preview: _transportPreview, ...sealTarget } = decryptedNote as unknown as Record<string, unknown>;
+        void _transportPreview;
+        const actualHash = await Integrity.computeHash(sealTarget);
         if (actualHash !== note._hash) {
           decryptedNote.content =
             `⚠️ WARNING: Digital seal broken!\n\n` + decryptedNote.content;

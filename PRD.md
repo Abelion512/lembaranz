@@ -171,7 +171,7 @@ lembaranz/
 ## 7. Metrics & Success Criteria
 
 ### Technical Metrics
-- **Encryption**: AES-GCM 256-bit, Argon2id (19MB RAM, 2 iterations)
+- **Encryption**: AES-GCM 256-bit, Argon2id (64 MiB RAM, 2 iterations, p=1)
 - **Performance**: <100ms decrypt for note <10KB
 - **Bundle Size**: CLI <2MB, Web <500KB (gzip)
 - **Test Coverage**: >80% core modules

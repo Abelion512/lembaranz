@@ -1,5 +1,5 @@
 
-At Lembaranz, security is not just an add-on feature, but the core foundation. We apply the principles of **Zero-Knowledge** and **Cryptographic Integrity** inspired by blockchain technology.
+At Lembaranz, security is not just an add-on feature, but the core foundation. We apply the principles of **Zero-Knowledge** and **Cryptographic Integrity**, including a blockchain-style hash chain for the local audit ledger.
 
 ## 1. Digital Seal (Data Integrity)
 
@@ -32,12 +32,23 @@ sequenceDiagram
 
 If even a single character changes without going through the application (e.g., manipulated by malware), the "Digital Seal" will be broken, and the application will detect the change.
 
-## 2. Zero-Knowledge Encryption
+## 2. Tamper-Evident Audit Ledger
+
+Every audit event (`VAULT_UNLOCK`, `NOTE_CREATED`, `SECURITY_ALERT`, `KDF_UPGRADED`, ...) is appended to a local hash chain: each entry stores the hash of the previous entry, so editing, reordering, or removing a covered entry breaks verification.
+
+- `Audit.verifyChain()` recomputes the chain and reports the first broken link.
+- `Audit.headHash()` returns the chain head; record it externally if you also want truncation coverage.
+- The ledger is local-only by design: no network, no consensus layer, no third party involved.
+
+Run `lembaranz security` to see the live ledger status inside the TUI.
+
+## 3. Zero-Knowledge Encryption
 
 We use the **Argon2id** algorithm (winner of the Password Hashing Competition) to transform your password into a very strong encryption key.
 
 - **Keys in Memory Only**: Your password is never saved to disk or sent to a server.
 - **Isolation**: Even we (the developers) cannot read your notes because we do not have the key.
+- **Argon2id parameters**: `t=2`, `m=64 MiB`, `p=1`, 32-byte output. Vaults created with the earlier PBKDF2 implementation still unlock through an automatic fallback and are re-wrapped with Argon2id — note ciphertext is never touched.
 
 ```mermaid
 flowchart LR
@@ -54,5 +65,9 @@ flowchart LR
 ## Code Transparency
 
 This entire security logic is open-source and can be audited in the following files:
-- `src/aksara/kunci.ts` (Encryption)
-- `src/aksara/Integritas.ts` (Data Validation)
+- `packages/core/src/Vault.ts` (encryption + key derivation)
+- `packages/core/src/Integrity.ts` (data validation)
+- `packages/core/src/Audit.ts` (tamper-evident ledger)
+- `packages/core/src/Archive.ts` (vault lifecycle & migration)
+
+Docs and UI follow the project language policy: English (base), Simplified Chinese (secondary).

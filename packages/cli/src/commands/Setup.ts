@@ -4,9 +4,6 @@ import { Archive } from '@lembaranz/core';
 import { generateMnemonic } from '@lembaranz/core';
 import { prepareContext } from '../utils.js';
 import pc from 'picocolors';
-import { spawn } from 'node:child_process';
-import { execSync } from 'node:child_process';
-import os from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 
@@ -15,7 +12,7 @@ export function registerSetupCommand(program: Command) {
   program
     .command('setup')
     .alias('init')
-    .description('Interactive setup wizard (CLI or GUI)')
+    .description('Interactive setup wizard (CLI)')
     .action(async () => {
       console.log(pc.bold('\n🚀 Lembaranz Setup Wizard'));
       console.log(pc.dim('Set up your secure credential vault.\n'));
@@ -32,56 +29,13 @@ export function registerSetupCommand(program: Command) {
 
         await prepareContext(program.opts());
 
-        const { mode } = await prompts({
-          type: 'select',
-          name: 'mode',
-          message: 'Choose setup mode:',
-          choices: [
-            { title: '⌨️   CLI — Terminal wizard', value: 'cli' },
-            // { title: '🖥️  GUI — Web interface (localhost:1401)', value: 'gui' }, // Disabled: Refactoring in progress
-          ],
-        });
-
-        if (mode === 'gui') {
-          await launchGUI();
-        } else {
-          await runCLISetup(program);
-        }
+        // GUI mode is disabled until the web setup flow ships (packages/dashboard).
+        await runCLISetup(program);
       } catch (error) {
         console.log(pc.red('\n✗ Setup failed:'), error instanceof Error ? error.message : String(error));
         process.exit(1);
       }
     });
-}
-
-async function launchGUI() {
-  const webDir = path.join(process.cwd(), 'packages', 'web');
-  try { await fs.access(webDir); } catch {
-    console.log(pc.red('\n✗ Web package not found. Run from monorepo root.\n'));
-    return;
-  }
-
-  // Kill zombie bun/next processes before starting GUI
-  try {
-    // Kill all bun run start/dev processes (catches zombies that lsof misses)
-    execSync('pgrep -f "bun.*dev|bun.*start|next-server" | xargs kill -9 2>/dev/null || true');
-    execSync('sleep 1');
-    // Fallback: kill anything on port 1401
-    execSync('lsof -ti:1401 2>/dev/null | xargs kill -9 2>/dev/null || true');
-    execSync('sleep 1');
-  } catch {
-    // Ignore kill errors
-  }
-
-  console.log(pc.cyan('\n🖥️  Starting GUI on http://localhost:1401\n'));
-  console.log(pc.yellow('⚠️  Keep this terminal open!'));
-  console.log(pc.dim('The vault manager will open in your browser.\n'));
-
-  const child = spawn(os.platform() === 'win32' ? 'bun.cmd' : 'bun', ['run', 'dev'], { cwd: webDir, stdio: 'inherit', shell: false });
-
-  await prompts({ type: 'text', name: '_', message: 'Press Enter to stop GUI server:', initial: '' });
-  child.kill();
-  console.log(pc.green('\n✓ GUI server stopped.\n'));
 }
 
 async function runCLISetup(program: Command) {

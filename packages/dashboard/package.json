@@ -9,18 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@lembaranz/core": "workspace:*",
+    "@lembaranz/core": "*",
     "canvas-confetti": "^1.9.3",
-    "clsx": "^2.1.1",
     "i18next": "^26.4.0",
     "i18next-browser-languagedetector": "^8.2.1",
     "lucide-react": "^0.468.0",
-    "marked": "^18.0.4",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.4",
-    "react-i18next": "^17.0.8",
-    "tailwind-merge": "^3.6.0",
-    "zustand": "^5.0.11"
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-i18next": "^17.0.8"
   },
   "devDependencies": {
     "@types/react": "^19.2.18",

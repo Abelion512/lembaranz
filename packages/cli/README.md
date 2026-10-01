@@ -1,41 +1,47 @@
-# lembaranz
+# @lembaranz/cli
 
-**Lembaranz CLI - Brankas Aksara Personal yang Berdikari** 🇮🇩
+**Lembaranz CLI — a self-sovereign encrypted vault for your terminal.**
 
-Antarmuka baris perintah (CLI) and TUI resmi untuk Lembaranz. Amankan catatan, ide, and rahasia Anda langsung di terminal dengan enkripsi tingkat militer.
+Official command-line interface and TUI for Lembaranz. Keep notes, ideas and
+credentials on your machine, encrypted with AES-GCM 256-bit.
 
-## 🚀 Instalasi
+## Install
 
-```bash
-# Via Bun (Disarankan)
-bun install -g lembaranz
-
-# Via NPM
-npm install -g lembaranz
-```
-
-## 🛠️ Penggunaan
-
-Jalankan perintah utama untuk masuk ke antarmuka interaktif:
+The packages are not published to npm yet, so install from source:
 
 ```bash
-lembaranz mulai
+git clone https://github.com/Abelion512/lembaranz.git
+cd lembaranz
+bun install && bun link          # or: npm install && npm install -g .
 ```
 
-### Perintah Lainnya
+## Usage
 
-- `lembaranz ukir`: Membuat catatan baru secara cepat.
-- `lembaranz laras`: Mengelola variabel lingkungan (.env) proyek Anda.
-- `lembaranz tanam`: Mengimpor direktori dokumen ke dalam brankas.
-- `lembaranz petik`: Mengekspor catatan terenkripsi ke format cadangan.
-- `lembaranz cari`: Mencari di seluruh arsip yang terenkripsi.
+```bash
+lembaranz                # launch the interactive TUI (default)
+lembaranz setup          # interactive setup wizard (alias: init)
+lembaranz launch         # enter TUI mode explicitly
+lembaranz browse [term]  # searchable archive browser
+lembaranz config         # configuration manager (alias: cfg)
+lembaranz doctor         # diagnostics & health checks
+lembaranz dashboard      # open the web dashboard
+lembaranz import         # bulk credential import
+lembaranz export         # encrypted portable backup
+lembaranz monitor        # system health & integrity
+lembaranz security       # security dashboard, audits & ledger status
+```
 
-## 🔐 Keamanan
+## Security
 
-- **Zero-Knowledge**: Kata sandi Anda tidak pernah disimpan or dikirim.
-- **Argon2id**: Derivasi kunci yang sangat kuat terhadap serangan GPU.
-- **AES-GCM 256**: Standar enkripsi industri untuk integritas data.
+- **Zero-knowledge**: your master password is never stored or transmitted.
+- **Argon2id** (`t=2`, `m=64 MiB`, `p=1`): memory-hard key derivation.
+  Vaults and backups created while PBKDF2 was the active KDF still unlock and
+  are automatically re-wrapped with Argon2id.
+- **AES-GCM 256-bit**: authenticated encryption for every entry.
+- **Tamper-evident audit ledger**: hash-chained, local-only audit entries
+  (`verifyChain()` reports the first broken link).
+- **Local-first**: no cloud, no telemetry, no account.
 
-## 📄 Lisensi
+## License
 
 [MIT](https://github.com/Abelion512/lembaranz/blob/main/LICENSE)

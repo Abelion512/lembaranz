@@ -21,7 +21,7 @@ Lembaranz 是一个**自托管、零知识的凭证管理器**，让您完全控
 ### Key Principles / 核心原则
 
 - **Local-First / 本地优先**: All data stays on your device. No cloud sync, no telemetry. / 所有数据保留在您的设备上。无云同步，无遥测。
-- **Consolidated State / 整合状态**: Optimized for a single-branch (`testing`) workflow with high-performance crypto logic. / 针对单分支（`testing`）工作流优化，具有高性能加密逻辑。
+- **Consolidated State / 整合状态**: Optimized for a single-branch (`main`) workflow with high-performance crypto logic. / 针对单分支（`testing`）工作流优化，具有高性能加密逻辑。
 - **Zero-Knowledge / 零知识**: Encryption happens before data touches storage. / 加密在数据存储之前进行。
 
 ---

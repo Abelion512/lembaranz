@@ -9,5 +9,266 @@
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete"
+  },
+  "landing": {
+    "skip": "Skip to content",
+    "langLabel": "Language",
+    "nav": {
+      "features": "Features",
+      "security": "Security",
+      "compare": "Comparison",
+      "install": "Install",
+      "faq": "FAQ",
+      "github": "GitHub",
+      "openDashboard": "Open Dashboard"
+    },
+    "hero": {
+      "badge": "Open Source · MIT · Zero-Knowledge",
+      "titleLead": "A vault for your words that stays",
+      "words": [
+        "Independent.",
+        "Encrypted.",
+        "Offline-First.",
+        "Yours."
+      ],
+      "subtitle": "Keep notes and credentials with absolute privacy: encrypted on your device, no cloud, no account, no compromise.",
+      "openDashboard": "Open Dashboard",
+      "viewSource": "View Source",
+      "copyHint": "Copy the install command",
+      "chips": [
+        "AES-GCM 256-bit",
+        "Zero-Knowledge",
+        "Offline-First"
+      ]
+    },
+    "stats": [
+      {
+        "value": "100%",
+        "label": "Data on device"
+      },
+      {
+        "value": "256-bit",
+        "label": "AES-GCM"
+      },
+      {
+        "value": "0",
+        "label": "Servers & accounts"
+      },
+      {
+        "value": "MIT",
+        "label": "Open-source license"
+      }
+    ],
+    "mock": {
+      "url": "lembaranz.vercel.app/app",
+      "search": "Search your vault...",
+      "badge": "AES-GCM active",
+      "entries": [
+        {
+          "title": "Production API Key",
+          "value": "sk_live_••••••••••••4f2a",
+          "tag": "Credential"
+        },
+        {
+          "title": "Q3 Meeting Notes",
+          "value": "3 attachments · encrypted",
+          "tag": "Note"
+        },
+        {
+          "title": "Recovery Mnemonic",
+          "value": "12 words · stored offline",
+          "tag": "Recovery"
+        }
+      ],
+      "status": "3 entries · encrypted",
+      "session": "active session",
+      "panic": "Panic Key armed",
+      "cli": "lembaranz browse"
+    },
+    "features": {
+      "title": "Built for Privacy",
+      "subtitle": "Every layer is designed so your data never leaves the device.",
+      "items": [
+        {
+          "title": "Zero-Knowledge",
+          "body": "AES-GCM 256-bit encryption happens on your device, before data touches storage. No server can read it."
+        },
+        {
+          "title": "Keys on Device",
+          "body": "Keys are derived with Argon2id plus a random salt, then live only in memory while the session is open. They are never sent or stored on a server."
+        },
+        {
+          "title": "Offline-First",
+          "body": "Data lives in IndexedDB or a local file. No internet, no account, no forced sync. The vault still opens."
+        },
+        {
+          "title": "Panic Key",
+          "body": "One emergency passphrase permanently wipes the entire vault. A kill switch that works even when you have no time to think."
+        },
+        {
+          "title": "CLI · TUI · Web",
+          "body": "Terminal for automation and remote servers, TUI for comfort, web dashboard for visuals. All on one vault."
+        },
+        {
+          "title": "Open Source (MIT)",
+          "body": "The entire codebase is open and auditable. Privacy claims should be provable, not just trusted."
+        }
+      ]
+    },
+    "security": {
+      "eyebrow": "Security",
+      "title": "An architecture you can audit",
+      "subtitle": "No magic and no black boxes. These four steps are the entire journey of your data, and all of it happens on this device.",
+      "guarantees": [
+        "No telemetry, analytics, or network requests.",
+        "No account, no email, no cloud storing your data.",
+        "The session key can be cleared from memory whenever you want.",
+        "Panic key wipes the vault instantly in an emergency.",
+        "MIT. You can audit the source yourself on GitHub."
+      ],
+      "pipelineTitle": "Cryptographic Flow",
+      "pipeline": [
+        {
+          "step": "01",
+          "title": "Password + random salt",
+          "note": "Argon2id (memory-hard, 64 MiB) processes your passphrase on device. The result never leaves this machine."
+        },
+        {
+          "step": "02",
+          "title": "AES-GCM 256-bit",
+          "note": "Every entry is encrypted with a unique 12-byte IV, so data patterns never leak through ciphertext."
+        },
+        {
+          "step": "03",
+          "title": "SHA-256 integrity",
+          "note": "Every entry carries a verification hash, and the audit trail is hash-chained, so silent changes are detected."
+        },
+        {
+          "step": "04",
+          "title": "Local storage",
+          "note": "The browser uses IndexedDB; the CLI stores a JSON file with 0o600 permissions inside a 0o700 directory."
+        }
+      ],
+      "chips": [
+        "Zero telemetry",
+        "No accounts",
+        "MIT"
+      ]
+    },
+    "compare": {
+      "title": "Choose how you access it",
+      "subtitle": "CLI, web, or desktop: one vault, three entry points.",
+      "columns": [
+        "Dimension",
+        "CLI",
+        "WEB",
+        "APP"
+      ],
+      "rows": [
+        {
+          "feature": "Accessibility",
+          "cli": "Terminal / SSH",
+          "web": "Browser (Anywhere)",
+          "app": "Desktop (Native)"
+        },
+        {
+          "feature": "Biometrics",
+          "cli": "Password Only",
+          "web": "Planned (WebAuthn)",
+          "app": "Yes (TouchID/FaceID)"
+        },
+        {
+          "feature": "Strength",
+          "cli": "Light & fast",
+          "web": "No install needed",
+          "app": "Offline-first + push"
+        },
+        {
+          "feature": "Trade-off",
+          "cli": "Less visual",
+          "web": "Needs internet/cache",
+          "app": "Needs more resources"
+        },
+        {
+          "feature": "Best for",
+          "cli": "Senior / Master",
+          "web": "Beginner / Junior",
+          "app": "Explorer / Power User"
+        }
+      ]
+    },
+    "install": {
+      "title": "Install in one line",
+      "subtitle": "Bun ≥ 1.3 or Node ≥ 20 · macOS, Linux, and Windows (WSL).",
+      "copy": "Copy",
+      "copied": "Copied",
+      "afterTitle": "After install",
+      "noInstall": "Don't want to install?",
+      "openInBrowser": "Open the dashboard in your browser →"
+    },
+    "ecosystem": {
+      "title": "Native Ecosystem",
+      "subtitle": "In development.",
+      "items": [
+        {
+          "label": "iOS & Android",
+          "note": "Push notifications + native biometrics"
+        },
+        {
+          "label": "macOS & Windows",
+          "note": "TouchID / FaceID unlock"
+        },
+        {
+          "label": "Linux (Flatpak)",
+          "note": "Lightweight distribution for every distro"
+        }
+      ],
+      "comingSoon": "Coming Soon",
+      "follow": "Follow progress in",
+      "discussions": "GitHub Discussions"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "subtitle": "The things people ask the most.",
+      "items": [
+        {
+          "q": "Is my data sent to a server?",
+          "a": "No. Lembaranz runs entirely on your device. The browser uses IndexedDB, the CLI uses local files, and no backend ever receives your vault contents."
+        },
+        {
+          "q": "What happens if I forget my master password?",
+          "a": "The key cannot be recovered from a server, because no server holds it. Keep the recovery mnemonic generated during setup in a safe place. Without it, the data cannot be opened."
+        },
+        {
+          "q": "Can I use it without internet?",
+          "a": "Yes. Once the page has loaded, the entire vault works fully offline. No network requests are made while you read or write."
+        },
+        {
+          "q": "Do I have to install anything to try it?",
+          "a": "No. Open the dashboard straight in your browser. The CLI is optional, for automation and terminal users who want the vault stored as a local file."
+        },
+        {
+          "q": "Is it free?",
+          "a": "Yes. MIT licensed, free, and self-hostable. No paid tiers, no entry limits."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Start your first vault.",
+      "subtitle": "No sign-up, no credit card, no data leaving your device. Open the dashboard and start writing.",
+      "openDashboard": "Open Dashboard",
+      "copyInstall": "Copy install command",
+      "copied": "Command copied"
+    },
+    "footer": {
+      "tagline": "Personal words vault",
+      "blurb": "Zero-knowledge, offline-first, MIT licensed. Made with ❤ in Indonesia.",
+      "product": "Product",
+      "source": "Source",
+      "privacy": "Privacy Policy",
+      "security": "Security Policy",
+      "rights": "© 2026 Lembaranz · MIT License",
+      "motto": "Stay Secure. Stay Local."
+    }
   }
 }

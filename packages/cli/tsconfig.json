@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "types": ["bun-types"],
+        "types": ["bun-types", "prompts"],
         "jsx": "react-jsx",
         "target": "ESNext",
         "module": "ESNext",

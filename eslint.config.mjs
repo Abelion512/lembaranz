@@ -19,6 +19,14 @@ export default ts.config(
     },
   },
   {
-    ignores: ["**/dist/**", "**/node_modules/**", "**/.next/**", "**/out/**"],
+    ignores: [
+      "**/dist/**",
+      "**/node_modules/**",
+      "**/.next/**",
+      "**/out/**",
+      // Nested clones (e.g. from testing install.sh) must never be linted:
+      // their tsconfigs confuse the typescript-eslint project parser.
+      "lembaranz/**",
+    ],
   },
 );

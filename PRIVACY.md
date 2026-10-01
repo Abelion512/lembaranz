@@ -1,15 +1,35 @@
 # Privacy Policy
 
-**Last Updated: February 17, 2026**
+**Last Updated: September 30, 2026**
 
 Privacy is a fundamental right at Lembaranz.
 
 ## 1. Data Collection
+
 We **do not collect** personal data, notes, or passwords.
-This application runs entirely client-side.
+Lembaranz runs entirely client-side: the web dashboard works in your browser, and the CLI works on your machine.
 
 ## 2. Analytics
-This application does not use third-party trackers or analytics cookies.
+
+This software does not include third-party trackers, analytics, or telemetry.
+No network requests are made while you read or write vault data.
 
 ## 3. Encryption
-Sensitive data is encrypted using AES-GCM 256-bit standard before being stored to disk. The encryption key is derived from your password using Argon2id and never leaves your device.
+
+Sensitive data is encrypted with **AES-GCM 256-bit** before it touches storage. The encryption key is derived from your password using **Argon2id** (`t=2`, `m=64 MiB`, `p=1`) and never leaves your device. Vaults and backups created by earlier releases that used PBKDF2 are unlocked through an automatic fallback and re-wrapped with Argon2id; your note ciphertext is never re-encrypted during that migration.
+
+## 4. Local Audit Ledger
+
+The audit trail is a local, hash-chained ledger (tamper-evident). It never leaves your device. You may choose to record its head hash externally to detect truncation; that is entirely under your control.
+
+## 5. Language & Documentation
+
+Documentation and UI are published in **English (base)** with **Simplified Chinese** as the secondary language. Translations never change how data is processed.
+
+## 6. Your Responsibility
+
+Because there is no server-side copy of your keys, **data cannot be recovered if you lose both your master password and your recovery mnemonic**.
+
+---
+
+*Stay Secure. Stay Local.*

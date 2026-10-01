@@ -20,7 +20,7 @@ import {
   Activity,
   Copy,
   Check,
-  Sparkles,
+  ShieldCheck,
   Compass
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -81,8 +81,8 @@ export default function App() {
       } else {
         setError('Incorrect Master Password / 无效密码.');
       }
-    } catch (err: any) {
-      setError(err.message || 'Unlock failed.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unlock failed.');
     } finally {
       setIsLoading(false);
     }
@@ -112,8 +112,8 @@ export default function App() {
         confetti({ particleCount: 100, spread: 80 });
         await refreshNotes();
       }
-    } catch (err: any) {
-      setError(err.message || "Setup failed.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Setup failed.");
     } finally {
       setIsLoading(false);
     }
@@ -172,8 +172,8 @@ export default function App() {
           setActiveNote(decryptedRes.data as DecryptedNote);
         }
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to save.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save.');
     } finally {
       setIsLoading(false);
     }
@@ -209,7 +209,7 @@ export default function App() {
 
   // Lock Vault again
   const handleLockVault = () => {
-    Vault.setActiveKey(null as any);
+    Vault.clearKey();
     setIsUnlocked(false);
     setActiveNote(null);
     setNotes([]);
@@ -252,7 +252,7 @@ export default function App() {
   // Loading Screen
   if (isSetup === null) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center text-slate-400 font-mono scanline">
+      <div className="flex h-screen w-screen items-center justify-center text-secondary font-mono">
         <div className="flex flex-col items-center gap-3">
           <Activity className="animate-pulse text-cyan-400" size={32} />
           <span>INITIALIZING VAULT SYSTEMS...</span>
@@ -264,8 +264,8 @@ export default function App() {
   // Lock / Login Screen
   if (!isUnlocked) {
     return (
-      <div className="flex min-h-screen w-screen items-center justify-center p-4 font-mono scanline">
-        <div className="glass-strong w-full max-w-md p-8 shadow-2xl shadow-cyan-950/40 rounded-2xl">
+      <div className="flex min-h-screen w-screen items-center justify-center p-4 font-mono">
+        <div className="surface-raised w-full max-w-md p-8 rounded-2xl hairline border">
           <div className="flex flex-col items-center text-center mb-8">
             <div className="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-full mb-3 text-cyan-400">
               <Shield size={36} />
@@ -321,7 +321,7 @@ export default function App() {
 
                 <div className="space-y-2">
                   <label className="text-xs uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
-                    <Sparkles size={12} className="text-cyan-500" />
+                    <KeyRound size={12} className="text-cyan-500" />
                     12-Word Seed Phrase (Optional)
                   </label>
                   <input
@@ -338,7 +338,7 @@ export default function App() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold py-3 px-4 transition-all duration-150 uppercase tracking-widest flex items-center justify-center gap-2 rounded border border-cyan-400/30"
+              className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-4 transition-all duration-150 uppercase tracking-widest flex items-center justify-center gap-2 rounded border border-cyan-400/30"
             >
               {isLoading ? (
                 <span>PROCESSING...</span>
@@ -352,8 +352,8 @@ export default function App() {
           </form>
 
           <div className="mt-8 text-center border-t border-white/10 pt-4">
-            <span className="text-[10px] text-slate-600 font-mono">
-              Argon2id (m=64MB, t=3, p=4) + AES-256-GCM
+            <span className="text-[10px] text-slate-400 font-mono">
+              Argon2id (m=64 MiB, t=2, p=1) + AES-256-GCM
             </span>
           </div>
         </div>
@@ -366,7 +366,7 @@ export default function App() {
     <div className="flex h-screen w-screen overflow-hidden font-sans text-slate-200">
       
       {/* Sidebar - Left Section */}
-      <aside className="glass w-80 shrink-0 flex flex-col min-h-0">
+      <aside className="surface w-80 shrink-0 flex flex-col min-h-0 hairline border-r">
         
         {/* Sidebar Header */}
         <div className="p-5 border-b border-white/10 flex items-center justify-between">
@@ -453,7 +453,7 @@ export default function App() {
               </button>
 
               {filteredNotes.length === 0 ? (
-                <div className="text-center text-xs text-slate-600 font-mono py-12">
+                <div className="text-center text-xs text-slate-400 font-mono py-12">
                   No notes yet.
                 </div>
               ) : (
@@ -504,8 +504,8 @@ export default function App() {
         
         {/* Toast success message */}
         {successMessage && (
-          <div className="absolute top-4 right-4 z-50 bg-cyan-950/70 backdrop-blur-md border border-cyan-500/30 text-cyan-300 px-4 py-2 text-xs rounded shadow-lg font-mono flex items-center gap-1.5 animate-bounce">
-            <Sparkles size={14} className="text-cyan-400" />
+          <div className="absolute top-4 right-4 z-50 surface-raised hairline border text-secondary px-4 py-2 text-xs rounded font-mono flex items-center gap-1.5 fade-up">
+            <ShieldCheck size={14} className="text-cyan-400" />
             {successMessage}
           </div>
         )}
@@ -547,7 +547,7 @@ export default function App() {
                 )}
                 <button
                   onClick={handleSaveNote}
-                  className="bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold py-1.5 px-4 text-xs tracking-wider flex items-center gap-1.5 rounded transition-all uppercase"
+                  className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-1.5 px-4 text-xs tracking-wider flex items-center gap-1.5 rounded transition-all uppercase"
                 >
                   <Save size={14} />
                   <span>SAVE</span>
@@ -579,7 +579,7 @@ export default function App() {
           </div>
         )}
 
-        {/* Tab 2: Graph Visualization (Peta Aksara) */}
+        {/* Tab 2: Graph visualization */}
         {currentTab === 'graph' && (
           <div className="flex-1 flex flex-col min-h-0 p-6">
             <div className="mb-4">
@@ -593,9 +593,9 @@ export default function App() {
             </div>
 
             {/* Simple Network Graph renderer via dynamic SVG */}
-            <div className="flex-1 glass-card rounded-lg relative overflow-hidden flex items-center justify-center">
+            <div className="flex-1 surface rounded-lg relative overflow-hidden flex items-center justify-center">
               {graphData.nodes.length === 0 ? (
-                <div className="text-center font-mono text-xs text-slate-600">
+                <div className="text-center font-mono text-xs text-slate-400">
                   No relations to render yet. Add tags to your notes!
                 </div>
               ) : (
@@ -681,8 +681,8 @@ export default function App() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Import Env */}
-              <div className="glass-card p-5 rounded-lg space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <div className="surface p-5 rounded-lg space-y-4">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-secondary flex items-center gap-1.5">
                   <Plus size={14} className="text-cyan-400" />
                   Save New .env Project
                 </h3>
@@ -704,7 +704,7 @@ export default function App() {
                       setSuccessMessage('.env project saved to vault!');
                       setTimeout(() => setSuccessMessage(null), 3000);
                     }}
-                    className="bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold py-2 px-4 text-xs tracking-wider rounded transition-all uppercase w-full flex items-center justify-center gap-1.5"
+                    className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2 px-4 text-xs tracking-wider rounded transition-all uppercase w-full flex items-center justify-center gap-1.5"
                   >
                     <Plus size={12} />
                     <span>SAVE ENV CONFIG</span>
@@ -713,8 +713,8 @@ export default function App() {
               </div>
 
               {/* Saved Env Projects */}
-              <div className="glass-card p-5 rounded-lg space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <div className="surface p-5 rounded-lg space-y-4">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-secondary flex items-center gap-1.5">
                   <Database size={14} className="text-cyan-400" />
                   Saved Env Profiles
                 </h3>
@@ -726,7 +726,7 @@ export default function App() {
                   <div className="border border-white/10 bg-slate-950/40 p-3 rounded flex items-center justify-between">
                     <div>
                       <h4 className="text-xs font-bold font-mono text-cyan-400">lembaranz-core</h4>
-                      <span className="text-[10px] text-slate-600 font-mono">Last updated: 2026-05-30</span>
+                      <span className="text-[10px] text-slate-400 font-mono">Last updated: 2026-05-30</span>
                     </div>
                     <div className="flex gap-2">
                       <button
@@ -761,7 +761,7 @@ export default function App() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Panic Key configuration */}
-              <div className="glass-card p-5 rounded-lg space-y-4">
+              <div className="surface p-5 rounded-lg space-y-4">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-red-400 flex items-center gap-1.5">
                   <Lock size={14} />
                   PANIC KEY / 恐慌密码 (Kill-Switch)
@@ -780,7 +780,7 @@ export default function App() {
                   />
                   <button
                     type="submit"
-                    className="bg-red-700 hover:bg-red-600 text-slate-100 font-bold py-2 px-4 text-xs tracking-wider rounded transition-all uppercase w-full"
+                    className="bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-4 text-xs tracking-wider rounded transition-all uppercase w-full"
                   >
                     ACTIVATE PANIC KEY
                   </button>
@@ -788,8 +788,8 @@ export default function App() {
               </div>
 
               {/* Vault administration */}
-              <div className="glass-card p-5 rounded-lg space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <div className="surface p-5 rounded-lg space-y-4">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-secondary flex items-center gap-1.5">
                   <Database size={14} className="text-cyan-400" />
                   Memory Management & Cleanup
                 </h3>
@@ -808,8 +808,8 @@ export default function App() {
                     WIPE VAULT CLEAN (DESTROY ALL DATA)
                   </button>
 
-                  <div className="text-[10px] text-slate-600 font-mono pt-4 leading-relaxed">
-                    <strong>Memory Cleanup / Nèicún qīnglǐ (内存清理):</strong> Lembaranz automatically cleans up the main password heap buffer in RAM after an idle session of 60 seconds or SIGINT termination.
+                  <div className="text-[10px] text-slate-400 font-mono pt-4 leading-relaxed">
+                    <strong>Memory Cleanup / 内存清理:</strong> Lembaranz automatically cleans up the main password heap buffer in RAM after an idle session of 60 seconds or SIGINT termination.
                   </div>
                 </div>
               </div>

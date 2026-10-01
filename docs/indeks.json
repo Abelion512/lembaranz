@@ -4,7 +4,7 @@
             {
                 "title": "Getting Started",
                 "items": [
-                    { "id": "01-mulai/cepat", "title": "Quick Start Guide", "desc": "Get up and running with Lembaranz CLI.", "icon": "Rocket" },
+                    { "id": "en/GETTING_STARTED", "title": "Quick Start Guide", "desc": "Get up and running with Lembaranz CLI.", "icon": "Rocket" },
                     { "id": "en/GETTING_STARTED", "title": "General Introduction", "desc": "Overview of the Lembaranz ecosystem.", "icon": "Globe" }
                 ]
             },
@@ -18,7 +18,7 @@
             {
                 "title": "Technical Reference",
                 "items": [
-                    { "id": "03-referensi/perintah", "title": "Command Cheat Sheet", "desc": "Quick lookup for all CLI commands.", "icon": "Command" },
+                    { "id": "QUICK_REFERENCE", "title": "Command Cheat Sheet", "desc": "Quick lookup for all CLI commands.", "icon": "Command" },
                     { "id": "docs/CODEBASE_GUIDE", "title": "Developer Guide", "desc": "Understanding the internal repository structure.", "icon": "Database" }
                 ]
             }

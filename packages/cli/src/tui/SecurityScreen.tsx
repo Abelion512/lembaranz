@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Text, useInput } from "ink";
 import Spinner from "ink-spinner";
 import os from "os";
+import { Audit } from "@lembaranz/core";
 import { UI_TOKENS } from "./theme.js";
 
 interface SecurityScreenProps {
@@ -11,6 +12,7 @@ interface SecurityScreenProps {
 export const SecurityScreen: React.FC<SecurityScreenProps> = ({ onBack }) => {
   const [isScanning, setIsScanning] = useState(true);
   const [scanProgress, setScanProgress] = useState(0);
+  const [ledger, setLedger] = useState<{ status: string; detail: string; color: string } | null>(null);
 
   useInput((input, key) => {
     if (!isScanning && (input === "q" || key.escape)) {
@@ -35,11 +37,37 @@ export const SecurityScreen: React.FC<SecurityScreenProps> = ({ onBack }) => {
     return () => clearInterval(timer);
   }, [isScanning]);
 
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const [verification, head] = await Promise.all([Audit.verifyChain(), Audit.headHash()]);
+      if (cancelled) return;
+      setLedger(
+        verification.ok
+          ? {
+              status: verification.checked > 0
+                ? `VERIFIED: ${verification.checked} entries${verification.legacy > 0 ? ` (+${verification.legacy} legacy)` : ""}`
+                : "EMPTY: no entries yet",
+              detail: head ? `Chain head ${head.slice(0, 16)}... (tamper-evident)` : "Log actions to start the chain.",
+              color: UI_TOKENS.brand,
+            }
+          : {
+              status: `TAMPERED: ${verification.brokenAt ?? "unknown entry"}`,
+              detail: "Audit chain failed verification. Investigate immediately.",
+              color: UI_TOKENS.danger,
+            }
+      );
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const ITEMS = [
     {
       title: "Encryption Engine",
       status: "READY: AES-GCM 256-bit",
-      detail: "Hardware accelerated via Node:Crypto.",
+      detail: "Hardware accelerated via Web Crypto.",
       color: UI_TOKENS.brand,
     },
     {
@@ -60,6 +88,16 @@ export const SecurityScreen: React.FC<SecurityScreenProps> = ({ onBack }) => {
       detail: `Mount point detected at: ${os.homedir()}/.lembaranz`,
       color: UI_TOKENS.brand,
     },
+    ...(ledger
+      ? [
+          {
+            title: "Audit Ledger",
+            status: ledger.status,
+            detail: ledger.detail,
+            color: ledger.color,
+          },
+        ]
+      : []),
   ];
 
   if (isScanning) {

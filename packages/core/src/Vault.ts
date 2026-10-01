@@ -1,9 +1,17 @@
 import { Result } from "./Formula";
+import { argon2idAsync } from "@noble/hashes/argon2.js";
 export type { Result };
 
 /**
+ * Argon2id parameters — must stay stable: they define the derived-key format.
+ * (t=2, m=64 MiB, p=1, 32-byte output.)
+ */
+const ARGON2ID_PARAMS = { t: 2, m: 64 * 1024, dkLen: 32, p: 1 } as const;
+
+/**
  * Vault: Lower-level cryptographic engine.
- * Wraps Web Crypto API for secure key management and encryption.
+ * AES-GCM 256-bit via Web Crypto, Argon2id (pure JS) for key derivation,
+ * with a PBKDF2 fallback to unlock data written by earlier releases.
  */
 export class Vault {
   private static activeKey: CryptoKey | null = null;
@@ -56,12 +64,45 @@ export class Vault {
   }
 
   /**
-   * Derives a cryptographic key from a plaintext password using Argon2id.
+   * Derives a cryptographic key from a plaintext password using Argon2id
+   * (memory-hard, anti-GPU). This is the current default KDF.
    */
   public static async deriveKey(
     password: string,
     salt: Uint8Array,
-    _extractable = false
+    extractable = false
+  ): Promise<Result<CryptoKey>> {
+    const passwordBytes = new TextEncoder().encode(password);
+    let hash: Uint8Array | null = null;
+
+    try {
+      // Async variant yields to the event loop, keeping the web UI responsive.
+      hash = await argon2idAsync(passwordBytes, salt, ARGON2ID_PARAMS);
+      const key = await crypto.subtle.importKey(
+        "raw",
+        hash as BufferSource,
+        { name: "AES-GCM", length: 256 },
+        extractable,
+        ["encrypt", "decrypt"]
+      );
+      return { data: key, error: null };
+    } catch (e) {
+      return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
+    } finally {
+      passwordBytes.fill(0);
+      hash?.fill(0);
+    }
+  }
+
+  /**
+   * Legacy PBKDF2-HMAC-SHA-256 (100 000 iterations) key derivation.
+   * Only used to unlock vaults and backups created while Argon2id was
+   * unavailable (see Archive.unlockVault / Vault.decryptPortable fallbacks).
+   */
+  public static async deriveKeyLegacy(
+    password: string,
+    salt: Uint8Array,
+    extractable = false
   ): Promise<Result<CryptoKey>> {
     try {
       const enc = new TextEncoder();
@@ -83,7 +124,7 @@ export class Vault {
         },
         keyMaterial,
         { name: "AES-GCM", length: 256 },
-        true,
+        extractable,
         ["encrypt", "decrypt"]
       );
 
@@ -345,7 +386,13 @@ export class Vault {
       const deriveRes = await this.deriveKey(passwordBackup, salt);
       if (deriveRes.error || !deriveRes.data) return { data: null, error: deriveRes.error };
 
-      return await this.decrypt(ciphertext.buffer as ArrayBuffer, iv, deriveRes.data);
+      const primary = await this.decrypt(ciphertext.buffer as ArrayBuffer, iv, deriveRes.data);
+      if (!primary.error) return primary;
+
+      // Legacy fallback: backups written while PBKDF2 was the active KDF.
+      const legacyRes = await this.deriveKeyLegacy(passwordBackup, salt);
+      if (legacyRes.error || !legacyRes.data) return primary;
+      return await this.decrypt(ciphertext.buffer as ArrayBuffer, iv, legacyRes.data);
     } catch (e) {
       return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
     }

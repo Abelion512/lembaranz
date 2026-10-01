@@ -23,7 +23,7 @@ This is the **heart** of Lembaranz — all encryption happens here.
 
 | File | Purpose | Lines |
 |------|---------|-------|
-| **`Vault.ts`** | Encryption/decryption engine (AES-GCM + Argon2id) | ~200 |
+| **`Vault.ts`** | Encryption/decryption engine (AES-GCM 256 + Argon2id, PBKDF2 legacy fallback) | ~200 |
 | **`Archive.ts`** | High-level credential management (CRUD operations) | ~570 |
 | **`Storage.ts`** | Abstract storage interface (filesystem/IndexedDB) | ~100 |
 | **`Password.ts`** | Mnemonic generation & BIP39 wordlist | ~255 |
@@ -31,6 +31,7 @@ This is the **heart** of Lembaranz — all encryption happens here.
 | **`Integrity.ts`** | SHA-256 hash verification (tamper detection) | ~80 |
 | **`Context.ts`** | Environment variable management | ~120 |
 | **`AuditLog.ts`** | Access logging (who accessed what when) | ~90 |
+| **`Audit.ts`** | Tamper-evident audit ledger (hash chain + `verifyChain()`) | ~190 |
 
 ---
 
@@ -255,7 +256,7 @@ Save .env to vault with tag "myproject"
 ```bash
 # ✅ DO: Run locally
 bun run dev
-# => http://localhost:1400
+# => http://localhost:5120
 
 # ❌ DON'T: Deploy to Vercel/Netlify/etc.
 ```
@@ -287,8 +288,7 @@ bun run test:perf
 ### Specific Package
 
 ```bash
-bun test packages/core  # Core encryption
-bun test packages/web   # Web components
+bun test packages/core  # Core encryption, vault, and ledger tests
 ```
 
 ---

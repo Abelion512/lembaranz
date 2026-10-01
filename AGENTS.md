@@ -1,81 +1,74 @@
-# Lembaranz — Agent Guidelines (v3.5.0)
+# Lembaranz — Agent Guidelines (v4.0.0)
 
-> Powered by GStack (Garry Tan's 23 specialist Claude Code skills)
-> Hermes agents: `lembaranz-dev` (coding), `lembaranz-mkt` (growth)
+> Tooling: GStack skills for planning/review + vendored ponytail skills for minimal-code discipline.
+> Hermes agents: `lembaranz-dev` (coding), `lembaranz-mkt` (growth).
 
-## 🏛️ Struktur Monorepo
-- `packages/core/src` — Logika inti, enkripsi, storage (Jiwa)
-- `packages/cli/src` — CLI/TUI (Ink + Commander.js)
-- `lembaranz-web/` — Landing page (Next.js 16)
+## 🏛️ Monorepo Layout
 
-## 🤖 Agent A — Development (lembaranz-dev)
-**GStack workflow (wajib):**
-1. `/office-hours` — Product interrogation sebelum coding
-2. `/plan-ceo-review` — CEO scope check
-3. `/plan-eng-review` — Architecture lock-in (ASCII diagrams)
-4. `/autoplan` — Auto-generate implementation plan
-5. **Implement** — Write code
-6. `/review` — Staff engineer code review (auto-fix)
-7. `/qa` — Browser QA (find & fix bugs)
-8. `/ship` — Release: sync main, run tests, PR
+- `packages/core/src` — encryption engine, storage adapters, audit ledger (plain TypeScript)
+- `packages/cli/src` — CLI + TUI (Ink + Commander.js)
+- `packages/dashboard/src` — landing page + web dashboard (Vite + React + Tailwind, i18n `en` / `zh`)
 
-**Aturan:**
-- Load `gstack-autoplan`, `gstack-review`, `gstack-qa`, `gstack-ship` skills
-- Build → lint → test before any ship
-- Update AGENTS.md setelah setiap perubahan fungsional
-- Gunakan konvensi nama Indonesia (Jiwa, Raga, Aksara, Brankas)
+## 🌐 Language & Naming Policy (IMPORTANT)
 
-## 🤖 Agent B — Marketing & Growth (lembaranz-mkt)
-**Workflow:**
-1. `/landing-report` — Audit landing page conversion
-2. SEO audit → fix technical SEO
-3. Content strategy → blog posts, tutorials
-4. Social hooks → Twitter/X, Reddit, HN, dev communities
-5. Analytics setup → track traffic, conversion
+- **English is the base language** for identifiers, comments, CLI output, documentation, and the landing page.
+- **Simplified Chinese (`zh`) is the secondary language** for user-facing docs and UI. When you change user-facing copy, keep `en` and `zh` in sync (`packages/dashboard/src/locales/*.json`, README).
+- Indonesian names survive **only where backward compatibility requires them**: legacy vault files (`saku.json`, `pelataran.json`) and their migration paths. Migrate on read; never delete those code paths without a data migration.
+- New code, commits, and docs must be English-first. Do not introduce new Indonesian identifiers.
 
-**Aturan:**
-- Target: developers Indonesia + global privacy community
-- Content: bilingual (Indonesia + English)
-- Hook in first 3 detik
-- Track everything, A/B test before committing
+## 🤖 Agent Workflow
 
-## 🐴 Ponytail (minimal-code discipline)
-> Vendored skills: `.claude/skills/ponytail*` (upstream: [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail), MIT)
+1. **Plan** — scope the change, name the files.
+2. **Implement** — smallest diff that works (see Ponytail ladder below).
+3. **Verify** — typecheck, tests, lint, and build the dashboard when UI changes.
+4. **Document** — update the affected docs in the same change (README, SECURITY, PRIVACY, llms.txt, CHANGELOG).
+5. **Ship** — commit/PR via the Changes panel; CI/CD workflows run on `main`.
 
-Aturan lazy-senior-dev untuk semua coding task (Agent A):
-1. **Ladder** sebelum nulis kode: YAGNI → reuse yang ada → stdlib → native platform → dependency terpasang → satu baris → baru minimum code.
-2. Jangan pernah potong: validasi trust-boundary, error handling anti data-loss, keamanan, accessibility.
-3. Tandai shortcut sadar dengan komentar `ponytail: <ceiling>, <upgrade path>` — contoh: `// ponytail: O(n²) scan, index kalau data > 10k`.
+### Verification Commands
 
-**Skills:**
-- `/ponytail` — lazy mode (`lite` / `full` / `ultra`)
-- `/ponytail-debt` — harvest semua komentar `ponytail:` jadi ledger utang tech-debt (`PONYTAIL-DEBT.md`)
-- `/ponytail-gain` — scoreboard dampak terukur (LOC/cost/time)
-- `/ponytail-review` — review diff khusus over-engineering (`delete/stdlib/native/yagni/shrink`)
-- `/ponytail-audit` — audit seluruh repo, ranking yang boleh dipotong
-- `/ponytail-help` — kartu bantuan
-
-## 🔒 Keamanan
-- AES-GCM 256-bit (Brankas.ts)
-- Argon2id key derivation
-- SHA-256 integrity check
-- Zero-knowledge: data stays on device
-
-## 🔧 Build & Run
 ```bash
-cd /media/abelion/Isaf/ican/project/Web/ACTIVE/lembaranz/lembaranz
 bun install
-bun run build
-
-# CLI
-bun run cli
-
-# Landing page
-cd ../lembaranz-web
-bun run dev
+bunx tsc --noEmit --project packages/core/tsconfig.json
+bunx tsc --noEmit --project packages/cli/tsconfig.json
+(cd packages/dashboard && bun run build)   # tsc + vite build
+bun run lint
+bun run lint:design   # UI anti-slop detector (impeccable)
+bun run test:core
+bun run security-audit
 ```
 
+## 🎨 Design Anti-Slop Gate (impeccable)
+
+> Upstream: [pbakaus/impeccable](https://github.com/pbakaus/impeccable) · docs: <https://impeccable.style> (MIT)
+
+1. `bun run lint:design` runs `impeccable detect packages/dashboard/src` — the official detector for UI anti-patterns (gradient text, gray-on-color, side-tab cards, icon tiles, AI color palette). CI fails on findings.
+2. Fix findings in source; do not add ignore rules unless a pattern is genuinely intentional (then document why next to the `impeccable ignores` entry).
+3. UI copy follows the em-dash ban and the English base / Simplified Chinese policy (see Language & Naming).
+4. Touch targets on interactive controls are ≥44px (Apple HIG).
+
+## 🔒 Security Facts (keep docs in sync)
+
+- **AES-GCM 256-bit**, random 12-byte IV per operation.
+- **Argon2id** default KDF: `t=2`, `m=64 MiB`, `p=1`, 32-byte output, 16-byte random salts.
+- **Legacy PBKDF2-HMAC-SHA-256** (100 000 iterations) fallback unlocks vaults/backups written by earlier releases and is automatically re-wrapped to Argon2id (`KDF_UPGRADED` audit entry).
+- Each vault has a random **master key**; notes are encrypted with the master key, so KDF migrations never re-encrypt note data.
+- **SHA-256** per-entry integrity seals + **tamper-evident hash-chained audit ledger** (`Audit.verifyChain()`, head hash for external anchoring).
+- Vault files `0o600`, directories `0o700`; atomic writes; **panic key** wipes everything.
+- Zero-knowledge: no network calls, no telemetry, no accounts.
+
+## 🐴 Ponytail (minimal-code discipline)
+
+> Vendored skills: `.claude/skills/ponytail*` (upstream: [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail), MIT)
+
+1. **Ladder** before writing code: YAGNI → reuse what exists → stdlib → native platform → installed dependency → one line → minimum code.
+2. Never cut: trust-boundary validation, anti-data-loss error handling, security, accessibility.
+3. Mark deliberate shortcuts with `ponytail: <ceiling>, <upgrade path>` — e.g. `// ponytail: O(n²) scan, index if data > 10k`.
+4. `/ponytail-debt` harvests the markers into `PONYTAIL-DEBT.md`; keep that ledger current.
+
+**Skills:** `/ponytail` (lite/full/ultra) · `/ponytail-debt` · `/ponytail-gain` · `/ponytail-review` · `/ponytail-audit` · `/ponytail-help`
+
 ## 🚀 Deployment
-- Landing page: Vercel
-- CLI: npm publish `@lembaranz/*`
-- Docker: compose.yaml
+
+- **Web (landing + dashboard): Vercel.** Root `vercel.json` builds `packages/dashboard` (output `packages/dashboard/dist`, SPA rewrite, `install.sh` copied into `dist`). Connect the repo to the existing Vercel project (Settings → Git); production deploys follow pushes to `main`.
+- **CLI:** npm publish `@lembaranz/*` — nothing is published yet, so README badges must not link to npm.
+- **Docker:** `compose.yaml` builds the CLI-only image (`Dockerfile`, TUI entrypoint).
