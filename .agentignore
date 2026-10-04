@@ -1,8 +1,7 @@
-# Antigravity & LLM tooling ignore list
 node_modules/
 .next/
 out/
 dist/
 .env
-.env.*
+.env.local
 !.env.example
