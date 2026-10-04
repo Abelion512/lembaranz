@@ -1,822 +1,445 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Archive, 
-  Vault, 
-  DecryptedNote, 
-  NoteInput 
-} from '@lembaranz/core';
-import { 
-  Shield, 
-  KeyRound, 
-  Plus, 
-  Search, 
-  Lock, 
-  Trash2, 
-  Save, 
-  Unlock, 
-  Settings, 
-  Database,
-  Terminal,
-  Activity,
-  Copy,
-  Check,
-  ShieldCheck,
-  Compass
-} from 'lucide-react';
-import confetti from 'canvas-confetti';
+/**
+ * The vault workspace, reached after the lock screen has opened the vault.
+ *
+ * Flow notes that came out of testing this against a real server:
+ *
+ *  - The old version read notes with `if (res.data) setNotes(...)` and ignored
+ *    errors entirely. Locking the vault therefore produced a silently stale or
+ *    empty list with no explanation and no way back in, because the only way to
+ *    enter a master password lived on the screen the user had just left. Every
+ *    vault read now goes through `run`, which hands a `locked` result back to
+ *    the lock screen instead of swallowing it.
+ *  - The "Env Manager" tab was two buttons that did nothing and one hardcoded
+ *    profile row. It is gone, replaced by a live audit-chain view.
+ *  - "LEMBARANZ V3" was hardcoded in four places while the landing page showed a
+ *    different version. One source of truth now.
+ *
+ * The workspace uses the same charcoal, cream and sand system as the landing
+ * page, so opening the vault feels like walking through the door rather than
+ * switching products. Hierarchy comes from the three luminance steps in the
+ * Tailwind theme rather than from borders, which keeps a dense screen calm.
+ *
+ * Accessibility kept from the original: real tab semantics with `aria-selected`
+ * and matching panels, focusable note rows with Enter and Space, and 44px
+ * minimum targets. Copied secrets are wiped after 30s, but only when the
+ * clipboard still holds exactly what we wrote.
+ */
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Check, Copy, Lock, Plus, Save, Search, Trash2 } from 'lucide-react';
+import type { DecryptedNote, NoteInput } from '@lembaranz/core';
+import { api, baseUrl, consumeConnectLink, isConnected } from './api';
+import { ConnectScreen } from './ConnectScreen';
+import { LockScreen } from './LockScreen';
+import { IntegrityPanel } from './IntegrityPanel';
+
+/** How long a copied secret may sit in the system clipboard. */
+const CLIPBOARD_WIPE_MS = 30000;
+
+/** Apple HIG minimum hit target. */
+const TAP_TARGET = 'min-h-[44px] min-w-[44px]';
+
+/**
+ * The editor fields were the real offenders: the title input sat in a 56px row
+ * with `items-center`, so it kept its natural 24px height rather than
+ * stretching, and the tag input was 20px. A search box at 40px missed the mark
+ * by four. All three now declare the floor instead of arriving at it through
+ * padding arithmetic.
+ */
+/* `placeholder:text-faint` is undimmed on purpose. Faint is already 5.3:1 on
+   the dark grounds, and dimming it by 30% drops the placeholder to 3.3:1, which
+   is under WCAG AA for the text it stands in for. `outline-none` is gone too:
+   it suppressed the focus ring on the fields where you type a master password,
+   which is the last place that should lose one. */
+const FIELD = `${TAP_TARGET} bg-transparent placeholder:text-faint`;
+const FIELD_BOXED = `${TAP_TARGET} rounded-xl border border-line bg-ink-soft placeholder:text-faint`;
+
+type Tab = 'entries' | 'integrity';
 
 export default function App() {
-  // Authentication & Vault State
-  const [isSetup, setIsSetup] = useState<boolean | null>(null);
-  const [isUnlocked, setIsUnlocked] = useState<boolean>(false);
-  const [password, setPassword] = useState<string>('');
-  const [confirmPassword, setConfirmPassword] = useState<string>('');
-  const [mnemonic, setMnemonic] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  
-  // App/Note State
+  // The vault lives in a server process; without its address and token there is
+  // nothing to talk to, so the connect screen comes first.
+  const [connected, setConnected] = useState(isConnected());
+  // A connect link from `lembaranz server` carries the origin and token in the
+  // fragment. Consuming it here means the user never sees the connect form at
+  // all on the happy path.
+  const [paired, setPaired] = useState(() => consumeConnectLink());
+
+  if (!connected && !paired) {
+    return <ConnectScreen onConnected={() => setConnected(true)} />;
+  }
+
+  return (
+    <VaultApp
+      key={baseUrl()}
+      onDisconnect={() => {
+        sessionStorage.clear();
+        setConnected(false);
+        setPaired(false);
+      }}
+    />
+  );
+}
+
+const VaultApp: React.FC<{ onDisconnect: () => void }> = ({ onDisconnect }) => {
+  const { t } = useTranslation();
+
+  const [hasVault, setHasVault] = useState<boolean | null>(null);
+  const [isUnlocked, setIsUnlocked] = useState(false);
   const [notes, setNotes] = useState<DecryptedNote[]>([]);
   const [activeNote, setActiveNote] = useState<DecryptedNote | null>(null);
-  const [noteContent, setNoteContent] = useState<string>('');
-  const [noteTitle, setNoteTitle] = useState<string>('');
-  const [noteTags, setNoteTags] = useState<string>('');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [currentTab, setCurrentTab] = useState<'notes' | 'graph' | 'settings' | 'laras'>('notes');
+  const [noteContent, setNoteContent] = useState('');
+  const [noteTitle, setNoteTitle] = useState('');
+  const [noteTags, setNoteTags] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [tab, setTab] = useState<Tab>('entries');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [savedAt, setSavedAt] = useState<number | null>(null);
 
-  // Settings / Panic State
-  const [panicPassword, setPanicPassword] = useState<string>('');
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  /**
+   * Runs a vault call, treating "locked" as a session event rather than an error.
+   *
+   * The vault can lock underneath the UI at any time (the server process holds
+   * the key, so `POST /lock` from anywhere, an idle timeout, or a restart makes
+   * every subsequent call fail). Treating that as an ordinary error is what left
+   * users staring at an empty vault with no way back in.
+   */
+  const run = useCallback(
+    async <T,>(operation: () => Promise<{ data: T; error: null } | { data: null; error: { message: string; code: string | null } }>) => {
+      const res = await operation();
+      if (res.error?.code === 'locked') setIsUnlocked(false);
+      return res;
+    },
+    []
+  );
 
-  // Check setup status on load
   useEffect(() => {
-    async function checkSetup() {
-      const isSetupVal = await Archive.isVaultSetup();
-      setIsSetup(isSetupVal);
-    }
-    checkSetup();
+    void (async () => {
+      const res = await api.status();
+      if (res.data) {
+        setHasVault(res.data.setup);
+        // The server may already hold an unlocked session from a reload.
+        if (res.data.setup && !res.data.locked) setIsUnlocked(true);
+      } else {
+        setHasVault(null);
+      }
+    })();
   }, []);
 
-  // Reload notes list when unlocked
-  const refreshNotes = async () => {
-    const res = await Archive.getAllNotes();
-    if (res.data) {
-      setNotes(res.data);
-    }
+  const refreshNotes = useCallback(async () => {
+    const res = await run(() => api.listNotes());
+    if (res.data) setNotes(res.data);
+  }, [run]);
+
+  useEffect(() => {
+    if (isUnlocked) void refreshNotes();
+  }, [isUnlocked, refreshNotes]);
+
+  const openNote = async (note: DecryptedNote) => {
+    const res = await run(() => api.getNote(note.id));
+    if (!res.data) return;
+    setActiveNote(res.data);
+    setNoteTitle(res.data.title);
+    setNoteContent(res.data.content);
+    setNoteTags(res.data.tags?.join(', ') ?? '');
   };
 
-  // Handle Vault Unlock
-  const handleUnlock = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!password) return;
-    setIsLoading(true);
-    setError(null);
-    try {
-      const res = await Archive.unlockVault(password);
-      if (res.data === true) {
-        setIsUnlocked(true);
-        confetti({ particleCount: 80, spread: 60, origin: { y: 0.8 } });
-        await refreshNotes();
-      } else {
-        setError('Incorrect Master Password / 无效密码.');
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unlock failed.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Handle Vault Initialization Setup
-  const handleSetup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!password || !confirmPassword) return;
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters!");
-      return;
-    }
-    if (password !== confirmPassword) {
-      setError("Password and confirmation do not match!");
-      return;
-    }
-    setIsLoading(true);
-    setError(null);
-    try {
-      const res = await Archive.setupVault(password, mnemonic || undefined);
-      if (res.error) {
-        setError(res.error.message);
-      } else {
-        setIsSetup(true);
-        setIsUnlocked(true);
-        confetti({ particleCount: 100, spread: 80 });
-        await refreshNotes();
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Setup failed.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Select a note to decrypt and view
-  const handleSelectNote = async (note: DecryptedNote) => {
-    setIsLoading(true);
-    try {
-      const res = await Archive.getNoteById(note.id);
-      if (res.data) {
-        const fullNote = res.data as DecryptedNote;
-        setActiveNote(fullNote);
-        setNoteTitle(fullNote.title);
-        setNoteContent(fullNote.content);
-        setNoteTags(fullNote.tags?.join(', ') || '');
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Create a new fresh note
-  const handleNewNote = () => {
+  const newNote = () => {
     setActiveNote(null);
     setNoteTitle('');
     setNoteContent('');
     setNoteTags('');
   };
 
-  // Save current active or new note
-  const handleSaveNote = async () => {
+  const save = async () => {
     if (!noteTitle.trim()) return;
-    setIsLoading(true);
+    setBusy(true);
     try {
-      const noteInput: NoteInput = {
+      const input: NoteInput = {
         id: activeNote?.id || undefined,
         title: noteTitle,
         content: noteContent,
         folderId: null,
         isPinned: false,
         isFavorite: false,
-        tags: noteTags.split(',').map(t => t.trim()).filter(t => t !== '')
+        tags: noteTags.split(',').map((tag) => tag.trim()).filter(Boolean),
       };
-      const res = await Archive.saveNote(noteInput);
-      if (res.data) {
-        setSuccessMessage("Note encrypted and saved successfully! / 存储成功.");
-        setTimeout(() => setSuccessMessage(null), 3000);
-        await refreshNotes();
-        // Set new note as active
-        const savedNote = res.data;
-        const decryptedRes = await Archive.getNoteById(savedNote.id);
-        if (decryptedRes.data) {
-          setActiveNote(decryptedRes.data as DecryptedNote);
-        }
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save.');
+      const res = await run(() => api.saveNote(input));
+      const saved = res.data;
+      if (!saved) return;
+      await refreshNotes();
+      // The save response is the stored (still sealed) note, so re-read it to
+      // get the decrypted fields rather than echoing the sealed ones back.
+      const decrypted = await run(() => api.getNote(saved.id));
+      if (decrypted.data) setActiveNote(decrypted.data);
+      setSavedAt(Date.now());
     } finally {
-      setIsLoading(false);
+      setBusy(false);
     }
   };
 
-  // Delete note
-  const handleDeleteNote = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this encrypted note?')) return;
-    await Archive.deleteNote(id);
-    setActiveNote(null);
-    setNoteTitle('');
-    setNoteContent('');
-    setNoteTags('');
+  const remove = async (id: string) => {
+    if (!window.confirm(t('vault.deleteConfirm'))) return;
+    await run(() => api.deleteNote(id));
+    newNote();
     await refreshNotes();
   };
 
-  // Copy content to clipboard and trigger auto-wipe simulation
-  const handleCopyContent = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
+  /**
+   * Copy note content, then wipe the clipboard.
+   *
+   * A copied secret otherwise stays in the system clipboard until something
+   * else overwrites it. The wipe is conditional: it clears only when the
+   * clipboard still holds exactly what we wrote, so a later copy by the user is
+   * never destroyed. `readText` needs clipboard-read permission and fails on
+   * insecure origins; in that case the value is left alone.
+   */
+  const copy = (text: string, id: string) => {
+    void navigator.clipboard?.writeText(text).catch(() => {});
     setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
+    window.setTimeout(() => setCopiedId(null), 2000);
+    window.setTimeout(() => {
+      navigator.clipboard
+        .readText()
+        .then((current) => {
+          if (current === text) void navigator.clipboard.writeText('');
+        })
+        .catch(() => {});
+    }, CLIPBOARD_WIPE_MS);
   };
 
-  // Set panic password key
-  const handleSavePanicKey = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!panicPassword) return;
-    await Archive.setPanicKey(panicPassword);
-    setSuccessMessage('Panic Key configured successfully! / 恐慌密码设置成功.');
-    setPanicPassword('');
-    setTimeout(() => setSuccessMessage(null), 3000);
-  };
-
-  // Lock Vault again
-  const handleLockVault = () => {
-    Vault.clearKey();
+  const lock = () => {
+    void api.lock();
     setIsUnlocked(false);
     setActiveNote(null);
     setNotes([]);
+    newNote();
   };
 
-  // Decrypted notes filtered by query
   const filteredNotes = useMemo(() => {
-    return notes.filter(note => 
-      note.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      note.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return notes;
+    return notes.filter(
+      (note) =>
+        note.title.toLowerCase().includes(query) ||
+        note.tags?.some((tag) => tag.toLowerCase().includes(query))
     );
   }, [notes, searchQuery]);
 
-  // Network Graph nodes and links calculation
-  const graphData = useMemo(() => {
-    const nodes: { id: string; label: string; group: 'note' | 'tag'; size: number }[] = [];
-    const links: { source: string; target: string }[] = [];
-    const tagMap = new Map<string, string[]>();
-
-    filteredNotes.forEach(note => {
-      nodes.push({ id: note.id, label: note.title, group: 'note', size: 12 });
-      note.tags?.forEach(tag => {
-        if (!tagMap.has(tag)) {
-          tagMap.set(tag, []);
-        }
-        tagMap.get(tag)!.push(note.id);
-      });
-    });
-
-    tagMap.forEach((noteIds, tag) => {
-      nodes.push({ id: `tag-${tag}`, label: `#${tag}`, group: 'tag', size: 8 });
-      noteIds.forEach(noteId => {
-        links.push({ source: noteId, target: `tag-${tag}` });
-      });
-    });
-
-    return { nodes, links };
-  }, [filteredNotes]);
-
-  // Loading Screen
-  if (isSetup === null) {
+  if (hasVault === null) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center text-secondary font-mono">
-        <div className="flex flex-col items-center gap-3">
-          <Activity className="animate-pulse text-cyan-400" size={32} />
-          <span>INITIALIZING VAULT SYSTEMS...</span>
-        </div>
+      <div className="hero-field flex h-screen w-screen items-center justify-center text-faint">
+        <span className="fade-up text-sm">{t('vault.verify')}...</span>
       </div>
     );
   }
 
-  // Lock / Login Screen
   if (!isUnlocked) {
     return (
-      <div className="flex min-h-screen w-screen items-center justify-center p-4 font-mono">
-        <div className="surface-raised w-full max-w-md p-8 rounded-2xl hairline border">
-          <div className="flex flex-col items-center text-center mb-8">
-            <div className="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-full mb-3 text-cyan-400">
-              <Shield size={36} />
-            </div>
-            <h1 className="text-xl font-bold tracking-widest text-cyan-400">LEMBARANZ V3</h1>
-            <p className="text-xs text-slate-500 mt-1 uppercase">Local-First Zero-Knowledge Vault</p>
-          </div>
-
-          <form onSubmit={isSetup ? handleUnlock : handleSetup} className="space-y-5">
-            {error && (
-              <div className="text-xs text-red-400 border border-red-500/20 bg-red-500/5 p-3 rounded font-sans">
-                {error}
-              </div>
-            )}
-
-            {!isSetup && (
-              <div className="text-xs text-amber-400 border border-amber-500/20 bg-amber-500/5 p-3 rounded font-sans leading-relaxed">
-                <strong>New Vault Detected.</strong> Please configure master password to secure your digital vault.
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <label className="text-xs uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
-                <KeyRound size={12} className="text-cyan-500" />
-                Master Password
-              </label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 focus:border-cyan-500/50 p-2.5 outline-none rounded font-sans text-sm tracking-widest"
-                required
-              />
-            </div>
-
-            {!isSetup && (
-              <>
-                <div className="space-y-2">
-                  <label className="text-xs uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
-                    <KeyRound size={12} className="text-cyan-500" />
-                    Confirm Password
-                  </label>
-                  <input
-                    type="password"
-                    placeholder="••••••••"
-                    value={confirmPassword}
-                    onChange={e => setConfirmPassword(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 focus:border-cyan-500/50 p-2.5 outline-none rounded font-sans text-sm tracking-widest"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
-                    <KeyRound size={12} className="text-cyan-500" />
-                    12-Word Seed Phrase (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="word1 word2 ... word12"
-                    value={mnemonic}
-                    onChange={e => setMnemonic(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 focus:border-cyan-500/50 p-2.5 outline-none rounded font-sans text-xs"
-                  />
-                </div>
-              </>
-            )}
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-4 transition-all duration-150 uppercase tracking-widest flex items-center justify-center gap-2 rounded border border-cyan-400/30"
-            >
-              {isLoading ? (
-                <span>PROCESSING...</span>
-              ) : (
-                <>
-                  {isSetup ? <Unlock size={16} /> : <Plus size={16} />}
-                  <span>{isSetup ? 'OPEN VAULT' : 'INITIALIZE VAULT'}</span>
-                </>
-              )}
-            </button>
-          </form>
-
-          <div className="mt-8 text-center border-t border-white/10 pt-4">
-            <span className="text-[10px] text-slate-400 font-mono">
-              Argon2id (m=64 MiB, t=2, p=1) + AES-256-GCM
-            </span>
-          </div>
-        </div>
-      </div>
+      <LockScreen
+        hasVault={hasVault}
+        onUnlocked={() => {
+          setHasVault(true);
+          setIsUnlocked(true);
+        }}
+        onDisconnect={onDisconnect}
+      />
     );
   }
 
-  // Dashboard Workspace Screen (Unlocked!)
   return (
-    <div className="flex h-screen w-screen overflow-hidden font-sans text-slate-200">
-      
-      {/* Sidebar - Left Section */}
-      <aside className="surface w-80 shrink-0 flex flex-col min-h-0 hairline border-r">
-        
-        {/* Sidebar Header */}
-        <div className="p-5 border-b border-white/10 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-cyan-500/10 border border-cyan-500/20 rounded text-cyan-400">
-              <Shield size={18} />
-            </div>
-            <div>
-              <h1 className="font-bold text-sm tracking-wider text-cyan-400">LEMBARANZ V3</h1>
-              <p className="text-[10px] text-slate-500 uppercase tracking-widest">Digital Vault</p>
-            </div>
-          </div>
+    <div className="flex h-screen w-screen overflow-hidden">
+      <aside className="flex min-h-0 w-80 shrink-0 flex-col border-r border-line bg-ink-soft">
+        <div className="flex items-center justify-between border-b border-line px-5 py-3">
+          <span className="font-display text-[17px] text-cream">{t('lock.title')}</span>
           <button
-            onClick={handleLockVault}
-            title="Lock Vault"
-            aria-label="Lock Vault"
-            className="p-1.5 bg-white/5 border border-white/10 text-slate-400 hover:text-red-400 hover:border-red-500/40 rounded transition-colors"
+            type="button"
+            onClick={lock}
+            title={t('lock.lock')}
+            aria-label={t('lock.lock')}
+            className={`${TAP_TARGET} flex items-center justify-center rounded-full border border-line text-muted transition-colors hover:border-alert/50 hover:text-alert`}
           >
             <Lock size={14} />
           </button>
         </div>
 
-        {/* Sidebar Navigation */}
-        <div className="grid grid-cols-4 border-b border-white/10 text-xs font-mono">
-          <button
-            onClick={() => setCurrentTab('notes')}
-            className={`py-3 text-center border-b-2 transition-all ${
-              currentTab === 'notes' ? 'border-cyan-500 text-cyan-400 bg-cyan-500/5' : 'border-transparent text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            NOTES
-          </button>
-          <button
-            onClick={() => setCurrentTab('graph')}
-            className={`py-3 text-center border-b-2 transition-all ${
-              currentTab === 'graph' ? 'border-cyan-500 text-cyan-400 bg-cyan-500/5' : 'border-transparent text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            GRAPH
-          </button>
-          <button
-            onClick={() => setCurrentTab('laras')}
-            className={`py-3 text-center border-b-2 transition-all ${
-              currentTab === 'laras' ? 'border-cyan-500 text-cyan-400 bg-cyan-500/5' : 'border-transparent text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            LARAS
-          </button>
-          <button
-            onClick={() => setCurrentTab('settings')}
-            className={`py-3 text-center border-b-2 transition-all ${
-              currentTab === 'settings' ? 'border-cyan-500 text-cyan-400 bg-cyan-500/5' : 'border-transparent text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            CONF
-          </button>
+        <div role="tablist" aria-label={t('lock.title')} className="grid grid-cols-2 border-b border-line">
+          {([['entries', t('vault.new')], ['integrity', t('vault.integrity')]] as const).map(([id, label]) => (
+            <button
+              key={id}
+              role="tab"
+              id={`tab-${id}`}
+              aria-selected={tab === id}
+              aria-controls={`panel-${id}`}
+              onClick={() => setTab(id)}
+              className={`${TAP_TARGET} border-b-2 text-[13px] font-medium transition-colors ${
+                tab === id ? 'border-sand text-sand' : 'border-transparent text-faint hover:text-muted'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
 
-        {/* Notes Tab Content */}
-        {currentTab === 'notes' && (
-          <div className="flex-1 flex flex-col min-h-0">
-            {/* Search Bar */}
-            <div className="p-3 border-b border-white/10">
+        {tab === 'entries' ? (
+          <>
+            <div className="border-b border-line p-3">
               <div className="relative">
-                <Search size={14} className="absolute left-3 top-3 text-slate-500" />
+                <Search size={14} className="absolute left-3.5 top-3.5 text-faint" />
                 <input
-                  type="text"
-                  placeholder="Search notes / tags..."
+                  type="search"
                   value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 text-xs pl-8 pr-3 py-2 outline-none rounded focus:border-cyan-500/50 font-sans"
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={t('vault.search')}
+                  aria-label={t('vault.search')}
+                  className={`${FIELD_BOXED} w-full pl-9 pr-3 text-sm text-cream focus:border-sand`}
                 />
               </div>
             </div>
 
-            {/* Notes List */}
-            <div className="flex-1 overflow-y-auto p-2.5 space-y-2">
+            <div className="flex-1 space-y-1.5 overflow-y-auto p-2.5">
               <button
-                onClick={handleNewNote}
-                className="w-full border border-dashed border-cyan-500/30 hover:border-cyan-500/50 hover:bg-cyan-500/5 py-2 px-3 flex items-center justify-center gap-1.5 text-xs font-mono text-cyan-400 rounded transition-all mb-3"
+                type="button"
+                onClick={newNote}
+                className={`${TAP_TARGET} mb-2 w-full rounded-xl border border-dashed border-line text-sm text-muted transition-colors hover:border-sand/60 hover:bg-sand/5 hover:text-sand`}
               >
-                <Plus size={14} />
-                <span>NEW NOTE / 新建</span>
+                <Plus size={14} className="mr-1.5 inline -mt-0.5" />
+                {t('vault.new')}
               </button>
 
               {filteredNotes.length === 0 ? (
-                <div className="text-center text-xs text-slate-400 font-mono py-12">
-                  No notes yet.
-                </div>
+                <p className="px-2 py-10 text-sm leading-relaxed text-faint">
+                  {notes.length === 0 ? t('vault.empty') : t('vault.emptyFiltered')}
+                </p>
               ) : (
-                filteredNotes.map(note => (
-                  <div
+                filteredNotes.map((note) => (
+                  <button
                     key={note.id}
-                    onClick={() => handleSelectNote(note)}
-                    className={`p-3 border rounded cursor-pointer transition-all ${
+                    type="button"
+                    onClick={() => void openNote(note)}
+                    aria-current={activeNote?.id === note.id}
+                    className={`${TAP_TARGET} w-full rounded-xl border p-3 text-left transition-colors ${
                       activeNote?.id === note.id
-                        ? 'border-cyan-500/60 bg-cyan-500/5 text-cyan-300'
-                        : 'border-white/10 hover:border-white/20 hover:bg-white/5 text-slate-300'
+                        ? 'border-sand/60 bg-sand/10'
+                        : 'border-line hover:border-muted/40 hover:bg-ink-raised'
                     }`}
                   >
-                    <div className="flex items-center justify-between mb-1.5">
-                      <h3 className="font-semibold text-sm truncate pr-2">{note.title}</h3>
-                      <span className="text-[9px] text-slate-500 font-mono shrink-0">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="truncate text-sm font-medium text-cream">{note.title}</span>
+                      <span className="shrink-0 text-[10px] text-faint tabular-nums">
                         {note.updatedAt?.slice(0, 10)}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-500 truncate mb-2">
-                      {note.preview || 'No preview available'}
-                    </p>
+                    {note.preview && <p className="mt-1 truncate text-xs text-faint">{note.preview}</p>}
                     {note.tags && note.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {note.tags.map((t: string) => (
-                          <span key={t} className="text-[9px] font-mono bg-white/5 border border-white/10 text-slate-400 px-1 rounded">
-                            #{t}
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {note.tags.map((tag) => (
+                          <span key={tag} className="rounded border border-line px-1.5 py-0.5 text-[10px] text-muted">
+                            #{tag}
                           </span>
                         ))}
                       </div>
                     )}
-                  </div>
+                  </button>
                 ))
               )}
             </div>
-          </div>
-        )}
 
-        {/* Quick Dashboard Stat Footer */}
-        <div className="p-4 border-t border-white/10 bg-slate-950/20 text-[10px] text-slate-500 font-mono flex items-center justify-between">
-          <span>NOTES: {notes.length}</span>
-          <span>VAULT: SECURED V3</span>
-        </div>
+            <div className="border-t border-line p-3 text-xs text-faint">
+              {notes.length} {t('vault.noteCount')}
+            </div>
+          </>
+        ) : (
+          <div className="min-h-0 flex-1" />
+        )}
       </aside>
 
-      {/* Main Workspace - Right Section */}
-      <main className="flex-1 flex flex-col min-h-0 relative">
-        
-        {/* Toast success message */}
-        {successMessage && (
-          <div className="absolute top-4 right-4 z-50 surface-raised hairline border text-secondary px-4 py-2 text-xs rounded font-mono flex items-center gap-1.5 fade-up">
-            <ShieldCheck size={14} className="text-cyan-400" />
-            {successMessage}
+      <main className="flex min-w-0 flex-1 flex-col">
+        {savedAt && (
+          <div
+            role="status"
+            className="absolute right-4 top-4 z-50 rounded-full border border-line bg-ink-raised px-4 py-2 text-xs text-sand"
+          >
+            {t('vault.saved')}
           </div>
         )}
 
-        {/* Tab 1: Editor & Viewer (Default) */}
-        {currentTab === 'notes' && (
-          <div className="flex-1 flex flex-col min-h-0">
-            {/* Action Header bar */}
-            <div className="h-14 border-b border-white/10 px-6 flex items-center justify-between">
-              <div className="flex-1 min-w-0 mr-4">
-                <input
-                  type="text"
-                  placeholder="Note Title..."
-                  value={noteTitle}
-                  onChange={e => setNoteTitle(e.target.value)}
-                  className="bg-transparent text-slate-100 font-bold outline-none text-base w-full placeholder-slate-500 font-sans"
-                />
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
+        {tab === 'integrity' ? (
+          <div role="tabpanel" id="panel-integrity" aria-labelledby="tab-integrity" className="min-h-0 flex-1">
+            <IntegrityPanel />
+          </div>
+        ) : (
+          <div role="tabpanel" id="panel-entries" aria-labelledby="tab-entries" className="flex min-h-0 flex-1 flex-col">
+            <div className="flex h-14 items-center justify-between gap-4 border-b border-line px-6">
+              <input
+                type="text"
+                value={noteTitle}
+                onChange={(e) => setNoteTitle(e.target.value)}
+                placeholder={t('vault.titlePlaceholder')}
+                aria-label={t('vault.titlePlaceholder')}
+                className={`${FIELD} min-w-0 flex-1 font-display text-lg text-cream`}
+              />
+              <div className="flex shrink-0 items-center gap-2">
                 {activeNote && (
                   <>
                     <button
-                      onClick={() => handleCopyContent(noteContent, activeNote.id)}
-                      title="Copy Note Content"
-                      aria-label="Copy Note Content"
-                      className="p-2 border border-white/10 hover:border-cyan-500/40 hover:bg-cyan-500/5 hover:text-cyan-400 text-slate-400 rounded transition-colors"
+                      type="button"
+                      onClick={() => copy(noteContent, activeNote.id)}
+                      title={t('vault.copy')}
+                      aria-label={t('vault.copy')}
+                      className={`${TAP_TARGET} flex items-center justify-center rounded-full border border-line text-muted transition-colors hover:border-sand/60 hover:text-sand`}
                     >
-                      {copiedId === activeNote.id ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
+                      {copiedId === activeNote.id ? <Check size={16} className="text-sage" /> : <Copy size={16} />}
                     </button>
                     <button
-                      onClick={() => handleDeleteNote(activeNote.id)}
-                      title="Delete Note"
-                      aria-label="Delete Note"
-                      className="p-2 border border-white/10 hover:border-red-500/40 hover:bg-red-500/5 hover:text-red-400 text-slate-400 rounded transition-colors"
+                      type="button"
+                      onClick={() => void remove(activeNote.id)}
+                      title={t('vault.delete')}
+                      aria-label={t('vault.delete')}
+                      className={`${TAP_TARGET} flex items-center justify-center rounded-full border border-line text-muted transition-colors hover:border-alert/60 hover:text-alert`}
                     >
                       <Trash2 size={16} />
                     </button>
                   </>
                 )}
                 <button
-                  onClick={handleSaveNote}
-                  className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-1.5 px-4 text-xs tracking-wider flex items-center gap-1.5 rounded transition-all uppercase"
+                  type="button"
+                  onClick={() => void save()}
+                  disabled={busy}
+                  className="btn btn-sand px-5 text-sm disabled:opacity-60"
                 >
                   <Save size={14} />
-                  <span>SAVE</span>
+                  {busy ? t('vault.saving') : t('vault.save')}
                 </button>
               </div>
             </div>
 
-            {/* Note Tags bar */}
-            <div className="px-6 py-2 border-b border-white/10 bg-white/[0.03] flex items-center gap-2">
-              <span className="text-[10px] uppercase font-mono text-slate-500 tracking-wider">Tags:</span>
+            <div className="flex items-center gap-3 border-b border-line bg-ink-soft px-6 py-2">
+              <span className="eyebrow shrink-0 text-faint">{t('vault.tagsLabel')}</span>
               <input
                 type="text"
-                placeholder="e.g.: project, database, env"
                 value={noteTags}
-                onChange={e => setNoteTags(e.target.value)}
-                className="bg-transparent text-xs text-slate-400 outline-none w-full placeholder-slate-600"
+                onChange={(e) => setNoteTags(e.target.value)}
+                placeholder={t('vault.tagsPlaceholder')}
+                aria-label={t('vault.tagsLabel')}
+                className={`${FIELD} min-w-0 flex-1 text-sm text-cream`}
               />
             </div>
 
-            {/* Editor Area */}
             <div className="flex-1 p-6">
               <textarea
-                placeholder="Type your encrypted note content here (Markdown format supported)..."
                 value={noteContent}
-                onChange={e => setNoteContent(e.target.value)}
-                className="w-full h-full bg-transparent border-0 outline-none resize-none font-mono text-sm leading-relaxed placeholder-slate-600 text-slate-300"
+                onChange={(e) => setNoteContent(e.target.value)}
+                placeholder={t('vault.bodyPlaceholder')}
+                aria-label={t('vault.bodyPlaceholder')}
+                spellCheck={false}
+                className="h-full w-full resize-none border-0 bg-transparent font-mono text-sm leading-relaxed text-cream"
               />
-            </div>
-          </div>
-        )}
-
-        {/* Tab 2: Graph visualization */}
-        {currentTab === 'graph' && (
-          <div className="flex-1 flex flex-col min-h-0 p-6">
-            <div className="mb-4">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
-                <Compass size={16} />
-                Graph Visualization
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Interactive representation of connections between encrypted notes based on tag label matching.
-              </p>
-            </div>
-
-            {/* Simple Network Graph renderer via dynamic SVG */}
-            <div className="flex-1 surface rounded-lg relative overflow-hidden flex items-center justify-center">
-              {graphData.nodes.length === 0 ? (
-                <div className="text-center font-mono text-xs text-slate-400">
-                  No relations to render yet. Add tags to your notes!
-                </div>
-              ) : (
-                <svg className="w-full h-full min-h-[400px]">
-                  {/* Lines between nodes */}
-                  {graphData.links.map((link, idx) => {
-                    const sourceNodeIdx = graphData.nodes.findIndex(n => n.id === link.source);
-                    const targetNodeIdx = graphData.nodes.findIndex(n => n.id === link.target);
-                    if (sourceNodeIdx === -1 || targetNodeIdx === -1) return null;
-
-                    // Compute simple deterministic coordinates for nodes to render static network
-                    const numNodes = graphData.nodes.length;
-                    const angleS = (sourceNodeIdx / numNodes) * 2 * Math.PI;
-                    const angleT = (targetNodeIdx / numNodes) * 2 * Math.PI;
-                    
-                    const x1 = 400 + Math.cos(angleS) * 150;
-                    const y1 = 200 + Math.sin(angleS) * 100;
-                    const x2 = 400 + Math.cos(angleT) * 150;
-                    const y2 = 200 + Math.sin(angleT) * 100;
-
-                    return (
-                      <line
-                        key={`link-${idx}`}
-                        x1={x1}
-                        y1={y1}
-                        x2={x2}
-                        y2={y2}
-                        stroke="#0891b2"
-                        strokeOpacity="0.25"
-                        strokeWidth="1.5"
-                      />
-                    );
-                  })}
-
-                  {/* Render node circles and labels */}
-                  {graphData.nodes.map((node, idx) => {
-                    const numNodes = graphData.nodes.length;
-                    const angle = (idx / numNodes) * 2 * Math.PI;
-                    const x = 400 + Math.cos(angle) * 150;
-                    const y = 200 + Math.sin(angle) * 100;
-
-                    const isTag = node.group === 'tag';
-
-                    return (
-                      <g key={node.id} className="cursor-pointer group">
-                        <circle
-                          cx={x}
-                          cy={y}
-                          r={isTag ? 6 : 8}
-                          fill={isTag ? '#e11d48' : '#22d3ee'}
-                          className="transition-all duration-150 group-hover:scale-150"
-                        />
-                        <text
-                          x={x}
-                          y={y - 12}
-                          textAnchor="middle"
-                          fill={isTag ? '#fda4af' : '#e2e8f0'}
-                          className="text-[9px] font-mono select-none"
-                        >
-                          {node.label}
-                        </text>
-                      </g>
-                    );
-                  })}
-                </svg>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Tab 3: Environment Manager (Laras) */}
-        {currentTab === 'laras' && (
-          <div className="flex-1 flex flex-col min-h-0 p-6 space-y-6">
-            <div>
-              <h2 className="text-sm font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
-                <Terminal size={16} />
-                Laras (Environment Manager)
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Save and load .env configuration files securely directly from/to your local machine without leaks.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Import Env */}
-              <div className="surface p-5 rounded-lg space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-secondary flex items-center gap-1.5">
-                  <Plus size={14} className="text-cyan-400" />
-                  Save New .env Project
-                </h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Enter your plaintext .env file content below. Lembaranz will encrypt and purge it from plaintext.
-                </p>
-                <div className="space-y-3">
-                  <input
-                    type="text"
-                    placeholder="Project Name (e.g., lembaranz-webui)"
-                    className="w-full bg-white/5 border border-white/10 text-xs p-2.5 outline-none rounded focus:border-cyan-500/50"
-                  />
-                  <textarea
-                    placeholder="DATABASE_URL=postgres://...&#10;API_KEY=xyz..."
-                    className="w-full h-32 bg-white/5 border border-white/10 text-xs p-2.5 outline-none rounded resize-none font-mono focus:border-cyan-500/50"
-                  />
-                  <button
-                    onClick={() => {
-                      setSuccessMessage('.env project saved to vault!');
-                      setTimeout(() => setSuccessMessage(null), 3000);
-                    }}
-                    className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2 px-4 text-xs tracking-wider rounded transition-all uppercase w-full flex items-center justify-center gap-1.5"
-                  >
-                    <Plus size={12} />
-                    <span>SAVE ENV CONFIG</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Saved Env Projects */}
-              <div className="surface p-5 rounded-lg space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-secondary flex items-center gap-1.5">
-                  <Database size={14} className="text-cyan-400" />
-                  Saved Env Profiles
-                </h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  List of encrypted .env profiles in the vault ready to be loaded into your working directory.
-                </p>
-                
-                <div className="space-y-2">
-                  <div className="border border-white/10 bg-slate-950/40 p-3 rounded flex items-center justify-between">
-                    <div>
-                      <h4 className="text-xs font-bold font-mono text-cyan-400">lembaranz-core</h4>
-                      <span className="text-[10px] text-slate-400 font-mono">Last updated: 2026-05-30</span>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => {
-                          setSuccessMessage('.env config loaded successfully to local!');
-                          setTimeout(() => setSuccessMessage(null), 3000);
-                        }}
-                        className="border border-cyan-500/30 hover:border-cyan-500/50 bg-cyan-500/5 hover:bg-cyan-500/10 text-cyan-300 text-[10px] font-mono px-2.5 py-1 rounded transition-all"
-                      >
-                        LOAD
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tab 4: Configuration & Panic Settings */}
-        {currentTab === 'settings' && (
-          <div className="flex-1 flex flex-col min-h-0 p-6 space-y-6">
-            <div>
-              <h2 className="text-sm font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
-                <Settings size={16} />
-                Vault Configuration & Panic Key
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Configure vault behavior and manage sensitive data along with anti-brute force settings.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Panic Key configuration */}
-              <div className="surface p-5 rounded-lg space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-red-400 flex items-center gap-1.5">
-                  <Lock size={14} />
-                  PANIC KEY / 恐慌密码 (Kill-Switch)
-                </h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Configure a special password. If this password is entered on the login screen, **all vault data in IndexedDB/on this local machine will be immediately and permanently wiped clean** to protect it from forced physical access!
-                </p>
-                <form onSubmit={handleSavePanicKey} className="space-y-3">
-                  <input
-                    type="password"
-                    placeholder="Enter panic key password..."
-                    value={panicPassword}
-                    onChange={e => setPanicPassword(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 text-xs p-2.5 outline-none rounded focus:border-red-500/30"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    className="bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-4 text-xs tracking-wider rounded transition-all uppercase w-full"
-                  >
-                    ACTIVATE PANIC KEY
-                  </button>
-                </form>
-              </div>
-
-              {/* Vault administration */}
-              <div className="surface p-5 rounded-lg space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-secondary flex items-center gap-1.5">
-                  <Database size={14} className="text-cyan-400" />
-                  Memory Management & Cleanup
-                </h3>
-                <p className="text-xs text-slate-500 leading-relaxed font-sans">
-                  Perform RAM cleanup of memory keys or reset all vault data storage.
-                </p>
-                <div className="space-y-2 pt-2">
-                  <button
-                    onClick={async () => {
-                      if (confirm('HARD WARNING: All your vault data will be permanently wiped and cannot be recovered! Continue?')) {
-                        await Archive.destroyAllData();
-                      }
-                    }}
-                    className="border border-red-500/30 hover:border-red-500/60 bg-red-500/5 hover:bg-red-500/10 text-red-400 text-xs font-mono py-2.5 px-4 rounded transition-all w-full text-left"
-                  >
-                    WIPE VAULT CLEAN (DESTROY ALL DATA)
-                  </button>
-
-                  <div className="text-[10px] text-slate-400 font-mono pt-4 leading-relaxed">
-                    <strong>Memory Cleanup / 内存清理:</strong> Lembaranz automatically cleans up the main password heap buffer in RAM after an idle session of 60 seconds or SIGINT termination.
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         )}
       </main>
     </div>
   );
-}
+};

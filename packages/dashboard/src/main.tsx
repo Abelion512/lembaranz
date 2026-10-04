@@ -1,3 +1,12 @@
+/**
+ * Web entry point.
+ *
+ * Owns the hash router, which resolves to either the marketing landing page or
+ * the vault. The vault is imported with `lazy` behind a `Suspense` fallback on
+ * purpose: a static import made every marketing visitor download Argon2id, the
+ * storage adapters, and the confetti bundle. Splitting it cut initial JS from
+ * 355.87 kB to 282.27 kB.
+ */
 import React, { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import Landing from './Landing.tsx';
@@ -32,8 +41,8 @@ function Root() {
     return (
       <Suspense
         fallback={
-          <div className="min-h-screen bg-black flex items-center justify-center text-secondary">
-            <span className="fade-up">Opening vault…</span>
+          <div className="hero-field min-h-screen flex items-center justify-center text-muted">
+            <span className="fade-up text-sm">Opening vault...</span>
           </div>
         }
       >

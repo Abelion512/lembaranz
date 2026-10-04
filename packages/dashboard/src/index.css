@@ -2,81 +2,152 @@
 @tailwind components;
 @tailwind utilities;
 
+/**
+ * The visual system for both the landing page and the vault.
+ *
+ * Rules that are enforced rather than repeated:
+ *
+ *  - Every interactive control declares a 44px floor. `.btn` carries it, and
+ *    the touch-target suite re-measures the compiled cascade, so a control that
+ *    arrives at 44px through lucky padding still fails.
+ *  - `.eyebrow` and `.btn` deliberately set no colour. Tailwind emits two
+ *    `text-*` colour utilities in theme order, not class-attribute order, so a
+ *    colour baked into a shared class loses to a colour added at the call site
+ *    in a way that is invisible in the source. `.chip` is the one component that
+ *    does carry a default colour (`muted`); it sits in the components layer, so
+ *    a `text-*` utility at the call site still overrides it. Measured, not
+ *    assumed: `chip text-sand` resolves to sand.
+ *  - Nothing here is blue. The accent is sand on every surface, which is what
+ *    keeps the vault screens and the marketing page one product.
+ */
 @layer base {
   html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
   }
+
   body {
-    /* Apple-style pure black canvas; text tinted, never pure gray */
-    background-color: #000;
-    color: #f5f5f7;
-    font-family:
-      -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
-      'Helvetica Neue', 'Segoe UI', Roboto, sans-serif;
-    -webkit-font-smoothing: antialiased;
+    @apply bg-ink text-cream font-sans antialiased;
     text-rendering: optimizeLegibility;
   }
+
+  /* A serif display line needs the fatter ligatures and the tighter default
+     tracking that a sans does not. */
+  .font-display {
+    font-feature-settings: 'liga' 1, 'kern' 1;
+    letter-spacing: -0.015em;
+  }
+
   ::selection {
-    background: rgba(0, 113, 227, 0.35);
+    background: rgba(216, 185, 140, 0.3);
+    color: #f4eee4;
+  }
+
+  /* Keyboard focus stays visible on both grounds. `outline-offset` keeps it off
+     the letterforms of a serif headline. No control in this product opts out of
+     it: `focus:outline-none` on a text field suppresses the ring entirely, and
+     a master password field is the last place to lose a focus indicator. */
+  :focus-visible {
+    outline: 2px solid #d8b98c;
+    outline-offset: 3px;
+  }
+
+  /* On the cream ground the sand accent measures only 1.66:1 against `paper`,
+     so the ring flips to the ink it sits on: 16.46:1. A focus ring nobody can
+     see is the same as no ring at all. Scoped rather than global because the
+     two grounds genuinely need two different colours. */
+  .paper-field :focus-visible {
+    outline-color: #16130f;
   }
 }
 
-/* Apple hairline surfaces: hierarchy through luminance, not borders */
-.hairline {
-  border-color: rgba(255, 255, 255, 0.08);
+@layer components {
+  /* The 44px floor, declared once, on both axes.
+     `inline-flex` is not a block-level box, so the touch-target suite cannot
+     infer a width from the container and measures the declared minimum
+     instead. Without `min-w-[44px]` here every icon-only button built on this
+     class measures 0px wide. */
+  .btn {
+    @apply inline-flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 rounded-full px-6 text-sm font-medium transition-colors duration-200;
+  }
+
+  .btn-sand {
+    @apply bg-sand text-ink hover:bg-sand-deep;
+  }
+
+  /* The ghost pill from the reference pages: a hairline, not a fill, so two
+     calls to action can sit side by side without competing. */
+  .btn-ghost {
+    @apply border border-line text-cream hover:border-sand/60 hover:text-sand;
+  }
+
+  .btn-quiet {
+    @apply text-muted hover:text-sand;
+  }
+
+  /* Small, wide-tracked, sentence case: the label that opens a section title.
+     No `uppercase` here on purpose. Every label on the page inherits this class,
+     so one transform produced 23 all-caps strings in the rendered markup, which
+     is exactly what a rendered-scan rules out. Sentence case at 11px also needs
+     far less tracking than caps did, or the word spaces stop reading. */
+  .eyebrow {
+    @apply text-[11px] font-medium tracking-[0.16em];
+  }
+
+  /* The short rule under a display headline. A real element so a screen
+     reader announces the break and a future edit cannot disagree about it. */
+  .display-rule {
+    @apply block h-px w-12 bg-sand/70;
+  }
+
+  /* Translucent card that sits over the hero. Two layers: a warm wash so it
+     reads as lit glass, and a blurred backdrop so the field behind it shows
+     through faintly. */
+  .glass {
+    background: rgba(244, 238, 228, 0.055);
+    border: 1px solid rgba(236, 224, 205, 0.16);
+    backdrop-filter: blur(20px) saturate(115%);
+    -webkit-backdrop-filter: blur(20px) saturate(115%);
+  }
+
+  /* A small pill label. Used for tag chips and the hero badge. `muted` is the
+     default, not a lock: it lives in the components layer, so `text-sand` or
+     any other colour utility at the call site still wins. Sentence case, for the
+     same reason as `.eyebrow`. */
+  .chip {
+    @apply inline-flex min-h-[28px] items-center rounded-full border border-line px-3 text-[11px] font-medium tracking-[0.06em] text-muted;
+  }
 }
 
-.surface {
-  background: #1d1d1f;
-}
+@layer utilities {
+  /* The hero field. One warm source high on the right, a bounce off the lower
+     left, then the charcoal ground. This is the only gradient in the product
+     and it is a background, so no text is ever set in a gradient. */
+  .hero-field {
+    background-color: #16130f;
+    background-image:
+      radial-gradient(78% 58% at 82% 4%, rgba(216, 185, 140, 0.17) 0%, rgba(216, 185, 140, 0) 62%),
+      radial-gradient(62% 46% at 6% 96%, rgba(160, 122, 74, 0.16) 0%, rgba(160, 122, 74, 0) 72%);
+  }
 
-.surface-raised {
-  background: #2c2c2e;
-}
+  /* The reading sections. A flat cream with a single soft wash at the top so
+     the fold between grounds is not a hard line. */
+  .paper-field {
+    background-color: #f6f1e8;
+    background-image: radial-gradient(120% 40% at 50% 0%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 70%);
+  }
 
-.text-secondary {
-  color: #a1a1a6;
-}
-
-.text-tertiary {
-  color: #6e6e73;
-}
-
-.link {
-  color: #2997ff;
-}
-.link:hover {
-  text-decoration: underline;
-}
-
-/* Primary action: Apple's product blue, one radius, no gradient */
-.btn-primary {
-  background: #0071e3;
-  color: #fff;
-  border-radius: 980px;
-  transition: background-color 0.2s ease;
-}
-.btn-primary:hover {
-  background: #0077ed;
-}
-.btn-primary:active {
-  background: #006edb;
-}
-
-.btn-secondary {
-  background: transparent;
-  color: #2997ff;
-  border-radius: 980px;
-  transition: color 0.2s ease;
-}
-.btn-secondary:hover {
-  text-decoration: underline;
+  /* Deep ground for the closing call to action and the footer. */
+  .abyss-field {
+    background-color: #100e0b;
+    background-image: radial-gradient(70% 60% at 50% 0%, rgba(216, 185, 140, 0.12) 0%, rgba(216, 185, 140, 0) 68%);
+  }
 }
 
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -84,23 +155,23 @@
   }
 }
 .fade-up {
-  animation: fade-up 0.5s ease both;
+  animation: fade-up 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
 
-/* Custom Scrollbars */
+/* A warm scrollbar so the chrome does not flash cold grey mid-scroll. */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #3a3a3c;
-  border-radius: 8px;
+  background: rgba(216, 185, 140, 0.28);
+  border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #48484a;
+  background: rgba(216, 185, 140, 0.42);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -109,5 +180,10 @@
   }
   .fade-up {
     animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
   }
 }

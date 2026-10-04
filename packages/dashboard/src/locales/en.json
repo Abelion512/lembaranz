@@ -1,274 +1,350 @@
 {
+  "lock": {
+    "title": "Lembaranz",
+    "subtitle": "A vault that runs on your machine. No account, no cloud, no telemetry.",
+    "masterPassword": "Master password",
+    "confirmPassword": "Confirm password",
+    "unlock": "Unlock vault",
+    "unlocking": "Unlocking",
+    "createVault": "Create vault",
+    "creating": "Creating",
+    "lock": "Lock vault",
+    "useRecovery": "Forgot your password? Use your recovery phrase",
+    "backToPassword": "Back to master password",
+    "recoveryTitle": "Recovery phrase",
+    "recoverySubtitle": "Enter the 12 words you wrote down when you created this vault.",
+    "recoveryPlaceholder": "word one two three four five six",
+    "recover": "Recover vault",
+    "recovering": "Recovering",
+    "newVaultDetected": "No vault on this machine yet. Let's create one.",
+    "stepPassword": "Master password",
+    "stepRecovery": "Recovery phrase",
+    "passwordTooShort": "Use at least 12 characters. This is the only key to your data.",
+    "passwordMismatch": "Those two passwords do not match.",
+    "recoveryIntro": "These 12 words are the only way back in if you forget your password. Nobody can recover them for you, including us.",
+    "recoverySaved": "I have written these 12 words down somewhere safe",
+    "recoveryRequired": "Confirm you have written the phrase down before continuing.",
+    "phraseCopied": "Copied. Clear your clipboard once it is on paper.",
+    "notConnected": "No vault server is running.",
+    "notConnectedHint": "Run `lembaranz server` in a terminal. It prints a link that opens this screen already connected.",
+    "connect": "Connect to a server",
+    "changeConnection": "Change server"
+  },
   "vault": {
-    "setup": "Initialization",
-    "open": "Open Vault",
-    "locked": "Locked",
-    "new_note": "New Note"
+    "search": "Search entries and tags",
+    "new": "New entry",
+    "empty": "Nothing here yet. Your first entry stays on this machine.",
+    "emptyFiltered": "No entry matches that search.",
+    "titlePlaceholder": "Title",
+    "bodyPlaceholder": "Paste a key, a .env file, a recovery code, a private key. Anything.",
+    "tagsLabel": "Tags",
+    "tagsPlaceholder": "comma, separated, tags",
+    "save": "Save",
+    "saving": "Saving",
+    "saved": "Encrypted and saved on this machine.",
+    "delete": "Delete this entry",
+    "deleteConfirm": "Delete this entry? It cannot be undone.",
+    "copy": "Copy content",
+    "locked": "Copy the content",
+    "noteCount": "entries",
+    "integrity": "Integrity",
+    "integritySubtitle": "Every entry carries a SHA-256 seal, and every action is appended to a hash-chained ledger. Both are checked live below.",
+    "chainOk": "Ledger intact",
+    "chainBroken": "Ledger broken at entry",
+    "chainChecked": "entries checked",
+    "chainLegacy": "pre-ledger entries",
+    "recentActions": "Recent actions",
+    "noActions": "No actions recorded yet.",
+    "verify": "Re-verify",
+    "panicTitle": "Panic key",
+    "panicBody": "A second password. Enter it on the unlock screen and the vault is destroyed, with the event written to the audit ledger first.",
+    "panicPlaceholder": "Panic key",
+    "panicSet": "Set panic key",
+    "panicSetDone": "Panic key armed.",
+    "wipeTitle": "Destroy this vault",
+    "wipeBody": "Deletes every entry and the ledger. There is no backup and no undo.",
+    "wipe": "Destroy everything",
+    "wipeConfirm": "This permanently destroys the vault on this machine. Continue?",
+    "crypto": "Argon2id (m=64 MiB, t=2, p=1) + AES-GCM 256-bit, per-entry SHA-256 seal",
+    "sessionOnly": "The master key lives in the server process, never in this tab. Close the tab and the session is gone."
   },
   "common": {
     "save": "Save",
     "cancel": "Cancel",
-    "delete": "Delete"
+    "delete": "Delete",
+    "close": "Close",
+    "copy": "Copy",
+    "copied": "Copied"
+  },
+  "errors": {
+    "wrong_password": "That master password is not correct.",
+    "locked": "The vault was locked. Enter your master password to continue.",
+    "rate_limited": "Too many failed attempts. Wait a few minutes before trying again.",
+    "recovery_failed": "That recovery phrase did not unlock the vault. Check the order and spelling of all 12 words.",
+    "already_setup": "This vault already exists. Unlock it instead.",
+    "unreachable": "The vault server is not responding. Check that `lembaranz server` is still running."
   },
   "landing": {
     "skip": "Skip to content",
     "langLabel": "Language",
     "nav": {
-      "features": "Features",
-      "security": "Security",
+      "problem": "The problem",
+      "holds": "What it holds",
       "compare": "Comparison",
       "install": "Install",
       "faq": "FAQ",
       "github": "GitHub",
-      "openDashboard": "Open Dashboard"
+      "openDashboard": "Open vault"
     },
     "hero": {
-      "badge": "Open Source · MIT · Zero-Knowledge",
-      "titleLead": "A vault for your words that stays",
+      "lead": "Passwords are becoming",
       "words": [
-        "Independent.",
-        "Encrypted.",
-        "Offline-First.",
-        "Yours."
+        "passkeys.",
+        "biometrics.",
+        "one-tap logins."
       ],
-      "subtitle": "Keep notes and credentials with absolute privacy: encrypted on your device, no cloud, no account, no compromise.",
-      "openDashboard": "Open Dashboard",
-      "viewSource": "View Source",
-      "copyHint": "Copy the install command",
+      "title": "Secrets are not.",
+      "subtitle": "Logins moved to your operating system. API keys and .env files did not.",
+      "openDashboard": "Open the vault",
+      "viewSource": "Read the source",
+      "installLine": "Install",
       "chips": [
-        "AES-GCM 256-bit",
-        "Zero-Knowledge",
-        "Offline-First"
+        "No account",
+        "No cloud",
+        "No autofill"
+      ],
+      "tagTitle": "What it holds",
+      "tagBody": "Whole .env files, API keys, 2FA seeds. Free-form, not username and password.",
+      "metrics": [
+        {
+          "value": "256-bit",
+          "label": "AES-GCM, a fresh 12-byte IV per entry"
+        },
+        {
+          "value": "64 MiB",
+          "label": "Argon2id cost, t=2, p=1, on your passphrase"
+        },
+        {
+          "value": "0",
+          "label": "Accounts, telemetry, and outbound requests"
+        }
       ]
     },
-    "stats": [
-      {
-        "value": "100%",
-        "label": "Data on device"
-      },
-      {
-        "value": "256-bit",
-        "label": "AES-GCM"
-      },
-      {
-        "value": "0",
-        "label": "Servers & accounts"
-      },
-      {
-        "value": "MIT",
-        "label": "Open-source license"
-      }
-    ],
-    "mock": {
-      "url": "lembaranz.vercel.app/app",
-      "search": "Search your vault...",
-      "badge": "AES-GCM active",
-      "entries": [
+    "problem": {
+      "eyebrow": "The problem",
+      "title": "Logins got solved. Secrets did not.",
+      "lede": "Two things happened at once. One is good news.",
+      "cards": [
         {
-          "title": "Production API Key",
-          "value": "sk_live_••••••••••••4f2a",
-          "tag": "Credential"
+          "value": "5B",
+          "label": "passkeys in active use",
+          "note": "About 75% of people have enabled one. Google reports 99.9% fewer compromises."
         },
         {
-          "title": "Q3 Meeting Notes",
-          "value": "3 attachments · encrypted",
-          "tag": "Note"
+          "value": "29M",
+          "label": "secrets leaked on public GitHub",
+          "note": "One year's count. Repos, CI logs, accidental commits."
         },
         {
-          "title": "Recovery Mnemonic",
-          "value": "12 words · stored offline",
-          "tag": "Recovery"
+          "value": "64%",
+          "label": "of leaked secrets still valid",
+          "note": "Leaked in 2022, still valid. A password manager cannot help."
         }
       ],
-      "status": "3 entries · encrypted",
-      "session": "active session",
-      "panic": "Panic Key armed",
-      "cli": "lembaranz browse"
+      "close": "A password manager protects logins. Autofill wants a username and password, not forty lines of config."
     },
-    "features": {
-      "title": "Built for Privacy",
-      "subtitle": "Every layer is designed so your data never leaves the device.",
+    "holds": {
+      "eyebrow": "What it holds",
+      "title": "For what a login form cannot express",
       "items": [
         {
-          "title": "Zero-Knowledge",
-          "body": "AES-GCM 256-bit encryption happens on your device, before data touches storage. No server can read it."
+          "title": "Configuration, verbatim",
+          "body": "A whole .env file as one entry. No fields, no limits, no reformatting."
         },
         {
-          "title": "Keys on Device",
-          "body": "Keys are derived with Argon2id plus a random salt, then live only in memory while the session is open. They are never sent or stored on a server."
+          "title": "Keys that authenticate, not logins",
+          "body": "API keys, service tokens, signing material. No username field, mostly."
         },
         {
-          "title": "Offline-First",
-          "body": "Data lives in IndexedDB or a local file. No internet, no account, no forced sync. The vault still opens."
+          "title": "The things you cannot re-issue",
+          "body": "Recovery codes, 2FA seeds, a paper mnemonic. Findable, integrity checked."
         },
         {
-          "title": "Panic Key",
-          "body": "One emergency passphrase permanently wipes the entire vault. A kill switch that works even when you have no time to think."
-        },
-        {
-          "title": "CLI · TUI · Web",
-          "body": "Terminal for automation and remote servers, TUI for comfort, web dashboard for visuals. All on one vault."
-        },
-        {
-          "title": "Open Source (MIT)",
-          "body": "The entire codebase is open and auditable. Privacy claims should be provable, not just trusted."
+          "title": "Structured credentials",
+          "body": "Real logins in proper fields, so a password manager can still autofill them."
         }
       ]
+    },
+    "compare": {
+      "eyebrow": "Comparison",
+      "title": "Why this is not another password manager",
+      "lede": "They solve a shrinking problem, better than this will. These are architectural differences.",
+      "columns": ["", "Bitwarden / 1Password", "Proton Pass", "Lembaranz"],
+      "rows": [
+        {
+          "feature": "Where your data lives",
+          "them": "Their cloud. Self-hosting means running their server.",
+          "proton": "Their cloud, in Switzerland.",
+          "us": "One process on your machine. No third party exists."
+        },
+        {
+          "feature": "What it is built to hold",
+          "them": "Structured login records with browser autofill.",
+          "proton": "Logins, then passkeys.",
+          "us": "Free-form text and whole files, sized for configuration."
+        },
+        {
+          "feature": "Who can read it",
+          "them": "You, and anyone who compromises the vendor.",
+          "proton": "You, Proton, and anyone who compels them.",
+          "us": "You. The key never leaves the server process and is never written down."
+        },
+        {
+          "feature": "Verifiable",
+          "them": "Trust the vendor's audit, or read their source.",
+          "proton": "Open source, but trust the operator for your data.",
+          "us": "A SHA-256 seal per entry, hash-chained actions, re-checked live in the UI."
+        },
+        {
+          "feature": "If you are forced to hand over the device",
+          "them": "Their product decides what the user can see.",
+          "proton": "Their product decides what the user can see.",
+          "us": "A panic key destroys the vault, and the wipe is audited."
+        },
+        {
+          "feature": "From a shell, over SSH, in CI",
+          "them": "No.",
+          "proton": "No.",
+          "us": "Yes. It is a CLI first."
+        },
+        {
+          "feature": "Cost",
+          "them": "Free tier, then roughly $20 to $40 a year.",
+          "proton": "Free, then roughly $36 a year.",
+          "us": "Free forever, MIT, including self-hosting."
+        }
+      ],
+      "footnote": "Pricing changes. Check the vendors' pages. This table is about architecture."
+    },
+    "notThis": {
+      "eyebrow": "Honest limits",
+      "title": "What this is not",
+      "items": [
+        "It does not autofill in your browser. Want that? Use 1Password or Bitwarden.",
+        "No sync, no phone app. Sovereignty over convenience.",
+        "No team or family sharing. No accounts, so nothing to share.",
+        "Aimed at people who run systems. Not for you? Use a password manager."
+      ],
+      "close": "Logging in? Use a password manager. Deploy keys and .env files you cannot search? This is for that."
     },
     "security": {
       "eyebrow": "Security",
       "title": "An architecture you can audit",
-      "subtitle": "No magic and no black boxes. These four steps are the entire journey of your data, and all of it happens on this device.",
+      "subtitle": "Four steps, all on your machine.",
       "guarantees": [
-        "No telemetry, analytics, or network requests.",
-        "No account, no email, no cloud storing your data.",
-        "The session key can be cleared from memory whenever you want.",
-        "Panic key wipes the vault instantly in an emergency.",
-        "MIT. You can audit the source yourself on GitHub."
+        "No telemetry, no analytics, no outbound requests.",
+        "No account, no email address, no company holding a copy.",
+        "The master key lives in one process and is dropped when you lock.",
+        "A panic key wipes everything, and the wipe is audited.",
+        "MIT licensed, small enough to read end to end."
       ],
-      "pipelineTitle": "Cryptographic Flow",
+      "pipelineTitle": "What happens when you save an entry",
       "pipeline": [
         {
           "step": "01",
-          "title": "Password + random salt",
-          "note": "Argon2id (memory-hard, 64 MiB) processes your passphrase on device. The result never leaves this machine."
+          "title": "Argon2id on your passphrase",
+          "note": "Memory-hard, 64 MiB, t=2, p=1, 16-byte salt. Never leaves your machine."
         },
         {
           "step": "02",
-          "title": "AES-GCM 256-bit",
-          "note": "Every entry is encrypted with a unique 12-byte IV, so data patterns never leak through ciphertext."
+          "title": "A random master key",
+          "note": "One key per vault, generated on device. Your password only wraps it."
         },
         {
           "step": "03",
-          "title": "SHA-256 integrity",
-          "note": "Every entry carries a verification hash, and the audit trail is hash-chained, so silent changes are detected."
+          "title": "AES-GCM 256-bit, fresh IV each time",
+          "note": "Own 12-byte IV per entry, so identical text never repeats."
         },
         {
           "step": "04",
-          "title": "Local storage",
-          "note": "The browser uses IndexedDB; the CLI stores a JSON file with 0o600 permissions inside a 0o700 directory."
-        }
-      ],
-      "chips": [
-        "Zero telemetry",
-        "No accounts",
-        "MIT"
-      ]
-    },
-    "compare": {
-      "title": "Choose how you access it",
-      "subtitle": "CLI, web, or desktop: one vault, three entry points.",
-      "columns": [
-        "Dimension",
-        "CLI",
-        "WEB",
-        "APP"
-      ],
-      "rows": [
-        {
-          "feature": "Accessibility",
-          "cli": "Terminal / SSH",
-          "web": "Browser (Anywhere)",
-          "app": "Desktop (Native)"
-        },
-        {
-          "feature": "Biometrics",
-          "cli": "Password Only",
-          "web": "Planned (WebAuthn)",
-          "app": "Yes (TouchID/FaceID)"
-        },
-        {
-          "feature": "Strength",
-          "cli": "Light & fast",
-          "web": "No install needed",
-          "app": "Offline-first + push"
-        },
-        {
-          "feature": "Trade-off",
-          "cli": "Less visual",
-          "web": "Needs internet/cache",
-          "app": "Needs more resources"
-        },
-        {
-          "feature": "Best for",
-          "cli": "Senior / Master",
-          "web": "Beginner / Junior",
-          "app": "Explorer / Power User"
+          "title": "SHA-256 seal plus a hash chain",
+          "note": "Integrity seal per entry, chained actions. A silent edit breaks a link."
         }
       ]
     },
     "install": {
-      "title": "Install in one line",
-      "subtitle": "Bun ≥ 1.3 or Node ≥ 20 · macOS, Linux, and Windows (WSL).",
-      "copy": "Copy",
+      "title": "Install and run",
+      "subtitle": "Bun 1.3+ or Node 20+. macOS, Linux, and Windows under WSL.",
+      "step1Title": "Install the CLI",
+      "step2Title": "Start the vault",
       "copied": "Copied",
-      "afterTitle": "After install",
-      "noInstall": "Don't want to install?",
-      "openInBrowser": "Open the dashboard in your browser →"
+      "step2Body": "One process holds the key and prints a link already connected.",
+      "afterTitle": "Then",
+      "noInstall": "Want to look before you install?",
+      "openInBrowser": "Open the dashboard"
     },
-    "ecosystem": {
-      "title": "Native Ecosystem",
-      "subtitle": "In development.",
-      "items": [
+    "roadmap": {
+      "eyebrow": "Where this goes",
+      "title": "The expansion is upward, not outward",
+      "lede": "A local vault is a niche only if that is all it is. Not if it is where rotation happens.",
+      "steps": [
         {
-          "label": "iOS & Android",
-          "note": "Push notifications + native biometrics"
+          "title": "Now: a local vault for long-lived secrets",
+          "body": "Today: .env files, API keys, recovery codes, config on your machine, with a checkable integrity chain."
         },
         {
-          "label": "macOS & Windows",
-          "note": "TouchID / FaceID unlock"
+          "title": "Next: leaked-secret detection and rotation",
+          "body": "Scan your repos against leak corpora. Show which keys still work, rotate them."
         },
         {
-          "label": "Linux (Flatpak)",
-          "note": "Lightweight distribution for every distro"
+          "title": "Then: scoped credentials for AI agents",
+          "body": "Long-lived keys are how agent breaches happen. Scope one to a host, a window, an operation. Let it expire."
         }
       ],
-      "comingSoon": "Coming Soon",
-      "follow": "Follow progress in",
-      "discussions": "GitHub Discussions"
+      "close": "None of it competes with autofill. All of it needs the key to stay on your machine."
     },
     "faq": {
-      "title": "Frequently Asked Questions",
-      "subtitle": "The things people ask the most.",
+      "title": "Questions worth asking",
       "items": [
         {
-          "q": "Is my data sent to a server?",
-          "a": "No. Lembaranz runs entirely on your device. The browser uses IndexedDB, the CLI uses local files, and no backend ever receives your vault contents."
+          "q": "Is my data sent anywhere?",
+          "a": "No. It talks to a process on your machine over loopback. No network requests."
         },
         {
           "q": "What happens if I forget my master password?",
-          "a": "The key cannot be recovered from a server, because no server holds it. Keep the recovery mnemonic generated during setup in a safe place. Without it, the data cannot be opened."
+          "a": "The 12-word recovery phrase. Lose both it and your password, and the data is gone."
         },
         {
-          "q": "Can I use it without internet?",
-          "a": "Yes. Once the page has loaded, the entire vault works fully offline. No network requests are made while you read or write."
+          "q": "Can I use it with no internet?",
+          "a": "Yes. Offline once loaded. The CLI never touches the network."
         },
         {
-          "q": "Do I have to install anything to try it?",
-          "a": "No. Open the dashboard straight in your browser. The CLI is optional, for automation and terminal users who want the vault stored as a local file."
+          "q": "Should I still use a password manager?",
+          "a": "Yes, for your logins. Want autofill and family sharing? Use 1Password or Bitwarden."
+        },
+        {
+          "q": "Why is the key in a server process instead of the browser tab?",
+          "a": "So extensions and XSS bugs cannot read your vault. The tab holds a token, not the key."
         },
         {
           "q": "Is it free?",
-          "a": "Yes. MIT licensed, free, and self-hostable. No paid tiers, no entry limits."
+          "a": "Yes. MIT, no paid tier, no entry limit."
         }
       ]
     },
     "cta": {
-      "title": "Start your first vault.",
-      "subtitle": "No sign-up, no credit card, no data leaving your device. Open the dashboard and start writing.",
-      "openDashboard": "Open Dashboard",
+      "title": "Put the deployment keys somewhere you can find.",
+      "subtitle": "No sign-up, no card, nothing leaves your machine.",
+      "openDashboard": "Open the vault",
       "copyInstall": "Copy install command",
       "copied": "Command copied"
     },
     "footer": {
-      "tagline": "Personal words vault",
-      "blurb": "Zero-knowledge, offline-first, MIT licensed. Made with ❤ in Indonesia.",
       "product": "Product",
       "source": "Source",
       "privacy": "Privacy Policy",
       "security": "Security Policy",
-      "rights": "© 2026 Lembaranz · MIT License",
-      "motto": "Stay Secure. Stay Local."
+      "rights": "© 2026 Lembaranz · MIT License"
     }
   }
 }

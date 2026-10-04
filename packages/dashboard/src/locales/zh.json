@@ -1,274 +1,342 @@
 {
+  "lock": {
+    "title": "Lembaranz",
+    "subtitle": "运行在你机器上的保险库。无账号、无云端、无遥测。",
+    "masterPassword": "主密码",
+    "confirmPassword": "确认密码",
+    "unlock": "解锁保险库",
+    "unlocking": "正在解锁",
+    "createVault": "创建保险库",
+    "creating": "正在创建",
+    "lock": "锁定保险库",
+    "useRecovery": "忘记密码？使用恢复短语",
+    "backToPassword": "返回主密码",
+    "recoveryTitle": "恢复短语",
+    "recoverySubtitle": "输入创建保险库时写下的 12 个单词。",
+    "recoveryPlaceholder": "词 一 二 三 四 五 六",
+    "recover": "恢复保险库",
+    "recovering": "正在恢复",
+    "newVaultDetected": "这台机器上还没有保险库。我们来创建一个。",
+    "stepPassword": "主密码",
+    "stepRecovery": "恢复短语",
+    "passwordTooShort": "至少 12 个字符。这是打开你数据的唯一钥匙。",
+    "passwordMismatch": "两次输入的密码不一致。",
+    "recoveryIntro": "这 12 个单词是你忘记密码后唯一的找回方式。没有人能替你恢复，包括我们自己。",
+    "recoverySaved": "我已把这 12 个单词记在安全的地方",
+    "recoveryRequired": "继续前请确认你已经记下了短语。",
+    "phraseCopied": "已复制。抄到纸上后请清空剪贴板。",
+    "notConnected": "保险库服务未运行。",
+    "notConnectedHint": "在终端运行 `lembaranz server`。它会打印一个链接，打开后本页已自动连接。",
+    "connect": "连接服务",
+    "changeConnection": "更换服务"
+  },
   "vault": {
-    "setup": "初始化",
-    "open": "打开保险库",
-    "locked": "已锁定",
-    "new_note": "新建笔记"
+    "search": "搜索条目与标签",
+    "new": "新建条目",
+    "empty": "这里还是空的。第一条记录只会留在这台机器上。",
+    "emptyFiltered": "没有匹配的条目。",
+    "titlePlaceholder": "标题",
+    "bodyPlaceholder": "粘贴一个密钥、.env 文件、恢复码、私钥。任何内容。",
+    "tagsLabel": "标签",
+    "tagsPlaceholder": "用逗号分隔的标签",
+    "save": "保存",
+    "saving": "正在保存",
+    "saved": "已加密并保存在这台机器上。",
+    "delete": "删除此条目",
+    "deleteConfirm": "删除此条目？无法撤销。",
+    "copy": "复制内容",
+    "locked": "内容已锁定",
+    "noteCount": "条记录",
+    "integrity": "完整性",
+    "integritySubtitle": "每条记录都带有 SHA-256 校验封印，每个操作都会追加到哈希链账本中。下面是实时校验结果。",
+    "chainOk": "账本完整",
+    "chainBroken": "账本在以下条目处断裂",
+    "chainChecked": "已校验条目",
+    "chainLegacy": "账本之前的旧条目",
+    "recentActions": "最近操作",
+    "noActions": "暂无操作记录。",
+    "verify": "重新校验",
+    "panicTitle": "恐慌密码",
+    "panicBody": "第二个密码。在解锁界面输入它，保险库会销毁，并且销毁事件会先写入审计账本。",
+    "panicPlaceholder": "恐慌密码",
+    "panicSet": "设置恐慌密码",
+    "panicSetDone": "恐慌密码已启用。",
+    "wipeTitle": "销毁此保险库",
+    "wipeBody": "删除全部条目和账本。没有备份，也无法撤销。",
+    "wipe": "销毁全部数据",
+    "wipeConfirm": "这会永久销毁这台机器上的保险库。继续吗？",
+    "crypto": "Argon2id（m=64 MiB, t=2, p=1）+ AES-GCM 256 位，每条记录独立 SHA-256 封印",
+    "sessionOnly": "主密钥保存在服务进程中，绝不进入这个标签页。关闭页面，会话即结束。"
   },
   "common": {
     "save": "保存",
     "cancel": "取消",
-    "delete": "删除"
+    "delete": "删除",
+    "close": "关闭",
+    "copy": "复制",
+    "copied": "已复制"
+  },
+  "errors": {
+    "wrong_password": "主密码不正确。",
+    "locked": "保险库已锁定。请输入主密码以继续。",
+    "rate_limited": "失败次数过多。请等待几分钟后再试。",
+    "recovery_failed": "该恢复短语未能解锁保险库。请核对 12 个单词的顺序和拼写。",
+    "already_setup": "此保险库已存在。请直接解锁。",
+    "unreachable": "保险库服务没有响应。请确认 `lembaranz server` 仍在运行。"
   },
   "landing": {
-    "skip": "跳转到内容",
+    "skip": "跳到正文",
     "langLabel": "语言",
     "nav": {
-      "features": "功能",
-      "security": "安全",
+      "problem": "问题",
+      "holds": "存放什么",
       "compare": "对比",
       "install": "安装",
       "faq": "常见问题",
       "github": "GitHub",
-      "openDashboard": "打开控制台"
+      "openDashboard": "打开保险库"
     },
     "hero": {
-      "badge": "开源 · MIT · 零知识",
-      "titleLead": "你的文字保险库，始终",
-      "words": [
-        "独立自主。",
-        "加密保护。",
-        "离线优先。",
-        "属于你。"
-      ],
-      "subtitle": "以绝对隐私保存笔记与凭证：在你的设备上加密，无云端、无账户、不妥协。",
-      "openDashboard": "打开控制台",
-      "viewSource": "查看源码",
-      "copyHint": "复制安装命令",
-      "chips": [
-        "AES-GCM 256 位",
-        "零知识",
-        "离线优先"
+      "lead": "密码正在变成",
+      "words": ["通行密钥。", "生物识别。", "一键登录。"],
+      "title": "密钥不会。",
+      "subtitle": "登录已经交给了操作系统。API 密钥、.env 文件和恢复码没有。",
+      "openDashboard": "打开保险库",
+      "viewSource": "阅读源码",
+      "installLine": "安装",
+      "chips": ["无账号", "无云端", "不自动填充"],
+      "tagTitle": "它装什么",
+      "tagBody": "完整的 .env 文件、API 密钥、双因素种子。自由文本，不是用户名加密码。",
+      "metrics": [
+        {
+          "value": "256 位",
+          "label": "AES-GCM，每条记录都用全新的 12 字节 IV"
+        },
+        {
+          "value": "64 MiB",
+          "label": "Argon2id 成本，t=2，p=1，跑在你的口令上"
+        },
+        {
+          "value": "0",
+          "label": "账号、遥测与对外请求"
+        }
       ]
     },
-    "stats": [
-      {
-        "value": "100%",
-        "label": "数据留在设备"
-      },
-      {
-        "value": "256-bit",
-        "label": "AES-GCM"
-      },
-      {
-        "value": "0",
-        "label": "服务器与账户"
-      },
-      {
-        "value": "MIT",
-        "label": "开源许可"
-      }
-    ],
-    "mock": {
-      "url": "lembaranz.vercel.app/app",
-      "search": "搜索你的保险库...",
-      "badge": "AES-GCM 已启用",
-      "entries": [
+    "problem": {
+      "eyebrow": "问题",
+      "title": "登录解决了，密钥没有",
+      "lede": "两件事同时发生，其中一件是好消息。",
+      "cards": [
         {
-          "title": "生产环境 API 密钥",
-          "value": "sk_live_••••••••••••4f2a",
-          "tag": "凭证"
+          "value": "50亿",
+          "label": "个正在使用的通行密钥",
+          "note": "约 75% 的人至少启用了一个。Google 报告：账户被攻破率下降 99.9%。"
         },
         {
-          "title": "第三季度会议记录",
-          "value": "3 个附件 · 已加密",
-          "tag": "笔记"
+          "value": "2900万",
+          "label": "个密钥泄露在公开 GitHub 上",
+          "note": "仅一年的统计量。仓库、CI 日志、误提交的 .env 文件。"
         },
         {
-          "title": "恢复助记词",
-          "value": "12 个单词 · 离线保存",
-          "tag": "恢复"
+          "value": "64%",
+          "label": "已泄露密钥仍然有效",
+          "note": "2022 年泄露，多年后依然有效。密码管理器无能为力。"
         }
       ],
-      "status": "3 条记录 · 已加密",
-      "session": "会话已激活",
-      "panic": "紧急密钥已就绪",
-      "cli": "lembaranz browse"
+      "close": "密码管理器保护的是登录凭据。自动填充需要用户名和密码，而不是四十行配置。"
     },
-    "features": {
-      "title": "为隐私而构建",
-      "subtitle": "每一层都经过设计，确保你的数据永不离开设备。",
+    "holds": {
+      "eyebrow": "存放什么",
+      "title": "为登录表单表达不了的东西而建",
       "items": [
         {
-          "title": "零知识",
-          "body": "AES-GCM 256 位加密在你的设备上完成，数据在落盘之前就已加密。任何服务器都无法读取。"
+          "title": "原样保存配置",
+          "body": "整个 .env 文件作为一条记录。没有字段，没有上限，不会被重新格式化。"
         },
         {
-          "title": "密钥留在设备上",
-          "body": "密钥通过 Argon2id 与随机盐派生，仅在会话开启期间驻留内存，绝不发送或存储在服务器上。"
+          "title": "用于鉴权而非登录的密钥",
+          "body": "API 密钥、服务令牌、签名材料。没有用户名字段，占大多数。"
         },
         {
-          "title": "离线优先",
-          "body": "数据存储于 IndexedDB 或本地文件。无需联网、无需账户、不强制同步，保险库依然可以打开。"
+          "title": "无法重新签发的东西",
+          "body": "恢复码、双因素种子、纸上的助记词。找得到，带完整性校验。"
         },
         {
-          "title": "紧急密钥",
-          "body": "一个紧急口令即可永久清空整个保险库。即使来不及思考，也能一键自毁。"
-        },
-        {
-          "title": "CLI · TUI · Web",
-          "body": "终端用于自动化与远程服务器，TUI 用于舒适操作，网页控制台用于可视化，同一个保险库。"
-        },
-        {
-          "title": "开源（MIT）",
-          "body": "全部代码开放可审计。隐私承诺应当可被验证，而不仅仅是被信任。"
+          "title": "结构化凭据",
+          "body": "真正的登录凭据按正确字段保存，密码管理器仍可自动填充。"
         }
-      ]
-    },
-    "security": {
-      "eyebrow": "安全",
-      "title": "一套你可以审计的架构",
-      "subtitle": "没有魔法，也没有黑盒。以下四步就是数据的完整旅程，全部发生在这台设备上。",
-      "guarantees": [
-        "没有遥测、分析或网络请求。",
-        "没有账户、邮箱，也没有云端存储你的数据。",
-        "会话密钥可随时从内存中清除。",
-        "紧急情况下，紧急密钥会立即清空保险库。",
-        "MIT。你可以在 GitHub 上亲自审计源码。"
-      ],
-      "pipelineTitle": "加密流程",
-      "pipeline": [
-        {
-          "step": "01",
-          "title": "口令 + 随机盐",
-          "note": "Argon2id（内存硬，64 MiB）在设备上处理你的口令，结果永不离开这台机器。"
-        },
-        {
-          "step": "02",
-          "title": "AES-GCM 256 位",
-          "note": "每条记录都使用唯一的 12 字节 IV 加密，数据模式不会从密文泄露。"
-        },
-        {
-          "step": "03",
-          "title": "SHA-256 完整性",
-          "note": "每条记录都带有校验哈希，审计日志以哈希链相连，任何静默改动都会被检测到。"
-        },
-        {
-          "step": "04",
-          "title": "本地存储",
-          "note": "浏览器使用 IndexedDB；CLI 以 0o600 权限将 JSON 文件存放在 0o700 目录中。"
-        }
-      ],
-      "chips": [
-        "零遥测",
-        "无账户",
-        "MIT"
       ]
     },
     "compare": {
-      "title": "选择你的使用方式",
-      "subtitle": "CLI、网页或桌面：一个保险库，三个入口。",
-      "columns": [
-        "维度",
-        "CLI",
-        "网页",
-        "应用"
-      ],
+      "eyebrow": "对比",
+      "title": "为什么这不是又一个密码管理器",
+      "lede": "他们在解决一个正在缩小的问题，而且解决得更好。下面是架构差异。",
+      "columns": ["", "Bitwarden / 1Password", "Proton Pass", "Lembaranz"],
       "rows": [
         {
-          "feature": "可访问性",
-          "cli": "终端 / SSH",
-          "web": "浏览器（随时随地）",
-          "app": "桌面（原生）"
+          "feature": "数据存放位置",
+          "them": "他们的云端。自托管意味着你要运维他们的服务器。",
+          "proton": "他们的云端，位于瑞士。",
+          "us": "你自己机器上的一个进程。不存在第三方。"
         },
         {
-          "feature": "生物识别",
-          "cli": "仅密码",
-          "web": "规划中（WebAuthn）",
-          "app": "支持（TouchID/FaceID）"
+          "feature": "为承载什么而建",
+          "them": "带浏览器自动填充的结构化登录记录。",
+          "proton": "先是登录，然后是通行密钥。",
+          "us": "自由文本和完整文件，尺寸按配置来定。"
         },
         {
-          "feature": "优势",
-          "cli": "轻量快速",
-          "web": "无需安装",
-          "app": "离线优先 + 推送"
+          "feature": "谁可以读取",
+          "them": "你，以及攻破厂商的人。",
+          "proton": "你、Proton，以及能对他们施加压力的人。",
+          "us": "只有你。密钥不离开服务进程，也从不被写下来。"
         },
         {
-          "feature": "取舍",
-          "cli": "视觉较弱",
-          "web": "需要网络/缓存",
-          "app": "占用资源更多"
+          "feature": "可验证性",
+          "them": "相信厂商的审计，或者去读他们的源码。",
+          "proton": "开源，但你的数据仍要信任运营方。",
+          "us": "每条记录带 SHA-256 封印，操作哈希成链，界面实时重算。"
         },
         {
-          "feature": "适合人群",
-          "cli": "高级 / 大师",
-          "web": "新手 / 初级",
-          "app": "探索者 / 重度用户"
+          "feature": "如果被迫交出这台设备",
+          "them": "由他们的产品决定用户能看到什么。",
+          "proton": "由他们的产品决定用户能看到什么。",
+          "us": "恐慌密码可随时销毁保险库，销毁也会被审计。"
+        },
+        {
+          "feature": "从 shell、经 SSH、在 CI 中使用",
+          "them": "不支持。",
+          "proton": "不支持。",
+          "us": "支持。这是一个 CLI 优先的产品。"
+        },
+        {
+          "feature": "成本",
+          "them": "有免费版，之后约每年 20 至 40 美元。",
+          "proton": "免费版，之后约每年 36 美元。",
+          "us": "永久免费，MIT 许可，自托管同样免费。"
+        }
+      ],
+      "footnote": "价格会变化，请以各厂商官网为准。这张表讲的是架构差异。"
+    },
+    "notThis": {
+      "eyebrow": "诚实的局限",
+      "title": "这个产品不是什么",
+      "items": [
+        "它不能在浏览器里自动填充。需要这个？请用 1Password 或 Bitwarden。",
+        "不同步，也没有手机应用。选主权，不选便利。",
+        "不是团队或家庭共享。没有账号，就没有可共享的对象。",
+        "面向运维系统的人。不习惯终端？密码管理器更合适。"
+      ],
+      "close": "只是要登录？请用密码管理器。部署密钥和 .env 文件搜不到？这个工具就是为那件事准备的。"
+    },
+    "security": {
+      "eyebrow": "安全",
+      "title": "一份你可以审计的架构",
+      "subtitle": "四个步骤，全部在你自己的机器上。",
+      "guarantees": [
+        "没有遥测、没有埋点、没有任何对外请求。",
+        "没有账号，没有邮箱，没有公司持有副本。",
+        "主密钥保存在一个进程里，锁定时即丢弃。",
+        "恐慌密码可清除一切，并且清除会被审计。",
+        "MIT 许可，代码量小到可以通读。"
+      ],
+      "pipelineTitle": "保存一条记录时发生了什么",
+      "pipeline": [
+        {
+          "step": "01",
+          "title": "在本机对你的口令做 Argon2id",
+          "note": "内存困难型，64 MiB，t=2，p=1，16 字节盐。永不离开你的机器。"
+        },
+        {
+          "step": "02",
+          "title": "一把随机主密钥",
+          "note": "每个保险库一把，在设备上生成。你的口令只用于包裹它。"
+        },
+        {
+          "step": "03",
+          "title": "AES-GCM 256 位，每次新 IV",
+          "note": "每条记录独立的 12 字节 IV，相同明文不会重复。"
+        },
+        {
+          "step": "04",
+          "title": "SHA-256 封印加哈希链",
+          "note": "每条记录带完整性封印，操作进链。静默修改会断链。"
         }
       ]
     },
     "install": {
-      "title": "一行命令完成安装",
-      "subtitle": "Bun ≥ 1.3 或 Node ≥ 20 · 支持 macOS、Linux 和 Windows (WSL)。",
-      "copy": "复制",
+      "title": "安装并运行",
+      "subtitle": "Bun 1.3+ 或 Node 20+。支持 macOS、Linux，以及 WSL 下的 Windows。",
+      "step1Title": "安装 CLI",
+      "step2Title": "启动保险库",
       "copied": "已复制",
-      "afterTitle": "安装之后",
-      "noInstall": "不想安装？",
-      "openInBrowser": "在浏览器中打开控制台 →"
+      "step2Body": "一个进程持有密钥，并打印一个连好的链接。",
+      "afterTitle": "然后",
+      "noInstall": "想先看看再决定安装？",
+      "openInBrowser": "打开控制台"
     },
-    "ecosystem": {
-      "title": "原生生态",
-      "subtitle": "开发中。",
-      "items": [
+    "roadmap": {
+      "eyebrow": "接下来",
+      "title": "扩张是向上，而不是向外",
+      "lede": "只做本地保险库，它就是细分市场。如果它是轮换发生的地方，就不是。",
+      "steps": [
         {
-          "label": "iOS 与 Android",
-          "note": "推送通知 + 原生生物识别"
+          "title": "现在：长效密钥的本地保险库",
+          "body": "今天：.env 文件、API 密钥、恢复码和配置，放在你机器上，带可校验的完整性链。"
         },
         {
-          "label": "macOS 与 Windows",
-          "note": "TouchID / FaceID 解锁"
+          "title": "接着：泄露检测与轮换",
+          "body": "用你的仓库比对泄露库，指出哪些密钥仍然有效，并完成轮换。"
         },
         {
-          "label": "Linux（Flatpak）",
-          "note": "面向所有发行版的轻量分发"
+          "title": "然后：面向 AI 智能体的受限凭据",
+          "body": "长效密钥正是智能体泄露的成因。签发一把限定主机、时间窗和操作的凭据，然后让它过期。"
         }
       ],
-      "comingSoon": "即将推出",
-      "follow": "关注进展：",
-      "discussions": "GitHub 讨论区"
+      "close": "以上都不与自动填充竞争。它们都依赖：密钥留在你的机器上。"
     },
     "faq": {
-      "title": "常见问题",
-      "subtitle": "大家最常问的问题。",
+      "title": "值得问的问题",
       "items": [
         {
-          "q": "我的数据会发送到服务器吗？",
-          "a": "不会。Lembaranz 完全在你的设备上运行：浏览器使用 IndexedDB，CLI 使用本地文件。没有任何后端会收到你的保险库内容。"
+          "q": "我的数据会被发到哪里吗？",
+          "a": "不会。它通过回环地址与你机器上的进程通信。没有任何网络请求。"
         },
         {
-          "q": "忘记主密码怎么办？",
-          "a": "密钥无法从服务器恢复，因为没有任何服务器保存它。请妥善保存设置时生成的恢复助记词。没有它，数据将无法打开。"
+          "q": "如果我忘记主密码会怎样？",
+          "a": "用 12 个单词的恢复短语。口令和短语都丢了，数据就没了。"
         },
         {
-          "q": "没有网络也能使用吗？",
-          "a": "可以。页面加载完成后，整个保险库完全离线运行。阅读或写入时不会发出任何网络请求。"
+          "q": "没有网络能用吗？",
+          "a": "能。加载后完全离线，CLI 从不触碰网络。"
         },
         {
-          "q": "试用需要安装吗？",
-          "a": "不需要。直接在浏览器中打开控制台即可。CLI 是可选的，适合自动化场景和希望把保险库保存为本地文件的终端用户。"
+          "q": "我还需要密码管理器吗？",
+          "a": "需要，用来管你的登录。想要自动填充和家庭共享，请用 1Password 或 Bitwarden。"
         },
         {
-          "q": "它是免费的吗？",
-          "a": "是的。MIT 许可、免费、可自托管。没有付费层级，也没有条目数量限制。"
+          "q": "为什么密钥放在服务进程里而不是浏览器标签页？",
+          "a": "这样扩展或 XSS 漏洞就读不到保险库。标签页只有令牌，没有密钥。"
+        },
+        {
+          "q": "免费吗？",
+          "a": "免费。MIT 许可，没有付费版，没有条目上限。"
         }
       ]
     },
     "cta": {
-      "title": "创建你的第一个保险库。",
-      "subtitle": "无需注册、无需信用卡，数据不会离开你的设备。打开控制台，开始书写。",
-      "openDashboard": "打开控制台",
+      "title": "把部署密钥放到你找得到的地方。",
+      "subtitle": "无需注册，无需信用卡，不会有东西离开你的机器。",
+      "openDashboard": "打开保险库",
       "copyInstall": "复制安装命令",
       "copied": "命令已复制"
     },
     "footer": {
-      "tagline": "个人文字保险库",
-      "blurb": "零知识、离线优先、MIT 许可。用 ❤ 在印度尼西亚制作。",
       "product": "产品",
       "source": "源码",
       "privacy": "隐私政策",
-      "security": "安全政策",
-      "rights": "© 2026 Lembaranz · MIT 许可证",
-      "motto": "保持安全，保持本地。"
+      "security": "安全策略",
+      "rights": "© 2026 Lembaranz · MIT 许可"
     }
   }
 }
