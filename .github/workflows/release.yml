@@ -1,7 +1,7 @@
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
-name: rilis
+name: Release
 
 on:
   push:
@@ -16,8 +16,8 @@ permissions:
   id-token: write
 
 jobs:
-  rilis:
-    name: Rilis Paket ke NPM
+  release:
+    name: Release & Publish to npm
     runs-on: ubuntu-latest
     env:
       HAS_NPM: ${{ secrets.NPM_TOKEN != '' }}
@@ -27,24 +27,23 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Pasang Bun
+      - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
 
-      - name: Pasang Dependensi
+      - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Buat Pull Request Rilis atau Publish ke NPM
+      - name: Create release PR or publish
         if: env.HAS_NPM == 'true'
         id: changesets
         uses: changesets/action@v1
         with:
-          # Pastikan skrip 'version-packages' dan 'ci:release' di root package.json
           version: bun run version-packages
           publish: bun run ci:release
-          title: "🚀 Rilis Lembaranz v${{ github.ref_name }}"
-          commit: "chore: rilis versi baru [skip ci]"
+          title: "Release Lembaranz v${{ github.ref_name }}"
+          commit: "chore: release [skip ci]"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

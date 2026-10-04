@@ -1,16 +1,74 @@
 # Lembaranz
-> Self-Hosted Credential & Note Vault — packages v0.2.0
+> A local vault for long-lived secrets — packages v0.2.0
 
 ## About
-Lembaranz is a self-hosted, zero-knowledge credential manager. Data is encrypted locally with AES-GCM 256-bit before storage. No cloud, no tracking, no account required. Runs as a TUI (Terminal User Interface) via the `lembaranz` command, with an offline-first web dashboard.
+Lembaranz is a local-first, zero-knowledge vault for the credentials that outlive a login: API keys, `.env` files, recovery codes, 2FA seeds, private keys. Data is encrypted locally with AES-GCM 256-bit and Argon2id before storage. No cloud, no tracking, no account required. Runs as a TUI via the `lembaranz` command, with an offline-first web dashboard.
+
+**It is deliberately not a password manager.** It does not autofill, does not sync, and has no team sharing. The positioning rationale, the architectural comparison against Bitwarden / 1Password / Proton Pass, and the expansion path are in `docs/STRATEGY_2026.md`.
+
+## Vault server API
+
+The dashboard talks to `lembaranz server` (`packages/server`), which holds the master key in memory so the browser never receives it. It binds to loopback and requires a bearer token minted per process. The server prints a connect link whose URL fragment carries the origin and token; the dashboard consumes it once and strips it.
+
+| Route | Purpose |
+|-------|---------|
+| `GET /health` | Unauthenticated liveness probe |
+| `POST /status` | `{ setup, locked }` |
+| `POST /recovery-phrase` | Generate a BIP39 phrase, persisting nothing |
+| `POST /setup` | Create a vault; refuses with `already_setup` if one exists |
+| `POST /unlock` | Master password; wrong password yields `wrong_password` |
+| `POST /recover` | 12-word phrase; failure yields `recovery_failed` |
+| `GET /notes`, `POST /notes`, `POST /note`, `DELETE /notes` | Entry CRUD |
+| `POST /audit` | `{ chain, entries }` — hash-chain verification and recent ledger |
+| `POST /stats` | Entry and folder counts |
+| `POST /panic-key`, `POST /wipe`, `POST /lock` | Panic key, destroy, lock |
+
+Errors are `{ error, code }` where `code` is one of `wrong_password`, `locked`, `rate_limited`, `recovery_failed`, `already_setup`. Callers branch on `code`, never on the message.
 
 ## Project Structure
 ```
 packages/
   core/       — @lembaranz/core      — Encryption engine & storage adapters (atomic writes)
-  cli/        — @lembaranz/cli       — TUI (Ink/React) + CLI commands
-  dashboard/  — @lembaranz/dashboard — Vite + React web app (landing page + offline vault, private/unpublished)
+  cli/        — @lembaranz/cli       — TUI (Ink/React) + CLI commands + `server` command
+  server/     — @lembaranz/server    — Local vault server (Bun.serve) holding the master key for the web UI
+  dashboard/  — @lembaranz/dashboard — Vite + React web client (private/unpublished)
 ```
+
+### Dashboard design system
+
+One palette, one light source, and system fonts only. The colours and all three
+font stacks live in `packages/dashboard/tailwind.config.js`; the shared classes
+(`.btn`, `.btn-sand`, `.btn-ghost`, `.eyebrow`, `.chip`, `.glass`,
+`.hero-field`, `.paper-field`, `.abyss-field`) live in
+`packages/dashboard/src/index.css`. No component contains a literal hex value
+and there is no second accent hue. Fonts are system stacks on purpose: the
+product makes no network requests, so it must not fetch a webfont from a CDN.
+Two rules are enforced by tests rather than by review: every interactive
+control must resolve to 44x44px in the compiled cascade
+(`touch-targets.test.tsx`), and every class named in the source must actually
+compile to a rule (`class-compile.test.ts`, because Tailwind's failure mode is
+silent).
+
+`bun run lint:design` (`impeccable detect`) reads source text, so it cannot see
+a computed style. Two anti-patterns therefore live in checks that render the
+page instead, and both used to ship while that gate was green:
+
+- **No `text-transform: uppercase` anywhere.** `.eyebrow` and `.chip` carry the
+  small tracked label look in sentence case. `class-compile.test.ts` reads the
+  compiled stylesheet, so it catches the utility both when a component names it
+  and when a shared class `@apply`s it.
+- **No short label element directly above a heading.** The section label is a
+  block span *inside* its `<h2>`, not a `<p>` above it.
+  `scripts/verify-render.tsx` walks the rendered markup of every screen with a
+  real depth stack and fails on any label whose next sibling is a heading.
+
+A third rule is `contrast.test.tsx`: every run of text must clear WCAG AA
+(4.5:1, or 3:1 at 24px) against its own composited background. It resolves
+`text-ink/60` and the translucent `.glass` cards to the pixels a browser paints,
+and asserts it measured a real page, because a suite that walks nothing reports
+nothing and passes. The gradient section grounds are reported separately rather
+than failed: the model is position-blind, so it cannot say whether a given label
+sits in the lit corner of the hero.
 
 ### Build & Run
 - Root manifest: `package.json` (Bun workspaces, consolidated dependencies)
@@ -36,6 +94,10 @@ packages/
 | `storage/FileAdapter.ts` | JSON-file storage adapter (atomic writes, Node-only) |
 | `storage/BrowserAdapter.ts` | IndexedDB storage adapter (web dashboard) |
 | `index.ts` | Public API barrel export |
+
+An exhaustive index of every file and folder in the repository lives at
+`docs/REPOSITORY_MAP.md`. Consult it before adding a file, and update it in the
+same change.
 
 ## Critical AI Rules
 
@@ -77,6 +139,10 @@ type Result<T> = { data: T; error: null } | { data: null; error: Error };
 | `lembaranz import` / `export` | Bulk import / encrypted portable backup |
 | `lembaranz monitor` | System health & integrity |
 | `lembaranz security` | Security dashboard, audits & ledger verification |
+| `lembaranz server` | Start the local vault server the web UI connects to (loopback by default) |
+
+### Trust boundary
+The web UI does **not** hold the master key. `lembaranz server` holds it in memory and the browser holds only a per-process bearer token, kept in `sessionStorage`. The server binds `127.0.0.1` unless `--host` is passed, answers every route with `Cache-Control: no-store`, and exposes only the vault operations the UI calls.
 
 ## Dev Commands
 

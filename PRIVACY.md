@@ -14,6 +14,12 @@ Lembaranz runs entirely client-side: the web dashboard works in your browser, an
 This software does not include third-party trackers, analytics, or telemetry.
 No network requests are made while you read or write vault data.
 
+The web interface loads nothing from a third party. It does not fetch a web
+font from a font CDN, it does not call an analytics endpoint, and it does not
+pull an icon set or a script from a CDN. Its type is drawn from fonts already
+installed on your machine, so visiting the page does not tell a third party
+which browser, operating system, or font list you have.
+
 ## 3. Encryption
 
 Sensitive data is encrypted with **AES-GCM 256-bit** before it touches storage. The encryption key is derived from your password using **Argon2id** (`t=2`, `m=64 MiB`, `p=1`) and never leaves your device. Vaults and backups created by earlier releases that used PBKDF2 are unlocked through an automatic fallback and re-wrapped with Argon2id; your note ciphertext is never re-encrypted during that migration.

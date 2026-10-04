@@ -11,7 +11,7 @@ on:
 
 jobs:
   lint-test-build:
-    name: Lint, Test & Build
+    name: Verify
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,20 +25,9 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Lint all packages
-        run: bun run lint
-
-      - name: Design anti-slop check (impeccable)
-        run: bun run lint:design
-
-      - name: Run tests
-        run: bun run test:core
-
-      - name: Typecheck core
-        run: bunx tsc --noEmit --project packages/core/tsconfig.json
-
-      - name: Typecheck cli
-        run: bunx tsc --noEmit --project packages/cli/tsconfig.json
-
-      - name: Build web package
-        run: bun run build
+      # One command, and the same command every phase gate names. It runs lint,
+      # the design detector, a typecheck per package, all four test suites with
+      # the coverage floors enforced, the render harness, and the dashboard
+      # build. Adding a check here adds it to every gate at once.
+      - name: Verify
+        run: bun run verify

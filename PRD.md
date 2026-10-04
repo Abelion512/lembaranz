@@ -97,14 +97,20 @@ Encrypted note management with CLI-first approach.
 Interactive terminal interface for maximum productivity.
 
 **Commands:**
-- `lembaranz start` - Interactive TUI
-- `lembaranz carve` - Create/edit notes
-- `lembaranz env` - Manage environment
-- `lembaranz plant` - Import directory
-- `lembaranz search` - Search encrypted notes
-- `lembaranz pick` - Export notes
+- `lembaranz` - Interactive TUI (default)
+- `lembaranz launch` - Interactive TUI
+- `lembaranz browse [keyword]` - Search notes
+- `lembaranz config` - Manage configurations and local `.env` (alias: `cfg`)
+- `lembaranz import <path>` - Import `.md` files or restore a backup
+- `lembaranz export` - Write an encrypted portable backup
 
 **Status:** ✅ Production Ready
+
+> Corrected October 2026. This section previously listed `start`, `carve`, `env`,
+> `plant`, `search`, and `pick`. None of them were ever registered on the
+> Commander program; the list above is the real surface, asserted by
+> `packages/cli/src/__tests__/commands.test.ts`. Full details in
+> [`docs/en/cli.md`](docs/en/cli.md).
 
 ---
 
@@ -113,7 +119,7 @@ Interactive terminal interface for maximum productivity.
 ### Phase 1 — Foundation (MVP) ✅ **COMPLETE 100%**
 - [x] Setup Monorepo (Core, CLI)
 - [x] Implement Brankas (AES-GCM + Argon2id)
-- [x] CLI Commands (carve, env, plant, search)
+- [x] CLI Commands (setup, browse, config, import, export)
 - [x] Interactive TUI (Ink-based)
 - [x] Digital Seal (SHA-256 integrity)
 - [x] Auto-lock & panic key
@@ -174,11 +180,11 @@ lembaranz/
 - **Encryption**: AES-GCM 256-bit, Argon2id (64 MiB RAM, 2 iterations, p=1)
 - **Performance**: <100ms decrypt for note <10KB
 - **Bundle Size**: CLI <2MB, Web <500KB (gzip)
-- **Test Coverage**: >80% core modules
+- **Test Coverage**: floors enforced in CI, currently core 73%, dashboard 84%
 
 ### User Metrics
 - **Time to First Note**: <30 seconds from install
-- **CLI Commands**: 6 main commands (start, carve, env, plant, search, pick)
+- **CLI Commands**: 12 registered commands (`setup`/`init`, `launch`, `browse`, `config`/`cfg`, `doctor`, `dashboard`, `server`, `import`, `export`, `monitor`, `security`, plus `update` and the default TUI)
 - **Documentation**: 100% English
 
 ### Security Metrics

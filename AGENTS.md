@@ -7,7 +7,8 @@
 
 - `packages/core/src` — encryption engine, storage adapters, audit ledger (plain TypeScript)
 - `packages/cli/src` — CLI + TUI (Ink + Commander.js)
-- `packages/dashboard/src` — landing page + web dashboard (Vite + React + Tailwind, i18n `en` / `zh`)
+- `packages/server/src` — local vault server (Bun.serve) that holds the master key for the web UI
+- `packages/dashboard/src` — landing page + web client (Vite + React + Tailwind, i18n `en` / `zh`)
 
 ## 🌐 Language & Naming Policy (IMPORTANT)
 
@@ -30,6 +31,7 @@
 bun install
 bunx tsc --noEmit --project packages/core/tsconfig.json
 bunx tsc --noEmit --project packages/cli/tsconfig.json
+bunx tsc --noEmit --project packages/server/tsconfig.json
 (cd packages/dashboard && bun run build)   # tsc + vite build
 bun run lint
 bun run lint:design   # UI anti-slop detector (impeccable)
@@ -71,4 +73,11 @@ bun run security-audit
 
 - **Web (landing + dashboard): Vercel.** Root `vercel.json` builds `packages/dashboard` (output `packages/dashboard/dist`, SPA rewrite, `install.sh` copied into `dist`). Connect the repo to the existing Vercel project (Settings → Git); production deploys follow pushes to `main`.
 - **CLI:** npm publish `@lembaranz/*` — nothing is published yet, so README badges must not link to npm.
+
+### Vault server
+
+`lembaranz server` (`packages/server`) is the process that holds the master key
+for the web UI. It binds loopback by default and requires a bearer token on
+every route; `--host 0.0.0.0` is opt-in and warns. It has no framework and no
+dependencies beyond `@lembaranz/core`.
 - **Docker:** `compose.yaml` builds the CLI-only image (`Dockerfile`, TUI entrypoint).

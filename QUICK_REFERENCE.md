@@ -27,6 +27,7 @@ lembaranz launch
 | **Health check** | `lembaranz doctor` |
 | **Search** | `lembaranz browse` |
 | **Security dashboard** | `lembaranz security` |
+| **Web vault server** | `lembaranz server` |
 | **Get help** | `lembaranz --help` |
 
 ---
@@ -44,9 +45,12 @@ lembaranz launch
 
 - **Arrow Keys**: Navigate
 - **Enter**: Select
-- **Esc / q**: Back/Exit
-- **/**: Search
-- **r**: Recovery mode
+- **Esc / q**: Back, then exit
+- **Ctrl+C**: Exit
+- **l**: Lock the vault
+
+There is no `/` shortcut; search lives in `lembaranz browse` and in the TUI's
+browse screen.
 
 ---
 
