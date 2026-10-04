@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import prompts from 'prompts';
 import { Archive } from '@lembaranz/core';
-import { generateMnemonic } from '@lembaranz/core';
+import { generateMnemonic, validateMnemonicChecksum } from '@lembaranz/core';
 import { prepareContext } from '../utils.js';
 import pc from 'picocolors';
 import path from 'node:path';
@@ -86,9 +86,9 @@ async function runCLISetup(program: Command) {
       const passwordResult = await prompts({
         type: 'password',
         name: 'password',
-        message: 'Enter a strong password (min 8 chars, mix of letters/numbers):',
+        message: 'Enter a strong password (min 12 chars, mix of letters/numbers):',
         validate: (val: string) => {
-          if (val.length < 8) return 'Password must be at least 8 characters';
+          if (val.length < 12) return 'Password must be at least 12 characters';
           if (!/[A-Za-z]/.test(val)) return 'Password must contain at least one letter';
           if (!/[0-9]/.test(val)) return 'Password must contain at least one number';
           return true;
@@ -132,7 +132,7 @@ async function runStep2AndBeyond(password: string, _program: Command) {
 
     // Step 2: Display recovery phrase
     console.log(pc.cyan('\n🔑 Step 2/3: Your Recovery Phrase'));
-    console.log(pc.yellow('\n⚠️  PENTING: Tulis 12 kata ini di KERTAS!'));
+    console.log(pc.yellow('\n⚠️  IMPORTANT: Write these 12 words on PAPER.'));
     console.log(pc.dim("If you forget your password, these 12 words are the ONLY way to recover.\n"));
 
     // Display words in a nice format
@@ -161,8 +161,9 @@ async function runStep2AndBeyond(password: string, _program: Command) {
     if (!wroteDown) {
       console.log(pc.red("\n⚠️  Setup cancelled."));
       console.log(pc.yellow("\n⚠️  You must restart the setup process from the beginning."));
-      console.log(pc.dim("  • Screenshot the 12 words above (temporarily only)"));
-      console.log(pc.dim("  • Write on paper, then delete the screenshot"));
+      console.log(pc.dim("  • Copy the 12 words above onto paper, then scroll back up"));
+      console.log(pc.dim("  • Do NOT photograph, screenshot, or store them digitally"));
+      console.log(pc.dim("  • Anyone holding these words can open your vault, forever"));
       console.log(pc.dim("  • Run `lembaranz setup` again\n"));
       return;
     }
@@ -292,6 +293,15 @@ async function recoverVaultInteractive() {
   if (!mnemonic) {
     console.log(pc.red('\n✗ Cancelled'));
     return;
+  }
+
+  // Advisory only. A failed BIP39 checksum usually means one mistyped word, but
+  // it can also mean a phrase written down by an older release, so recovery is
+  // still attempted and the warning never blocks it.
+  if (!validateMnemonicChecksum(mnemonic.trim())) {
+    console.log(pc.yellow('\n⚠  This phrase fails its BIP39 checksum.'));
+    console.log(pc.dim('   One word is probably mistyped, or the phrase came from an older release.'));
+    console.log(pc.dim('   Trying anyway.'));
   }
 
   const result = await Archive.recoverVault(mnemonic.trim());

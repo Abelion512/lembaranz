@@ -1,4 +1,13 @@
-import { Context, Storage, VaultContext, Archive, Sentinel } from '@lembaranz/core';
+/**
+ * Shared CLI helpers.
+ *
+ * `prepareContext` resolves the vault path for the chosen context and
+ * initializes storage; every command calls it before touching the vault.
+ * `openVaultCLI` is the shared password gate: it prompts and delegates to
+ * `Archive.unlockVault`, which owns the rate limiting and resets the counter
+ * on success.
+ */
+import { Context, Storage, VaultContext, Archive } from '@lembaranz/core';
 import prompts from 'prompts';
 
 export interface GlobalOptions {
@@ -26,18 +35,13 @@ export const openVaultCLI = async (): Promise<boolean> => {
   });
   if (!res.pw) return false;
 
-  const rateCheck = Sentinel.checkRateLimit('vault-unlock');
-  if (!rateCheck.allowed) {
-    const remainingMs = (rateCheck.resetAt || 0) - Date.now();
-    const minutes = Math.ceil(remainingMs / 60000);
-    console.log(`Too many failed attempts. Try again in ${minutes} minute(s).`);
-    return false;
-  }
-
+  // Rate limiting lives in Archive.unlockVault, not here. It used to sit only
+  // in this function, which left `lembaranz server` (which calls unlockVault
+  // directly) as an unthrottled password oracle. Keeping a second check here
+  // would also double-count every attempt against the same bucket.
   const result = await Archive.unlockVault(res.pw);
   if (result.error) {
-    const remaining = rateCheck.remaining !== undefined ? `${rateCheck.remaining} attempt(s) left` : 'locked';
-    console.log(`Failed to open vault: ${result.error.message} [${remaining}]`);
+    console.log(`Failed to open vault: ${result.error.message}`);
     return false;
   }
 
@@ -46,7 +50,6 @@ export const openVaultCLI = async (): Promise<boolean> => {
     return false;
   }
 
-  Sentinel.resetRateLimit('vault-unlock');
   return result.data === true;
 };
 

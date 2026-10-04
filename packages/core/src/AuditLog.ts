@@ -32,6 +32,11 @@ export class AuditLog {
 
             try {
                 await fs.access(logPath);
+                // `mode` on appendFile only applies when the file is created, so
+                // an existing log keeps whatever permissions it has. A privacy
+                // log that has been loosened must be tightened again, or the
+                // restore below would silently leave it world-readable.
+                await fs.chmod(logPath, 0o600);
             } catch {
                 // Create the file with strict permissions if it doesn't exist
                 // 🛡️ Sentinel: Explicitly restrict file permissions to owner-only

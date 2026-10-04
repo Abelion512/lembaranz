@@ -1,65 +1,123 @@
+# Lembaranz CLI
 
-Lembaranz CLI is a faithful companion for developers. It is designed for speed, automation, and ease of integration into your terminal workflow.
+The terminal interface to the vault: a full TUI plus single-purpose commands that
+script cleanly.
 
-## Installation
+> This page previously documented `lembaranz mulai`, `pantau`, `jelajah`,
+> `pengaturan`, `petik`, and `tanam`. None of those commands exist in the CLI, and
+> the install instructions pointed at an npm package that has never been
+> published. Every command below is taken from `packages/cli/src/main.ts` and the
+> `register*Command` functions it calls, and the command surface is asserted by
+> `packages/cli/src/__tests__/commands.test.ts`. If a command here ever drifts
+> from the binary, that test fails first.
 
-### Using Bun (highly recommended)
-Bun is the fastest runtime for running Lembaranz CLI.
+## Install
+
+Nothing is published to the npm registry yet, so install from source.
+
 ```bash
-bun install -g Abelion512/lembaranz
+git clone https://github.com/Abelion512/lembaranz.git
+cd lembaranz
+bun install
 ```
 
-### Using NPM
+To get a global `lembaranz` binary:
+
 ```bash
-npm install -g Abelion512/lembaranz
+bun link          # from the cloned repository
 ```
 
-## Running the CLI
+Or skip the clone entirely:
 
-After installation, the `lembaranz` command will be available globally.
-
-### 1. Interactive Mode (TUI)
-Type the following command to enter the intuitive terminal interface:
 ```bash
-lembaranz mulai
-```
-The TUI features non-looping navigation for precise control.
-
-### 2. Direct Command Mode
-You can also run specific commands without entering the main menu:
-```bash
-lembaranz pantau    # View system status
-lembaranz jelajah   # Search for notes
-lembaranz pengaturan # Manage .env configuration
+curl -fsSL https://lembaranz.vercel.app/install.sh | bash
 ```
 
-## Configuration Command (pengaturan)
+Docker is supported for the TUI:
 
-One of Lembaranz CLI's most powerful features is its ability to manage `.env` configurations directly without opening a text editor. This is extremely useful for quickly storing API credentials or project settings.
+```bash
+docker compose run --rm lembaranz
+```
 
-### Usage Examples:
+## Commands
 
-1. **View all configurations:**
-   ```bash
-   lembaranz pengaturan
-   ```
-2. **View a specific value:**
-   ```bash
-   lembaranz pengaturan GEMINI_API_KEY
-   ```
-3. **Store/Update a value:**
-   ```bash
-   lembaranz pengaturan GEMINI_API_KEY "your-api-key-here"
-   ```
+| Command | What it does |
+|---------|--------------|
+| `lembaranz` | Launch the TUI (default when no command is given) |
+| `lembaranz setup` | Interactive setup wizard (alias: `init`) |
+| `lembaranz launch` | Enter TUI mode directly |
+| `lembaranz browse [keyword]` | Searchable archive browser |
+| `lembaranz config` | Manage configurations, local `.env` values, and security hooks (alias: `cfg`) |
+| `lembaranz doctor` | Security audit: entropy scan, leak detection, git safety |
+| `lembaranz dashboard` | Serve the web dashboard locally |
+| `lembaranz server` | Run the vault server the web UI connects to |
+| `lembaranz import <path>` | Import `.md` files or restore a `.lembaranz` backup |
+| `lembaranz export` | Write an encrypted portable backup |
+| `lembaranz run <command...>` | Load a `.env` profile from the vault, then run a command with it |
+| `lembaranz monitor` | System health and integrity |
+| `lembaranz security` | Security dashboard, audits, and ledger status |
+| `lembaranz --help` | Full command list |
 
-## Long-term Retention & Security
+### Notable flags
 
-Lembaranz is designed to keep your data safe and accessible for years to come:
+```bash
+lembaranz server --open            # open the connect link in a browser
+lembaranz server --port 5199       # or set LEMBARANZ_PORT
+lembaranz server --host 0.0.0.0    # expose to the LAN, prints a warning
+lembaranz doctor --deep            # scan file contents for high-entropy secrets
+lembaranz doctor --fix             # attempt automatic repair
+```
 
-1.  **Self-Backup**: Use the `petik` (export) command in the main menu to export your entire vault into a single encrypted `.lembaranz` file. Keep this file in a safe place (personal cloud or physical drive).
-2.  **Easy Import**: If you change devices, simply install Lembaranz CLI and use the `tanam` (import) feature to restore your entire archive.
-3.  **Local-First, Privacy-Always**: The `.lembaranz/` folder in your project root contains the local database. We've ensured this folder is automatically added to `.gitignore` when using the CLI, so your secrets will never accidentally leak to GitHub.
-4.  **AI Sovereignty**: By using `lembaranz pengaturan`, you can easily switch AI providers (Gemini, etc.) at any time without changing application code.
+`LEMBARANZ_HOST`, `LEMBARANZ_PORT`, and `LEMBARANZ_WEB_URL` are the environment
+equivalents for the `server` flags.
 
----
-*Created with ❤️ for those who crave digital freedom.*
+## Running a command with vault-loaded environment
+
+`lembaranz run` injects a stored `.env` profile into the environment of the
+command it then executes, so a project can run without a plaintext `.env` on
+disk:
+
+```bash
+lembaranz run npm start                 # profile defaults to the directory name
+lembaranz run -t staging npm test       # pick a profile with --tag
+```
+
+Bare arguments are forwarded here too, so `lembaranz npm start` is shorthand for
+`lembaranz run npm start`.
+
+## `config` subcommands
+
+`config` is a group, not a single command:
+
+```bash
+lembaranz config show                    # every local configuration
+lembaranz config get <key>               # one value
+lembaranz config set <key> <value>       # write one value
+lembaranz config save [tag]              # save the local .env into the vault
+lembaranz config load [tag]              # load it back (alias: fetch)
+lembaranz config list                    # stored .env profiles
+lembaranz config hook                    # install the git pre-commit leak scanner
+```
+
+## TUI keys
+
+| Key | Action |
+|-----|--------|
+| Arrow keys | Move through menus |
+| Enter | Select |
+| Esc / `q` | Back, then exit |
+| Ctrl+C | Exit |
+| `l` | Lock the vault |
+
+There is no `/` shortcut. Search lives in `lembaranz browse` and in the
+`browse` screen of the TUI.
+
+## Backup and restore
+
+```bash
+lembaranz export                 # writes an encrypted .lembaranz archive
+lembaranz import backup.lembaranz
+```
+
+Both paths are covered by tests in `packages/core/src/__tests__/`, and a backup
+written by an older release still opens through the legacy PBKDF2 fallback.

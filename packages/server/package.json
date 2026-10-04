@@ -1,0 +1,13 @@
+{
+  "name": "@lembaranz/server",
+  "version": "0.2.0",
+  "description": "Local HTTP server exposing the vault for the web UI",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "bun ./src/index.ts"
+  },
+  "dependencies": {
+    "@lembaranz/core": "*"
+  }
+}

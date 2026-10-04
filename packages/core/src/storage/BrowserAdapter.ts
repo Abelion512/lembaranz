@@ -1,3 +1,11 @@
+/**
+ * BrowserAdapter: the IndexedDB storage adapter for the web dashboard.
+ *
+ * Mirrors the `FileAdapter` interface over IndexedDB, with the same four
+ * object stores. Note and folder records are keyed by their own `id` field
+ * (`keyPath`), while `kv` and `meta` use the explicit key argument. The vault
+ * lives only in this browser profile; there is no server and no sync.
+ */
 import { openDB, IDBPDatabase } from 'idb';
 import { StorageAdapter, LembaranzSchema } from './types';
 

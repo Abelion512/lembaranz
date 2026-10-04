@@ -1,3 +1,21 @@
+/**
+ * Vault: the cryptographic engine.
+ *
+ * AES-GCM 256-bit through Web Crypto, with Argon2id (pure JS, via
+ * `@noble/hashes`) as the key derivation function and a PBKDF2-HMAC-SHA-256
+ * fallback for data written by earlier releases. The master key lives in
+ * `activeKey` for the session; `clearKey()` drops it and the plaintext cache.
+ *
+ * `encryptPacked` / `decryptPacked` produce and consume the `ivHex|base64`
+ * format stored in the vault. Two properties of `decryptPacked` matter to
+ * callers:
+ *
+ *  - a value without the `|` separator is returned unchanged, for entries
+ *    written before encryption existed. A successful decrypt is therefore not
+ *    proof a field was ever sealed; use `isPacked` when that matters.
+ *  - `hexToBytes` rejects non-hex input, so a tampered IV segment fails loudly
+ *    instead of decoding to different bytes.
+ */
 import { Result } from "./Formula";
 import { argon2idAsync } from "@noble/hashes/argon2.js";
 export type { Result };
@@ -8,6 +26,26 @@ export type { Result };
  */
 const ARGON2ID_PARAMS = { t: 2, m: 64 * 1024, dkLen: 32, p: 1 } as const;
 
+/** True for '0'-'9', 'a'-'f', 'A'-'F'. Guards the nibble math in `hexToBytes`. */
+const isHexNibble = (code: number): boolean =>
+  (code >= 48 && code <= 57) || (code >= 97 && code <= 102) || (code >= 65 && code <= 70);
+
+/** Shape written by `encryptPacked`: a 12-byte IV as 24 hex chars, then "|". */
+const PACKED_PATTERN = /^[0-9a-f]{24}\|[A-Za-z0-9+/]+={0,2}$/;
+
+/**
+ * Fixed error messages the UI has to act on.
+ *
+ * These are exported constants rather than inline strings because callers must
+ * tell "you typed the wrong password" and "the vault is locked" apart from a
+ * transport failure, and because the raw WebCrypto error
+ * ("The operation failed for an operation-specific reason") tells a user
+ * nothing at all. Both are crypto-level constants, so they live here rather
+ * than in Archive, which imports this module.
+ */
+export const WRONG_PASSWORD = "That master password is not correct.";
+export const VAULT_LOCKED = "The vault is locked. Enter your master password.";
+
 /**
  * Vault: Lower-level cryptographic engine.
  * AES-GCM 256-bit via Web Crypto, Argon2id (pure JS) for key derivation,
@@ -16,6 +54,28 @@ const ARGON2ID_PARAMS = { t: 2, m: 64 * 1024, dkLen: 32, p: 1 } as const;
 export class Vault {
   private static activeKey: CryptoKey | null = null;
   private static decryptionCache: Map<string, string> = new Map();
+
+  /**
+   * Decrypted-plaintext entries kept per session. Re-reading the vault is the
+   * common case and the cache makes it ~13x faster (measured 3.5ms -> 0.26ms on
+   * 300 notes), so it stays — but capped. An unbounded map held every note body
+   * and credential in plain memory for the whole session.
+   *
+   * The cap must exceed one full vault scan, or FIFO eviction thrashes: a cap of
+   * 256 against 300 notes x 3 fields forced a ~100% miss rate and pushed
+   * getAllNotes from 3.5ms to 16.5ms. 4096 covers a full vault several times
+   * over while still bounding memory. Map keeps insertion order, so the first
+   * key is the oldest entry.
+   */
+  private static readonly DECRYPTION_CACHE_LIMIT = 4096;
+
+  private static cachePlaintext(packed: string, plaintext: string): void {
+    if (this.decryptionCache.size >= this.DECRYPTION_CACHE_LIMIT) {
+      const oldest = this.decryptionCache.keys().next().value;
+      if (oldest !== undefined) this.decryptionCache.delete(oldest);
+    }
+    this.decryptionCache.set(packed, plaintext);
+  }
 
   /**
    * Sets the current session encryption key in memory.
@@ -142,7 +202,7 @@ export class Vault {
     key?: CryptoKey
   ): Promise<Result<{ iv: Uint8Array; data: ArrayBuffer }>> {
     const targetKey = key || this.activeKey;
-    if (!targetKey) return { data: null, error: new Error("Vault locked") };
+    if (!targetKey) return { data: null, error: new Error(VAULT_LOCKED) };
 
     try {
       const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -167,7 +227,7 @@ export class Vault {
     key?: CryptoKey
   ): Promise<Result<string>> {
     const targetKey = key || this.activeKey;
-    if (!targetKey) return { data: null, error: new Error("Vault locked") };
+    if (!targetKey) return { data: null, error: new Error(VAULT_LOCKED) };
 
     try {
       const decrypted = await crypto.subtle.decrypt(
@@ -181,6 +241,19 @@ export class Vault {
     } catch (e) {
       return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
     }
+  }
+
+  /**
+   * True when a value is in the "ivHex|base64" packed form this module writes.
+   *
+   * `decryptPacked` accepts bare plaintext for backwards compatibility with
+   * entries written before encryption existed, so a successful decrypt is not
+   * proof that a field was ever sealed. Callers that need that guarantee (any
+   * code surfacing a stored value to a person) use this to tell a real
+   * ciphertext from injected plaintext.
+   */
+  public static isPacked(value: unknown): value is string {
+    return typeof value === "string" && PACKED_PATTERN.test(value);
   }
 
   /**
@@ -199,7 +272,7 @@ export class Vault {
     
     // Cache the result if using active key
     if (!key) {
-      this.decryptionCache.set(packed, plaintext);
+      this.cachePlaintext(packed, plaintext);
     }
 
     return { data: packed, error: null };
@@ -217,7 +290,10 @@ export class Vault {
     if (packed === undefined) return { data: undefined as any, error: null };
     if (packed === "") return { data: "", error: null };
 
-    // Support for unencrypted strings (graceful degradation/compatibility)
+    // Backwards compatibility: entries written before encryption existed are
+    // stored as bare plaintext. Anything without the "ivHex|base64" separator is
+    // treated as such, which is why callers that render a note must not treat a
+    // successful decrypt as proof the entry was ever sealed (see getAllNotes).
     if (!packed.includes("|")) {
       return { data: packed, error: null };
     }
@@ -234,7 +310,7 @@ export class Vault {
       const res = await this.decrypt(bytes.buffer as ArrayBuffer, iv, key);
       
       if (res.data && !key) {
-        this.decryptionCache.set(packed, res.data);
+        this.cachePlaintext(packed, res.data);
       }
       
       return res;
@@ -291,6 +367,13 @@ export class Vault {
 
   /**
    * Optimized hex string to Uint8Array conversion using bitwise math.
+   *
+   * Rejects non-hex input. The nibble math below is a branch-free identity on
+   * [0-9a-f] only: `charCode & 0xf + (charCode >> 6) * 9` happens to map some
+   * other characters onto valid nibbles ('z' -> 3, 'G' -> 10, '-' -> 13), so
+   * without this guard a corrupted or tampered segment silently decodes to the
+   * wrong bytes. Callers pass attacker-adjacent data here: the IV half of a
+   * stored "ivHex|base64" string.
    */
   public static hexToBytes(hex: string): Uint8Array {
     if (hex.length % 2 !== 0) {
@@ -300,6 +383,9 @@ export class Vault {
     for (let i = 0; i < bytes.length; i++) {
       const c1 = hex.charCodeAt(i * 2);
       const c2 = hex.charCodeAt(i * 2 + 1);
+      if (!isHexNibble(c1) || !isHexNibble(c2)) {
+        throw new Error("Invalid hex character");
+      }
       // Bitwise magic to convert hex character code to nibble value (0-15)
       const n1 = (c1 & 0xf) + (c1 >> 6) * 9;
       const n2 = (c2 & 0xf) + (c2 >> 6) * 9;

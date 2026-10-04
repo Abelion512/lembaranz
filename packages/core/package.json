@@ -54,6 +54,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "eslint": "^10"
+    "eslint": "^10",
+    "fake-indexeddb": "^6.2.5"
   }
 }

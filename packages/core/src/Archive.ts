@@ -1,9 +1,38 @@
+/**
+ * Archive: high-level vault operations.
+ *
+ * Owns the lifecycle around the crypto engine: setup, unlock, recovery, and
+ * password reset, plus note CRUD and backup export/restore. Every method
+ * returns `Result<T>` and never throws.
+ *
+ * Unlocking derives a password key, unwraps the master key, and keeps it in
+ * `Vault` for the session. Note fields are sealed individually with
+ * `Vault.encryptPacked` and carry a SHA-256 seal (`_hash`) computed over the
+ * plaintext at save time; `decryptNote` recomputes it and flags a mismatch.
+ *
+ * Recovery is the highest-value path in the vault: it is rate limited, every
+ * failure is audited, and a successful recovery resets the counter.
+ */
 import { Storage } from "./Storage";
-import { Vault, Result } from "./Vault";
+import { Vault, Result, VAULT_LOCKED, WRONG_PASSWORD } from "./Vault";
 import { StoredNote, DecryptedNote, Note, EntityId, AppSettings } from "./Formula";
 import { v4 as uuidv4 } from "uuid";
 import { Integrity } from "./Integrity";
 import { Audit } from "./Audit";
+import { Sentinel } from "./Sentinel";
+
+/** Rate-limit bucket for the recovery-phrase path. */
+const RECOVERY_RATE_LIMIT_KEY = "vault-recovery";
+
+// Re-exported so consumers can import every vault error from the package root
+// alongside the operations that produce them.
+export { VAULT_LOCKED, WRONG_PASSWORD };
+
+/**
+ * Rate-limit bucket for password unlock. Enforced inside `unlockVault` and
+ * scoped per vault, so one vault's lockout never blocks another.
+ */
+const unlockRateLimitKey = (): string => `vault-unlock:${Storage.vaultId()}`;
 
 /** Input for creating or updating a note (before encryption) */
 export interface NoteInput {
@@ -123,6 +152,20 @@ export const Archive = {
    */
   async unlockVault(password: string): Promise<Result<boolean>> {
     try {
+      // Rate limit lives HERE, not in each caller. It used to sit only in the
+      // CLI's openVaultCLI, so `lembaranz server` calling unlockVault directly
+      // exposed an unthrottled password oracle over HTTP (measured: 12 wrong
+      // passwords, 12 Argon2id derivations, no lockout). One gate at the choke
+      // point protects the CLI, the TUI, and the server alike.
+      const rateCheck = Sentinel.checkRateLimit(unlockRateLimitKey());
+      if (!rateCheck.allowed) {
+        await Audit.log("SECURITY_ALERT", "Vault unlock rate limit reached; attempt refused");
+        return {
+          data: null,
+          error: new Error("Too many failed attempts. Try again later."),
+        };
+      }
+
       // Panic Key Check
       const panicHash = (await Storage.get("meta", "panic_hash")) as string;
       if (panicHash) {
@@ -174,7 +217,10 @@ export const Archive = {
         }
         if (decResult.error) {
            await Audit.log("SECURITY_ALERT", "Failed vault unlock attempt detected (Wrong Password)");
-           return decResult as Result<boolean>;
+           // The raw WebCrypto failure is "The operation failed for an
+           // operation-specific reason", which tells a user nothing. The branch
+           // already knows this is a wrong password, so say so.
+           return { data: null, error: new Error(WRONG_PASSWORD) };
         }
 
         const masterKeyBuffer = Vault.base64ToBytes(decResult.data)
@@ -202,6 +248,7 @@ export const Archive = {
             }
           }
           await Audit.log("VAULT_UNLOCK", "Vault unlocked successfully");
+          Sentinel.resetRateLimit(unlockRateLimitKey());
           return { data: true, error: null };
         }
       } else {
@@ -233,7 +280,7 @@ export const Archive = {
         }
         if (decResult.error) {
            await Audit.log("SECURITY_ALERT", "Failed vault unlock attempt detected (Legacy V2)");
-           return decResult as Result<boolean>;
+           return { data: null, error: new Error(WRONG_PASSWORD) };
         }
 
         if (decResult.data === "LEMBARANZ_SECURED_V2") {
@@ -252,6 +299,7 @@ export const Archive = {
             );
           
           await Audit.log("VAULT_UNLOCK", "Vault unlocked successfully (Migrated to V3)");
+          Sentinel.resetRateLimit(unlockRateLimitKey());
           return { data: true, error: null };
         }
       }
@@ -266,10 +314,36 @@ export const Archive = {
   },
 
   /**
+   * Clears the unlock lockout. Success paths call this so a user who
+   * fat-fingers their password is not punished for the next five minutes.
+   */
+  resetUnlockRateLimit(): void {
+    Sentinel.resetRateLimit(unlockRateLimitKey());
+  },
+
+  /**
    * Recovers vault access using a paper key (mnemonic).
    */
   async recoverVault(mnemonic: string): Promise<Result<boolean>> {
     try {
+      // The recovery phrase is the highest-value secret in the vault. Password
+      // unlock is gated by the caller (see cli/utils.ts openVaultCLI), so the
+      // rate limit lives here where both the CLI wizard and the TUI unlock
+      // screen go through it — previously neither did.
+      const rateCheck = Sentinel.checkRateLimit(RECOVERY_RATE_LIMIT_KEY);
+      if (!rateCheck.allowed) {
+        await Audit.log(
+          "SECURITY_ALERT",
+          "Recovery phrase rate limit reached; attempt refused"
+        );
+        return {
+          data: null,
+          error: new Error(
+            "Too many failed recovery attempts. Try again later."
+          ),
+        };
+      }
+
       const mSaltHex = (await Storage.get("meta", "recovery_salt")) as string;
       const wrappedKey = (await Storage.get(
         "meta",
@@ -298,7 +372,21 @@ export const Archive = {
           }
         }
       }
-      if (decResult.error) return decResult as Result<boolean>;
+      if (decResult.error) {
+        await Audit.log(
+          "SECURITY_ALERT",
+          "Failed vault recovery attempt detected (wrong recovery phrase)"
+        );
+        // Replace the WebCrypto auth failure with a message the person can act
+        // on. "The operation failed for an operation-specific reason" was being
+        // shown verbatim for a wrong phrase.
+        return {
+          data: null,
+          error: new Error(
+            "Recovery phrase did not unlock this vault. Check the words and their order."
+          ),
+        };
+      }
 
       const keyBuffer = Vault.base64ToBytes(decResult.data)
         .buffer as ArrayBuffer;
@@ -324,6 +412,7 @@ export const Archive = {
       if (importResult.error) return importResult as Result<boolean>;
 
       Vault.setActiveKey(importResult.data);
+      Sentinel.resetRateLimit(RECOVERY_RATE_LIMIT_KEY);
       await Audit.log("VAULT_UNLOCK", "Vault unlocked successfully via recovery mnemonic");
       return { data: true, error: null };
     } catch (e) {
@@ -401,7 +490,7 @@ export const Archive = {
     if (Vault.isLocked()) {
       return {
         data: null,
-        error: new Error("Vault locked. Cannot save data."),
+        error: new Error(VAULT_LOCKED),
       };
     }
 
@@ -484,7 +573,7 @@ export const Archive = {
    */
   async getAllNotes(): Promise<Result<DecryptedNote[]>> {
     if (Vault.isLocked())
-      return { data: null, error: new Error("Vault locked") };
+      return { data: null, error: new Error(VAULT_LOCKED) };
 
     try {
       const rawNotes = (await Storage.getAll("notes")) as StoredNote[];
@@ -495,9 +584,28 @@ export const Archive = {
           const resTitle = await Vault.decryptPacked(n.title);
           const resPreview = await Vault.decryptPacked(n.preview || "");
 
+          // A stored field that is not in packed form decrypted by passthrough,
+          // not by AES-GCM. Entries written by saveNote are always packed, so
+          // this means the value was replaced with injected plaintext by
+          // something that could write the store. Rendering it as if it were a
+          // genuine decrypted title would show attacker-chosen text with no
+          // indicator, and the per-entry seal in decryptNote never runs here
+          // because this path does not decrypt the content the seal covers.
+          const titleInjected = Boolean(n._hash) && !Vault.isPacked(n.title);
+          if (titleInjected) {
+            await Audit.log(
+              "SECURITY_ALERT",
+              `Entry ${n.id} has an unsealed title; the store was modified outside the app`
+            );
+          }
+
           return {
             ...n,
-            title: resTitle.error ? "⚠️ [CORRUPTED]" : resTitle.data,
+            title: titleInjected
+              ? "⚠️ [UNSEALED]"
+              : resTitle.error
+                ? "⚠️ [CORRUPTED]"
+                : resTitle.data,
             preview: resPreview.error ? "⚠️ [CORRUPTED]" : resPreview.data,
             content: "🔒 Locked",
             credentials: undefined,
@@ -553,9 +661,21 @@ export const Archive = {
         }
       }
 
+      // A field that decrypts by passthrough instead of AES-GCM was never
+      // sealed. Entries written by saveNote always are, so this is injected
+      // plaintext, and the seal comparison below cannot see it because the
+      // injected value becomes part of the recomputed hash target.
+      const titleInjected = Boolean(note._hash) && !Vault.isPacked(note.title);
+      if (titleInjected) {
+        await Audit.log(
+          "SECURITY_ALERT",
+          `Entry ${note.id} has an unsealed title; the store was modified outside the app`
+        );
+      }
+
       const decryptedNote: DecryptedNote = {
         ...note,
-        title: resTitle.data,
+        title: titleInjected ? "⚠️ [UNSEALED]" : resTitle.data,
         content: resContent.data,
         credentials: decodedCreds,
       };
@@ -597,7 +717,7 @@ export const Archive = {
    */
   async getNoteById(id: EntityId): Promise<Result<Note | undefined>> {
     if (Vault.isLocked())
-      return { data: null, error: new Error("Vault locked") };
+      return { data: null, error: new Error(VAULT_LOCKED) };
     try {
       const note = (await Storage.get("notes", id)) as StoredNote | undefined;
       if (!note) return { data: undefined, error: null };
@@ -624,7 +744,7 @@ export const Archive = {
    */
   async createBackup(passwordBackup: string): Promise<Result<Uint8Array>> {
     if (Vault.isLocked())
-      return { data: null, error: new Error("Vault locked") };
+      return { data: null, error: new Error(VAULT_LOCKED) };
     try {
       const rawNotes = (await Storage.getAll("notes")) as StoredNote[];
       const payload = JSON.stringify({ notes: rawNotes, exportedAt: new Date().toISOString() });
@@ -639,6 +759,12 @@ export const Archive = {
 
   /**
    * Restores data from a portable backup buffer.
+   *
+   * A backup stores entries exactly as the vault holds them, so every field is
+   * still AES-GCM ciphertext sealed with the exporting vault's master key. They
+   * must be decrypted with the current key before being handed to `saveNote`,
+   * which encrypts its input: passing ciphertext through re-encrypts it and
+   * produces entries nobody can read.
    */
   async restoreBackup(buffer: Uint8Array, passwordBackup: string): Promise<Result<{ restored: number; skipped: number }>> {
     const res = await Vault.decryptPortable(buffer, passwordBackup);
@@ -646,18 +772,26 @@ export const Archive = {
 
     try {
       const backup = JSON.parse(res.data);
+      if (!backup || !Array.isArray(backup.notes)) {
+        return { data: null, error: new Error("Backup payload is not a note archive") };
+      }
       let restored = 0;
       let skipped = 0;
 
-      // Optimize: use chunked parallel processing to avoid sequential await bottleneck.
-      // FileAdapter implements a safe save queue, making concurrent saves safe.
+      // Chunked so a large archive does not open one storage transaction per row.
+      // FileAdapter serialises writes through a queue, so concurrency is safe.
       const chunkSize = 50;
       for (let i = 0; i < backup.notes.length; i += chunkSize) {
         const chunk = backup.notes.slice(i, i + chunkSize);
         await Promise.all(
-          chunk.map(async (note: NoteInput) => {
+          chunk.map(async (stored: StoredNote) => {
             try {
-              const saveRes = await this.saveNote(note);
+              const plain = await this.unsealForRestore(stored);
+              if (plain.error) {
+                skipped++;
+                return;
+              }
+              const saveRes = await this.saveNote(plain.data as NoteInput);
               if (saveRes.error) skipped++;
               else restored++;
             } catch {
@@ -671,6 +805,77 @@ export const Archive = {
     } catch (e) {
       return { data: null, error: e instanceof Error ? e : new Error(String(e)) };
     }
+  },
+
+  /**
+   * Reverses the storage encryption on a backed-up entry.
+   *
+   * Returns an error rather than a best guess: an entry that cannot be unsealed
+   * with the active key is counted as skipped rather than stored as ciphertext,
+   * which would look like a successful restore and read back as garbage.
+   */
+  async unsealForRestore(
+    stored: StoredNote
+  ): Promise<Result<NoteInput>> {
+    if (!stored || typeof stored !== "object") {
+      return { data: null, error: new Error("Backup entry is not a record") };
+    }
+
+    const absent: Result<undefined> = { data: undefined, error: null };
+    const [title, content, preview, credentials] = await Promise.all([
+      Vault.decryptPacked(stored.title),
+      Vault.decryptPacked(stored.content),
+      stored.preview ? Vault.decryptPacked(stored.preview) : Promise.resolve(absent),
+      typeof stored.credentials === "string"
+        ? Vault.decryptPacked(stored.credentials)
+        : Promise.resolve(absent),
+    ]);
+
+    if (title.error || content.error || preview.error || credentials.error) {
+      return {
+        data: null,
+        error: new Error("Backup entry could not be decrypted with the active vault key"),
+      };
+    }
+    // `preview` is transport metadata that saveNote derives from `content` and
+    // that the seal deliberately excludes, so it is dropped rather than passed
+    // back: forwarding it would change the recomputed seal and every restored
+    // entry would read back as tampered.
+
+    let parsedCredentials: NoteInput["credentials"] = undefined;
+    if (typeof credentials.data === "string") {
+      try {
+        parsedCredentials = JSON.parse(credentials.data);
+      } catch {
+        parsedCredentials = credentials.data;
+      }
+    }
+
+    const {
+      _hash: _seal,
+      _timestamp: _stamp,
+      preview: _storedPreview,
+      title: _storedTitle,
+      content: _storedContent,
+      credentials: _storedCreds,
+      ...fields
+    } = stored as StoredNote & Record<string, unknown>;
+    void _seal;
+    void _stamp;
+    void _storedPreview;
+    void _storedTitle;
+    void _storedContent;
+    void _storedCreds;
+
+    return {
+      data: {
+        ...fields,
+        title: title.data as string,
+        content: content.data as string,
+        credentials: parsedCredentials,
+      } as unknown as NoteInput,
+      error: null,
+    };
   },
 
   /**

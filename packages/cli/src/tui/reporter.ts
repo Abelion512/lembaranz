@@ -1,3 +1,12 @@
+/**
+ * Crash report generation for the TUI.
+ *
+ * `generateIssueUrl` builds a pre-filled GitHub issue, redacting the home
+ * directory from the stack trace. `openReport` hands the URL to the platform
+ * opener. It parses the URL first, refuses any scheme other than http and
+ * https, and spawns with `shell: false`, so a crafted URL cannot reach a local
+ * file or run a command.
+ */
 import { spawn } from 'child_process';
 import os from 'os';
 import pkg from "../../package.json" with { type: "json" };

@@ -1,3 +1,14 @@
+/**
+ * Audit: the tamper-evident ledger.
+ *
+ * Every entry commits to the previous entry's hash, so removing or editing
+ * history breaks the chain. `verifyChain()` reports the first entry that fails
+ * to link, and `headHash()` returns the head for optional external anchoring,
+ * which is the only way to detect truncation of the tail.
+ *
+ * Entries are stored individually under `audit_` keys in the `kv` store and
+ * counted as `legacy` when they predate the chain.
+ */
 import { Storage } from "./Storage";
 import { Integrity } from "./Integrity";
 import { EntityId } from "./Formula";

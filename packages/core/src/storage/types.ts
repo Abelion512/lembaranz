@@ -1,3 +1,11 @@
+/**
+ * Storage contracts shared by every adapter.
+ *
+ * `LembaranzSchema` types the four object stores (`notes`, `folders`, `kv`,
+ * `meta`) for IndexedDB and doubles as the key type for the file adapter.
+ * `StorageAdapter` is the six-method interface both `FileAdapter` and
+ * `BrowserAdapter` implement; `Storage.initialize` picks one at runtime.
+ */
 import { Note, Folder, AppSettings, UserProfile } from '../Formula';
 import { DBSchema } from 'idb';
 

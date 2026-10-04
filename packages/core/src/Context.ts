@@ -1,3 +1,14 @@
+/**
+ * Context: vault path resolution and local `.env` handling.
+ *
+ * Two contexts exist. `personal` is the global vault under the user's home
+ * directory, `project` is a vault inside the current repository. Legacy
+ * filenames `saku.json` and `pelataran.json` are still read and migrated on
+ * load; those Indonesian names survive only here, for backward compatibility.
+ *
+ * `readEnv` parses a project `.env` by hand rather than evaluating it, so a
+ * value can never be executed.
+ */
 import { Result } from './Vault';
 
 export type VaultContext = 'personal' | 'project';
@@ -91,6 +102,10 @@ export class Context {
 
     /**
      * Detects the project root by searching for .git or package.json.
+     *
+     * Returns a usable absolute path or null. It must never return `''`: an
+     * empty string is falsy, so a caller checking `if (!root)` would read it as
+     * "no project found" and silently fall back to the current directory.
      */
     private static async findProjectRoot(dir: string = ''): Promise<string | null> {
         if (typeof window !== 'undefined') return null;
@@ -109,7 +124,7 @@ export class Context {
                 if (parent === curr) return null;
                 return await check(parent);
             };
-            return await check(dir);
+            return await check(searchDir);
         } catch {
             return null;
         }
@@ -206,8 +221,11 @@ export class Context {
             });
 
             if (!found) {
-                if (content.length > 0 && !content.endsWith('\n')) {
-                    newLines.push('');
+                // `split('\n')` leaves a trailing empty element for any file that
+                // ends in a newline, and leaves none for one that does not.
+                // Dropping them keeps the append from writing a blank line.
+                while (newLines.length > 0 && newLines[newLines.length - 1] === '') {
+                    newLines.pop();
                 }
                 newLines.push(`${key}=${value}`);
             }

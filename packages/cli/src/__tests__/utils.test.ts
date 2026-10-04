@@ -1,9 +1,8 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
 
-const promptsMock = mock(async () => ({ pw: "rahasia" }));
-const unlockVaultMock = mock(async () => ({ data: false }));
-const checkRateLimitMock = mock(() => ({ allowed: true, remaining: 4 }));
-const resetRateLimitMock = mock(() => {});
+const promptsMock = mock(async (): Promise<{ pw?: string }> => ({ pw: "rahasia" }));
+type UnlockResult = { data: boolean | null; error: Error | null };
+const unlockVaultMock = mock(async (): Promise<UnlockResult> => ({ data: false, error: null }));
 
 mock.module("prompts", () => ({
   default: promptsMock,
@@ -20,55 +19,61 @@ mock.module("@lembaranz/core", () => ({
   Archive: {
     unlockVault: unlockVaultMock,
   },
-  Sentinel: {
-    checkRateLimit: checkRateLimitMock,
-    resetRateLimit: resetRateLimitMock,
-  },
 }));
 
 const { openVaultCLI } = await import("../utils");
 
-describe("openVaultCLI rate-limit reset behavior", () => {
+/**
+ * Rate limiting moved into `Archive.unlockVault` so every caller is covered,
+ * not just the CLI. While the check lived here, `lembaranz server` (which calls
+ * unlockVault directly) was an unthrottled password oracle. These tests
+ * therefore cover only what is still the CLI's job: delegating and surfacing
+ * the result. The throttling itself is tested in core, next to the code.
+ */
+describe("openVaultCLI delegation", () => {
   const consoleLogSpy = mock(() => {});
 
   beforeEach(() => {
     promptsMock.mockReset();
     unlockVaultMock.mockReset();
-    checkRateLimitMock.mockReset();
-    resetRateLimitMock.mockReset();
     consoleLogSpy.mockReset();
 
     promptsMock.mockResolvedValue({ pw: "rahasia" });
-    checkRateLimitMock.mockReturnValue({ allowed: true, remaining: 4 });
-
     console.log = consoleLogSpy as typeof console.log;
   });
 
-  test("wrong password does not reset attempts", async () => {
-    unlockVaultMock.mockResolvedValue({
-      data: false,
-      error: null,
-    } as any);
+  test("a cancelled prompt does not attempt to unlock", async () => {
+    promptsMock.mockResolvedValue({});
 
-    const result = await openVaultCLI();
+    expect(await openVaultCLI()).toBe(false);
+    expect(unlockVaultMock).toHaveBeenCalledTimes(0);
+  });
 
-    expect(result).toBe(false);
-    expect(resetRateLimitMock).toHaveBeenCalledTimes(0);
+  test("a wrong password is reported and denied", async () => {
+    unlockVaultMock.mockResolvedValue({ data: false, error: null });
+
+    expect(await openVaultCLI()).toBe(false);
+    expect(unlockVaultMock).toHaveBeenCalledTimes(1);
     expect(consoleLogSpy).toHaveBeenCalledWith(
       "Failed to open vault: Authentication failed."
     );
   });
 
-  test("correct password resets attempts", async () => {
+  test("a correct password unlocks", async () => {
+    unlockVaultMock.mockResolvedValue({ data: true, error: null });
+
+    expect(await openVaultCLI()).toBe(true);
+  });
+
+  test("a rate-limit refusal from unlockVault is surfaced verbatim", async () => {
     unlockVaultMock.mockResolvedValue({
-      data: true,
-      error: null,
-    } as any);
+      data: null,
+      error: new Error("Too many failed attempts. Try again later."),
+    });
 
-    const result = await openVaultCLI();
-
-    expect(result).toBe(true);
-    expect(resetRateLimitMock).toHaveBeenCalledTimes(1);
-    expect(resetRateLimitMock).toHaveBeenCalledWith("vault-unlock");
+    expect(await openVaultCLI()).toBe(false);
+    expect(consoleLogSpy).toHaveBeenCalledWith(
+      "Failed to open vault: Too many failed attempts. Try again later."
+    );
   });
 });

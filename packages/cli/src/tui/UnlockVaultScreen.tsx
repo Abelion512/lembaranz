@@ -15,6 +15,7 @@ export const UnlockVaultScreen: React.FC<UnlockVaultScreenProps> = ({ onSuccess 
     const [isInit, setIsInit] = useState<boolean | null>(null);
     const [mode, setMode] = useState<'unlock' | 'setup' | 'mnemonic'>('unlock');
     const [mnemonic, setMnemonic] = useState('');
+    const [checksumWarning, setChecksumWarning] = useState<string | null>(null);
 
     useEffect(() => {
         const check = async () => {
@@ -67,8 +68,17 @@ export const UnlockVaultScreen: React.FC<UnlockVaultScreenProps> = ({ onSuccess 
     const handleMnemonicSubmit = async () => {
         setIsLoading(true);
         setError(null);
+        setChecksumWarning(null);
         try {
-            const { Archive } = await import('@lembaranz/core');
+            const { Archive, validateMnemonicChecksum } = await import('@lembaranz/core');
+
+            // Advisory only. A failed checksum usually means one mistyped word, but
+            // it can also mean a phrase written down by an older release, so
+            // recovery is still attempted and the warning never blocks it.
+            if (!validateMnemonicChecksum(mnemonic)) {
+                setChecksumWarning('This phrase fails its BIP39 checksum. One word is probably mistyped, or the phrase came from an older release. Trying anyway.');
+            }
+
             const result = await Archive.recoverVault(mnemonic);
             if (!result.error && result.data) {
                 // Force user to set new password after recovery
@@ -91,9 +101,11 @@ export const UnlockVaultScreen: React.FC<UnlockVaultScreenProps> = ({ onSuccess 
         if (input === 'r' && mode === 'unlock') {
             setMode('mnemonic');
             setError(null);
+            setChecksumWarning(null);
         } else if (input === 'l' && mode === 'mnemonic') {
             setMode('unlock');
             setError(null);
+            setChecksumWarning(null);
         }
     });
 
@@ -138,6 +150,12 @@ export const UnlockVaultScreen: React.FC<UnlockVaultScreenProps> = ({ onSuccess 
                 {isLoading && (
                     <Box marginTop={1} key="loading-box">
                         <Text color={UI_TOKENS.brand}><Spinner type="dots" /> Processing...</Text>
+                    </Box>
+                )}
+
+                {checksumWarning && !error && (
+                    <Box marginTop={1} key="checksum-box">
+                        <Text color="yellow">⚠️  {checksumWarning}</Text>
                     </Box>
                 )}
 
